@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Who Gets the Money? — Mobility Cost Infographic</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #06080d;
+  --card: #0d1117;
+  --card2: #131921;
+  --border: #1e2736;
+  --text: #e2e8f0;
+  --dim: #64748b;
+  --blue: #3b82f6;
+  --cyan: #06b6d4;
+  --green: #22c55e;
+  --amber: #f59e0b;
+  --red: #ef4444;
+  --purple: #a78bfa;
+  --pink: #f472b6;
+  --orange: #fb923c;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+.infographic {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+}
+
+/* ── HERO ── */
+.hero {
+  text-align: center;
+  padding: 4rem 2rem 3rem;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at 50% 80%, rgba(59,130,246,0.08) 0%, transparent 60%),
+              radial-gradient(ellipse at 30% 20%, rgba(167,139,250,0.06) 0%, transparent 50%);
+  pointer-events: none;
+}
+.hero-label {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  background: rgba(6,182,212,0.1);
+  border: 1px solid rgba(6,182,212,0.2);
+  padding: 0.35rem 1rem;
+  border-radius: 100px;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+.hero h1 {
+  font-size: clamp(2.5rem, 5vw, 4.2rem);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+  margin-bottom: 1rem;
+}
+.hero h1 em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--blue), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.hero-sub {
+  font-size: 1.1rem;
+  color: var(--dim);
+  font-weight: 300;
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* ── SECTION ── */
+.section {
+  margin: 3.5rem 0;
+}
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+.section-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--cyan);
+  background: rgba(6,182,212,0.1);
+  border: 1px solid rgba(6,182,212,0.15);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+.section-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* ── HEADLINE STAT STRIP ── */
+.stat-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 2rem 0;
+}
+.stat-cell {
+  background: var(--card);
+  padding: 1.5rem;
+  text-align: center;
+}
+.stat-cell .value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+.stat-cell .label {
+  font-size: 0.75rem;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.v-blue { color: var(--blue); }
+.v-green { color: var(--green); }
+.v-red { color: var(--red); }
+.v-amber { color: var(--amber); }
+
+/* ── BAR CHART ROWS ── */
+.bar-chart {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+}
+.bar-chart-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  color: var(--text);
+}
+.bar-row {
+  display: grid;
+  grid-template-columns: 140px 1fr 70px;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+}
+.bar-label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bar-track {
+  height: 24px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+}
+.bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.6s ease;
+  min-width: 2px;
+}
+.bar-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-align: right;
+}
+
+/* ── STACKED BAR (cost decomposition) ── */
+.stack-chart {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+}
+.stack-row {
+  margin-bottom: 1rem;
+}
+.stack-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.35rem;
+}
+.stack-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+.stack-total {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--dim);
+}
+.stack-bar {
+  height: 32px;
+  display: flex;
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+.stack-seg {
+  height: 100%;
+  position: relative;
+  transition: width 0.5s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.85);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* ── LEGEND ── */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.7rem;
+  color: var(--dim);
+}
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+/* ── DIRECTION TABLE ── */
+.dir-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.dir-cell {
+  background: var(--card);
+  padding: 1rem 1.25rem;
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+.dir-arrow {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  line-height: 1;
+  margin-top: 0.1rem;
+}
+.dir-content h4 {
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+.dir-content p {
+  font-size: 0.72rem;
+  color: var(--dim);
+  line-height: 1.45;
+}
+
+/* ── INSIGHT CARDS ── */
+.insight-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1rem;
+}
+.insight-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  position: relative;
+  overflow: hidden;
+}
+.insight-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+.insight-card.ic-1::before { background: var(--blue); }
+.insight-card.ic-2::before { background: var(--green); }
+.insight-card.ic-3::before { background: var(--amber); }
+.insight-card.ic-4::before { background: var(--red); }
+.insight-card.ic-5::before { background: var(--purple); }
+.insight-card.ic-6::before { background: var(--pink); }
+.insight-card h4 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+  letter-spacing: -0.01em;
+}
+.insight-card p {
+  font-size: 0.78rem;
+  color: var(--dim);
+  line-height: 1.55;
+}
+.insight-card .callout {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 0.5rem 0;
+}
+
+/* ── PREDICTIONS ── */
+.prediction {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+  position: relative;
+  overflow: hidden;
+}
+.prediction::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+}
+.pred-1::after { background: linear-gradient(180deg, var(--blue), var(--cyan)); }
+.pred-2::after { background: linear-gradient(180deg, var(--amber), var(--orange)); }
+.pred-3::after { background: linear-gradient(180deg, var(--green), var(--cyan)); }
+.pred-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--cyan);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+.prediction h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+.prediction p {
+  font-size: 0.8rem;
+  color: var(--dim);
+  line-height: 1.6;
+}
+
+/* ── COUNTRY COMPARISON PANEL ── */
+.country-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 1rem 0;
+}
+.country-card {
+  background: var(--card);
+  padding: 1.2rem 1rem;
+  text-align: center;
+}
+.country-card .flag { font-size: 1.8rem; margin-bottom: 0.4rem; }
+.country-card .name {
+  font-size: 0.7rem;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.6rem;
+}
+.country-card .metric {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  margin-bottom: 0.3rem;
+}
+.country-card .metric-label {
+  font-size: 0.6rem;
+  color: var(--dim);
+}
+.country-card .metric-val {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+/* ── FOOTER ── */
+.footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.65rem;
+  color: var(--dim);
+  line-height: 1.6;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── ASSUMPTIONS BOX ── */
+.assumptions-box {
+  background: var(--card2);
+  border-left: 3px solid var(--blue);
+  padding: 0.8rem 1rem;
+  font-size: 0.72rem;
+  color: var(--dim);
+  margin: 1rem 0;
+  border-radius: 0 8px 8px 0;
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1.6;
+}
+
+/* ── DIVIDER ── */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  margin: 3rem 0;
+}
+
+@media (max-width: 768px) {
+  .infographic { padding: 1.5rem 1rem; }
+  .bar-row { grid-template-columns: 90px 1fr 55px; }
+  .bar-label { font-size: 0.68rem; }
+  .stack-bar { height: 24px; }
+  .country-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); }
+}
+</style>
+</head>
+<body>
+<div class="infographic">
+
+<!-- ══════════ HERO ══════════ -->
+<div class="hero">
+  <div class="hero-label">Board-Level Briefing · Feb 2026</div>
+  <h1>Who Gets the <em>Money</em><br>per Kilometre?</h1>
+  <p class="hero-sub">Decomposing the €/km cost stack across powertrains and countries — from wellhead to wheel, from turbine to tyre.</p>
+</div>
+
+<!-- ══════════ HEADLINE STATS ══════════ -->
+<div class="stat-strip">
+  <div class="stat-cell">
+    <div class="value v-green">€0.019</div>
+    <div class="label">Cheapest BEV/km (Norway home)</div>
+  </div>
+  <div class="stat-cell">
+    <div class="value v-red">€0.131</div>
+    <div class="label">Most expensive BEV/km (UK public)</div>
+  </div>
+  <div class="stat-cell">
+    <div class="value v-amber">6.9×</div>
+    <div class="label">Gap between best & worst EV cost</div>
+  </div>
+  <div class="stat-cell">
+    <div class="value v-blue">31%</div>
+    <div class="label">Network share of German BEV cost</div>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 1: TOTAL COST PER KM ══════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">01</div>
+    <div class="section-title">Total Energy Cost per km</div>
+  </div>
+
+  <div class="assumptions-box">
+    <strong>Vehicles (C-segment, real-world):</strong> Petrol 7.0 L/100km · Diesel 5.8 L/100km · HEV 5.2 L · PHEV 2.5 L + 12 kWh · BEV 17.5 kWh/100km<br>
+    <strong>Best 3 EV:</strong> Norway (hydro), Hungary (regulated), Bulgaria (low cost) · <strong>Worst 3:</strong> Germany (€0.38/kWh), Belgium, Denmark
+  </div>
+
+  <!-- BEV HOME CHARGING -->
+  <div class="bar-chart">
+    <div class="bar-chart-title">🔌 BEV Home Charging — €/km by country</div>
+    <div class="bar-row">
+      <div class="bar-label">🇳🇴 Norway</div>
+      <div class="bar-track"><div class="bar-fill" style="width:14.5%;background:var(--green)"></div></div>
+      <div class="bar-value" style="color:var(--green)">€0.019</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">🇭🇺 Hungary</div>
+      <div class="bar-track"><div class="bar-fill" style="width:14.5%;background:var(--green)"></div></div>
+      <div class="bar-value" style="color:var(--green)">€0.019</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">🇧🇬 Bulgaria</div>
+      <div class="bar-track"><div class="bar-fill" style="width:14.5%;background:var(--green)"></div></div>
+      <div class="bar-value" style="color:var(--green)">€0.019</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">🇺🇸 United States</div>
+      <div class="bar-track"><div class="bar-fill" style="width:21.4%;background:var(--cyan)"></div></div>
+      <div class="bar-value" style="color:var(--cyan)">€0.028</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">🇬🇧 United Kingdom</div>
+      <div class="bar-track"><div class="bar-fill" style="width:41.2%;background:var(--amber)"></div></div>
+      <div class="bar-value" style="color:var(--amber)">€0.054</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">🇩🇰 Denmark</div>
+      <div class="bar-track"><div class="bar-fill" style="width:46.6%;background:var(--orange)"></div></div>
+      <div class="bar-value" style="color:var(--orange)">€0.061</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">🇧🇪 Belgium</div>
+      <div class="bar-track"><div class="bar-fill" style="width:48.1%;background:var(--orange)"></div></div>
+      <div class="bar-value" style="color:var(--orange)">€0.063</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">🇩🇪 Germany</div>
+      <div class="bar-track"><div class="bar-fill" style="width:51.1%;background:var(--red)"></div></div>
+      <div class="bar-value" style="color:var(--red)">€0.067</div>
+    </div>
+  </div>
+
+  <!-- PETROL COMPARISON -->
+  <div class="bar-chart">
+    <div class="bar-chart-title">⛽ Petrol ICE — €/km by country</div>
+    <div class="bar-row">
+      <div class="bar-label">🇺🇸 United States</div>
+      <div class="bar-track"><div class="bar-fill" style="width:42.9%;background:var(--cyan)"></div></div>
+      <div class="bar-value">€0.054</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">🇧🇬 Bulgaria</div>
+      <div class="bar-track"><div class="bar-fill" style="width:67.5%;background:var(--amber)"></div></div>
+      <div class="bar-value">€0.085</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">🇭🇺 Hungary</div>
+      <div class="bar-track"><div class="bar-fill" style="width:81.0%;background:var(--amber)"></div></div>
+      <div class="bar-value">€0.102</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">🇬🇧 United Kingdom</div>
+      <div class="bar-track"><div class="bar-fill" style="width:88.9%;background:var(--orange)"></div></div>
+      <div class="bar-value">€0.112</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">🇧🇪 Belgium</div>
+      <div class="bar-track"><div class="bar-fill" style="width:94.4%;background:var(--orange)"></div></div>
+      <div class="bar-value">€0.119</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">🇳🇴 Norway</div>
+      <div class="bar-track"><div class="bar-fill" style="width:97.6%;background:var(--red)"></div></div>
+      <div class="bar-value">€0.123</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">🇩🇪 Germany</div>
+      <div class="bar-track"><div class="bar-fill" style="width:97.6%;background:var(--red)"></div></div>
+      <div class="bar-value">€0.123</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">🇩🇰 Denmark</div>
+      <div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--red)"></div></div>
+      <div class="bar-value">€0.126</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ══════════ SECTION 2: COST STACK ══════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">02</div>
+    <div class="section-title">Who Gets the Money — Cost Stack Decomposition</div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#334155"></div>Raw energy</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#475569"></div>Refining / gen.</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#64748b"></div>Distribution</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>Networks</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div>Storage / bal.</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Govt tax</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div>Policy costs</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--cyan)"></div>Operator margin</div>
+  </div>
+
+  <!-- BEV HOME STACKS -->
+  <div class="stack-chart">
+    <div style="font-size:0.82rem;font-weight:700;margin-bottom:1.25rem;color:var(--green)">🔌 BEV Home Charging — where every cent goes</div>
+
+    <div class="stack-row">
+      <div class="stack-header">
+        <span class="stack-label">🇳🇴 Norway</span>
+        <span class="stack-total">1.90 €c/km</span>
+      </div>
+      <div class="stack-bar">
+        <div class="stack-seg" style="width:22.1%;background:#334155" title="Raw energy 0.42c">energy</div>
+        <div class="stack-seg" style="width:7.4%;background:#475569" title="Refining 0.14c"></div>
+        <div class="stack-seg" style="width:3.7%;background:#64748b" title="Distrib 0.07c"></div>
+        <div class="stack-seg" style="width:22.1%;background:var(--amber)" title="Networks 0.42c">net</div>
+        <div class="stack-seg" style="width:2.6%;background:var(--purple)" title="Storage 0.05c"></div>
+        <div class="stack-seg" style="width:16.8%;background:var(--red)" title="Tax 0.32c">tax</div>
+        <div class="stack-seg" style="width:7.4%;background:var(--orange)" title="Policy 0.14c"></div>
+        <div class="stack-seg" style="width:17.9%;background:var(--cyan)" title="Margin 0.34c">marg</div>
+      </div>
+    </div>
+
+    <div class="stack-row">
+      <div class="stack-header">
+        <span class="stack-label">🇬🇧 UK</span>
+        <span class="stack-total">5.40 €c/km</span>
+      </div>
+      <div class="stack-bar">
+        <div class="stack-seg" style="width:11.7%;background:#334155" title="Raw energy 0.63c">ener</div>
+        <div class="stack-seg" style="width:6.5%;background:#475569" title="Refining 0.35c"></div>
+        <div class="stack-seg" style="width:1.3%;background:#64748b" title="Distrib 0.07c"></div>
+        <div class="stack-seg" style="width:22.8%;background:var(--amber)" title="Networks 1.23c">networks</div>
+        <div class="stack-seg" style="width:2.6%;background:var(--purple)" title="Storage 0.14c"></div>
+        <div class="stack-seg" style="width:16.3%;background:var(--red)" title="Tax 0.88c">tax</div>
+        <div class="stack-seg" style="width:6.5%;background:var(--orange)" title="Policy 0.35c"></div>
+        <div class="stack-seg" style="width:32.4%;background:var(--cyan)" title="Margin 1.75c">operator margin</div>
+      </div>
+    </div>
+
+    <div class="stack-row">
+      <div class="stack-header">
+        <span class="stack-label">🇩🇪 Germany</span>
+        <span class="stack-total">6.70 €c/km</span>
+      </div>
+      <div class="stack-bar">
+        <div class="stack-seg" style="width:13.1%;background:#334155" title="Raw energy 0.88c">ener</div>
+        <div class="stack-seg" style="width:7.3%;background:#475569" title="Refining 0.49c"></div>
+        <div class="stack-seg" style="width:1.0%;background:#64748b" title="Distrib 0.07c"></div>
+        <div class="stack-seg" style="width:31.3%;background:var(--amber)" title="Networks 2.10c">networks 🔺</div>
+        <div class="stack-seg" style="width:2.7%;background:var(--purple)" title="Storage 0.18c"></div>
+        <div class="stack-seg" style="width:26.1%;background:var(--red)" title="Tax 1.75c">govt tax</div>
+        <div class="stack-seg" style="width:10.4%;background:var(--orange)" title="Policy 0.70c">policy</div>
+        <div class="stack-seg" style="width:7.9%;background:var(--cyan)" title="Margin 0.53c"></div>
+      </div>
+    </div>
+
+    <div class="stack-row">
+      <div class="stack-header">
+        <span class="stack-label">🇺🇸 United States</span>
+        <span class="stack-total">2.80 €c/km</span>
+      </div>
+      <div class="stack-bar">
+        <div class="stack-seg" style="width:27.5%;background:#334155" title="Raw energy 0.77c">raw energy</div>
+        <div class="stack-seg" style="width:5.0%;background:#475569" title="Refining 0.14c"></div>
+        <div class="stack-seg" style="width:1.8%;background:#64748b" title="Distrib 0.05c"></div>
+        <div class="stack-seg" style="width:20.0%;background:var(--amber)" title="Networks 0.56c">net</div>
+        <div class="stack-seg" style="width:1.4%;background:var(--purple)" title="Storage 0.04c"></div>
+        <div class="stack-seg" style="width:5.0%;background:var(--red)" title="Tax 0.14c"></div>
+        <div class="stack-seg" style="width:2.5%;background:var(--orange)" title="Policy 0.07c"></div>
+        <div class="stack-seg" style="width:36.8%;background:var(--cyan)" title="Margin 1.03c">operator margin</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PETROL STACKS -->
+  <div class="stack-chart">
+    <div style="font-size:0.82rem;font-weight:700;margin-bottom:1.25rem;color:var(--red)">⛽ Petrol ICE — where every cent goes</div>
+
+    <div class="stack-row">
+      <div class="stack-header">
+        <span class="stack-label">🇩🇰 Denmark</span>
+        <span class="stack-total">12.60 €c/km</span>
+      </div>
+      <div class="stack-bar">
+        <div class="stack-seg" style="width:16.7%;background:#334155">energy</div>
+        <div class="stack-seg" style="width:7.2%;background:#475569"></div>
+        <div class="stack-seg" style="width:6.1%;background:#64748b"></div>
+        <div class="stack-seg" style="width:2.2%;background:var(--amber)"></div>
+        <div class="stack-seg" style="width:54.4%;background:var(--red)">GOVT TAX 54%</div>
+        <div class="stack-seg" style="width:8.9%;background:var(--orange)">pol</div>
+        <div class="stack-seg" style="width:4.4%;background:var(--cyan)"></div>
+      </div>
+    </div>
+
+    <div class="stack-row">
+      <div class="stack-header">
+        <span class="stack-label">🇬🇧 UK</span>
+        <span class="stack-total">11.20 €c/km</span>
+      </div>
+      <div class="stack-bar">
+        <div class="stack-seg" style="width:18.8%;background:#334155">energy</div>
+        <div class="stack-seg" style="width:7.5%;background:#475569"></div>
+        <div class="stack-seg" style="width:8.8%;background:#64748b"></div>
+        <div class="stack-seg" style="width:2.5%;background:var(--amber)"></div>
+        <div class="stack-seg" style="width:50.0%;background:var(--red)">GOVT TAX 50%</div>
+        <div class="stack-seg" style="width:5.0%;background:var(--orange)"></div>
+        <div class="stack-seg" style="width:7.5%;background:var(--cyan)"></div>
+      </div>
+    </div>
+
+    <div class="stack-row">
+      <div class="stack-header">
+        <span class="stack-label">🇺🇸 United States</span>
+        <span class="stack-total">5.40 €c/km</span>
+      </div>
+      <div class="stack-bar">
+        <div class="stack-seg" style="width:33.7%;background:#334155">raw energy</div>
+        <div class="stack-seg" style="width:13.0%;background:#475569">refin</div>
+        <div class="stack-seg" style="width:15.6%;background:#64748b">distrib</div>
+        <div class="stack-seg" style="width:2.6%;background:var(--amber)"></div>
+        <div class="stack-seg" style="width:18.1%;background:var(--red)">tax 18%</div>
+        <div class="stack-seg" style="width:17.0%;background:var(--cyan)">margin</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PUBLIC CHARGING -->
+  <div class="stack-chart">
+    <div style="font-size:0.82rem;font-weight:700;margin-bottom:1.25rem;color:var(--pink)">⚡ BEV Public Charging — the margin is the story</div>
+
+    <div class="stack-row">
+      <div class="stack-header">
+        <span class="stack-label">🇬🇧 UK — CPO captures 62% of cost</span>
+        <span class="stack-total">13.10 €c/km</span>
+      </div>
+      <div class="stack-bar">
+        <div class="stack-seg" style="width:4.8%;background:#334155"></div>
+        <div class="stack-seg" style="width:2.7%;background:#475569"></div>
+        <div class="stack-seg" style="width:0.5%;background:#64748b"></div>
+        <div class="stack-seg" style="width:9.4%;background:var(--amber)">net</div>
+        <div class="stack-seg" style="width:1.1%;background:var(--purple)"></div>
+        <div class="stack-seg" style="width:16.7%;background:var(--red)">tax</div>
+        <div class="stack-seg" style="width:2.7%;background:var(--orange)"></div>
+        <div class="stack-seg" style="width:62.1%;background:var(--cyan)">CPO MARGIN + INFRA 8.14c 🔺</div>
+      </div>
+    </div>
+
+    <div class="stack-row">
+      <div class="stack-header">
+        <span class="stack-label">🇩🇪 Germany</span>
+        <span class="stack-total">10.90 €c/km</span>
+      </div>
+      <div class="stack-bar">
+        <div class="stack-seg" style="width:8.1%;background:#334155"></div>
+        <div class="stack-seg" style="width:4.5%;background:#475569"></div>
+        <div class="stack-seg" style="width:0.6%;background:#64748b"></div>
+        <div class="stack-seg" style="width:19.3%;background:var(--amber)">networks</div>
+        <div class="stack-seg" style="width:1.7%;background:var(--purple)"></div>
+        <div class="stack-seg" style="width:24.1%;background:var(--red)">govt tax</div>
+        <div class="stack-seg" style="width:6.4%;background:var(--orange)">pol</div>
+        <div class="stack-seg" style="width:35.3%;background:var(--cyan)">CPO margin 3.85c</div>
+      </div>
+    </div>
+
+    <div class="stack-row">
+      <div class="stack-header">
+        <span class="stack-label">🇧🇬 Bulgaria — cheapest public</span>
+        <span class="stack-total">6.10 €c/km</span>
+      </div>
+      <div class="stack-bar">
+        <div class="stack-seg" style="width:5.2%;background:#334155"></div>
+        <div class="stack-seg" style="width:2.3%;background:#475569"></div>
+        <div class="stack-seg" style="width:0.7%;background:#64748b"></div>
+        <div class="stack-seg" style="width:6.4%;background:var(--amber)"></div>
+        <div class="stack-seg" style="width:0.7%;background:var(--purple)"></div>
+        <div class="stack-seg" style="width:18.4%;background:var(--red)">tax</div>
+        <div class="stack-seg" style="width:1.1%;background:var(--orange)"></div>
+        <div class="stack-seg" style="width:65.2%;background:var(--cyan)">CPO margin 3.98c</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ══════════ SECTION 3: COUNTRY CARDS ══════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">03</div>
+    <div class="section-title">Country Snapshot — BEV vs Petrol</div>
+  </div>
+
+  <div class="country-grid">
+    <div class="country-card">
+      <div class="flag">🇳🇴</div>
+      <div class="name">Norway</div>
+      <div class="metric"><span class="metric-val" style="color:var(--green)">€0.019</span></div>
+      <div class="metric-label">BEV home/km</div>
+      <div class="metric" style="margin-top:0.5rem"><span class="metric-val" style="color:var(--red)">€0.123</span></div>
+      <div class="metric-label">Petrol/km</div>
+      <div class="metric" style="margin-top:0.5rem"><span class="metric-val" style="color:var(--amber)">6.5×</span></div>
+      <div class="metric-label">EV advantage</div>
+    </div>
+    <div class="country-card">
+      <div class="flag">🇭🇺</div>
+      <div class="name">Hungary</div>
+      <div class="metric"><span class="metric-val" style="color:var(--green)">€0.019</span></div>
+      <div class="metric-label">BEV home/km</div>
+      <div class="metric" style="margin-top:0.5rem"><span class="metric-val" style="color:var(--red)">€0.102</span></div>
+      <div class="metric-label">Petrol/km</div>
+      <div class="metric" style="margin-top:0.5rem"><span class="metric-val" style="color:var(--amber)">5.4×</span></div>
+      <div class="metric-label">EV advantage</div>
+    </div>
+    <div class="country-card">
+      <div class="flag">🇧🇬</div>
+      <div class="name">Bulgaria</div>
+      <div class="metric"><span class="metric-val" style="color:var(--green)">€0.019</span></div>
+      <div class="metric-label">BEV home/km</div>
+      <div class="metric" style="margin-top:0.5rem"><span class="metric-val" style="color:var(--red)">€0.085</span></div>
+      <div class="metric-label">Petrol/km</div>
+      <div class="metric" style="margin-top:0.5rem"><span class="metric-val" style="color:var(--amber)">4.5×</span></div>
+      <div class="metric-label">EV advantage</div>
+    </div>
+    <div class="country-card">
+      <div class="flag">🇩🇪</div>
+      <div class="name">Germany</div>
+      <div class="metric"><span class="metric-val" style="color:var(--orange)">€0.067</span></div>
+      <div class="metric-label">BEV home/km</div>
+      <div class="metric" style="margin-top:0.5rem"><span class="metric-val" style="color:var(--red)">€0.123</span></div>
+      <div class="metric-label">Petrol/km</div>
+      <div class="metric" style="margin-top:0.5rem"><span class="metric-val" style="color:var(--amber)">1.8×</span></div>
+      <div class="metric-label">EV advantage</div>
+    </div>
+    <div class="country-card">
+      <div class="flag">🇧🇪</div>
+      <div class="name">Belgium</div>
+      <div class="metric"><span class="metric-val" style="color:var(--orange)">€0.063</span></div>
+      <div class="metric-label">BEV home/km</div>
+      <div class="metric" style="margin-top:0.5rem"><span class="metric-val" style="color:var(--red)">€0.119</span></div>
+      <div class="metric-label">Petrol/km</div>
+      <div class="metric" style="margin-top:0.5rem"><span class="metric-val" style="color:var(--amber)">1.9×</span></div>
+      <div class="metric-label">EV advantage</div>
+    </div>
+    <div class="country-card">
+      <div class="flag">🇩🇰</div>
+      <div class="name">Denmark</div>
+      <div class="metric"><span class="metric-val" style="color:var(--orange)">€0.061</span></div>
+      <div class="metric-label">BEV home/km</div>
+      <div class="metric" style="margin-top:0.5rem"><span class="metric-val" style="color:var(--red)">€0.126</span></div>
+      <div class="metric-label">Petrol/km</div>
+      <div class="metric" style="margin-top:0.5rem"><span class="metric-val" style="color:var(--amber)">2.1×</span></div>
+      <div class="metric-label">EV advantage</div>
+    </div>
+    <div class="country-card">
+      <div class="flag">🇬🇧</div>
+      <div class="name">UK</div>
+      <div class="metric"><span class="metric-val" style="color:var(--amber)">€0.054</span></div>
+      <div class="metric-label">BEV home/km</div>
+      <div class="metric" style="margin-top:0.5rem"><span class="metric-val" style="color:var(--red)">€0.112</span></div>
+      <div class="metric-label">Petrol/km</div>
+      <div class="metric" style="margin-top:0.5rem"><span class="metric-val" style="color:var(--amber)">2.1×</span></div>
+      <div class="metric-label">EV advantage</div>
+    </div>
+    <div class="country-card">
+      <div class="flag">🇺🇸</div>
+      <div class="name">US</div>
+      <div class="metric"><span class="metric-val" style="color:var(--green)">€0.028</span></div>
+      <div class="metric-label">BEV home/km</div>
+      <div class="metric" style="margin-top:0.5rem"><span class="metric-val" style="color:var(--orange)">€0.054</span></div>
+      <div class="metric-label">Petrol/km</div>
+      <div class="metric" style="margin-top:0.5rem"><span class="metric-val" style="color:var(--amber)">1.9×</span></div>
+      <div class="metric-label">EV advantage</div>
+    </div>
+  </div>
+  <p style="font-size:0.72rem;color:var(--dim);text-align:center;margin-top:0.25rem">EV advantage = ratio of petrol cost to BEV home cost. Higher = stronger economic case for switching.</p>
+</div>
+
+<div class="divider"></div>
+
+<!-- ══════════ SECTION 4: DIRECTION OF TRAVEL ══════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">04</div>
+    <div class="section-title">Direction of Travel to 2030</div>
+  </div>
+
+  <div class="dir-grid">
+    <div class="dir-cell">
+      <div class="dir-arrow" style="color:var(--green)">↓</div>
+      <div class="dir-content">
+        <h4>Raw energy (BEV)</h4>
+        <p>RE LCOE still declining 3-5%/yr. Solar + wind overbuild compresses wholesale power.</p>
+      </div>
+    </div>
+    <div class="dir-cell">
+      <div class="dir-arrow" style="color:var(--red)">↑</div>
+      <div class="dir-content">
+        <h4>Refining margin (ICE)</h4>
+        <p>Refinery closures in EU tighten product supply. Structural margin expansion.</p>
+      </div>
+    </div>
+    <div class="dir-cell">
+      <div class="dir-arrow" style="color:var(--red)">↑↑</div>
+      <div class="dir-content">
+        <h4>Networks (BEV)</h4>
+        <p>Massive grid upgrade cycle 2025-2035. DSOs raising tariffs 20-40% across EU. THE big cost driver.</p>
+      </div>
+    </div>
+    <div class="dir-cell">
+      <div class="dir-arrow" style="color:var(--red)">↑↑</div>
+      <div class="dir-content">
+        <h4>Govt taxes (BEV)</h4>
+        <p>Fuel duty revenue declining → govts must tax EVs. Road pricing emerging by 2028-30.</p>
+      </div>
+    </div>
+    <div class="dir-cell">
+      <div class="dir-arrow" style="color:var(--red)">↑↑</div>
+      <div class="dir-content">
+        <h4>Policy costs (ICE)</h4>
+        <p>EU ETS2 from 2027 adds €0.05-0.10/L on transport fuel. ICE gets more expensive.</p>
+      </div>
+    </div>
+    <div class="dir-cell">
+      <div class="dir-arrow" style="color:var(--green)">↓</div>
+      <div class="dir-content">
+        <h4>CPO margins (public)</h4>
+        <p>Competition intensifies. Utilisation improves. Margins compress toward utility returns from 2028.</p>
+      </div>
+    </div>
+    <div class="dir-cell">
+      <div class="dir-arrow" style="color:var(--red)">↑</div>
+      <div class="dir-content">
+        <h4>ICE distribution cost</h4>
+        <p>Falling volumes = higher per-litre forecourt overhead. Death spiral for marginal stations.</p>
+      </div>
+    </div>
+    <div class="dir-cell">
+      <div class="dir-arrow" style="color:var(--amber)">→</div>
+      <div class="dir-content">
+        <h4>Oil commodity (ICE)</h4>
+        <p>Range-bound $65-85/bbl. Neither shortage nor glut scenario dominant.</p>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;margin-top:1rem">
+    <p style="font-size:0.82rem;color:var(--text);line-height:1.6"><strong style="color:var(--amber)">Net effect:</strong> ICE cost/km rises 10-20% by 2030. BEV home stays flat (generation gains offset by network + tax). BEV public falls 10-15% as CPO scale improves. The gap widens in favour of BEV <em>everywhere except where network costs explode</em>.</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ══════════ SECTION 5: KEY INSIGHTS ══════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">05</div>
+    <div class="section-title">Key Insights</div>
+  </div>
+
+  <div class="insight-grid">
+    <div class="insight-card ic-1">
+      <h4>Network operators capture the marginal euro</h4>
+      <div class="callout" style="color:var(--blue)">31% → 40%+</div>
+      <p>DSOs/TSOs are the single biggest winner from electrification. In Germany, networks already take €0.021/km — and this share is rising everywhere as grid reinforcement costs pass through.</p>
+    </div>
+    <div class="insight-card ic-2">
+      <h4>Cheap generation ≠ cheap mobility</h4>
+      <p>Germany's wholesale power fell 45% from 2022 peaks. Household prices barely moved. Network charges, taxes, and margins absorbed the savings. Cheap generation is necessary but not sufficient.</p>
+    </div>
+    <div class="insight-card ic-3">
+      <h4>€200bn+ fiscal hole by 2035</h4>
+      <div class="callout" style="color:var(--amber)">6:1</div>
+      <p>UK govt takes €0.056/km from petrol drivers, €0.009/km from home-charging BEV. That 6:1 tax ratio is politically unsustainable. Per-km road pricing is the only scalable answer.</p>
+    </div>
+    <div class="insight-card ic-4">
+      <h4>Public charging is a luxury good</h4>
+      <p>UK BEV public charging (€0.131/km) is <strong style="color:var(--red)">more expensive than diesel</strong> (€0.099/km). EV economics break for drivers without home charging — typically renters and the least affluent.</p>
+    </div>
+    <div class="insight-card ic-5">
+      <h4>CPO margins = the new refining margins</h4>
+      <p>Public charging operators capture 30-65% of consumer BEV cost as margin + infrastructure recovery. Higher than refiners ever achieved. Will compress, but first-movers are rewarded.</p>
+    </div>
+    <div class="insight-card ic-6">
+      <h4>The US is a different planet</h4>
+      <p>At €0.054/km gasoline and €0.028/km BEV, the absolute saving is ~€300/yr for 12,000km. The economic case for EVs is 3-4× weaker than in Europe.</p>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ══════════ SECTION 6: BOLD PREDICTIONS ══════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">06</div>
+    <div class="section-title">Three Bold Predictions</div>
+  </div>
+
+  <div class="prediction pred-1">
+    <div class="pred-num">Prediction 01</div>
+    <h4>By 2030, the UK's largest CPO will be acquired by a regulated utility — not an oil major</h4>
+    <p>The UK's extreme public charging margin is structurally a grid-edge distribution business. Regulated utilities (SSE, National Grid, Iberdrola) can cross-subsidise connections and earn regulated returns. Oil majors will exit once CPO ROIC converges to 6-8% utility returns rather than the 15%+ they model.</p>
+  </div>
+
+  <div class="prediction pred-2">
+    <div class="pred-num">Prediction 02</div>
+    <h4>Germany will introduce an "electricity autobahn surcharge" — a per-kWh grid fee for EV charging — before 2029</h4>
+    <p>Network costs represent 31% of BEV cost/km and are rising at 8-10%/yr. Political pressure to shield households while funding €100bn+ in transmission upgrades will force segmentation. EV charging will be classified differently — effectively recreating fuel duty by another name, routed through DSOs.</p>
+  </div>
+
+  <div class="prediction pred-3">
+    <div class="pred-num">Prediction 03</div>
+    <h4>Norway pioneers GPS-based road pricing by 2027 — the template for all of Europe</h4>
+    <p>Norway's €0.019/km is artificially low. Toll revenue is cratering as EVs reach 90%+ of new sales. The government is already consulting on per-km charges linked to GPS tracking. Norway will be the first to price EVs at parity with ICE running costs — not because electricity gets expensive, but because the roads need paying for.</p>
+  </div>
+</div>
+
+<!-- ══════════ FOOTER ══════════ -->
+<div class="footer">
+  <strong>Sources:</strong> Eurostat H1 2025 · UK DESNZ QEP Q4 2025 · US EIA Nov 2025 · EU Commission Oil Bulletin Feb 2026 · RAC Fuel Watch · ChargePlanner CPO survey Sep 2025 · Tax Foundation 2025. Cost stack decompositions are analytical estimates using published tax rates, wholesale indices, and regulatory filings. Approximate figures for strategic discussion.
+</div>
+
+</div>
+
+<!-- AI QUERY PANEL ──────────────────────────────────────── -->
+<style>
+#ai-panel {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 9999;
+  font-family: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+}
+#ai-bar {
+  background: linear-gradient(90deg, #06080d 0%, #0d1117 100%);
+  border-top: 1px solid #1e2736;
+  padding: 12px 28px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  user-select: none;
+  transition: background 0.2s;
+}
+#ai-bar:hover { background: #0d1117; }
+#ai-expanded {
+  display: none;
+  background: #06080d;
+  border-top: 1px solid #1e2736;
+}
+.ai-key-row {
+  padding: 14px 28px;
+  background: #0d1117;
+  border-bottom: 1px solid #1e2736;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.ai-mode-row {
+  padding: 10px 28px;
+  background: #0a0d14;
+  border-bottom: 1px solid #1e2736;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.ai-mode-btn {
+  padding: 4px 14px;
+  border-radius: 20px;
+  border: 1px solid #1e2736;
+  background: transparent;
+  color: #64748b;
+  font-size: 0.75rem;
+  cursor: pointer;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  transition: all 0.15s;
+  letter-spacing: 0.05em;
+}
+.ai-mode-btn.active {
+  background: rgba(6,182,212,0.12);
+  border-color: #06b6d4;
+  color: #06b6d4;
+}
+.ai-chips-row {
+  padding: 12px 28px 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  border-bottom: 1px solid #1e2736;
+}
+.ai-chip {
+  background: #0d1117;
+  border: 1px solid #1e2736;
+  color: #94a3b8;
+  padding: 5px 13px;
+  border-radius: 20px;
+  font-size: 0.76rem;
+  cursor: pointer;
+  font-family: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.ai-chip:hover { background: #131921; color: #e2e8f0; border-color: #06b6d4; }
+.ai-input-row {
+  padding: 11px 28px;
+  display: flex;
+  gap: 10px;
+  border-bottom: 1px solid #1e2736;
+}
+#ai-query-input {
+  flex: 1;
+  background: #0d1117;
+  border: 1px solid #1e2736;
+  border-radius: 6px;
+  padding: 9px 14px;
+  color: #e2e8f0;
+  font-size: 0.88rem;
+  outline: none;
+  font-family: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+  transition: border-color 0.15s;
+}
+#ai-query-input:focus { border-color: #06b6d4; }
+#ai-send-btn {
+  background: #06b6d4;
+  color: #06080d;
+  border: none;
+  border-radius: 6px;
+  padding: 9px 22px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-family: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+}
+#ai-send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+#ai-send-btn:hover:not(:disabled) { opacity: 0.85; }
+#ai-response-area {
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 0 28px;
+}
+#ai-response-inner { padding: 14px 0; }
+.ai-entry {
+  border-left: 2px solid #06b6d4;
+  padding: 11px 16px;
+  margin-bottom: 10px;
+  background: #0d1117;
+  border-radius: 0 6px 6px 0;
+}
+.ai-q-label {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.68rem;
+  color: #06b6d4;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 7px;
+}
+.ai-a-text { color: #e2e8f0; line-height: 1.72; font-size: 0.88rem; }
+.ai-a-text p { margin-bottom: 8px; }
+.ai-a-text p:last-child { margin-bottom: 0; }
+.ai-err { color: #ef4444; font-size: 0.84rem; }
+.ai-thinking { color: #475569; font-style: italic; font-size: 0.84rem; display: flex; align-items: center; gap: 8px; }
+.ai-dot { display: inline-flex; gap: 4px; }
+.ai-dot span { width: 5px; height: 5px; border-radius: 50%; background: #06b6d4; display: inline-block; animation: aiDot 1.2s infinite; }
+.ai-dot span:nth-child(2) { animation-delay: 0.2s; }
+.ai-dot span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes aiDot { 0%,80%,100%{opacity:0.2;transform:scale(0.8)} 40%{opacity:1;transform:scale(1)} }
+.ai-mode-tag {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  padding: 2px 7px;
+  border-radius: 3px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.ai-mode-tag.doc { background: rgba(6,182,212,0.15); color: #06b6d4; }
+.ai-mode-tag.broad { background: rgba(167,139,250,0.15); color: #a78bfa; }
+#ai-key-input {
+  flex: 1; min-width: 240px; max-width: 400px;
+  background: #06080d; border: 1px solid #1e2736; border-radius: 4px;
+  padding: 7px 12px; color: #e2e8f0;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.78rem; outline: none;
+  transition: border-color 0.15s;
+}
+#ai-key-input:focus { border-color: #06b6d4; }
+</style>
+
+<div id="ai-panel">
+  <!-- Collapsed bar -->
+  <div id="ai-bar" onclick="aiToggle()">
+    <div style="width:7px;height:7px;border-radius:50%;background:#06b6d4;box-shadow:0 0 8px #06b6d4;flex-shrink:0"></div>
+    <span style="font-family:'JetBrains Mono',ui-monospace,monospace;font-size:0.68rem;color:#06b6d4;letter-spacing:0.2em;text-transform:uppercase">Ask AI</span>
+    <span style="color:#475569;font-size:0.8rem">— query this document or go beyond it</span>
+    <span id="ai-icon" style="margin-left:auto;color:#475569;font-size:1rem;line-height:1">▲</span>
+  </div>
+
+  <!-- Expanded -->
+  <div id="ai-expanded">
+
+    <!-- API key -->
+    <div class="ai-key-row">
+      <span style="font-family:'JetBrains Mono',ui-monospace,monospace;font-size:0.66rem;color:#475569;text-transform:uppercase;letter-spacing:0.15em;white-space:nowrap">Anthropic Key</span>
+      <input id="ai-key-input" type="password" placeholder="sk-ant-..." oninput="aiSaveKey(this.value)">
+      <span style="font-size:0.74rem;color:#475569">Free at <a href="https://console.anthropic.com" target="_blank" style="color:#3b82f6;text-decoration:none">console.anthropic.com</a></span>
+      <span id="ai-key-ok" style="font-size:0.74rem;color:#22c55e;display:none">✓ saved</span>
+    </div>
+
+    <!-- Mode toggle -->
+    <div class="ai-mode-row">
+      <span style="font-family:'JetBrains Mono',ui-monospace,monospace;font-size:0.65rem;color:#475569;text-transform:uppercase;letter-spacing:0.15em">Mode:</span>
+      <button class="ai-mode-btn active" id="mode-doc" onclick="aiSetMode('doc')">📄 Document only</button>
+      <button class="ai-mode-btn" id="mode-broad" onclick="aiSetMode('broad')">🌐 Document + broader knowledge</button>
+      <span style="font-size:0.74rem;color:#334155;margin-left:8px" id="ai-mode-desc">Answers grounded in this document</span>
+    </div>
+
+    <!-- Suggested questions -->
+    <div class="ai-chips-row">
+      <span style="font-family:'JetBrains Mono',ui-monospace,monospace;font-size:0.63rem;color:#334155;text-transform:uppercase;letter-spacing:0.15em;align-self:center;margin-right:4px">Ask:</span>
+      <button class="ai-chip" onclick="aiAsk(this)">Why is UK public charging so expensive?</button>
+      <button class="ai-chip" onclick="aiAsk(this)">Who captures the most value in EV charging?</button>
+      <button class="ai-chip" onclick="aiAsk(this)">What is the Denmark Trap for EVs?</button>
+      <button class="ai-chip" onclick="aiAsk(this)">Which countries have the best EV economics?</button>
+      <button class="ai-chip" onclick="aiAsk(this)">What happens to ICE costs by 2030?</button>
+      <button class="ai-chip" onclick="aiAsk(this)">Explain the three bold predictions</button>
+      <button class="ai-chip" onclick="aiAsk(this)">What should an OEM strategy team worry about?</button>
+      <button class="ai-chip" onclick="aiAsk(this)">How does this compare to China's EV market?</button>
+    </div>
+
+    <!-- Input -->
+    <div class="ai-input-row">
+      <input id="ai-query-input" type="text" placeholder="Ask anything — about this document or the broader mobility industry…" onkeydown="if(event.key==='Enter')aiSend()">
+      <button id="ai-send-btn" onclick="aiSend()">Ask →</button>
+    </div>
+
+    <!-- Responses -->
+    <div id="ai-response-area">
+      <div id="ai-response-inner"></div>
+    </div>
+
+  </div>
+</div>
+
+<div id="ai-spacer" style="height:46px"></div>
+
+<script>
+(function(){
+
+var DOC = "Who Gets the Money? \u2014 Mobility Cost Infographic Board-Level Briefing \u00b7 Feb 2026 Who Gets the Money per Kilometre? Decomposing the \u20ac/km cost stack across powertrains and countries \u2014 from wellhead to wheel, from turbine to tyre. \u20ac0.019 Cheapest BEV/km (Norway home) \u20ac0.131 Most expensive BEV/km (UK public) 6.9\u00d7 Gap between best & worst EV cost 31% Network share of German BEV cost 01 Total Energy Cost per km Vehicles (C-segment, real-world): Petrol 7.0 L/100km \u00b7 Diesel 5.8 L/100km \u00b7 HEV 5.2 L \u00b7 PHEV 2.5 L + 12 kWh \u00b7 BEV 17.5 kWh/100km Best 3 EV: Norway (hydro), Hungary (regulated), Bulgaria (low cost) \u00b7 Worst 3: Germany (\u20ac0.38/kWh), Belgium, Denmark \ud83d\udd0c BEV Home Charging \u2014 \u20ac/km by country \ud83c\uddf3\ud83c\uddf4 Norway \u20ac0.019 \ud83c\udded\ud83c\uddfa Hungary \u20ac0.019 \ud83c\udde7\ud83c\uddec Bulgaria \u20ac0.019 \ud83c\uddfa\ud83c\uddf8 United States \u20ac0.028 \ud83c\uddec\ud83c\udde7 United Kingdom \u20ac0.054 \ud83c\udde9\ud83c\uddf0 Denmark \u20ac0.061 \ud83c\udde7\ud83c\uddea Belgium \u20ac0.063 \ud83c\udde9\ud83c\uddea Germany \u20ac0.067 \u26fd Petrol ICE \u2014 \u20ac/km by country \ud83c\uddfa\ud83c\uddf8 United States \u20ac0.054 \ud83c\udde7\ud83c\uddec Bulgaria \u20ac0.085 \ud83c\udded\ud83c\uddfa Hungary \u20ac0.102 \ud83c\uddec\ud83c\udde7 United Kingdom \u20ac0.112 \ud83c\udde7\ud83c\uddea Belgium \u20ac0.119 \ud83c\uddf3\ud83c\uddf4 Norway \u20ac0.123 \ud83c\udde9\ud83c\uddea Germany \u20ac0.123 \ud83c\udde9\ud83c\uddf0 Denmark \u20ac0.126 02 Who Gets the Money \u2014 Cost Stack Decomposition Raw energy Refining / gen. Distribution Networks Storage / bal. Govt tax Policy costs Operator margin \ud83d\udd0c BEV Home Charging \u2014 where every cent goes \ud83c\uddf3\ud83c\uddf4 Norway 1.90 \u20acc/km energy net tax marg \ud83c\uddec\ud83c\udde7 UK 5.40 \u20acc/km ener networks tax operator margin \ud83c\udde9\ud83c\uddea Germany 6.70 \u20acc/km ener networks \ud83d\udd3a govt tax policy \ud83c\uddfa\ud83c\uddf8 United States 2.80 \u20acc/km raw energy net operator margin \u26fd Petrol ICE \u2014 where every cent goes \ud83c\udde9\ud83c\uddf0 Denmark 12.60 \u20acc/km energy GOVT TAX 54% pol \ud83c\uddec\ud83c\udde7 UK 11.20 \u20acc/km energy GOVT TAX 50% \ud83c\uddfa\ud83c\uddf8 United States 5.40 \u20acc/km raw energy refin distrib tax 18% margin \u26a1 BEV Public Charging \u2014 the margin is the story \ud83c\uddec\ud83c\udde7 UK \u2014 CPO captures 62% of cost 13.10 \u20acc/km net tax CPO MARGIN + INFRA 8.14c \ud83d\udd3a \ud83c\udde9\ud83c\uddea Germany 10.90 \u20acc/km networks govt tax pol CPO margin 3.85c \ud83c\udde7\ud83c\uddec Bulgaria \u2014 cheapest public 6.10 \u20acc/km tax CPO margin 3.98c 03 Country Snapshot \u2014 BEV vs Petrol \ud83c\uddf3\ud83c\uddf4 Norway \u20ac0.019 BEV home/km \u20ac0.123 Petrol/km 6.5\u00d7 EV advantage \ud83c\udded\ud83c\uddfa Hungary \u20ac0.019 BEV home/km \u20ac0.102 Petrol/km 5.4\u00d7 EV advantage \ud83c\udde7\ud83c\uddec Bulgaria \u20ac0.019 BEV home/km \u20ac0.085 Petrol/km 4.5\u00d7 EV advantage \ud83c\udde9\ud83c\uddea Germany \u20ac0.067 BEV home/km \u20ac0.123 Petrol/km 1.8\u00d7 EV advantage \ud83c\udde7\ud83c\uddea Belgium \u20ac0.063 BEV home/km \u20ac0.119 Petrol/km 1.9\u00d7 EV advantage \ud83c\udde9\ud83c\uddf0 Denmark \u20ac0.061 BEV home/km \u20ac0.126 Petrol/km 2.1\u00d7 EV advantage \ud83c\uddec\ud83c\udde7 UK \u20ac0.054 BEV home/km \u20ac0.112 Petrol/km 2.1\u00d7 EV advantage \ud83c\uddfa\ud83c\uddf8 US \u20ac0.028 BEV home/km \u20ac0.054 Petrol/km 1.9\u00d7 EV advantage EV advantage = ratio of petrol cost to BEV home cost. Higher = stronger economic case for switching. 04 Direction of Travel to 2030 \u2193 Raw energy (BEV) RE LCOE still declining 3-5%/yr. Solar + wind overbuild compresses wholesale power. \u2191 Refining margin (ICE) Refinery closures in EU tighten product supply. Structural margin expansion. \u2191\u2191 Networks (BEV) Massive grid upgrade cycle 2025-2035. DSOs raising tariffs 20-40% across EU. THE big cost driver. \u2191\u2191 Govt taxes (BEV) Fuel duty revenue declining \u2192 govts must tax EVs. Road pricing emerging by 2028-30. \u2191\u2191 Policy costs (ICE) EU ETS2 from 2027 adds \u20ac0.05-0.10/L on transport fuel. ICE gets more expensive. \u2193 CPO margins (public) Competition intensifies. Utilisation improves. Margins compress toward utility returns from 2028. \u2191 ICE distribution cost Falling volumes = higher per-litre forecourt overhead. Death spiral for marginal stations. \u2192 Oil commodity (ICE) Range-bound $65-85/bbl. Neither shortage nor glut scenario dominant. Net effect: ICE cost/km rises 10-20% by 2030. BEV home stays flat (generation gains offset by network + tax). BEV public falls 10-15% as CPO scale improves. The gap widens in favour of BEV everywhere except where network costs explode . 05 Key Insights Network operators capture the marginal euro 31% \u2192 40%+ DSOs/TSOs are the single biggest winner from electrification. In Germany, networks already take \u20ac0.021/km \u2014 and this share is rising everywhere as grid reinforcement costs pass through. Cheap generation \u2260 cheap mobility Germany's wholesale power fell 45% from 2022 peaks. Household prices barely moved. Network charges, taxes, and margins absorbed the savings. Cheap generation is necessary but not sufficient. \u20ac200bn+ fiscal hole by 2035 6:1 UK govt takes \u20ac0.056/km from petrol drivers, \u20ac0.009/km from home-charging BEV. That 6:1 tax ratio is politically unsustainable. Per-km road pricing is the only scalable answer. Public charging is a luxury good UK BEV public charging (\u20ac0.131/km) is more expensive than diesel (\u20ac0.099/km). EV economics break for drivers without home charging \u2014 typically renters and the least affluent. CPO margins = the new refining margins Public charging operators capture 30-65% of consumer BEV cost as margin + infrastructure recovery. Higher than refiners ever achieved. Will compress, but first-movers are rewarded. The US is a different planet At \u20ac0.054/km gasoline and \u20ac0.028/km BEV, the absolute saving is ~\u20ac300/yr for 12,000km. The economic case for EVs is 3-4\u00d7 weaker than in Europe. 06 Three Bold Predictions Prediction 01 By 2030, the UK's largest CPO will be acquired by a regulated utility \u2014 not an oil major The UK's extreme public charging margin is structurally a grid-edge distribution business. Regulated utilities (SSE, National Grid, Iberdrola) can cross-subsidise connections and earn regulated returns. Oil majors will exit once CPO ROIC converges to 6-8% utility returns rather than the 15%+ they model. Prediction 02 Germany will introduce an \"electricity autobahn surcharge\" \u2014 a per-kWh grid fee for EV charging \u2014 before 2029 Network costs represent 31% of BEV cost/km and are rising at 8-10%/yr. Political pressure to shield households while funding \u20ac100bn+ in transmission upgrades will force segmentation. EV charging will be classified differently \u2014 effectively recreating fuel duty by another name, routed through DSOs. Prediction 03 Norway pioneers GPS-based road pricing by 2027 \u2014 the template for all of Europe Norway's \u20ac0.019/km is artificially low. Toll revenue is cratering as EVs reach 90%+ of new sales. The government is already consulting on per-km charges linked to GPS tracking. Norway will be the first to price EVs at parity with ICE running costs \u2014 not because electricity gets expensive, but because the roads need paying for. Sources: Eurostat H1 2025 \u00b7 UK DESNZ QEP Q4 2025 \u00b7 US EIA Nov 2025 \u00b7 EU Commission Oil Bulletin Feb 2026 \u00b7 RAC Fuel Watch \u00b7 ChargePlanner CPO survey Sep 2025 \u00b7 Tax Foundation 2025. Cost stack decompositions are analytical estimates using published tax rates, wholesale indices, and regulatory filings. Approximate figures for strategic discussion.";
+var MODE = 'doc';
+var OPEN = false;
+
+var SYSTEMS = {
+  doc: 'You are an expert analyst answering questions about the following mobility cost infographic document. ' +
+       'Base your answers on the document content. Be concise and direct — 2 to 4 short paragraphs. ' +
+       'If the document does not contain enough to answer fully, say so clearly.\n\nDOCUMENT:\n' + DOC,
+  broad: 'You are an expert in mobility, energy, EV markets, and automotive strategy. ' +
+         'You have been given a research document on mobility cost structures as context, but you can also draw on your broader knowledge. ' +
+         'When answering, indicate whether your answer comes from the document, your broader knowledge, or both. ' +
+         'Be substantive — 3 to 5 paragraphs where useful. Bring in relevant industry context, company examples, policy developments, and forward-looking insight beyond what the document covers.\n\nDOCUMENT CONTEXT:\n' + DOC
+};
+
+window.aiToggle = function() {
+  OPEN = !OPEN;
+  document.getElementById('ai-expanded').style.display = OPEN ? 'block' : 'none';
+  document.getElementById('ai-icon').textContent = OPEN ? '▼' : '▲';
+  document.getElementById('ai-spacer').style.height = OPEN ? '460px' : '46px';
+  if (OPEN) {
+    var k = localStorage.getItem('ai_key_mob');
+    if (k) { document.getElementById('ai-key-input').value = k; document.getElementById('ai-key-ok').style.display = 'inline'; }
+    setTimeout(function(){ document.getElementById('ai-query-input').focus(); }, 80);
+  }
+};
+
+window.aiSetMode = function(m) {
+  MODE = m;
+  document.getElementById('mode-doc').className = 'ai-mode-btn' + (m==='doc' ? ' active' : '');
+  document.getElementById('mode-broad').className = 'ai-mode-btn' + (m==='broad' ? ' active' : '');
+  document.getElementById('ai-mode-desc').textContent = m === 'doc'
+    ? 'Answers grounded in this document'
+    : 'Draws on document + broader industry knowledge';
+};
+
+window.aiSaveKey = function(v) {
+  if (v.startsWith('sk-')) {
+    localStorage.setItem('ai_key_mob', v);
+    document.getElementById('ai-key-ok').style.display = 'inline';
+  }
+};
+
+window.aiAsk = function(btn) {
+  document.getElementById('ai-query-input').value = btn.textContent;
+  aiSend();
+};
+
+window.aiSend = function() {
+  var q = document.getElementById('ai-query-input').value.trim();
+  if (!q) return;
+  var key = document.getElementById('ai-key-input').value.trim() || localStorage.getItem('ai_key_mob') || '';
+  if (!key || !key.startsWith('sk-')) {
+    aiShowResult(q, null, 'Enter your Anthropic API key above. Get one free at console.anthropic.com', MODE);
+    return;
+  }
+  document.getElementById('ai-query-input').value = '';
+  document.getElementById('ai-send-btn').disabled = true;
+  aiShowThinking(q, MODE);
+
+  fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 800,
+      system: SYSTEMS[MODE],
+      messages: [{ role: 'user', content: q }]
+    })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d) {
+    document.getElementById('ai-send-btn').disabled = false;
+    var txt = (d.content && d.content[0] && d.content[0].text)
+      ? d.content[0].text
+      : (d.error ? '⚠ API error: ' + d.error.message : 'No response.');
+    aiShowResult(q, txt, null, MODE);
+  })
+  .catch(function(e) {
+    document.getElementById('ai-send-btn').disabled = false;
+    aiShowResult(q, null, 'Request failed: ' + e.message, MODE);
+  });
+};
+
+function aiShowThinking(q, mode) {
+  var inner = document.getElementById('ai-response-inner');
+  var el = document.createElement('div');
+  el.id = 'ai-thinking';
+  el.className = 'ai-entry';
+  el.innerHTML = '<div class="ai-q-label">' + esc(q) + modeTag(mode) + '</div>' +
+    '<div class="ai-thinking"><div class="ai-dot"><span></span><span></span><span></span></div> Thinking…</div>';
+  inner.insertBefore(el, inner.firstChild);
+  document.getElementById('ai-response-area').scrollTop = 0;
+}
+
+function aiShowResult(q, ans, err, mode) {
+  var old = document.getElementById('ai-thinking');
+  if (old) old.remove();
+  var inner = document.getElementById('ai-response-inner');
+  var el = document.createElement('div');
+  el.className = 'ai-entry';
+  var body = err
+    ? '<div class="ai-err">⚠ ' + esc(err) + '</div>'
+    : '<div class="ai-a-text">' + fmt(ans) + '</div>';
+  el.innerHTML = '<div class="ai-q-label">' + esc(q) + modeTag(mode) + '</div>' + body;
+  inner.insertBefore(el, inner.firstChild);
+  document.getElementById('ai-response-area').scrollTop = 0;
+}
+
+function modeTag(m) {
+  return m === 'broad'
+    ? '<span class="ai-mode-tag broad">+ broader knowledge</span>'
+    : '<span class="ai-mode-tag doc">document</span>';
+}
+
+function fmt(t) {
+  return t.split(/\n\n+/).map(function(p){
+    return '<p>' + esc(p.trim()).replace(/\n/g,'<br>') + '</p>';
+  }).join('');
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+})();
+</script>
+
+</body>
+</html>

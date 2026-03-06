@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signal Engine — DB Sync v2</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+:root{
+  --bg:#0a0c10;--sf:#111520;--bd:#1e2535;--bhi:#2a3550;
+  --ac:#00d4ff;--gn:#00ff88;--am:#ffb800;--rd:#ff4444;--pu:#a78bfa;
+  --tx:#e2e8f0;--mu:#64748b;
+  --mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,212,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+.page{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:40px 24px}
+.hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px;padding-bottom:20px;border-bottom:1px solid var(--bd)}
+.h-tag{font-family:var(--mono);font-size:10px;color:var(--ac);letter-spacing:3px;margin-bottom:4px}
+.h-title{font-size:22px;font-weight:600}
+.h-sub{font-family:var(--mono);font-size:11px;color:var(--mu)}
+.pill{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10px;padding:5px 14px;border-radius:100px;border:1px solid var(--bd);color:var(--mu)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--mu)}.dot.live{background:var(--gn);box-shadow:0 0 8px var(--gn)}
+.sec{font-family:var(--mono);font-size:11px;color:var(--mu);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.sec::before{content:'';width:3px;height:14px;background:var(--ac);border-radius:2px;flex-shrink:0}
+.dbzone{background:var(--sf);border:2px dashed var(--bd);border-radius:10px;margin-bottom:14px;transition:all .2s}
+.dbzone.good{border-color:var(--gn);border-style:solid}
+.dbzone label{display:flex;align-items:center;gap:18px;padding:22px 28px;cursor:pointer;width:100%}
+.dbzone input{display:none}
+.db-ico{font-size:28px;flex-shrink:0}
+.db-txt b{display:block;font-size:13px;font-weight:600;margin-bottom:3px}
+.db-txt small{font-family:var(--mono);font-size:10px;color:var(--mu)}
+.db-st{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--mu);min-width:180px;text-align:right}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px}
+.stat{background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:16px;text-align:center}
+.stat-n{font-family:var(--mono);font-size:26px;font-weight:600;line-height:1;margin-bottom:6px}
+.stat-l{font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:1px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:10px;overflow:hidden;transition:border-color .2s}
+.card.good{border-color:var(--gn)}.card.bad{border-color:var(--rd)}
+.card-head{padding:14px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px}
+.card-ico{font-size:20px}.card-name{font-weight:600;font-size:13px}.card-type{font-family:var(--mono);font-size:10px;color:var(--mu)}
+.card-body{padding:14px}
+.picker{display:block;margin-bottom:12px}
+.picker input{display:none}
+.pick-face{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:10px 8px;border-radius:6px;border:1px dashed var(--bd);font-family:var(--mono);font-size:11px;color:var(--mu);cursor:pointer;transition:all .15s;background:rgba(255,255,255,.02)}
+.picker:hover .pick-face{border-color:var(--ac);color:var(--ac);background:rgba(0,212,255,.04)}
+.card.good .pick-face{border-color:var(--gn);border-style:solid;color:var(--gn)}
+.card.bad .pick-face{border-color:var(--rd);color:var(--rd)}
+.card-err{display:none;font-family:var(--mono);font-size:10px;line-height:1.5;color:var(--rd);background:rgba(255,68,68,.08);border:1px solid rgba(255,68,68,.3);border-radius:5px;padding:8px 10px;margin-bottom:10px;white-space:pre-wrap;word-break:break-word}
+.card-err.show{display:block}
+.mrow{display:flex;justify-content:space-between;padding:5px 0;font-size:11px;border-bottom:1px solid var(--bd)}
+.mrow:last-child{border:none}
+.mk{color:var(--mu)}.mv{font-family:var(--mono);font-weight:600}
+.dlbtn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:10px;border-radius:6px;background:var(--gn);color:#000;font-family:var(--mono);font-size:11px;font-weight:700;border:none;cursor:pointer;margin-top:10px;transition:all .15s}
+.dlbtn:hover:not(:disabled){background:#00ffaa;transform:translateY(-1px)}
+.dlbtn:disabled{opacity:.3;cursor:not-allowed}
+.alert{padding:11px 16px;border-radius:7px;font-size:12px;margin-bottom:14px;display:none}
+.alert.show{display:block}
+.a-ok{background:rgba(0,255,136,.07);border:1px solid rgba(0,255,136,.25);color:var(--gn)}
+.a-err{background:rgba(255,68,68,.07);border:1px solid rgba(255,68,68,.25);color:var(--rd)}
+.tbl-wrap{background:var(--sf);border:1px solid var(--bd);border-radius:8px;overflow:hidden;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{background:rgba(255,255,255,.02);padding:10px 12px;text-align:left;font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);border-bottom:1px solid var(--bd);white-space:nowrap}
+tbody td{padding:8px 12px;border-bottom:1px solid var(--bd)}
+tbody tr:last-child td{border:none}
+tbody tr:hover td{background:rgba(255,255,255,.02)}
+.badge{font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:2px 8px;border-radius:100px;text-transform:uppercase}
+.b-new{background:rgba(0,255,136,.1);color:var(--gn);border:1px solid rgba(0,255,136,.3)}
+.b-email{background:rgba(0,212,255,.1);color:var(--ac);border:1px solid rgba(0,212,255,.3)}
+.b-cnt{background:rgba(255,184,0,.1);color:var(--am);border:1px solid rgba(255,184,0,.3)}
+.b-t1{background:rgba(167,139,250,.15);color:var(--pu);border:1px solid rgba(167,139,250,.3)}
+.b-t2{background:rgba(0,212,255,.08);color:var(--ac);border:1px solid rgba(0,212,255,.2)}
+.b-t3{background:rgba(100,116,139,.1);color:var(--mu);border:1px solid var(--bd)}
+.logbox{background:#070a0d;border:1px solid var(--bd);border-radius:8px;padding:14px;font-family:var(--mono);font-size:11px;max-height:200px;overflow-y:auto;margin-top:24px}
+.logrow{padding:2px 0}.li{color:var(--mu)}.lok{color:var(--gn)}.lw{color:var(--am)}.le{color:var(--rd)}
+.hidden{display:none!important}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-thumb{background:var(--bhi);border-radius:3px}
+@media(max-width:720px){.cards,.stats{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="hdr">
+    <div>
+      <div class="h-tag">FutureBridge Advisory</div>
+      <div class="h-title">Signal Engine — DB Sync v2</div>
+      <div class="h-sub">DB is master &middot; push to v14, mail contacts, insight forecast</div>
+    </div>
+    <div class="pill"><div class="dot" id="statusDot"></div><span id="statusTxt">AWAITING DB</span></div>
+  </div>
+
+  <!-- Step 1 -->
+  <div class="sec">Step 1 &mdash; Master Database</div>
+  <div class="dbzone" id="dbZone">
+    <label>
+      <input type="file" accept=".db,.sqlite,.sqlite3" id="dbFile" onchange="onDbFile(this.files[0])">
+      <div class="db-ico">&#128451;</div>
+      <div class="db-txt">
+        <b>Click to load SQLite database</b>
+        <small>signal_engine_v6_enriched__4_.db &middot; any .db / .sqlite</small>
+      </div>
+      <div class="db-st" id="dbStat">No file loaded</div>
+    </label>
+  </div>
+  <div class="alert a-ok" id="dbBanner"></div>
+  <div class="alert a-err" id="dbErrBanner"></div>
+
+  <div class="stats hidden" id="statsRow">
+    <div class="stat"><div class="stat-n" style="color:var(--ac)" id="n-total">0</div><div class="stat-l">Total Contacts</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--gn)" id="n-email">0</div><div class="stat-l">With Email</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--pu)" id="n-t1">0</div><div class="stat-l">Tier 1</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--am)" id="n-ent">0</div><div class="stat-l">Entities</div></div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="hidden" id="step2">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div class="sec" style="margin:0">Step 2 &mdash; HTML Files to Sync</div>
+      <span style="font-size:11px;color:var(--mu)">Load any or all three independently</span>
+    </div>
+    <div class="cards">
+
+      <!-- v14 -->
+      <div class="card" id="card-v14">
+        <div class="card-head">
+          <div class="card-ico">&#9889;</div>
+          <div><div class="card-name">Signal Engine v14</div><div class="card-type">SE_CONTACTS[ ]</div></div>
+        </div>
+        <div class="card-body">
+          <div class="card-err" id="err-v14"></div>
+          <label class="picker">
+            <input type="file" accept=".html" onchange="onContactsFile('v14', this.files[0])">
+            <div class="pick-face" id="pf-v14">&#128196; signal_engine_v14.html</div>
+          </label>
+          <div id="info-v14"></div>
+          <button class="dlbtn" id="btn-v14" onclick="syncContacts('v14')" disabled>&#8595; Download Synced v14</button>
+        </div>
+      </div>
+
+      <!-- mail -->
+      <div class="card" id="card-mail">
+        <div class="card-head">
+          <div class="card-ico">&#128231;</div>
+          <div><div class="card-name">Mail Contacts v6</div><div class="card-type">const CONTACTS[ ]</div></div>
+        </div>
+        <div class="card-body">
+          <div class="card-err" id="err-mail"></div>
+          <label class="picker">
+            <input type="file" accept=".html" onchange="onContactsFile('mail', this.files[0])">
+            <div class="pick-face" id="pf-mail">&#128196; se_v6_mail_contacts.html</div>
+          </label>
+          <div id="info-mail"></div>
+          <button class="dlbtn" id="btn-mail" onclick="syncContacts('mail')" disabled>&#8595; Download Synced Mail</button>
+        </div>
+      </div>
+
+      <!-- insight forecast -->
+      <div class="card" id="card-forecast">
+        <div class="card-head">
+          <div class="card-ico">&#128202;</div>
+          <div><div class="card-name">Insight &amp; Forecast</div><div class="card-type">ACCOUNTS[ ] contacts counts</div></div>
+        </div>
+        <div class="card-body">
+          <div class="card-err" id="err-forecast"></div>
+          <label class="picker">
+            <input type="file" accept=".html" onchange="onForecastFile(this.files[0])">
+            <div class="pick-face" id="pf-forecast">&#128196; insight_forecast.html</div>
+          </label>
+          <div id="info-forecast"></div>
+          <button class="dlbtn" id="btn-forecast" onclick="syncForecast()" disabled>&#8595; Download Synced Forecast</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Diff table -->
+  <div class="hidden" id="diffSection">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div class="sec" style="margin:0">Changes Detected</div>
+      <span style="font-family:var(--mono);font-size:11px;color:var(--mu)" id="diffSummary"></span>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Type</th><th>ID</th><th>Name</th><th>Title</th><th>Entity</th><th>Email</th><th>Tier</th><th>File</th></tr></thead>
+        <tbody id="diffBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Log -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:28px;margin-bottom:10px">
+    <div class="sec" style="margin:0">Sync Log</div>
+    <span style="font-family:var(--mono);font-size:10px;color:var(--mu);cursor:pointer" onclick="clearLog()">clear</span>
+  </div>
+  <div class="logbox" id="logBox">
+    <div class="logrow li">[ready] Load your database to begin</div>
+  </div>
+
+</div>
+<script>
+// ─── STATE ────────────────────────────────────────────────────
+var DB = null;
+var dbContacts = [];
+var dbEntities = [];
+var entityCountMap = {};   // entity_id -> count
+
+var S = {
+  v14:      { html: null, contacts: [], filename: '' },
+  mail:     { html: null, contacts: [], filename: '' },
+  forecast: { html: null, filename: '', accounts: [], accountCounts: {} }
+};
+
+// ─── ACCOUNT → ENTITY mapping for insight_forecast ────────────
+var ACCOUNT_ENTITY_MAP = {
+  'shell':        ['SHELL'],
+  'exxon':        ['EXXONMOBIL'],
+  'chevron':      ['CHEVRON'],
+  'bp':           ['BP'],
+  'totalenergie': ['TOTALENERGIES','TOTAL','TOTAL_SA'],
+  'bmw':          ['BMW','BMW_MOTORRAD'],
+  'mercedes':     ['MERCEDES_BENZ','MERCEDES'],
+  'vw':           ['VW_GROUP','VW'],
+  'toyota':       ['TOYOTA'],
+  'stellantis':   ['STELLANTIS'],
+  'ford':         ['FORD'],
+  'hyundai':      ['HYUNDAI_KIA'],
+  'vestas':       [],
+  'orsted':       ['ORSTED'],
+  'nel':          ['NEL_ASA'],
+  'bloom':        ['PLUG_POWER'],
+  'basf':         [],
+  'sabic':        [],
+  'linde':        ['LINDE'],
+  'riotinto':     [],
+  'glencore':     [],
+  'bhp':          [],
+  'maersk':       [],
+  'dnv':          []
+};
+
+// INDUSTRY → account IDs (for updating count: in INDUSTRIES array)
+var INDUSTRY_ACCOUNTS = {
+  'oil-gas':  ['shell','exxon','chevron','bp','totalenergie'],
+  'energy':   ['vestas','orsted','nel','bloom'],
+  'auto':     ['bmw','mercedes','vw','toyota','stellantis','ford','hyundai'],
+  'chem':     ['basf','sabic','linde'],
+  'mining':   ['riotinto','glencore','bhp'],
+  'shipping': ['maersk','dnv']
+};
+
+// ─── LOG ──────────────────────────────────────────────────────
+function log(msg, t) {
+  var box = document.getElementById('logBox');
+  var row = document.createElement('div');
+  row.className = 'logrow l' + (t||'i');
+  row.textContent = '[' + new Date().toTimeString().slice(0,8) + '] ' + msg;
+  box.appendChild(row);
+  box.scrollTop = box.scrollHeight;
+}
+function clearLog() { document.getElementById('logBox').innerHTML = ''; }
+
+// ─── DB LOAD ─────────────────────────────────────────────────
+async function onDbFile(file) {
+  if (!file) return;
+  log('Loading DB: ' + file.name + ' (' + (file.size/1024/1024).toFixed(1) + ' MB)');
+  document.getElementById('dbStat').textContent = 'Loading...';
+  try {
+    var SQL = await initSqlJs({ locateFile: function(f){ return 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/' + f; } });
+    DB = new SQL.Database(new Uint8Array(await file.arrayBuffer()));
+    log('Database opened', 'ok');
+
+    var r = DB.exec('SELECT c.contact_id, c.entity_id, c.name, c.title, c.email, c.linkedin_url, c.department, c.seniority, c.tier, c.tech_interests, c.strategy_interests, c.signal_types, c.competitors_watched, c.communication_style, c.preferred_depth, c.last_contacted, c.notes FROM contacts c');
+    if (r.length) {
+      var cols = r[0].columns;
+      dbContacts = r[0].values.map(function(row){ var o={}; cols.forEach(function(c,i){ o[c]=row[i]; }); return o; });
+    }
+    var er = DB.exec('SELECT entity_id, name FROM entities');
+    if (er.length) {
+      var ec = er[0].columns;
+      dbEntities = er[0].values.map(function(row){ var o={}; ec.forEach(function(c,i){ o[c]=row[i]; }); return o; });
+    }
+
+    // Build entity count map
+    entityCountMap = {};
+    dbContacts.forEach(function(c) {
+      var eid = (c.entity_id||'').toUpperCase();
+      if (eid) entityCountMap[eid] = (entityCountMap[eid]||0) + 1;
+    });
+
+    var withEmail = dbContacts.filter(function(c){ return c.email&&c.email.trim(); }).length;
+    var tier1 = dbContacts.filter(function(c){ return c.tier==1; }).length;
+
+    document.getElementById('n-total').textContent = dbContacts.length.toLocaleString();
+    document.getElementById('n-email').textContent = withEmail.toLocaleString();
+    document.getElementById('n-t1').textContent = tier1.toLocaleString();
+    document.getElementById('n-ent').textContent = dbEntities.length;
+    document.getElementById('statsRow').classList.remove('hidden');
+    document.getElementById('step2').classList.remove('hidden');
+    document.getElementById('dbZone').classList.add('good');
+    document.getElementById('dbStat').textContent = '✓ ' + dbContacts.length.toLocaleString() + ' contacts';
+    showBanner('dbBanner', '✓ ' + file.name + ' — ' + dbContacts.length.toLocaleString() + ' contacts, ' + dbEntities.length + ' entities');
+    setStatus('DB LOADED', true);
+    log('Contacts: ' + dbContacts.length + ' | Entities: ' + dbEntities.length, 'ok');
+  } catch(err) {
+    log('DB error: ' + err.message, 'e');
+    showBanner('dbErrBanner', 'Error: ' + err.message);
+    document.getElementById('dbStat').textContent = 'Error';
+  }
+}
+
+// ─── CONTACTS FILES (v14 + mail) ─────────────────────────────
+async function onContactsFile(key, file) {
+  if (!file) return;
+  if (!DB) { showCardErr(key, 'Load the database first'); return; }
+  log(key + ': reading ' + file.name);
+  clearCardErr(key);
+  try {
+    var text = await file.text();
+    var varName = key === 'v14' ? 'SE_CONTACTS' : 'CONTACTS';
+    var arr = extractArray(text, varName);
+    if (arr === null) { showCardErr(key, 'Cannot find ' + varName + ' array.\nIs this the correct file?'); cardClass(key,'bad'); return; }
+    log(key + ': parsed ' + arr.length + ' existing contacts', 'ok');
+    S[key].html = text; S[key].contacts = arr; S[key].filename = file.name;
+    document.getElementById('pf-'+key).textContent = '✓ ' + file.name;
+    cardClass(key,'good');
+    renderContactsInfo(key, arr);
+    rebuildDiff();
+  } catch(err) {
+    log(key + ' error: ' + err.message, 'e');
+    showCardErr(key, 'Error: ' + err.message);
+    cardClass(key,'bad');
+  }
+}
+
+// ─── FORECAST FILE ────────────────────────────────────────────
+async function onForecastFile(file) {
+  if (!file) return;
+  if (!DB) { showCardErr('forecast', 'Load the database first'); return; }
+  log('forecast: reading ' + file.name + ' (' + (file.size/1024/1024).toFixed(2) + ' MB)');
+  clearCardErr('forecast');
+  try {
+    var text = await file.text();
+
+    // Detect file type
+    var hasAccounts = text.indexOf('const ACCOUNTS') >= 0 || text.indexOf('var ACCOUNTS') >= 0;
+    var hasOldCC = text.indexOf('var CC') >= 0;
+
+    if (!hasAccounts && !hasOldCC) {
+      showCardErr('forecast', 'Cannot find ACCOUNTS or var CC in this file.\nIs this insight_forecast.html?');
+      cardClass('forecast','bad');
+      return;
+    }
+
+    S.forecast.html = text;
+    S.forecast.filename = file.name;
+    S.forecast.type = hasAccounts ? 'accounts' : 'cc';
+
+    // Compute what the new counts will be
+    var updates = computeForecastUpdates();
+    var totalUpdates = Object.keys(updates.accountUpdates).length;
+
+    var infoHtml = mrow('File type', hasAccounts ? 'Insight &amp; Forecast (new)' : 'Old var CC format');
+    infoHtml += mrow('File loaded', '&#10003; ' + file.name);
+    if (hasAccounts) {
+      infoHtml += mrow('Accounts to update', totalUpdates.toString(), 'var(--gn)');
+      // Show per-account preview
+      var preview = '';
+      for (var id in updates.accountUpdates) {
+        var u = updates.accountUpdates[id];
+        preview += id + ': ' + u.old + ' → ' + u.new + '\n';
+      }
+      if (preview) {
+        infoHtml += '<div style="font-family:var(--mono);font-size:10px;color:var(--mu);margin-top:8px;line-height:1.8;white-space:pre">' + preview + '</div>';
+      }
+    } else {
+      infoHtml += mrow('Entity counts from DB', Object.keys(entityCountMap).length.toString());
+    }
+
+    document.getElementById('info-forecast').innerHTML = infoHtml;
+    document.getElementById('pf-forecast').textContent = '✓ ' + file.name;
+    document.getElementById('btn-forecast').disabled = false;
+    cardClass('forecast','good');
+    log('forecast: ready — ' + totalUpdates + ' account counts to update', 'ok');
+  } catch(err) {
+    log('forecast error: ' + err.message, 'e');
+    showCardErr('forecast', 'Error: ' + err.message);
+    cardClass('forecast','bad');
+  }
+}
+
+// ─── COMPUTE FORECAST UPDATES ────────────────────────────────
+function computeForecastUpdates() {
+  var accountUpdates = {};
+
+  for (var accId in ACCOUNT_ENTITY_MAP) {
+    var entityIds = ACCOUNT_ENTITY_MAP[accId];
+    var total = 0;
+    entityIds.forEach(function(eid) {
+      total += entityCountMap[eid] || 0;
+    });
+
+    // Find current value using position-based approach
+    var html = S.forecast.html || '';
+    var searchStr2 = "id:'" + accId + "'";
+    var idIdx2 = html.indexOf(searchStr2);
+    var oldVal = '?';
+    if (idIdx2 >= 0) {
+      var chunk2 = html.slice(idIdx2, idIdx2+250);
+      var cm = chunk2.match(/contacts:\s*(\d+)/);
+      if (cm) oldVal = parseInt(cm[1]);
+    }
+
+    if (oldVal !== total) {
+      accountUpdates[accId] = { old: oldVal, new: total };
+    }
+  }
+
+  // Industry totals
+  var industryUpdates = {};
+  for (var indId in INDUSTRY_ACCOUNTS) {
+    var accIds = INDUSTRY_ACCOUNTS[indId];
+    var indTotal = 0;
+    accIds.forEach(function(aid) {
+      var eids = ACCOUNT_ENTITY_MAP[aid] || [];
+      eids.forEach(function(eid){ indTotal += entityCountMap[eid]||0; });
+    });
+
+    var html2 = S.forecast.html || '';
+    var p2 = new RegExp("id:\\s*['\"]" + indId + "['\"][^}]+count:\\s*(\\d+)", 'i');
+    var m2 = p2.exec(html2);
+    var oldInd = m2 ? parseInt(m2[1]) : '?';
+    if (oldInd !== indTotal) {
+      industryUpdates[indId] = { old: oldInd, new: indTotal };
+    }
+  }
+
+  // All accounts total
+  var allTotal = 0;
+  for (var accId2 in ACCOUNT_ENTITY_MAP) {
+    var eids2 = ACCOUNT_ENTITY_MAP[accId2] || [];
+    eids2.forEach(function(eid){ allTotal += entityCountMap[eid]||0; });
+  }
+  industryUpdates['all'] = { old: '?', new: 24 }; // count of accounts, not contacts
+
+  return { accountUpdates: accountUpdates, industryUpdates: industryUpdates };
+}
+
+// ─── SYNC FORECAST ───────────────────────────────────────────
+function syncForecast() {
+  if (!S.forecast.html) { log('forecast: no file loaded', 'w'); return; }
+  log('Syncing forecast...');
+
+  var html = S.forecast.html;
+
+  if (S.forecast.type === 'accounts') {
+    // Position-based replacement: find id:'accId' then find contacts:N within next 200 chars
+    var changed = 0;
+
+    for (var accId in ACCOUNT_ENTITY_MAP) {
+      var entityIds = ACCOUNT_ENTITY_MAP[accId];
+      var total = 0;
+      entityIds.forEach(function(eid){ total += entityCountMap[eid]||0; });
+
+      // Find id:'accId' in the html
+      var searchStr = "id:'" + accId + "'";
+      var idIdx = html.indexOf(searchStr);
+      if (idIdx < 0) continue;
+
+      // Within the next 250 chars, find contacts:N
+      var chunk = html.slice(idIdx, idIdx + 250);
+      var cMatch = chunk.match(/contacts:\s*(\d+)/);
+      if (!cMatch) continue;
+
+      var oldNum = parseInt(cMatch[1]);
+      if (oldNum === total) continue;
+
+      // Replace just that number in the full html
+      var absPos = idIdx + chunk.indexOf(cMatch[0]);
+      var beforeNum = html.slice(0, absPos) + cMatch[0].replace(/\d+$/, '');
+      html = beforeNum + total + html.slice(absPos + cMatch[0].length);
+
+      log('  ' + accId + ': ' + oldNum + ' → ' + total, 'ok');
+      changed++;
+    }
+
+    // Update industry counts using same position-based approach
+    for (var indId in INDUSTRY_ACCOUNTS) {
+      if (indId === 'all') continue;
+      var accIds2 = INDUSTRY_ACCOUNTS[indId];
+      var indTotal = 0;
+      accIds2.forEach(function(aid) {
+        var eids = ACCOUNT_ENTITY_MAP[aid] || [];
+        eids.forEach(function(eid){ indTotal += entityCountMap[eid]||0; });
+      });
+      if (indTotal === 0) continue;
+
+      var indSearch = "id: '" + indId + "'";
+      var indIdx = html.indexOf(indSearch);
+      if (indIdx < 0) { indSearch = "id:'" + indId + "'"; indIdx = html.indexOf(indSearch); }
+      if (indIdx < 0) continue;
+
+      var indChunk = html.slice(indIdx, indIdx + 200);
+      var indMatch = indChunk.match(/count:\s*(\d+)/);
+      if (!indMatch) continue;
+
+      var oldIndNum = parseInt(indMatch[1]);
+      if (oldIndNum === indTotal) continue;
+
+      var absIndPos = indIdx + indChunk.indexOf(indMatch[0]);
+      var beforeIndNum = html.slice(0, absIndPos) + indMatch[0].replace(/\d+$/, '');
+      html = beforeIndNum + indTotal + html.slice(absIndPos + indMatch[0].length);
+      log('  industry ' + indId + ': ' + oldIndNum + ' → ' + indTotal, 'ok');
+    }
+
+    log('forecast: synced ' + changed + ' account counts', 'ok');
+
+  } else {
+    // Old var CC format — replace entire CC object
+    var counts = entityCountMap;
+    var newCC = 'var CC=' + JSON.stringify(counts) + ';';
+    var start = html.indexOf('var CC=');
+    if (start >= 0) {
+      var objStart = html.indexOf('{', start);
+      var depth = 0, end = objStart;
+      for (var i = objStart; i < html.length; i++) {
+        if (html[i]==='{') depth++;
+        else if (html[i]==='}') { depth--; if (depth===0){ end=i; break; } }
+      }
+      var after = end+1;
+      if (html[after]===';') after++;
+      html = html.slice(0,start) + newCC + html.slice(after);
+    } else {
+      var closeTag = html.lastIndexOf('<' + '/script>');
+      html = html.slice(0,closeTag) + newCC + '\n' + html.slice(closeTag);
+    }
+    log('forecast: updated var CC — ' + Object.keys(counts).length + ' entities', 'ok');
+  }
+
+  triggerDownload(html, S.forecast.filename.replace('.html','_synced_' + dateStamp() + '.html'));
+}
+
+// ─── CONTACTS SYNC ───────────────────────────────────────────
+function syncContacts(key) {
+  if (!S[key].html) { log(key + ': no file loaded', 'w'); return; }
+  log('Syncing ' + key + '...');
+  var d = getDiff(key);
+  var updated = applyDiff(key, S[key].contacts, d);
+  var varName = key === 'v14' ? 'SE_CONTACTS' : 'CONTACTS';
+  var out = replaceArray(S[key].html, varName, updated);
+  if (!out) { log(key + ': replace failed', 'e'); return; }
+  log(key + ': done — +' + d.newContacts.length + ' new, ' + d.emailUpdates.length + ' email updates', 'ok');
+  triggerDownload(out, S[key].filename.replace('.html','_synced_' + dateStamp() + '.html'));
+}
+
+// ─── ARRAY EXTRACT / REPLACE ──────────────────────────────────
+function extractArray(html, varName) {
+  var arrStart = -1;
+  var patterns = [varName+'=[', varName+' =[', varName+'= [', varName+' = ['];
+  for (var i=0; i<patterns.length; i++) {
+    var idx = html.indexOf(patterns[i]);
+    if (idx >= 0) { arrStart = html.indexOf('[', idx); log('Found '+varName+' (pattern '+i+') at '+idx); break; }
+  }
+  if (arrStart < 0) return null;
+
+  var depth=0, end=arrStart, inStr=false, strChar='';
+  for (var i=arrStart; i<html.length; i++) {
+    var c=html[i];
+    if (inStr) {
+      if (c==='\\') { i++; continue; }
+      if (c===strChar) inStr=false;
+    } else {
+      if (c==='"'||c==="'") { inStr=true; strChar=c; }
+      else if (c==='[') depth++;
+      else if (c===']') { depth--; if(depth===0){ end=i; break; } }
+    }
+  }
+  try { return JSON.parse(html.slice(arrStart, end+1)); }
+  catch(e) {
+    try { return JSON.parse(html.slice(arrStart, end+1).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g,'')); }
+    catch(e2) { throw new Error('JSON parse: '+e.message); }
+  }
+}
+
+function replaceArray(html, varName, data) {
+  var arrStart=-1;
+  var patterns=[varName+'=[', varName+' =[', varName+'= [', varName+' = ['];
+  for (var i=0; i<patterns.length; i++) {
+    var idx=html.indexOf(patterns[i]);
+    if (idx>=0){ arrStart=html.indexOf('[',idx); break; }
+  }
+  if (arrStart<0) { log('Cannot find '+varName+' to replace', 'e'); return null; }
+  var depth=0, end=arrStart;
+  for (var i=arrStart; i<html.length; i++) {
+    if (html[i]==='[') depth++;
+    else if (html[i]===']') { depth--; if(depth===0){ end=i; break; } }
+  }
+  var newStr = JSON.stringify(data);
+  log(varName+': replaced '+((end-arrStart+1)).toLocaleString()+' chars with '+newStr.length.toLocaleString()+' chars', 'ok');
+  return html.slice(0,arrStart) + newStr + html.slice(end+1);
+}
+
+// ─── DIFF ────────────────────────────────────────────────────
+function getDiff(key) {
+  var existing=S[key].contacts, byId={}, byName={};
+  existing.forEach(function(c){
+    var id=(c.id||c.contact_id||'').toLowerCase();
+    var nm=(c.name||'').toLowerCase().trim();
+    if(id) byId[id]=c;
+    if(nm) byName[nm]=c;
+  });
+  var newContacts=[], emailUpdates=[];
+  dbContacts.forEach(function(db){
+    var id=(db.contact_id||'').toLowerCase();
+    var nm=(db.name||'').toLowerCase().trim();
+    var ex=byId[id]||byName[nm];
+    if(!ex){ newContacts.push(db); }
+    else {
+      var exE=(ex.email||'').trim(), dbE=(db.email||'').trim();
+      if(dbE&&dbE!==exE) emailUpdates.push({db:db,oldEmail:exE});
+    }
+  });
+  return {newContacts:newContacts, emailUpdates:emailUpdates};
+}
+
+function applyDiff(key, existing, d) {
+  var updated=existing.map(function(c){
+    var id=(c.id||c.contact_id||'').toLowerCase();
+    var eu=d.emailUpdates.filter(function(u){ return (u.db.contact_id||'').toLowerCase()===id; })[0];
+    return eu ? Object.assign({},c,{email:eu.db.email}) : c;
+  });
+  d.newContacts.forEach(function(db){ updated.push(key==='v14'?toV14(db):toMail(db)); });
+  return updated;
+}
+
+function toV14(db){
+  var a=function(v){ if(!v)return[]; if(Array.isArray(v))return v; try{return JSON.parse(v);}catch(e){return v.split('|').map(function(s){return s.trim();}).filter(Boolean);} };
+  // Look up entity info for company/type/sector/hq
+  var ent = dbEntities.filter(function(e){ return e.entity_id === db.entity_id; })[0] || {};
+  return {
+    id: db.contact_id,
+    entity_id: db.entity_id || null,
+    name: db.name || '',
+    title: db.title || '',
+    email: db.email || '',
+    linkedin: db.linkedin_url || '',
+    dept: db.department || '',
+    seniority: db.seniority || '',
+    tier: db.tier || 3,
+    tech: JSON.stringify(a(db.tech_interests)),
+    strategy: JSON.stringify(a(db.strategy_interests)),
+    signals: JSON.stringify(a(db.signal_types)),
+    style: db.communication_style || '',
+    depth: db.preferred_depth || '',
+    company: ent.name || '',
+    type: ent.entity_type || '',
+    sector: ent.sector || '',
+    hq: ent.headquarters || ''
+  };
+}
+function toMail(db){
+  var a=function(v){ if(!v)return[]; if(Array.isArray(v))return v; try{return JSON.parse(v);}catch(e){return v.split('|').map(function(s){return s.trim();}).filter(Boolean);} };
+  return {id:db.contact_id, entity_id:db.entity_id||null, name:db.name||'', title:db.title||'', email:db.email||'', linkedin:db.linkedin_url||'', dept:db.department||'', seniority:db.seniority||'', tier:db.tier||3, tech_interests:a(db.tech_interests), strategy_interests:a(db.strategy_interests), signal_types:a(db.signal_types), competitors:a(db.competitors_watched), comm_style:db.communication_style||'', depth:db.preferred_depth||'', last_contacted:db.last_contacted||'', notes:db.notes||''};
+}
+
+// ─── DIFF TABLE ───────────────────────────────────────────────
+function renderContactsInfo(key, existing) {
+  var d=getDiff(key);
+  document.getElementById('info-'+key).innerHTML =
+    mrow('In file', existing.length.toLocaleString()) +
+    mrow('New contacts', '+'+d.newContacts.length.toLocaleString(),'var(--gn)') +
+    mrow('Email updates', d.emailUpdates.length.toString(),'var(--am)') +
+    mrow('After sync', (existing.length+d.newContacts.length).toLocaleString());
+  document.getElementById('btn-'+key).disabled = (d.newContacts.length===0 && d.emailUpdates.length===0);
+}
+
+function rebuildDiff() {
+  var loaded=['v14','mail'].filter(function(k){ return S[k].html; });
+  if (!loaded.length) return;
+  document.getElementById('diffSection').classList.remove('hidden');
+  var tbody=document.getElementById('diffBody');
+  tbody.innerHTML='';
+  var seenNew={}, seenEmail={}, newCount=0, emailCount=0;
+  loaded.forEach(function(key){
+    var d=getDiff(key), label={v14:'v14',mail:'Mail'}[key];
+    d.newContacts.forEach(function(db){
+      if(seenNew[db.contact_id]) return;
+      seenNew[db.contact_id]=true; newCount++;
+      var affects=loaded.filter(function(k){ return getDiff(k).newContacts.some(function(x){ return x.contact_id===db.contact_id; }); }).map(function(k){ return {v14:'v14',mail:'Mail'}[k]; }).join(', ');
+      tbody.innerHTML+='<tr><td><span class="badge b-new">NEW</span></td><td style="font-family:var(--mono);font-size:10px;color:var(--mu)">'+esc(db.contact_id)+'</td><td style="font-weight:500">'+esc(db.name)+'</td><td style="color:var(--mu);font-size:11px">'+esc((db.title||'').slice(0,40))+'</td><td style="font-family:var(--mono);font-size:10px;color:var(--ac)">'+esc(db.entity_id||'—')+'</td><td style="font-size:11px;color:var(--gn)">'+esc(db.email||'—')+'</td><td>'+tierBadge(db.tier)+'</td><td style="font-size:10px;color:var(--mu)">'+affects+'</td></tr>';
+    });
+    d.emailUpdates.forEach(function(u){
+      if(seenEmail[u.db.contact_id]) return;
+      seenEmail[u.db.contact_id]=true; emailCount++;
+      tbody.innerHTML+='<tr><td><span class="badge b-email">EMAIL</span></td><td style="font-family:var(--mono);font-size:10px;color:var(--mu)">'+esc(u.db.contact_id)+'</td><td style="font-weight:500">'+esc(u.db.name)+'</td><td style="color:var(--mu);font-size:11px">'+esc((u.db.title||'').slice(0,40))+'</td><td style="font-family:var(--mono);font-size:10px;color:var(--ac)">'+esc(u.db.entity_id||'—')+'</td><td style="font-size:11px;color:var(--am)">'+esc(u.oldEmail||'—')+' → '+esc(u.db.email)+'</td><td>'+tierBadge(u.db.tier)+'</td><td style="font-size:10px;color:var(--mu)">'+label+'</td></tr>';
+    });
+  });
+  document.getElementById('diffSummary').textContent = newCount+' new · '+emailCount+' email updates';
+  if(!newCount&&!emailCount) tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--mu)">All files in sync with DB</td></tr>';
+}
+
+// ─── HELPERS ─────────────────────────────────────────────────
+function triggerDownload(content, filename) {
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([content],{type:'text/html'}));
+  a.download=filename; a.click();
+  log('Downloaded: '+filename, 'ok');
+}
+function cardClass(key,cls){ var el=document.getElementById('card-'+key); el.classList.remove('good','bad'); if(cls) el.classList.add(cls); }
+function showCardErr(key,msg){ var el=document.getElementById('err-'+key); el.textContent=msg; el.classList.add('show'); }
+function clearCardErr(key){ document.getElementById('err-'+key).classList.remove('show'); }
+function showBanner(id,msg){ var el=document.getElementById(id); el.textContent=msg; el.classList.add('show'); }
+function setStatus(txt,on){ document.getElementById('statusTxt').textContent=txt; document.getElementById('statusDot').className='dot'+(on?' live':''); }
+function mrow(label,value,color){ var s=color?' style="color:'+color+'"':''; return '<div class="mrow"><span class="mk">'+label+'</span><span class="mv"'+s+'>'+value+'</span></div>'; }
+function tierBadge(t){ var cls={1:'b-t1',2:'b-t2',3:'b-t3'}[t]||'b-t3'; return '<span class="badge '+cls+'">T'+(t||'?')+'</span>'; }
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function dateStamp(){ return new Date().toISOString().slice(0,10); }
+</script>
+</body>
+</html>

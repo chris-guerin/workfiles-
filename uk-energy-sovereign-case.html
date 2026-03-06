@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Energy Sovereignty: The Global Map and the UK Business Case</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>:root{--font-sans:'IBM Plex Sans',ui-sans-serif,system-ui,sans-serif;--font-mono:'IBM Plex Mono',ui-monospace,monospace;--font-serif:'DM Serif Display',ui-serif,Georgia,serif;}</style>
+<style>
+:root {
+  --bg: #0a0f1a;
+  --surface: #111827;
+  --surface2: #1a2236;
+  --surface3: #1f2b42;
+  --border: #1e293b;
+  --border2: #2d3a52;
+  --text: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --accent: #f59e0b;
+  --red: #ef4444;
+  --blue: #3b82f6;
+  --green: #10b981;
+  --amber: #f59e0b;
+  --purple: #8b5cf6;
+  --cyan: #06b6d4;
+  --rose: #f43f5e;
+  --teal: #14b8a6;
+  --water: #2563eb;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'IBM Plex Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 15.5px;
+}
+
+/* ─── HERO ─── */
+.hero {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 80px 60px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(160deg, #05080f 0%, #0c1628 30%, #131a30 60%, #0a0f1a 100%);
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    radial-gradient(ellipse 900px 500px at 15% 45%, rgba(37,99,235,0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 700px 350px at 75% 25%, rgba(245,158,11,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 400px 400px at 50% 80%, rgba(16,185,129,0.04) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-content { position: relative; z-index: 1; max-width: 1100px; }
+
+.hero-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+.hero h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(2.6rem, 5vw, 4.2rem);
+  line-height: 1.12;
+  color: #fff;
+  max-width: 850px;
+}
+
+.hero h1 .hl { color: var(--accent); }
+.hero h1 .hl2 { color: var(--cyan); }
+
+.hero .subtitle {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  margin-top: 24px;
+  max-width: 720px;
+  font-weight: 300;
+  line-height: 1.65;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 40px;
+  margin-top: 48px;
+  flex-wrap: wrap;
+}
+
+.hero-stat .number {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2.4rem;
+  line-height: 1;
+}
+
+.hero-stat .number.blue { color: var(--blue); }
+.hero-stat .number.amber { color: var(--amber); }
+.hero-stat .number.green { color: var(--green); }
+.hero-stat .number.red { color: var(--red); }
+.hero-stat .number.cyan { color: var(--cyan); }
+
+.hero-stat .label {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-top: 4px;
+  max-width: 160px;
+}
+
+/* ─── NAVIGATION ─── */
+.doc-nav {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 60px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.doc-nav-inner {
+  display: flex;
+  gap: 8px;
+  max-width: 1100px;
+  margin: 0 auto;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.doc-nav a {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-dim);
+  text-decoration: none;
+  padding: 6px 14px;
+  border-radius: 4px;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.doc-nav a:hover { color: var(--text); background: var(--surface2); }
+
+/* ─── LAYOUT ─── */
+.container { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
+
+section {
+  padding: 80px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+section:last-of-type { border-bottom: none; }
+
+/* ─── TYPOGRAPHY ─── */
+h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2.1rem;
+  color: #fff;
+  margin-bottom: 12px;
+}
+
+h2 .num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 8px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.45rem;
+  color: #fff;
+  margin: 36px 0 14px;
+}
+
+h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 24px 0 10px;
+}
+
+p { margin-bottom: 14px; color: var(--text-muted); }
+p.lead { font-size: 1.1rem; color: var(--text); font-weight: 300; margin-bottom: 28px; }
+strong { color: var(--text); font-weight: 600; }
+
+/* ─── TIER CARDS ─── */
+.tier-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px;
+  margin: 28px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.tier-section::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 4px; height: 100%;
+}
+
+.tier-section.t1::before { background: var(--green); }
+.tier-section.t2::before { background: var(--amber); }
+.tier-section.t3::before { background: var(--red); }
+.tier-section.t4::before { background: var(--blue); }
+
+.tier-badge {
+  display: inline-block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  padding: 4px 12px;
+  border-radius: 4px;
+  margin-bottom: 14px;
+}
+
+.tier-section.t1 .tier-badge { background: rgba(16,185,129,0.12); color: var(--green); }
+.tier-section.t2 .tier-badge { background: rgba(245,158,11,0.12); color: var(--amber); }
+.tier-section.t3 .tier-badge { background: rgba(239,68,68,0.12); color: var(--red); }
+.tier-section.t4 .tier-badge { background: rgba(59,130,246,0.12); color: var(--blue); }
+
+.tier-section h3 { margin: 0 0 6px; font-size: 1.35rem; }
+.tier-section .tier-desc { font-style: italic; color: var(--text-dim); margin-bottom: 16px; font-size: 0.92rem; }
+
+/* ─── COUNTRY GRID ─── */
+.country-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.country-chip {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 0.85rem;
+}
+
+.country-chip .name { font-weight: 600; color: var(--text); display: block; }
+.country-chip .detail { font-size: 0.78rem; color: var(--text-dim); margin-top: 2px; }
+
+/* ─── TABLES ─── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0 28px;
+  font-size: 0.88rem;
+}
+
+thead th {
+  background: var(--surface2);
+  color: var(--text);
+  font-weight: 600;
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 2px solid var(--border);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+tbody tr:hover { background: rgba(255,255,255,0.015); }
+
+td.num {
+  font-family: 'IBM Plex Mono', monospace;
+  text-align: right;
+  font-size: 0.82rem;
+}
+
+td.green { color: var(--green); font-weight: 600; }
+td.red { color: var(--red); font-weight: 600; }
+td.amber { color: var(--amber); font-weight: 600; }
+td.blue { color: var(--blue); font-weight: 600; }
+td.cyan { color: var(--cyan); font-weight: 600; }
+
+/* ─── BIG NUMBERS ─── */
+.big-numbers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 32px 0;
+}
+
+.big-num-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+}
+
+.big-num-card .figure {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2.4rem;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.big-num-card .figure.red { color: var(--red); }
+.big-num-card .figure.amber { color: var(--amber); }
+.big-num-card .figure.green { color: var(--green); }
+.big-num-card .figure.blue { color: var(--blue); }
+.big-num-card .figure.purple { color: var(--purple); }
+.big-num-card .figure.cyan { color: var(--cyan); }
+
+.big-num-card .desc {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  line-height: 1.3;
+}
+
+/* ─── BAR CHART ─── */
+.bar-chart { margin: 28px 0; }
+
+.bar-row {
+  display: grid;
+  grid-template-columns: 180px 1fr 90px;
+  align-items: center;
+  gap: 14px;
+  margin: 8px 0;
+}
+
+.bar-label { font-size: 0.82rem; color: var(--text-muted); text-align: right; }
+.bar-track { height: 24px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 3px; }
+.bar-value { font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; color: var(--text); }
+
+/* ─── CALLOUTS ─── */
+.callout {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+  margin: 28px 0;
+}
+
+.callout.green { border-left: 4px solid var(--green); background: rgba(16,185,129,0.03); }
+.callout.red { border-left: 4px solid var(--red); background: rgba(239,68,68,0.03); }
+.callout.amber { border-left: 4px solid var(--amber); background: rgba(245,158,11,0.03); }
+.callout.blue { border-left: 4px solid var(--blue); background: rgba(59,130,246,0.03); }
+
+.callout .callout-title {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+}
+
+.callout.green .callout-title { color: var(--green); }
+.callout.red .callout-title { color: var(--red); }
+.callout.amber .callout-title { color: var(--amber); }
+.callout.blue .callout-title { color: var(--blue); }
+
+/* ─── PRIORITY CARDS ─── */
+.priority-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+  margin: 28px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.priority-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 4px; height: 100%;
+}
+
+.priority-card.urgent::before { background: var(--red); }
+.priority-card.important::before { background: var(--amber); }
+.priority-card.strategic::before { background: var(--blue); }
+
+.priority-card .badge {
+  display: inline-block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  padding: 4px 12px;
+  border-radius: 4px;
+  margin-bottom: 14px;
+}
+
+.priority-card.urgent .badge { background: rgba(239,68,68,0.12); color: var(--red); }
+.priority-card.important .badge { background: rgba(245,158,11,0.12); color: var(--amber); }
+.priority-card.strategic .badge { background: rgba(59,130,246,0.12); color: var(--blue); }
+
+.priority-card h3 { margin: 0 0 6px; }
+.priority-card .tagline { font-size: 0.95rem; color: var(--text-dim); font-style: italic; margin-bottom: 18px; }
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.metric {
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.metric .label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-dim);
+  margin-bottom: 3px;
+}
+
+.metric .value {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 1.2rem;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.metric .value.green { color: var(--green); }
+.metric .value.red { color: var(--red); }
+
+/* ─── TECH THREAT TABLE ─── */
+.threat-indicator {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 3px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.threat-indicator.high { background: rgba(239,68,68,0.15); color: var(--red); }
+.threat-indicator.medium { background: rgba(245,158,11,0.15); color: var(--amber); }
+.threat-indicator.low { background: rgba(59,130,246,0.15); color: var(--blue); }
+.threat-indicator.vlow { background: rgba(100,116,139,0.15); color: var(--text-dim); }
+
+/* ─── SUMMARY TABLE ─── */
+.summary-table {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 36px 0;
+}
+
+.summary-table table { margin: 0; }
+
+/* ─── FOOTER ─── */
+.doc-footer {
+  padding: 40px 0;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.78rem;
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 768px) {
+  .hero { padding: 50px 20px; min-height: 60vh; }
+  .container { padding: 0 16px; }
+  section { padding: 50px 0; }
+  h2 { font-size: 1.7rem; }
+  .bar-row { grid-template-columns: 100px 1fr 70px; }
+  .big-numbers { grid-template-columns: repeat(2, 1fr); }
+  .country-grid { grid-template-columns: repeat(2, 1fr); }
+  .doc-nav { padding: 12px 16px; }
+  .hero-stats { gap: 24px; }
+}
+
+@media print {
+  .doc-nav { display: none; }
+  body { background: #fff; color: #111; font-size: 11pt; }
+  .hero { min-height: auto; padding: 40px; background: #f0f4f8; }
+  section { padding: 30px 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ HERO ═══════════════════ -->
+<div class="hero">
+  <div class="hero-content">
+    <div class="hero-label">Strategic Energy Analysis — February 2026</div>
+    <h1>Energy Sovereignty:<br>The <span class="hl">Global Map</span> and the <span class="hl2">UK Business Case</span></h1>
+    <p class="subtitle">Eight countries have achieved permanent cheap electricity through amortised hydropower. No technology will disrupt their advantage before 2050. The UK isn't one of them — but with £20–26bn of investment, funded entirely from money already being wasted in its own system, it can close half the gap within 15 years.</p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="number blue">8</div>
+        <div class="label">Countries in the "forever cheap" club</div>
+      </div>
+      <div class="hero-stat">
+        <div class="number amber">0</div>
+        <div class="label">Technologies that beat amortised hydro before 2050</div>
+      </div>
+      <div class="hero-stat">
+        <div class="number red">£30bn</div>
+        <div class="label">UK energy profits extracted per year</div>
+      </div>
+      <div class="hero-stat">
+        <div class="number green">£20–26bn</div>
+        <div class="label">Total cost to transform UK energy (10-year programme)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ NAVIGATION ═══════════════════ -->
+<div class="doc-nav">
+  <div class="doc-nav-inner">
+    <a href="#sovereignty">Sovereignty Map</a>
+    <a href="#disruptors">50-Year Disruptors</a>
+    <a href="#uk-position">UK Position</a>
+    <a href="#price-trap">Price Trap</a>
+    <a href="#extraction">The £30bn</a>
+    <a href="#fixes">Seven Fixes</a>
+    <a href="#balance">Balance Sheet</a>
+    <a href="#impact">Consumer Impact</a>
+  </div>
+</div>
+
+<!-- ═══════════════════ PART I: THE GLOBAL MAP ═══════════════════ -->
+
+<!-- ═══════════════════ 1. SOVEREIGNTY ═══════════════════ -->
+<section id="sovereignty">
+<div class="container">
+  <h2><span class="num">Part I — The Global Map</span>Who Has Sovereign Cheap Electricity — and Who Never Will</h2>
+  <p class="lead">The single most important variable in long-term electricity cost is whether a country owns amortised, dispatchable, zero-fuel-cost generation. In practice, this means hydropower built 30–70 years ago, fully paid off, with marginal generation cost of €0.005–0.01/kWh. Eight countries have this. Everyone else is paying 4–10× more and always will be — unless something fundamentally changes.</p>
+
+  <h3>The Benchmark to Beat</h3>
+  <p>Norway's existing hydro fleet: 90% of electricity, built 1950s–80s, publicly owned, fully amortised. Marginal cost: <strong>€0.005–0.01/kWh</strong>. Dispatchable on demand. Lasts 50–100+ years. Zero carbon. Zero fuel cost. Water flows downhill through a turbine paid for decades ago. This is what cheap electricity looks like — and it's what every other country is measured against.</p>
+
+  <!-- TIER 1 -->
+  <div class="tier-section t1">
+    <div class="tier-badge">Tier 1 — Already There</div>
+    <h3>The "Forever Cheap" Club</h3>
+    <p class="tier-desc">Operating Norway-model systems with amortised, publicly-owned hydro. Marginal generation cost €0.005–0.02/kWh. These countries have achieved permanent structural advantage that cannot be replicated.</p>
+    <div class="country-grid">
+      <div class="country-chip"><span class="name">🇳🇴 Norway</span><span class="detail">90% hydro · 25.5 TWh/capita · Model for all others</span></div>
+      <div class="country-chip"><span class="name">🇮🇸 Iceland</span><span class="detail">72% hydro + geothermal · 35.0 TWh/capita · Highest per-capita</span></div>
+      <div class="country-chip"><span class="name">🇵🇾 Paraguay</span><span class="detail">99% hydro · 8.1 TWh/capita · Cheapest potential globally</span></div>
+      <div class="country-chip"><span class="name">🇨🇦 Canada (QC/BC/MB)</span><span class="detail">60% hydro · 9.3 TWh/capita · Provincial systems</span></div>
+      <div class="country-chip"><span class="name">🇸🇪 Sweden</span><span class="detail">42% hydro + nuclear · 6.9 TWh/capita · Diversified base</span></div>
+      <div class="country-chip"><span class="name">🇦🇹 Austria</span><span class="detail">60% hydro · 4.6 TWh/capita · Alpine advantage</span></div>
+      <div class="country-chip"><span class="name">🇨🇭 Switzerland</span><span class="detail">57% hydro + nuclear · 4.1 TWh/capita · Pumped storage leader</span></div>
+      <div class="country-chip"><span class="name">🇳🇿 New Zealand</span><span class="detail">58% hydro + geothermal · 4.6 TWh/capita · Isolated grid</span></div>
+    </div>
+    <p style="font-size:0.85rem"><strong>Risk:</strong> Interconnector leakage — Norway, Sweden, Austria all coupled to EU electricity markets. Market integration exports their cheap power to neighbours, raising domestic prices. Norway subsidises to paper over the gap. The political tension between "sell high to Europe" and "keep it cheap for citizens" is the defining energy policy fight in these countries.</p>
+  </div>
+
+  <!-- TIER 2 -->
+  <div class="tier-section t2">
+    <div class="tier-badge">Tier 2 — Could Get There (20–30 Year Horizon)</div>
+    <h3>Massive Untapped Potential</h3>
+    <p class="tier-desc">Countries with extraordinary hydro resources largely unexploited. Need $billions in new dam construction + 20–30 years to build and amortise. Won't be "free" until 2050s–2060s.</p>
+    <div class="country-grid">
+      <div class="country-chip"><span class="name">🇧🇷 Brazil</span><span class="detail">63% hydro · ~43% of 260 GW exploited</span></div>
+      <div class="country-chip"><span class="name">🇨🇴 Colombia</span><span class="detail">68% hydro · ~21% exploited</span></div>
+      <div class="country-chip"><span class="name">🇪🇹 Ethiopia</span><span class="detail">90% hydro · ~10% exploited · GERD 6.5 GW</span></div>
+      <div class="country-chip"><span class="name">🇨🇩 DR Congo</span><span class="detail">97% hydro · ~3% exploited · Grand Inga 40 GW+</span></div>
+      <div class="country-chip"><span class="name">🇵🇪 Peru</span><span class="detail">55% hydro · ~8% exploited</span></div>
+      <div class="country-chip"><span class="name">🇳🇵 Nepal</span><span class="detail">90% hydro · ~6% of 42 GW · Highest head on Earth</span></div>
+      <div class="country-chip"><span class="name">🇱🇦 Laos</span><span class="detail">80% hydro · ~38% · "Battery of SE Asia"</span></div>
+      <div class="country-chip"><span class="name">🇹🇯 Tajikistan</span><span class="detail">95% hydro · ~9% · Rogun Dam 3.6 GW</span></div>
+      <div class="country-chip"><span class="name">🇧🇹 Bhutan</span><span class="detail">93% hydro · ~8% · 0.8M population = surplus</span></div>
+    </div>
+    <p style="font-size:0.85rem"><strong>Barriers:</strong> Governance crisis (DRC), geopolitical conflict (Ethiopia-Egypt Nile dispute), Chinese debt-trap diplomacy (Laos), seismic risk, financing gaps. Grand Inga alone could generate 40 GW — more than Norway's entire installed hydro — from a single site. But DRC governance makes this a 50-year proposition at best.</p>
+  </div>
+
+  <!-- TIER 3 -->
+  <div class="tier-section t3">
+    <div class="tier-badge">Tier 3 — Has Hydro but Structurally Can't Reach Norway</div>
+    <h3>Population or Geography Defeats Them</h3>
+    <p class="tier-desc">Either too many people for hydro to dominate the mix, or generation too far from demand, or governance has destroyed existing assets.</p>
+    <div class="country-grid">
+      <div class="country-chip"><span class="name">🇨🇳 China</span><span class="detail">14% hydro · 421 GW but 1.4bn people</span></div>
+      <div class="country-chip"><span class="name">🇺🇸 United States</span><span class="detail">6% hydro · 80 GW but 330M people</span></div>
+      <div class="country-chip"><span class="name">🇮🇳 India</span><span class="detail">10% hydro · 1.4bn people</span></div>
+      <div class="country-chip"><span class="name">🇷🇺 Russia</span><span class="detail">18% hydro · 5,000km transmission gap</span></div>
+      <div class="country-chip"><span class="name">🇻🇪 Venezuela</span><span class="detail">60% hydro · Chronic blackouts, zero maintenance</span></div>
+      <div class="country-chip"><span class="name">🇹🇷 Turkey</span><span class="detail">20% hydro · Climate drying reservoirs</span></div>
+      <div class="country-chip"><span class="name">🇲🇿 Mozambique</span><span class="detail">75% hydro · Cahora Bassa exports to SA</span></div>
+    </div>
+    <p style="font-size:0.85rem"><strong>Cautionary tale:</strong> Venezuela has 16 GW of installed hydro and chronic blackouts. Proof that hydro sovereignty requires maintenance and governance, not just dams.</p>
+  </div>
+
+  <!-- TIER 4 -->
+  <div class="tier-section t4">
+    <div class="tier-badge">Tier 4 — Pumped Storage: "Synthetic Norway"</div>
+    <h3>No Rivers but Mountains + Cheap Variable Generation</h3>
+    <p class="tier-desc">Countries that can build pumped storage hydro to store wind/solar surplus and release it on demand. Won't match amortised hydro economics but achieves dispatchability — the missing ingredient for wind-dominated systems.</p>
+    <div class="country-grid">
+      <div class="country-chip"><span class="name">🇬🇧 UK (Scotland)</span><span class="detail">2.8 GW existing · ~10 GW pipeline · Coire Glas 1.3 GW</span></div>
+      <div class="country-chip"><span class="name">🇪🇸 Spain</span><span class="detail">8.0 GW existing · ~7 GW pipeline</span></div>
+      <div class="country-chip"><span class="name">🇵🇹 Portugal</span><span class="detail">3.5 GW existing · ~2 GW pipeline</span></div>
+      <div class="country-chip"><span class="name">🇦🇺 Australia</span><span class="detail">1.8 GW existing · Snowy 2.0 (2.2 GW, massively over budget)</span></div>
+      <div class="country-chip"><span class="name">🇲🇦 Morocco</span><span class="detail">1.8 GW existing · Atlas Mtns + Saharan solar</span></div>
+    </div>
+    <p style="font-size:0.85rem"><strong>Key insight:</strong> Pumped storage turns intermittent wind into dispatchable power. Buy surplus at £40/MWh, store it, sell at £120/MWh. 80%+ round-trip efficiency. 50–100+ year asset life. The Scottish Highlands have 500m+ elevation drops, huge lochs, and existing grid connections from 1940s–80s hydro schemes. The UK's best path to sovereign dispatchable power runs through Scotland.</p>
+  </div>
+
+  <h3>Projected 2035 BEV Running Cost by Sovereignty Tier</h3>
+  <table>
+    <thead>
+      <tr><th>Country</th><th>Tier</th><th>2035 BEV Cost/km</th><th>Structural Basis</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>🇵🇾 Paraguay</td><td>1</td><td class="num green">1.1–1.4 c/km</td><td>Cheapest potential globally</td></tr>
+      <tr><td>🇮🇸 Iceland</td><td>1</td><td class="num green">1.4–1.8 c/km</td><td>Maximum durability</td></tr>
+      <tr><td>🇨🇦 Canada (QC/MB/BC)</td><td>1</td><td class="num green">1.4–2.1 c/km</td><td>Provincial hydro systems</td></tr>
+      <tr><td>🇳🇿 New Zealand</td><td>1</td><td class="num green">1.8–2.5 c/km</td><td>Hydro + geothermal</td></tr>
+      <tr><td>🇳🇴 Norway</td><td>1</td><td class="num green">2.1–3.2 c/km</td><td>Depends on interconnector policy</td></tr>
+      <tr><td>🇬🇧 UK (optimal strategy)</td><td>4</td><td class="num cyan">2.5–3.5 c/km</td><td>Requires all fixes implemented</td></tr>
+      <tr><td>🇬🇧 UK (current trajectory)</td><td>4</td><td class="num amber">4.2–5.3 c/km</td><td>Wind-only, no reform</td></tr>
+      <tr><td>🇩🇪 Germany</td><td>—</td><td class="num red">6.1–7.4 c/km</td><td>No hydro, no nuclear, purely tax holiday</td></tr>
+    </tbody>
+  </table>
+</div>
+</section>
+
+<!-- ═══════════════════ 2. DISRUPTORS ═══════════════════ -->
+<section id="disruptors">
+<div class="container">
+  <h2><span class="num">02 — 50-Year Technology Assessment</span>Will Anything Disrupt Hydro Sovereignty?</h2>
+  <p class="lead">Eight challenger technologies assessed against the benchmark: Norway's amortised hydro at €0.005–0.01/kWh, dispatchable, zero fuel, 100+ year asset life. To disrupt, a technology must match all four attributes — not just cheap generation.</p>
+
+  <table>
+    <thead>
+      <tr><th>Technology</th><th>Threat Level</th><th>Current LCOE</th><th>Best Case 2050</th><th>Dispatchable?</th><th>Geography Free?</th><th>Verdict</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Enhanced Geothermal (EGS)</strong></td>
+        <td><span class="threat-indicator high">High</span></td>
+        <td class="num">$0.06–0.80</td>
+        <td class="num green">$0.03–0.05</td>
+        <td class="green">YES</td>
+        <td class="amber">Moderate</td>
+        <td style="font-size:0.8rem">Only real challenger. Fervo drilling 4.8km in 16 days. If follows shale cost curve, could equalise by 2070s</td>
+      </tr>
+      <tr>
+        <td><strong>Solar + Battery (4hr)</strong></td>
+        <td><span class="threat-indicator medium">Medium</span></td>
+        <td class="num">$0.04–0.08</td>
+        <td class="num green">$0.02–0.04</td>
+        <td class="amber">Partial</td>
+        <td class="amber">Sun belt only</td>
+        <td style="font-size:0.8rem">Cheap but 4hr storage ≠ dispatchable. Can't cover 3-day winter lulls</td>
+      </tr>
+      <tr>
+        <td><strong>SMR Nuclear Fission</strong></td>
+        <td><span class="threat-indicator medium">Medium</span></td>
+        <td class="num">$0.06–0.10</td>
+        <td class="num">$0.04–0.07</td>
+        <td class="green">YES</td>
+        <td class="green">YES</td>
+        <td style="font-size:0.8rem">Plausible near-term. Nuclear has history of cost overruns but factory-build could work</td>
+      </tr>
+      <tr>
+        <td><strong>Nuclear Fusion</strong></td>
+        <td><span class="threat-indicator medium">Medium</span></td>
+        <td class="num">N/A</td>
+        <td class="num">$0.05–0.10</td>
+        <td class="green">YES</td>
+        <td class="green">YES</td>
+        <td style="font-size:0.8rem">53 private startups, $9.8bn invested. First plant optimistically 2040s. Tritium supply problem</td>
+      </tr>
+      <tr>
+        <td><strong>100hr Batteries (Iron-Air)</strong></td>
+        <td><span class="threat-indicator medium">Medium</span></td>
+        <td class="num">N/A</td>
+        <td class="num">$0.03–0.06</td>
+        <td class="green">Enables it</td>
+        <td class="green">YES</td>
+        <td style="font-size:0.8rem">Form Energy claims 100hr at $20/kWh. Would make wind truly dispatchable. Unproven at scale</td>
+      </tr>
+      <tr>
+        <td><strong>Tidal Stream</strong></td>
+        <td><span class="threat-indicator low">Low</span></td>
+        <td class="num">$0.20–0.45</td>
+        <td class="num">$0.08–0.12</td>
+        <td class="amber">Predictable</td>
+        <td class="red">Very limited</td>
+        <td style="font-size:0.8rem">Niche contributor. Total global resource ~100–150 GW. Won't change the map</td>
+      </tr>
+      <tr>
+        <td><strong>Wave Energy</strong></td>
+        <td><span class="threat-indicator vlow">V. Low</span></td>
+        <td class="num">$0.30–0.85</td>
+        <td class="num">$0.10–0.20</td>
+        <td class="red">NO</td>
+        <td class="red">Very limited</td>
+        <td style="font-size:0.8rem">No commercial plant exists. 15–20 years behind tidal. Ocean destroys equipment</td>
+      </tr>
+      <tr>
+        <td><strong>Space-Based Solar</strong></td>
+        <td><span class="threat-indicator vlow">Wildcard</span></td>
+        <td class="num">$0.60–1.60</td>
+        <td class="num">$0.03–0.09</td>
+        <td class="green">Theoretically</td>
+        <td class="green">YES</td>
+        <td style="font-size:0.8rem">Requires simultaneous breakthroughs in launch, panels, assembly, transmission. 2070+ at earliest</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout amber">
+    <div class="callout-title">The Verdict</div>
+    <p><strong>Nothing beats amortised hydro before 2050. One thing might by 2075.</strong> Enhanced geothermal is the only technology that offers the same combination of dispatchability + zero fuel cost + multi-decade asset life that makes hydro special. If EGS follows the shale drilling cost curve and reaches $0.03/kWh by the 2040s, and those plants operate 30+ years approaching amortisation, then by the 2070s Germany and the UK could have "near-free" dispatchable green power.</p>
+    <p style="margin:0">For any boardroom decision with a horizon shorter than 2050: <strong>the Tier 1 sovereignty map is fixed.</strong> Those 8 countries will have the cheapest electricity on Earth for the next 25 years, and no investment, policy, or technology changes that. The question for everyone else is how close they can get.</p>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════ PART II: THE UK ═══════════════════ -->
+
+<!-- ═══════════════════ 3. UK POSITION ═══════════════════ -->
+<section id="uk-position" style="background: linear-gradient(180deg, var(--bg) 0%, #0d1525 50%, var(--bg) 100%);">
+<div class="container">
+  <h2><span class="num">Part II — The UK Specific Case</span>Why the UK Chose Offshore Wind (and Why It's Not Enough)</h2>
+  <p class="lead">The UK has no hydro to build, no nuclear fleet in production, no geothermal industry. It does have the best offshore wind resource on Earth. So it played the only card in its hand — and it's not a bad card. But wind alone cannot deliver cheap consumer electricity, for four structural reasons.</p>
+
+  <h3>It's Not a Bad Card</h3>
+  <p>North Sea and Scottish waters have the strongest, most consistent winds on Earth — UK offshore capacity factors of 40–50% are among the best globally. AR7 offshore wind strike price of £91/MWh is 38% cheaper than new-build gas at £147/MWh. Wind farms reduced UK wholesale prices by roughly a third in 2025 — without existing wind, wholesale would be ~£121/MWh instead of ~£83/MWh. And wind is domestic in a country that became a net gas importer in 2004.</p>
+
+  <h3>But Wind Alone = The Denmark Trap</h3>
+  <p>Denmark has 58% wind penetration — among the highest in the world. Yet Danish consumer electricity costs €0.35/kWh — the 4th highest in Europe. Cheap generation ≠ cheap consumer electricity. Denmark built world-class wind but failed to translate it into cheap consumer prices because of taxation, grid costs, backup requirements, and market design. The UK is walking the exact same path.</p>
+</div>
+</section>
+
+<!-- ═══════════════════ 4. PRICE TRAP ═══════════════════ -->
+<section id="price-trap">
+<div class="container">
+  <h2><span class="num">04 — The Four-Layer Price Trap</span>Why Cheap Wind Never Reaches UK Consumers</h2>
+  <p class="lead">UK offshore wind generates at ~£50–60/MWh. UK consumers pay ~£245/MWh (24.5p/kWh). The gap isn't theft — it's system design. Four layers reprice cheap wind at expensive gas rates before it reaches the wall socket.</p>
+
+  <table>
+    <thead>
+      <tr><th>Layer</th><th>Mechanism</th><th>Cost Impact</th><th>Can Be Fixed?</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>1. Marginal Pricing</strong></td>
+        <td>Gas (last unit needed) sets price for ALL generation. Even when 50% is wind, the last 1% from gas sets the wholesale price. Gas set UK price 98% of the time in 2023 vs 7% in France.</td>
+        <td class="num red">+£30–40/MWh</td>
+        <td class="green">Yes — market reform</td>
+      </tr>
+      <tr>
+        <td><strong>2. Intermittency Backup</strong></td>
+        <td>Must maintain ~25 GW gas backup for calm periods. Plants paid to exist (Capacity Market £65/kW/yr) even when running at low utilisation. Curtailment rising: 10 TWh wasted in 2025.</td>
+        <td class="num amber">+£15–25/MWh</td>
+        <td class="amber">Partly — needs storage</td>
+      </tr>
+      <tr>
+        <td><strong>3. Network Costs</strong></td>
+        <td>Wind in Scotland/North Sea, demand in London/South. £58bn transmission investment in NESO Clean Power 2030 plan. Network charges ~25% of consumer bill and rising.</td>
+        <td class="num amber">+£40–60/MWh</td>
+        <td class="amber">Structural — geography fixed</td>
+      </tr>
+      <tr>
+        <td><strong>4. Interconnector Coupling</strong></td>
+        <td>8.4 GW links to EU. When French nuclear offline or German gas expensive, UK prices rise by contagion. Financial traders arbitrage differentials. Net imports 37 TWh (10% demand).</td>
+        <td class="num amber">+£10–30/MWh</td>
+        <td class="green">Yes — policy choice</td>
+      </tr>
+      <tr style="background: var(--surface2);">
+        <td><strong>Result</strong></td>
+        <td><strong>Wind LCOE ~£50–60/MWh → Consumer price ~£245/MWh</strong></td>
+        <td class="num red" style="font-weight:700">4× markup</td>
+        <td><strong>Fixable with political will</strong></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</section>
+
+<!-- ═══════════════════ 5. WHERE £30BN GOES ═══════════════════ -->
+<section id="extraction">
+<div class="container">
+  <h2><span class="num">05 — Follow the Money</span>Where £30 Billion Goes Every Year</h2>
+  <p class="lead">UK energy companies posted £30bn in pre-tax profits in 2024. That's £500 per household — while 4 million households sit in energy debt. Profit margins average 23%, triple the national average.</p>
+
+  <div class="big-numbers">
+    <div class="big-num-card"><div class="figure red">£30bn</div><div class="desc">Energy sector profits 2024</div></div>
+    <div class="big-num-card"><div class="figure amber">£500</div><div class="desc">Per household to profits</div></div>
+    <div class="big-num-card"><div class="figure purple">£1.8bn</div><div class="desc">Curtailment waste 2025</div></div>
+    <div class="big-num-card"><div class="figure blue">£4bn</div><div class="desc">Household energy debt</div></div>
+  </div>
+
+  <table>
+    <thead><tr><th>Recipient</th><th>Profit 2024</th><th>Margin</th><th>Ultimate Owner</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Generation companies</strong></td><td class="num red">£9.7bn</td><td class="num">~25%</td><td>Gas, wind & nuclear generators paid at gas-marginal rate</td></tr>
+      <tr><td><strong>Grid monopolies</strong></td><td class="num red">£6.8bn</td><td class="num">38%</td><td>National Grid, UK Power Networks, regional DNOs</td></tr>
+      <tr><td><strong>Gas extraction</strong></td><td class="num red">£5.9bn</td><td class="num">58%</td><td>Norwegian sovereign fund: £5.9bn alone</td></tr>
+      <tr><td><strong>Retail supply</strong></td><td class="num amber">£2.8bn</td><td class="num">~8%</td><td>Centrica/British Gas, EDF, SSE — only segment Ofgem monitors</td></tr>
+      <tr><td><strong>Trading & finance</strong></td><td class="num amber">£4.8bn+</td><td class="num">—</td><td>Morgan Stanley, banks, hedge funds — interconnector arbitrage</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Where the Profits End Up</h3>
+  <div class="bar-chart">
+    <div class="bar-row">
+      <div class="bar-label">US asset managers<br><small style="color:var(--text-dim)">BlackRock, Vanguard</small></div>
+      <div class="bar-track"><div class="bar-fill" style="width:48%; background: linear-gradient(90deg, var(--red), #dc2626)"></div></div>
+      <div class="bar-value">~48%</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">Foreign governments<br><small style="color:var(--text-dim)">Norway, France, Denmark, Qatar</small></div>
+      <div class="bar-track"><div class="bar-fill" style="width:33%; background: linear-gradient(90deg, var(--amber), #d97706)"></div></div>
+      <div class="bar-value">~33%</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">UK shareholders<br><small style="color:var(--text-dim)">pension funds, retail</small></div>
+      <div class="bar-track"><div class="bar-fill" style="width:12%; background: linear-gradient(90deg, var(--blue), #2563eb)"></div></div>
+      <div class="bar-value">~12%</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">Other international<br><small style="color:var(--text-dim)">Li Ka Shing, Kretinsky</small></div>
+      <div class="bar-track"><div class="bar-fill" style="width:7%; background: linear-gradient(90deg, var(--purple), #7c3aed)"></div></div>
+      <div class="bar-value">~7%</div>
+    </div>
+  </div>
+
+  <div class="callout red">
+    <div class="callout-title">The Irony</div>
+    <p style="margin:0">Norway's sovereign wealth fund received <strong>£5.9bn</strong> in UK gas profits in 2024 alone. Norway built publicly-owned hydro with public money in the 1950s–80s. The UK privatised its electricity system in 1990. Norway now profits from UK energy <em>twice</em>: once from selling North Sea gas, and again through its fund's stakes in UK energy companies. The country that did energy right profits from the country that did energy wrong.</p>
+  </div>
+
+  <h3>Annual System Waste on Top of Profits</h3>
+  <table>
+    <thead><tr><th>Waste Category</th><th>Annual Cost</th><th>Trend</th><th>Root Cause</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Wind curtailment + gas replacement</strong></td><td class="num red">£1.8bn</td><td class="num red">→ £4–8bn by 2030</td><td>Grid can't move Scottish wind south</td></tr>
+      <tr><td><strong>Gas-marginal pricing overpayment</strong></td><td class="num red">£6–10bn</td><td class="num amber">Shrinking as CfDs grow</td><td>Gas sets wholesale ~85% of time</td></tr>
+      <tr><td><strong>Interconnector price contagion</strong></td><td class="num amber">£1–3bn</td><td class="num amber">Variable</td><td>Private traders arbitrage UK-EU spread</td></tr>
+      <tr><td><strong>Capacity Market (backup gas)</strong></td><td class="num amber">£1.2bn</td><td class="num amber">Stable</td><td>Must pay gas plants to exist for calm days</td></tr>
+      <tr><td><strong>Grid balancing costs</strong></td><td class="num amber">£2.7bn</td><td class="num red">Rising</td><td>Dispersed generation, congested grid</td></tr>
+      <tr style="background: rgba(239,68,68,0.05);"><td><strong>TOTAL ANNUAL WASTE</strong></td><td class="num red" style="font-weight:700">£13–19bn</td><td class="num red">→ £20–30bn by 2030</td><td><em>All avoidable with correct system design</em></td></tr>
+    </tbody>
+  </table>
+</div>
+</section>
+
+<!-- ═══════════════════ 6. THE SEVEN FIXES ═══════════════════ -->
+<section id="fixes">
+<div class="container">
+  <h2><span class="num">06 — The Seven Fixes</span>What the UK Needs, What It Costs, and How to Fund It</h2>
+  <p class="lead">Every recommendation is funded by redirecting money already in the system — from waste, windfall profits, or market redesign. No new taxes required. Total programme cost: £20–26bn over 10 years. Total money currently being wasted or extracted: £30–49bn per year.</p>
+
+  <!-- FIX 1 -->
+  <div class="priority-card urgent">
+    <div class="badge">Priority 1 — Urgent</div>
+    <h3>Build Scotland's Pumped Storage Hydro</h3>
+    <p class="tagline">"UK has spent £85bn on wind since 2014 and £0 on storage. Like buying a Ferrari and refusing to buy tyres."</p>
+    <p>11 schemes across Scotland and Wales, combined 10 GW / 200 GWh — a five-fold increase in UK long-duration storage. Technology is proven (Dinorwig has run since 1984). Sites surveyed, planning consents granted. Only blocker: a Cap & Floor revenue framework the privatised market won't provide. Coire Glas (SSE, 1.3 GW, £2bn) is the flagship — FID expected early 2026 pending Cap & Floor award.</p>
+    <div class="metrics-grid">
+      <div class="metric"><div class="label">Total Investment</div><div class="value">£15–21bn</div></div>
+      <div class="metric"><div class="label">Timeline</div><div class="value">2026–2035</div></div>
+      <div class="metric"><div class="label">Capacity</div><div class="value">10 GW / 200 GWh</div></div>
+      <div class="metric"><div class="label">Jobs</div><div class="value green">15,000</div></div>
+      <div class="metric"><div class="label">Asset Life</div><div class="value green">100+ years</div></div>
+      <div class="metric"><div class="label">Payback</div><div class="value green">3–5 years</div></div>
+    </div>
+    <table>
+      <thead><tr><th>Annual Benefit</th><th>Value</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Curtailment costs avoided</td><td class="num green">£1.5–4.0bn</td><td>Currently £1.8bn/yr → £4–8bn by 2030</td></tr>
+        <tr><td>Arbitrage revenue (buy low / sell high)</td><td class="num green">£0.8–1.5bn</td><td>Buy wind £40/MWh, sell peak £120/MWh</td></tr>
+        <tr><td>Gas backup capacity avoided</td><td class="num green">£0.4–0.8bn</td><td>Reduces need for 5–8 GW gas backup</td></tr>
+        <tr><td>System balancing reduction</td><td class="num green">£0.5–1.1bn</td><td>SSE estimate: £1.13bn/yr system saving</td></tr>
+        <tr style="background:rgba(16,185,129,0.04)"><td><strong>Total annual benefit</strong></td><td class="num green" style="font-weight:700">£3.2–7.4bn</td><td><strong>vs annual capex of £1.5–2.1bn</strong></td></tr>
+      </tbody>
+    </table>
+    <div class="callout green" style="margin-bottom:0">
+      <div class="callout-title">Funding Source</div>
+      <p style="margin:0"><strong>Curtailment waste alone (£1.8bn/yr rising to £8bn) covers the entire annual capital outlay.</strong> The £15–21bn invested over 10 years = £1.5–2.1bn/yr. These assets then operate for 100+ years. Dinorwig (built 1984) will run until at least 2084.</p>
+    </div>
+  </div>
+
+  <!-- FIX 2 -->
+  <div class="priority-card urgent">
+    <div class="badge">Priority 2 — Urgent</div>
+    <h3>Reform the Wholesale Market</h3>
+    <p class="tagline">"Stop paying champagne prices for tap water."</p>
+    <p>UCL's "Green Power Pool": split market in two. Renewables and nuclear sell at average cost (~£45–55/MWh) through long-term contracts. Gas sells at marginal cost in a separate backup market. Consumers access cheap clean power directly.</p>
+    <div class="metrics-grid">
+      <div class="metric"><div class="label">Investment</div><div class="value green">~£0</div></div>
+      <div class="metric"><div class="label">Type</div><div class="value">Legislative</div></div>
+      <div class="metric"><div class="label">Timeline</div><div class="value">2026–2028</div></div>
+      <div class="metric"><div class="label">Annual Saving</div><div class="value green">£5–8bn</div></div>
+      <div class="metric"><div class="label">Per Household</div><div class="value green">£150–250/yr</div></div>
+      <div class="metric"><div class="label">Payback</div><div class="value green">Immediate</div></div>
+    </div>
+    <div class="callout green" style="margin-bottom:0">
+      <div class="callout-title">Funding Source</div>
+      <p style="margin:0"><strong>Costs nothing.</strong> Regulatory/legislative change redirecting £6–10bn/yr in windfall profits from generators back to consumers. The REMA process is underway. What's missing is political will to challenge the generator lobby.</p>
+    </div>
+  </div>
+
+  <!-- FIX 3 -->
+  <div class="priority-card urgent">
+    <div class="badge">Priority 3 — Urgent</div>
+    <h3>State Control of Interconnectors</h3>
+    <p class="tagline">"Stop Morgan Stanley setting your electricity bill."</p>
+    <p>Public body (NESO) becomes sole trader on UK's 8.4 GW of interconnectors. Import/export decisions based on consumer benefit, not arbitrage. Revenue from smart trading accrues to system. Not radical — it's how Norway's Statnett operates. Post-Brexit UK has full regulatory freedom.</p>
+    <div class="metrics-grid">
+      <div class="metric"><div class="label">Investment</div><div class="value green">~£0</div></div>
+      <div class="metric"><div class="label">Type</div><div class="value">Regulatory</div></div>
+      <div class="metric"><div class="label">Annual Saving</div><div class="value green">£1.5–4bn</div></div>
+      <div class="metric"><div class="label">Payback</div><div class="value green">Immediate</div></div>
+    </div>
+  </div>
+
+  <!-- FIX 4 -->
+  <div class="priority-card important">
+    <div class="badge">Priority 4 — Continue but Reframe</div>
+    <h3>Offshore Wind — Keep Building, Stop Pretending It's Enough</h3>
+    <p class="tagline">"Wind is the fuel. Storage is what makes it useful."</p>
+    <p>Target 50 GW by 2035. £150–200bn in cumulative private investment flowing via CfD. Generation cost genuinely low. But without Fixes 1–3, more wind = more curtailment, not cheaper bills.</p>
+    <div class="metrics-grid">
+      <div class="metric"><div class="label">Investment</div><div class="value">£150–200bn (private)</div></div>
+      <div class="metric"><div class="label">Target</div><div class="value">50 GW by 2035</div></div>
+      <div class="metric"><div class="label">Status</div><div class="value green">Happening</div></div>
+    </div>
+  </div>
+
+  <!-- FIX 5 -->
+  <div class="priority-card important">
+    <div class="badge">Priority 5 — Important</div>
+    <h3>Rolls-Royce SMR Nuclear</h3>
+    <p class="tagline">"Dispatchable, domestic, zero-carbon — the three things wind isn't."</p>
+    <p>£2.5bn committed. Wylfa, North Wales selected. 3 × 470 MW units, first power mid-2030s. Site can host up to 8 units (3.76 GW). At full production ~£3.3bn/GW — compared to Sizewell C's £10.3bn/GW. Fleet of 16 units (7.5 GW) could contribute £54bn to UK economy.</p>
+    <div class="metrics-grid">
+      <div class="metric"><div class="label">Phase 1 Investment</div><div class="value">£2.5bn</div></div>
+      <div class="metric"><div class="label">Phase 1 Capacity</div><div class="value">1.41 GW</div></div>
+      <div class="metric"><div class="label">Cost/GW</div><div class="value green">£3.3bn</div></div>
+      <div class="metric"><div class="label">vs Sizewell C</div><div class="value green">3× cheaper/GW</div></div>
+      <div class="metric"><div class="label">First Power</div><div class="value">Mid-2030s</div></div>
+      <div class="metric"><div class="label">Full Fleet</div><div class="value">£25–30bn for 7.5 GW</div></div>
+    </div>
+  </div>
+
+  <!-- FIX 6 -->
+  <div class="priority-card strategic">
+    <div class="badge">Priority 6 — Strategic Gamechanger</div>
+    <h3>UK FORGE — Enhanced Geothermal R&D</h3>
+    <p class="tagline">"The only technology that gives UK what Norway has: dispatchable, zero-fuel, sovereign, permanent."</p>
+    <p>Cornwall proposed UK FORGE programme (December 2025). Fervo (US) drills 4.8km in 16 days; UK takes 100 days for 3.5km. If UK transfers Fervo's techniques to Cornish granite, Cornwall alone could deliver 4 GW electricity + 13 GW heat. The "Digging Deep" parliamentary report estimates 30 sites / ~10.5 GW for just £1.6bn over 32 years. Entire UK deep geothermal sector has received ~£50m. Fervo has $1.5bn+.</p>
+    <div class="metrics-grid">
+      <div class="metric"><div class="label">R&D Phase</div><div class="value">£100–200m</div></div>
+      <div class="metric"><div class="label">Full Build</div><div class="value">£1.6bn (30 sites)</div></div>
+      <div class="metric"><div class="label">Potential</div><div class="value">10+ GW</div></div>
+      <div class="metric"><div class="label">Dispatchable?</div><div class="value green">YES — 24/7</div></div>
+      <div class="metric"><div class="label">Current CfD</div><div class="value">£119/MWh</div></div>
+      <div class="metric"><div class="label">Target LCOE</div><div class="value green">£40–60/MWh</div></div>
+    </div>
+    <div class="callout blue" style="margin-bottom:0">
+      <div class="callout-title">Why This Matters Most Long-Term</div>
+      <p style="margin:0">At £1.6bn for 10 GW, geothermal is an order of magnitude cheaper per GW than nuclear — <em>if</em> the drilling economics can be cracked. That's what UK FORGE is designed to prove. The £100–200m R&D cost is a rounding error on the £1.8bn/yr being burned on curtailment. 227 of 650 UK parliamentary constituencies have geothermal resources.</p>
+    </div>
+  </div>
+
+  <!-- FIX 7 -->
+  <div class="priority-card strategic">
+    <div class="badge">Priority 7 — Niche</div>
+    <h3>Tidal Stream — Predictable Complement</h3>
+    <p class="tagline">"Won't change the map, but fills a useful gap when wind is calm."</p>
+    <div class="metrics-grid">
+      <div class="metric"><div class="label">Annual CfD Cost</div><div class="value">~£50m</div></div>
+      <div class="metric"><div class="label">Role</div><div class="value">5–10% complement</div></div>
+      <div class="metric"><div class="label">Current CfD</div><div class="value">£265/MWh</div></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════ 7. MASTER BALANCE SHEET ═══════════════════ -->
+<section id="balance">
+<div class="container">
+  <h2><span class="num">07 — The Balance Sheet</span>Total Cost vs. Money Already in the System</h2>
+  <p class="lead">Can the UK fund all seven fixes from money already being extracted? Yes — comfortably. The total 10-year programme costs less than one year's energy sector profits.</p>
+
+  <div class="summary-table">
+  <table>
+    <thead><tr><th>Investment Required</th><th>Total (10yr)</th><th>Per Year</th><th></th><th>Funding Source</th><th>Available/Year</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Scottish Pumped Storage</td><td class="num">£15–21bn</td><td class="num">£1.5–2.1bn</td>
+        <td style="text-align:center;color:var(--text-dim)">←</td>
+        <td>Wind curtailment waste</td><td class="num red">£1.8bn (→£8bn)</td>
+      </tr>
+      <tr>
+        <td>Wholesale market reform</td><td class="num green">£0</td><td class="num green">£0</td>
+        <td style="text-align:center;color:var(--text-dim)">←</td>
+        <td>Gas-marginal overpayment</td><td class="num red">£6–10bn</td>
+      </tr>
+      <tr>
+        <td>Interconnector reform</td><td class="num green">£0</td><td class="num green">£0</td>
+        <td style="text-align:center;color:var(--text-dim)">←</td>
+        <td>Trading arbitrage profits</td><td class="num red">£1–3bn</td>
+      </tr>
+      <tr>
+        <td>Rolls-Royce SMR (Phase 1)</td><td class="num">£2.5bn</td><td class="num">£0.5bn</td>
+        <td style="text-align:center;color:var(--text-dim)">←</td>
+        <td>Capacity Market gas backup</td><td class="num red">£1.2bn</td>
+      </tr>
+      <tr>
+        <td>UK FORGE + Geothermal build</td><td class="num">£1.8bn</td><td class="num">£0.18bn</td>
+        <td style="text-align:center;color:var(--text-dim)">←</td>
+        <td>Grid monopoly excess profits</td><td class="num red">£6.8bn</td>
+      </tr>
+      <tr>
+        <td>Tidal CfD support</td><td class="num">£0.5bn</td><td class="num">£0.05bn</td>
+        <td></td><td></td><td></td>
+      </tr>
+      <tr style="background:var(--surface2);font-weight:600">
+        <td><strong>TOTAL INVESTMENT</strong></td>
+        <td class="num cyan">£20–26bn</td><td class="num cyan">£2.0–2.6bn/yr</td>
+        <td style="text-align:center;color:var(--text-dim)">vs</td>
+        <td><strong>TOTAL AVAILABLE</strong></td><td class="num red" style="font-weight:700">£17–30bn/yr</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="big-numbers">
+    <div class="big-num-card" style="border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.04)">
+      <div class="figure green">£2–3bn</div><div class="desc">Annual investment needed</div>
+    </div>
+    <div class="big-num-card" style="border-color:rgba(239,68,68,0.3);background:rgba(239,68,68,0.04)">
+      <div class="figure red">£30bn</div><div class="desc">Annual profits extracted</div>
+    </div>
+    <div class="big-num-card" style="border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.04)">
+      <div class="figure amber">£13–19bn</div><div class="desc">Annual system waste</div>
+    </div>
+    <div class="big-num-card" style="border-color:rgba(6,182,212,0.3);background:rgba(6,182,212,0.04)">
+      <div class="figure cyan">10–15×</div><div class="desc">Ratio: money available to money needed</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════ 8. CONSUMER IMPACT ═══════════════════ -->
+<section id="impact">
+<div class="container">
+  <h2><span class="num">08 — What This Means</span>Consumer Impact and the Cost of Inaction</h2>
+
+  <table>
+    <thead>
+      <tr><th>Year</th><th>Current Trajectory</th><th>With All Fixes</th><th>Annual Household Saving</th><th>Norway Benchmark</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>2025</strong></td><td class="num">24.5p/kWh</td><td class="num">24.5p/kWh</td><td class="num">—</td><td class="num green">~10p</td></tr>
+      <tr><td><strong>2028</strong></td><td class="num">23–25p</td><td class="num green">18–20p</td><td class="num green">£200–300</td><td class="num green">~10p</td></tr>
+      <tr><td><strong>2030</strong></td><td class="num">22–25p</td><td class="num green">16–18p</td><td class="num green">£300–450</td><td class="num green">~10p</td></tr>
+      <tr><td><strong>2035</strong></td><td class="num">20–24p</td><td class="num green">14–17p</td><td class="num green">£400–600</td><td class="num green">~10p</td></tr>
+      <tr><td><strong>2040</strong></td><td class="num">18–22p</td><td class="num green">11–14p</td><td class="num green">£500–800</td><td class="num green">~10p</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout red">
+    <div class="callout-title">The Cost of Doing Nothing</div>
+    <p>The difference between current trajectory and optimal strategy is <strong>£400–800 per household per year by 2040</strong>. Across 28 million UK households: <strong>£11–22bn per year</strong> in avoidable cost, permanently. Over 15 years (2025–2040): <strong>£80–170bn</strong> transferred from UK consumers to shareholders, foreign governments, and financial traders — money that could have built sovereign infrastructure lasting 100+ years.</p>
+    <p style="margin:0">For EV drivers: the gap narrows from <strong>4.2–5.3p/km today to 2.5–3.5p/km by 2040</strong> — closing half the distance to Norway. Without reform, UK BEV running costs stay 2.5× higher than hydro-sovereign nations indefinitely.</p>
+  </div>
+
+  <div class="callout green" style="margin-top: 40px;">
+    <div class="callout-title">The Bottom Line</div>
+    <p>The UK doesn't have an energy cost problem. It has an energy <em>design</em> problem. It generates increasingly cheap wind power, then reprices it at gas rates, wastes £1.8bn/yr paying wind farms to switch off, lets financial traders arbitrage interconnectors, and channels £30bn/yr to foreign governments and US asset managers — while 4 million households sit in energy debt.</p>
+    <p>The total cost to permanently fix this is <strong>£20–26bn over 10 years</strong> — less than one year's energy sector profits, less than two years of system waste. The assets built then operate for 50–100+ years.</p>
+    <p><strong>Norway built publicly-owned hydro with public money in the 1950s–80s and now enjoys near-free electricity forever.</strong> The UK can build publicly-backed pumped storage, SMR nuclear, and geothermal with money already being wasted in its own system — and close half the gap within 15 years.</p>
+    <p style="margin:0">The money is there. The engineering is proven. The sites are surveyed. The only thing missing is a government willing to choose its citizens over its market ideology.</p>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<div class="doc-footer">
+  <div class="container">
+    <p>Analysis compiled February 2026 · Sources: Unite (Oct 2025), UCL Energy Institute, NESO, SSE Renewables, Ofgem, DESNZ, Scottish Renewables/BiGGAR Economics, Cornwall Trade & Investment, Rolls-Royce SMR, Octopus Energy, FTI Consulting, RenewableUK, IHA, World Nuclear Association, Fervo Energy</p>
+    <p style="margin-top:6px">Figures represent best estimates from published sources. Ranges reflect uncertainty in projections. Not financial advice.</p>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- AI QUERY PANEL                                          -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="ai-panel" style="
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 9999;
+  font-family: 'IBM Plex Sans', sans-serif;
+">
+  <!-- Collapsed bar -->
+  <div id="ai-bar" onclick="toggleAI()" style="
+    background: linear-gradient(90deg, #0c1628 0%, #131a30 100%);
+    border-top: 1px solid #1e293b;
+    padding: 12px 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    user-select: none;
+  ">
+    <div style="width:8px;height:8px;border-radius:50%;background:#f59e0b;box-shadow:0 0 8px #f59e0b;flex-shrink:0;"></div>
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:0.7rem;color:#f59e0b;letter-spacing:3px;text-transform:uppercase;">Ask the document</span>
+    <span style="color:#64748b;font-size:0.8rem;margin-left:4px;">— query this analysis with AI</span>
+    <span id="ai-toggle-icon" style="margin-left:auto;color:#64748b;font-size:1.2rem;">▲</span>
+  </div>
+
+  <!-- Expanded panel -->
+  <div id="ai-expanded" style="display:none;background:#0a0f1a;border-top:1px solid #2d3a52;">
+    
+    <!-- API key row -->
+    <div id="ai-key-row" style="
+      padding: 16px 24px;
+      background: #111827;
+      border-bottom: 1px solid #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    ">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:0.68rem;color:#64748b;text-transform:uppercase;letter-spacing:2px;white-space:nowrap;">Anthropic API Key</span>
+      <input id="ai-key-input" type="password" placeholder="sk-ant-..." style="
+        flex:1; min-width:260px; max-width:420px;
+        background:#0a0f1a; border:1px solid #2d3a52; border-radius:4px;
+        padding:7px 12px; color:#e2e8f0; font-family:'IBM Plex Mono',monospace;
+        font-size:0.8rem; outline:none;
+      " oninput="saveKey(this.value)">
+      <span style="font-size:0.75rem;color:#475569;">Free at <a href="https://console.anthropic.com" target="_blank" style="color:#3b82f6;">console.anthropic.com</a></span>
+      <span id="ai-key-status" style="font-size:0.75rem;color:#10b981;display:none;">✓ Key saved</span>
+    </div>
+
+    <!-- Suggested questions -->
+    <div style="padding:16px 24px 8px;display:flex;flex-wrap:wrap;gap:8px;border-bottom:1px solid #1e293b;">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:0.65rem;color:#475569;text-transform:uppercase;letter-spacing:2px;align-self:center;margin-right:4px;">Ask:</span>
+      <button class="ai-chip" onclick="askQuestion(this)">What's the UK's core energy problem?</button>
+      <button class="ai-chip" onclick="askQuestion(this)">How much would the 7-fix programme cost?</button>
+      <button class="ai-chip" onclick="askQuestion(this)">Why can't renewables alone solve this?</button>
+      <button class="ai-chip" onclick="askQuestion(this)">What is the Denmark Trap?</button>
+      <button class="ai-chip" onclick="askQuestion(this)">Which countries have permanently cheap electricity?</button>
+      <button class="ai-chip" onclick="askQuestion(this)">What's the investment case for SMR nuclear?</button>
+    </div>
+
+    <!-- Input row -->
+    <div style="padding:12px 24px;display:flex;gap:10px;border-bottom:1px solid #1e293b;">
+      <input id="ai-query-input" type="text" placeholder="Ask anything about this document…" style="
+        flex:1; background:#111827; border:1px solid #2d3a52; border-radius:4px;
+        padding:10px 14px; color:#e2e8f0; font-size:0.9rem; outline:none;
+        font-family:'IBM Plex Sans',sans-serif;
+      " onkeydown="if(event.key==='Enter')sendQuery()">
+      <button onclick="sendQuery()" id="ai-send-btn" style="
+        background:#f59e0b; color:#0a0f1a; border:none; border-radius:4px;
+        padding:10px 22px; font-weight:600; font-size:0.85rem; cursor:pointer;
+        font-family:'IBM Plex Sans',sans-serif; white-space:nowrap;
+      ">Ask →</button>
+    </div>
+
+    <!-- Response area -->
+    <div id="ai-response-area" style="
+      padding: 0 24px;
+      max-height: 320px;
+      overflow-y: auto;
+    ">
+      <div id="ai-response-inner" style="padding:16px 0;"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Spacer so footer content isn't hidden behind panel -->
+<div id="ai-spacer" style="height:48px;"></div>
+
+<style>
+.ai-chip {
+  background: #1a2236;
+  border: 1px solid #2d3a52;
+  color: #94a3b8;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  font-family: 'IBM Plex Sans', sans-serif;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.ai-chip:hover {
+  background: #1f2b42;
+  color: #e2e8f0;
+  border-color: #f59e0b;
+}
+#ai-query-input:focus {
+  border-color: #f59e0b;
+}
+#ai-response-inner p {
+  color: #e2e8f0;
+  line-height: 1.7;
+  margin-bottom: 10px;
+}
+#ai-response-inner .ai-q {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  color: #f59e0b;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+#ai-response-inner .ai-a {
+  color: #e2e8f0;
+  line-height: 1.75;
+  font-size: 0.9rem;
+}
+#ai-response-inner .ai-thinking {
+  color: #475569;
+  font-style: italic;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#ai-response-inner .ai-err {
+  color: #ef4444;
+  font-size: 0.85rem;
+}
+.ai-dot-anim {
+  display: inline-flex; gap: 4px;
+}
+.ai-dot-anim span {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: #f59e0b; display: inline-block;
+  animation: aiDot 1.2s infinite;
+}
+.ai-dot-anim span:nth-child(2) { animation-delay: 0.2s; }
+.ai-dot-anim span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes aiDot {
+  0%,80%,100% { opacity:0.2; transform:scale(0.8); }
+  40% { opacity:1; transform:scale(1); }
+}
+</style>
+
+<script>
+(function() {
+
+var DOC_CONTEXT = "Energy Sovereignty: The Global Map and the UK Business Case Strategic Energy Analysis \u2014 February 2026 Energy Sovereignty: The Global Map and the UK Business Case Eight countries have achieved permanent cheap electricity through amortised hydropower. No technology will disrupt their advantage before 2050. The UK isn't one of them \u2014 but with \u00a320\u201326bn of investment, funded entirely from money already being wasted in its own system, it can close half the gap within 15 years. 8 Countries in the \"forever cheap\" club 0 Technologies that beat amortised hydro before 2050 \u00a330bn UK energy profits extracted per year \u00a320\u201326bn Total cost to transform UK energy (10-year programme) Sovereignty Map 50-Year Disruptors UK Position Price Trap The \u00a330bn Seven Fixes Balance Sheet Consumer Impact Part I \u2014 The Global Map Who Has Sovereign Cheap Electricity \u2014 and Who Never Will The single most important variable in long-term electricity cost is whether a country owns amortised, dispatchable, zero-fuel-cost generation. In practice, this means hydropower built 30\u201370 years ago, fully paid off, with marginal generation cost of \u20ac0.005\u20130.01/kWh. Eight countries have this. Everyone else is paying 4\u201310\u00d7 more and always will be \u2014 unless something fundamentally changes. The Benchmark to Beat Norway's existing hydro fleet: 90% of electricity, built 1950s\u201380s, publicly owned, fully amortised. Marginal cost: \u20ac0.005\u20130.01/kWh . Dispatchable on demand. Lasts 50\u2013100+ years. Zero carbon. Zero fuel cost. Water flows downhill through a turbine paid for decades ago. This is what cheap electricity looks like \u2014 and it's what every other country is measured against. Tier 1 \u2014 Already There The \"Forever Cheap\" Club Operating Norway-model systems with amortised, publicly-owned hydro. Marginal generation cost \u20ac0.005\u20130.02/kWh. These countries have achieved permanent structural advantage that cannot be replicated. \ud83c\uddf3\ud83c\uddf4 Norway 90% hydro \u00b7 25.5 TWh/capita \u00b7 Model for all others \ud83c\uddee\ud83c\uddf8 Iceland 72% hydro + geothermal \u00b7 35.0 TWh/capita \u00b7 Highest per-capita \ud83c\uddf5\ud83c\uddfe Paraguay 99% hydro \u00b7 8.1 TWh/capita \u00b7 Cheapest potential globally \ud83c\udde8\ud83c\udde6 Canada (QC/BC/MB) 60% hydro \u00b7 9.3 TWh/capita \u00b7 Provincial systems \ud83c\uddf8\ud83c\uddea Sweden 42% hydro + nuclear \u00b7 6.9 TWh/capita \u00b7 Diversified base \ud83c\udde6\ud83c\uddf9 Austria 60% hydro \u00b7 4.6 TWh/capita \u00b7 Alpine advantage \ud83c\udde8\ud83c\udded Switzerland 57% hydro + nuclear \u00b7 4.1 TWh/capita \u00b7 Pumped storage leader \ud83c\uddf3\ud83c\uddff New Zealand 58% hydro + geothermal \u00b7 4.6 TWh/capita \u00b7 Isolated grid Risk: Interconnector leakage \u2014 Norway, Sweden, Austria all coupled to EU electricity markets. Market integration exports their cheap power to neighbours, raising domestic prices. Norway subsidises to paper over the gap. The political tension between \"sell high to Europe\" and \"keep it cheap for citizens\" is the defining energy policy fight in these countries. Tier 2 \u2014 Could Get There (20\u201330 Year Horizon) Massive Untapped Potential Countries with extraordinary hydro resources largely unexploited. Need $billions in new dam construction + 20\u201330 years to build and amortise. Won't be \"free\" until 2050s\u20132060s. \ud83c\udde7\ud83c\uddf7 Brazil 63% hydro \u00b7 ~43% of 260 GW exploited \ud83c\udde8\ud83c\uddf4 Colombia 68% hydro \u00b7 ~21% exploited \ud83c\uddea\ud83c\uddf9 Ethiopia 90% hydro \u00b7 ~10% exploited \u00b7 GERD 6.5 GW \ud83c\udde8\ud83c\udde9 DR Congo 97% hydro \u00b7 ~3% exploited \u00b7 Grand Inga 40 GW+ \ud83c\uddf5\ud83c\uddea Peru 55% hydro \u00b7 ~8% exploited \ud83c\uddf3\ud83c\uddf5 Nepal 90% hydro \u00b7 ~6% of 42 GW \u00b7 Highest head on Earth \ud83c\uddf1\ud83c\udde6 Laos 80% hydro \u00b7 ~38% \u00b7 \"Battery of SE Asia\" \ud83c\uddf9\ud83c\uddef Tajikistan 95% hydro \u00b7 ~9% \u00b7 Rogun Dam 3.6 GW \ud83c\udde7\ud83c\uddf9 Bhutan 93% hydro \u00b7 ~8% \u00b7 0.8M population = surplus Barriers: Governance crisis (DRC), geopolitical conflict (Ethiopia-Egypt Nile dispute), Chinese debt-trap diplomacy (Laos), seismic risk, financing gaps. Grand Inga alone could generate 40 GW \u2014 more than Norway's entire installed hydro \u2014 from a single site. But DRC governance makes this a 50-year proposition at best. Tier 3 \u2014 Has Hydro but Structurally Can't Reach Norway Population or Geography Defeats Them Either too many people for hydro to dominate the mix, or generation too far from demand, or governance has destroyed existing assets. \ud83c\udde8\ud83c\uddf3 China 14% hydro \u00b7 421 GW but 1.4bn people \ud83c\uddfa\ud83c\uddf8 United States 6% hydro \u00b7 80 GW but 330M people \ud83c\uddee\ud83c\uddf3 India 10% hydro \u00b7 1.4bn people \ud83c\uddf7\ud83c\uddfa Russia 18% hydro \u00b7 5,000km transmission gap \ud83c\uddfb\ud83c\uddea Venezuela 60% hydro \u00b7 Chronic blackouts, zero maintenance \ud83c\uddf9\ud83c\uddf7 Turkey 20% hydro \u00b7 Climate drying reservoirs \ud83c\uddf2\ud83c\uddff Mozambique 75% hydro \u00b7 Cahora Bassa exports to SA Cautionary tale: Venezuela has 16 GW of installed hydro and chronic blackouts. Proof that hydro sovereignty requires maintenance and governance, not just dams. Tier 4 \u2014 Pumped Storage: \"Synthetic Norway\" No Rivers but Mountains + Cheap Variable Generation Countries that can build pumped storage hydro to store wind/solar surplus and release it on demand. Won't match amortised hydro economics but achieves dispatchability \u2014 the missing ingredient for wind-dominated systems. \ud83c\uddec\ud83c\udde7 UK (Scotland) 2.8 GW existing \u00b7 ~10 GW pipeline \u00b7 Coire Glas 1.3 GW \ud83c\uddea\ud83c\uddf8 Spain 8.0 GW existing \u00b7 ~7 GW pipeline \ud83c\uddf5\ud83c\uddf9 Portugal 3.5 GW existing \u00b7 ~2 GW pipeline \ud83c\udde6\ud83c\uddfa Australia 1.8 GW existing \u00b7 Snowy 2.0 (2.2 GW, massively over budget) \ud83c\uddf2\ud83c\udde6 Morocco 1.8 GW existing \u00b7 Atlas Mtns + Saharan solar Key insight: Pumped storage turns intermittent wind into dispatchable power. Buy surplus at \u00a340/MWh, store it, sell at \u00a3120/MWh. 80%+ round-trip efficiency. 50\u2013100+ year asset life. The Scottish Highlands have 500m+ elevation drops, huge lochs, and existing grid connections from 1940s\u201380s hydro schemes. The UK's best path to sovereign dispatchable power runs through Scotland. Projected 2035 BEV Running Cost by Sovereignty Tier Country Tier 2035 BEV Cost/km Structural Basis \ud83c\uddf5\ud83c\uddfe Paraguay 1 1.1\u20131.4 c/km Cheapest potential globally \ud83c\uddee\ud83c\uddf8 Iceland 1 1.4\u20131.8 c/km Maximum durability \ud83c\udde8\ud83c\udde6 Canada (QC/MB/BC) 1 1.4\u20132.1 c/km Provincial hydro systems \ud83c\uddf3\ud83c\uddff New Zealand 1 1.8\u20132.5 c/km Hydro + geothermal \ud83c\uddf3\ud83c\uddf4 Norway 1 2.1\u20133.2 c/km Depends on interconnector policy \ud83c\uddec\ud83c\udde7 UK (optimal strategy) 4 2.5\u20133.5 c/km Requires all fixes implemented \ud83c\uddec\ud83c\udde7 UK (current trajectory) 4 4.2\u20135.3 c/km Wind-only, no reform \ud83c\udde9\ud83c\uddea Germany \u2014 6.1\u20137.4 c/km No hydro, no nuclear, purely tax holiday 02 \u2014 50-Year Technology Assessment Will Anything Disrupt Hydro Sovereignty? Eight challenger technologies assessed against the benchmark: Norway's amortised hydro at \u20ac0.005\u20130.01/kWh, dispatchable, zero fuel, 100+ year asset life. To disrupt, a technology must match all four attributes \u2014 not just cheap generation. Technology Threat Level Current LCOE Best Case 2050 Dispatchable? Geography Free? Verdict Enhanced Geothermal (EGS) High $0.06\u20130.80 $0.03\u20130.05 YES Moderate Only real challenger. Fervo drilling 4.8km in 16 days. If follows shale cost curve, could equalise by 2070s Solar + Battery (4hr) Medium $0.04\u20130.08 $0.02\u20130.04 Partial Sun belt only Cheap but 4hr storage \u2260 dispatchable. Can't cover 3-day winter lulls SMR Nuclear Fission Medium $0.06\u20130.10 $0.04\u20130.07 YES YES Plausible near-term. Nuclear has history of cost overruns but factory-build could work Nuclear Fusion Medium N/A $0.05\u20130.10 YES YES 53 private startups, $9.8bn invested. First plant optimistically 2040s. Tritium supply problem 100hr Batteries (Iron-Air) Medium N/A $0.03\u20130.06 Enables it YES Form Energy claims 100hr at $20/kWh. Would make wind truly dispatchable. Unproven at scale Tidal Stream Low $0.20\u20130.45 $0.08\u20130.12 Predictable Very limited Niche contributor. Total global resource ~100\u2013150 GW. Won't change the map Wave Energy V. Low $0.30\u20130.85 $0.10\u20130.20 NO Very limited No commercial plant exists. 15\u201320 years behind tidal. Ocean destroys equipment Space-Based Solar Wildcard $0.60\u20131.60 $0.03\u20130.09 Theoretically YES Requires simultaneous breakthroughs in launch, panels, assembly, transmission. 2070+ at earliest The Verdict Nothing beats amortised hydro before 2050. One thing might by 2075. Enhanced geothermal is the only technology that offers the same combination of dispatchability + zero fuel cost + multi-decade asset life that makes hydro special. If EGS follows the shale drilling cost curve and reaches $0.03/kWh by the 2040s, and those plants operate 30+ years approaching amortisation, then by the 2070s Germany and the UK could have \"near-free\" dispatchable green power. For any boardroom decision with a horizon shorter than 2050: the Tier 1 sovereignty map is fixed. Those 8 countries will have the cheapest electricity on Earth for the next 25 years, and no investment, policy, or technology changes that. The question for everyone else is how close they can get. Part II \u2014 The UK Specific Case Why the UK Chose Offshore Wind (and Why It's Not Enough) The UK has no hydro to build, no nuclear fleet in production, no geothermal industry. It does have the best offshore wind resource on Earth. So it played the only card in its hand \u2014 and it's not a bad card. But wind alone cannot deliver cheap consumer electricity, for four structural reasons. It's Not a Bad Card North Sea and Scottish waters have the strongest, most consistent winds on Earth \u2014 UK offshore capacity factors of 40\u201350% are among the best globally. AR7 offshore wind strike price of \u00a391/MWh is 38% cheaper than new-build gas at \u00a3147/MWh. Wind farms reduced UK wholesale prices by roughly a third in 2025 \u2014 without existing wind, wholesale would be ~\u00a3121/MWh instead of ~\u00a383/MWh. And wind is domestic in a country that became a net gas importer in 2004. But Wind Alone = The Denmark Trap Denmark has 58% wind penetration \u2014 among the highest in the world. Yet Danish consumer electricity costs \u20ac0.35/kWh \u2014 the 4th highest in Europe. Cheap generation \u2260 cheap consumer electricity. Denmark built world-class wind but failed to translate it into cheap consumer prices because of taxation, grid costs, backup requirements, and market design. The UK is walking the exact same path. 04 \u2014 The Four-Layer Price Trap Why Cheap Wind Never Reaches UK Consumers UK offshore wind generates at ~\u00a350\u201360/MWh. UK consumers pay ~\u00a3245/MWh (24.5p/kWh). The gap isn't theft \u2014 it's system design. Four layers reprice cheap wind at expensive gas rates before it reaches the wall socket. Layer Mechanism Cost Impact Can Be Fixed? 1. Marginal Pricing Gas (last unit needed) sets price for ALL generation. Even when 50% is wind, the last 1% from gas sets the wholesale price. Gas set UK price 98% of the time in 2023 vs 7% in France. +\u00a330\u201340/MWh Yes \u2014 market reform 2. Intermittency Backup Must maintain ~25 GW gas backup for calm periods. Plants paid to exist (Capacity Market \u00a365/kW/yr) even when running at low utilisation. Curtailment rising: 10 TWh wasted in 2025. +\u00a315\u201325/MWh Partly \u2014 needs storage 3. Network Costs Wind in Scotland/North Sea, demand in London/South. \u00a358bn transmission investment in NESO Clean Power 2030 plan. Network charges ~25% of consumer bill and rising. +\u00a340\u201360/MWh Structural \u2014 geography fixed 4. Interconnector Coupling 8.4 GW links to EU. When French nuclear offline or German gas expensive, UK prices rise by contagion. Financial traders arbitrage differentials. Net imports 37 TWh (10% demand). +\u00a310\u201330/MWh Yes \u2014 policy choice Result Wind LCOE ~\u00a350\u201360/MWh \u2192 Consumer price ~\u00a3245/MWh 4\u00d7 markup Fixable with political will 05 \u2014 Follow the Money Where \u00a330 Billion Goes Every Year UK energy companies posted \u00a330bn in pre-tax profits in 2024. That's \u00a3500 per household \u2014 while 4 million households sit in energy debt. Profit margins average 23%, triple the national average. \u00a330bn Energy sector profits 2024 \u00a3500 Per household to profits \u00a31.8bn Curtailment waste 2025 \u00a34bn Household energy debt Recipient Profit 2024 Margin Ultimate Owner Generation companies \u00a39.7bn ~25% Gas, wind & nuclear generators paid at gas-marginal rate Grid monopolies \u00a36.8bn 38% National Grid, UK Power Networks, regional DNOs Gas extraction \u00a35.9bn 58% Norwegian sovereign fund: \u00a35.9bn alone Retail supply \u00a32.8bn ~8% Centrica/British Gas, EDF, SSE \u2014 only segment Ofgem monitors Trading & finance \u00a34.8bn+ \u2014 Morgan Stanley, banks, hedge funds \u2014 interconnector arbitrage Where the Profits End Up US asset managers BlackRock, Vanguard ~48% Foreign governments Norway, France, Denmark, Qatar ~33% UK shareholders pension funds, retail ~12% Other international Li Ka Shing, Kretinsky ~7% The Irony Norway's sovereign wealth fund received \u00a35.9bn in UK gas profits in 2024 alone. Norway built publicly-owned hydro with public money in the 1950s\u201380s. The UK privatised its electricity system in 1990. Norway now profits from UK energy twice : once from selling North Sea gas, and again through its fund's stakes in UK energy companies. The country that did energy right profits from the country that did energy wrong. Annual System Waste on Top of Profits Waste Category Annual Cost Trend Root Cause Wind curtailment + gas replacement \u00a31.8bn \u2192 \u00a34\u20138bn by 2030 Grid can't move Scottish wind south Gas-marginal pricing overpayment \u00a36\u201310bn Shrinking as CfDs grow Gas sets wholesale ~85% of time Interconnector price contagion \u00a31\u20133bn Variable Private traders arbitrage UK-EU spread Capacity Market (backup gas) \u00a31.2bn Stable Must pay gas plants to exist for calm days Grid balancing costs \u00a32.7bn Rising Dispersed generation, congested grid TOTAL ANNUAL WASTE \u00a313\u201319bn \u2192 \u00a320\u201330bn by 2030 All avoidable with correct system design 06 \u2014 The Seven Fixes What the UK Needs, What It Costs, and How to Fund It Every recommendation is funded by redirecting money already in the system \u2014 from waste, windfall profits, or market redesign. No new taxes required. Total programme cost: \u00a320\u201326bn over 10 years. Total money currently being wasted or extracted: \u00a330\u201349bn per year. Priority 1 \u2014 Urgent Build Scotland's Pumped Storage Hydro \"UK has spent \u00a385bn on wind since 2014 and \u00a30 on storage. Like buying a Ferrari and refusing to buy tyres.\" 11 schemes across Scotland and Wales, combined 10 GW / 200 GWh \u2014 a five-fold increase in UK long-duration storage. Technology is proven (Dinorwig has run since 1984). Sites surveyed, planning consents granted. Only blocker: a Cap & Floor revenue framework the privatised market won't provide. Coire Glas (SSE, 1.3 GW, \u00a32bn) is the flagship \u2014 FID expected early 2026 pending Cap & Floor award. Total Investment \u00a315\u201321bn Timeline 2026\u20132035 Capacity 10 GW / 200 GWh Jobs 15,000 Asset Life 100+ years Payback 3\u20135 years Annual Benefit Value Notes Curtailment costs avoided \u00a31.5\u20134.0bn Currently \u00a31.8bn/yr \u2192 \u00a34\u20138bn by 2030 Arbitrage revenue (buy low / sell high) \u00a30.8\u20131.5bn Buy wind \u00a340/MWh, sell peak \u00a3120/MWh Gas backup capacity avoided \u00a30.4\u20130.8bn Reduces need for 5\u20138 GW gas backup System balancing reduction \u00a30.5\u20131.1bn SSE estimate: \u00a31.13bn/yr system saving Total annual benefit \u00a33.2\u20137.4bn vs annual capex of \u00a31.5\u20132.1bn Funding Source Curtailment waste alone (\u00a31.8bn/yr rising to \u00a38bn) covers the entire annual capital outlay. The \u00a315\u201321bn invested over 10 years = \u00a31.5\u20132.1bn/yr. These assets then operate for 100+ years. Dinorwig (built 1984) will run until at least 2084. Priority 2 \u2014 Urgent Reform the Wholesale Market \"Stop paying champagne prices for tap water.\" UCL's \"Green Power Pool\": split market in two. Renewables and nuclear sell at average cost (~\u00a345\u201355/MWh) through long-term contracts. Gas sells at marginal cost in a separate backup market. Consumers access cheap clean power directly. Investment ~\u00a30 Type Legislative Timeline 2026\u20132028 Annual Saving \u00a35\u20138bn Per Household \u00a3150\u2013250/yr Payback Immediate Funding Source Costs nothing. Regulatory/legislative change redirecting \u00a36\u201310bn/yr in windfall profits from generators back to consumers. The REMA process is underway. What's missing is political will to challenge the generator lobby. Priority 3 \u2014 Urgent State Control of Interconnectors \"Stop Morgan Stanley setting your electricity bill.\" Public body (NESO) becomes sole trader on UK's 8.4 GW of interconnectors. Import/export decisions based on consumer benefit, not arbitrage. Revenue from smart trading accrues to system. Not radical \u2014 it's how Norway's Statnett operates. Post-Brexit UK has full regulatory freedom. Investment ~\u00a30 Type Regulatory Annual Saving \u00a31.5\u20134bn Payback Immediate Priority 4 \u2014 Continue but Reframe Offshore Wind \u2014 Keep Building, Stop Pretending It's Enough \"Wind is the fuel. Storage is what makes it useful.\" Target 50 GW by 2035. \u00a3150\u2013200bn in cumulative private investment flowing via CfD. Generation cost genuinely low. But without Fixes 1\u20133, more wind = more curtailment, not cheaper bills. Investment \u00a3150\u2013200bn (private) Target 50 GW by 2035 Status Happening Priority 5 \u2014 Important Rolls-Royce SMR Nuclear \"Dispatchable, domestic, zero-carbon \u2014 the three things wind isn't.\" \u00a32.5bn committed. Wylfa, North Wales selected. 3 \u00d7 470 MW units, first power mid-2030s. Site can host up to 8 units (3.76 GW). At full production ~\u00a33.3bn/GW \u2014 compared to Sizewell C's \u00a310.3bn/GW. Fleet of 16 units (7.5 GW) could contribute \u00a354bn to UK economy. Phase 1 Investment \u00a32.5bn Phase 1 Capacity 1.41 GW Cost/GW \u00a33.3bn vs Sizewell C 3\u00d7 cheaper/GW First Power Mid-2030s Full Fleet \u00a325\u201330bn for 7.5 GW Priority 6 \u2014 Strategic Gamechanger UK FORGE \u2014 Enhanced Geothermal R&D \"The only technology that gives UK what Norway has: dispatchable, zero-fuel, sovereign, permanent.\" Cornwall proposed UK FORGE programme (December 2025). Fervo (US) drills 4.8km in 16 days; UK takes 100 days for 3.5km. If UK transfers Fervo's techniques to Cornish granite, Cornwall alone could deliver 4 GW electricity + 13 GW heat. The \"Digging Deep\" parliamentary report estimates 30 sites / ~10.5 GW for just \u00a31.6bn over 32 years. Entire UK deep geothermal sector has received ~\u00a350m. Fervo has $1.5bn+. R&D Phase \u00a3100\u2013200m Full Build \u00a31.6bn (30 sites) Potential 10+ GW Dispatchable? YES \u2014 24/7 Current CfD \u00a3119/MWh Target LCOE \u00a340\u201360/MWh Why This Matters Most Long-Term At \u00a31.6bn for 10 GW, geothermal is an order of magnitude cheaper per GW than nuclear \u2014 if the drilling economics can be cracked. That's what UK FORGE is designed to prove. The \u00a3100\u2013200m R&D cost is a rounding error on the \u00a31.8bn/yr being burned on curtailment. 227 of 650 UK parliamentary constituencies have geothermal resources. Priority 7 \u2014 Niche Tidal Stream \u2014 Predictable Complement \"Won't change the map, but fills a useful gap when wind is calm.\" Annual CfD Cost ~\u00a350m Role 5\u201310% complement Current CfD \u00a3265/MWh 07 \u2014 The Balance Sheet Total Cost vs. Money Already in the System Can the UK fund all seven fixes from money already being extracted? Yes \u2014 comfortably. The total 10-year programme costs less than one year's energy sector profits. Investment Required Total (10yr) Per Year Funding Source Available/Year Scottish Pumped Storage \u00a315\u201321bn \u00a31.5\u20132.1bn \u2190 Wind curtailment waste \u00a31.8bn (\u2192\u00a38bn) Wholesale market reform \u00a30 \u00a30 \u2190 Gas-marginal overpayment \u00a36\u201310bn Interconnector reform \u00a30 \u00a30 \u2190 Trading arbitrage profits \u00a31\u20133bn Rolls-Royce SMR (Phase 1) \u00a32.5bn \u00a30.5bn \u2190 Capacity Market gas backup \u00a31.2bn UK FORGE + Geothermal build \u00a31.8bn \u00a30.18bn \u2190 Grid monopoly excess profits \u00a36.8bn Tidal CfD support \u00a30.5bn \u00a30.05bn TOTAL INVESTMENT \u00a320\u201326bn \u00a32.0\u20132.6bn/yr vs TOTAL AVAILABLE \u00a317\u201330bn/yr \u00a32\u20133bn Annual investment needed \u00a330bn Annual profits extracted \u00a313\u201319bn Annual system waste 10\u201315\u00d7 Ratio: money available to money needed 08 \u2014 What This Means Consumer Impact and the Cost of Inaction Year Current Trajectory With All Fixes Annual Household Saving Norway Benchmark 2025 24.5p/kWh 24.5p/kWh \u2014 ~10p 2028 23\u201325p 18\u201320p \u00a3200\u2013300 ~10p 2030 22\u201325p 16\u201318p \u00a3300\u2013450 ~10p 2035 20\u201324p 14\u201317p \u00a3400\u2013600 ~10p 2040 18\u201322p 11\u201314p \u00a3500\u2013800 ~10p The Cost of Doing Nothing The difference between current trajectory and optimal strategy is \u00a3400\u2013800 per household per year by 2040 . Across 28 million UK households: \u00a311\u201322bn per year in avoidable cost, permanently. Over 15 years (2025\u20132040): \u00a380\u2013170bn transferred from UK consumers to shareholders, foreign governments, and financial traders \u2014 money that could have built sovereign infrastructure lasting 100+ years. For EV drivers: the gap narrows from 4.2\u20135.3p/km today to 2.5\u20133.5p/km by 2040 \u2014 closing half the distance to Norway. Without reform, UK BEV running costs stay 2.5\u00d7 higher than hydro-sovereign nations indefinitely. The Bottom Line The UK doesn't have an energy cost problem. It has an energy design problem. It generates increasingly cheap wind power, then reprices it at gas rates, wastes \u00a31.8bn/yr paying wind farms to switch off, lets financial traders arbitrage interconnectors, and channels \u00a330bn/yr to foreign governments and US asset managers \u2014 while 4 million households sit in energy debt. The total cost to permanently fix this is \u00a320\u201326bn over 10 years \u2014 less than one year's energy sector profits, less than two years of system waste. The assets built then operate for 50\u2013100+ years. Norway built publicly-owned hydro with public money in the 1950s\u201380s and now enjoys near-free electricity forever. The UK can build publicly-backed pumped storage, SMR nuclear, and geothermal with money already being wasted in its own system \u2014 and close half the gap within 15 years. The money is there. The engineering is proven. The sites are surveyed. The only thing missing is a government willing to choose its citizens over its market ideology. Analysis compiled February 2026 \u00b7 Sources: Unite (Oct 2025), UCL Energy Institute, NESO, SSE Renewables, Ofgem, DESNZ, Scottish Renewables/BiGGAR Economics, Cornwall Trade & Investment, Rolls-Royce SMR, Octopus Energy, FTI Consulting, RenewableUK, IHA, World Nuclear Association, Fervo Energy Figures represent best estimates from published sources. Ranges reflect uncertainty in projections. Not financial advice.";
+
+var isOpen = false;
+
+window.toggleAI = function() {
+  isOpen = !isOpen;
+  document.getElementById('ai-expanded').style.display = isOpen ? 'block' : 'none';
+  document.getElementById('ai-toggle-icon').textContent = isOpen ? '▼' : '▲';
+  document.getElementById('ai-spacer').style.height = isOpen ? '480px' : '48px';
+  if (isOpen) {
+    var saved = localStorage.getItem('ai_key');
+    if (saved) {
+      document.getElementById('ai-key-input').value = saved;
+      document.getElementById('ai-key-status').style.display = 'inline';
+    }
+    setTimeout(function(){ document.getElementById('ai-query-input').focus(); }, 100);
+  }
+};
+
+window.saveKey = function(val) {
+  if (val.startsWith('sk-')) {
+    localStorage.setItem('ai_key', val);
+    document.getElementById('ai-key-status').style.display = 'inline';
+  }
+};
+
+window.askQuestion = function(btn) {
+  document.getElementById('ai-query-input').value = btn.textContent;
+  sendQuery();
+};
+
+window.sendQuery = function() {
+  var q = document.getElementById('ai-query-input').value.trim();
+  if (!q) return;
+
+  var key = document.getElementById('ai-key-input').value.trim()
+         || localStorage.getItem('ai_key') || '';
+
+  if (!key || !key.startsWith('sk-')) {
+    showResponse(q, null, 'Please enter your Anthropic API key above to use the AI query feature. Get one free at console.anthropic.com');
+    return;
+  }
+
+  document.getElementById('ai-query-input').value = '';
+  document.getElementById('ai-send-btn').disabled = true;
+
+  showThinking(q);
+
+  fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 600,
+      system: 'You are an expert analyst answering questions about the following document. Answer concisely and directly — 2 to 4 short paragraphs maximum. Ground every answer in the document content. If the document does not contain enough information to answer, say so briefly and offer what context you can.\n\nDOCUMENT:\n' + DOC_CONTEXT,
+      messages: [{ role: 'user', content: q }]
+    })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(data) {
+    document.getElementById('ai-send-btn').disabled = false;
+    var text = (data.content && data.content[0] && data.content[0].text)
+      ? data.content[0].text
+      : (data.error ? data.error.message : 'No response received.');
+    showResponse(q, text, null);
+  })
+  .catch(function(err) {
+    document.getElementById('ai-send-btn').disabled = false;
+    showResponse(q, null, 'Request failed: ' + err.message + '. Check your API key and internet connection.');
+  });
+};
+
+function showThinking(q) {
+  var area = document.getElementById('ai-response-inner');
+  var entry = document.createElement('div');
+  entry.id = 'ai-thinking-entry';
+  entry.style.cssText = 'border-left:2px solid #f59e0b;padding:12px 16px;margin-bottom:12px;background:#111827;border-radius:0 4px 4px 0;';
+  entry.innerHTML = '<div class="ai-q">' + escHtml(q) + '</div>' +
+    '<div class="ai-thinking"><div class="ai-dot-anim"><span></span><span></span><span></span></div> Thinking…</div>';
+  area.insertBefore(entry, area.firstChild);
+  scrollToResponse();
+}
+
+function showResponse(q, answer, err) {
+  var old = document.getElementById('ai-thinking-entry');
+  if (old) old.remove();
+
+  var area = document.getElementById('ai-response-inner');
+  var entry = document.createElement('div');
+  entry.style.cssText = 'border-left:2px solid #f59e0b;padding:12px 16px;margin-bottom:12px;background:#111827;border-radius:0 4px 4px 0;';
+
+  var body = err
+    ? '<div class="ai-err">⚠ ' + escHtml(err) + '</div>'
+    : '<div class="ai-a">' + formatAnswer(answer) + '</div>';
+
+  entry.innerHTML = '<div class="ai-q">' + escHtml(q) + '</div>' + body;
+  area.insertBefore(entry, area.firstChild);
+  scrollToResponse();
+}
+
+function formatAnswer(text) {
+  return text.split('\n\n').map(function(p) {
+    return '<p>' + escHtml(p.trim()).replace(/\n/g, '<br>') + '</p>';
+  }).join('');
+}
+
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+function scrollToResponse() {
+  var area = document.getElementById('ai-response-area');
+  area.scrollTop = 0;
+}
+
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,3573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signal Engine · Insight & Forecast</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080b12;
+  --surface: #0e1420;
+  --surface2: #141a28;
+  --border: #1e2a3a;
+  --border2: #243040;
+  --accent: #00c9a7;
+  --accent2: #0090ff;
+  --accent3: #f59e0b;
+  --accent4: #e040fb;
+  --text: #e8eef8;
+  --text2: #8a9bb8;
+  --text3: #4a5a72;
+  --red: #ff4d6d;
+  --green: #00c9a7;
+  --yellow: #f59e0b;
+  --font-head: 'Syne', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --font-body: 'Inter', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 13px;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── TOPBAR ─────────────────────────────── */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0 20px;
+  height: 48px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.logo {
+  font-family: var(--font-head);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+  margin-right: 32px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+
+.module-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--accent3);
+  background: rgba(245,158,11,0.1);
+  border: 1px solid rgba(245,158,11,0.25);
+  border-radius: 3px;
+  padding: 2px 7px;
+  margin-right: 24px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 0;
+  height: 100%;
+}
+
+.nav-tab {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 18px;
+  height: 100%;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text3);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  letter-spacing: 0.02em;
+}
+
+.nav-tab:hover { color: var(--text2); }
+.nav-tab.active { color: var(--text); border-bottom-color: var(--accent); }
+
+.nav-tab svg { width: 14px; height: 14px; opacity: 0.7; }
+.nav-tab.active svg { opacity: 1; }
+
+.topbar-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pulse-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 0 var(--accent);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(0,201,167,0.4); }
+  70% { box-shadow: 0 0 0 6px rgba(0,201,167,0); }
+  100% { box-shadow: 0 0 0 0 rgba(0,201,167,0); }
+}
+
+.timestamp {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text3);
+}
+
+/* ─── MAIN ───────────────────────────────── */
+.main { flex: 1; overflow: hidden; position: relative; }
+.page { display: none; height: 100%; }
+.page.active { display: flex; }
+
+/* ═══════════════════════════════════════════
+   ACCOUNTS PAGE
+═══════════════════════════════════════════ */
+#page-accounts {
+  flex-direction: row;
+}
+
+.industry-sidebar {
+  width: 200px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.sidebar-header {
+  padding: 16px 16px 10px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--text3);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.industry-list {
+  padding: 8px 0;
+  flex: 1;
+}
+
+.industry-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+  border-left: 2px solid transparent;
+}
+
+.industry-item:hover { background: var(--surface2); color: var(--text); }
+.industry-item.active {
+  background: rgba(0,201,167,0.08);
+  border-left-color: var(--accent);
+  color: var(--accent);
+}
+
+.industry-icon {
+  width: 26px; height: 26px;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.industry-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: inherit;
+  flex: 1;
+}
+
+.industry-count {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text3);
+}
+
+.industry-item.active .industry-count { color: var(--accent); opacity: 0.7; }
+
+/* accounts main */
+.accounts-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.accounts-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+.accounts-title {
+  font-family: var(--font-head);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.accounts-subtitle {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text3);
+  margin-left: auto;
+}
+
+.accounts-grid-wrap {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.accounts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 12px;
+}
+
+.account-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 12px 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.account-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0,201,167,0.04), transparent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.account-card:hover {
+  border-color: var(--accent);
+  background: var(--surface2);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+.account-card:hover::after { opacity: 1; }
+
+.account-logo {
+  width: 48px; height: 48px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  font-family: var(--font-head);
+  flex-shrink: 0;
+}
+
+.account-name {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text);
+  text-align: center;
+  line-height: 1.3;
+}
+
+.account-tier {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.tier-1 { background: rgba(0,201,167,0.12); color: var(--accent); }
+.tier-2 { background: rgba(0,144,255,0.12); color: var(--accent2); }
+.tier-3 { background: rgba(245,158,11,0.12); color: var(--accent3); }
+
+.account-signal {
+  position: absolute;
+  top: 8px; right: 8px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+}
+
+.signal-hot { background: var(--red); box-shadow: 0 0 6px var(--red); }
+.signal-warm { background: var(--accent3); box-shadow: 0 0 6px var(--accent3); }
+.signal-cold { background: var(--text3); }
+
+/* account modal */
+.account-modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(8,11,18,0.85);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+.account-modal-overlay.open { display: flex; }
+
+.account-modal {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  width: 560px;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 28px;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  cursor: pointer;
+  color: var(--text3);
+  font-size: 18px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+.modal-close:hover { color: var(--text); }
+
+.modal-header { display: flex; gap: 16px; align-items: flex-start; margin-bottom: 20px; }
+.modal-logo { width: 56px; height: 56px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-family: var(--font-head); font-weight: 700; flex-shrink: 0; }
+.modal-name { font-family: var(--font-head); font-size: 20px; font-weight: 700; }
+.modal-sector { font-size: 12px; color: var(--text2); margin-top: 3px; }
+
+.modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+.modal-stat { background: var(--bg); border-radius: 8px; padding: 12px 14px; }
+.modal-stat-label { font-family: var(--font-mono); font-size: 9px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 5px; }
+.modal-stat-value { font-family: var(--font-head); font-size: 16px; font-weight: 700; color: var(--text); }
+.modal-stat-value.green { color: var(--green); }
+.modal-stat-value.amber { color: var(--accent3); }
+
+.modal-section-title { font-family: var(--font-mono); font-size: 9px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
+.modal-signals { display: flex; flex-direction: column; gap: 6px; }
+.modal-signal-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 12px; background: var(--bg); border-radius: 6px; font-size: 12px; line-height: 1.5; color: var(--text2); }
+.modal-signal-dot { width: 6px; height: 6px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+
+/* ═══════════════════════════════════════════
+   MARKET PAGE
+═══════════════════════════════════════════ */
+#page-market {
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.market-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 14px 20px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.market-title { font-family: var(--font-head); font-size: 15px; font-weight: 700; }
+.market-subtitle { font-family: var(--font-mono); font-size: 10px; color: var(--text3); }
+
+.market-segment-tabs {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.seg-tab {
+  padding: 5px 12px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  border-radius: 4px;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text3);
+  background: transparent;
+  border: 1px solid var(--border);
+  transition: all 0.15s;
+}
+
+.seg-tab:hover { color: var(--text2); border-color: var(--border2); }
+.seg-tab.active { background: rgba(0,201,167,0.12); color: var(--accent); border-color: rgba(0,201,167,0.3); }
+
+.market-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 0;
+  overflow: hidden;
+}
+
+.market-panel {
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.market-panel:nth-child(2) { border-right: none; }
+.market-panel:nth-child(3) { border-bottom: none; }
+.market-panel:nth-child(4) { border-right: none; border-bottom: none; }
+
+.panel-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--text3);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel-label-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+.panel-title { font-family: var(--font-head); font-size: 13px; font-weight: 700; margin-bottom: 14px; }
+
+/* supply demand chart */
+.sd-chart {
+  flex: 1;
+  position: relative;
+  min-height: 0;
+}
+
+.sd-chart svg { width: 100%; height: 100%; }
+
+/* kpi row */
+.kpi-row { display: flex; gap: 10px; margin-bottom: 14px; }
+.kpi-box {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 10px 12px;
+}
+.kpi-label { font-family: var(--font-mono); font-size: 8px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 5px; }
+.kpi-val { font-family: var(--font-head); font-size: 18px; font-weight: 800; }
+.kpi-change { font-family: var(--font-mono); font-size: 9px; margin-top: 2px; }
+.up { color: var(--green); }
+.down { color: var(--red); }
+.neutral { color: var(--accent3); }
+
+/* forecast bars */
+.forecast-bars { flex: 1; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; }
+.forecast-row { display: grid; grid-template-columns: 60px 1fr 50px; gap: 10px; align-items: center; }
+.forecast-year { font-family: var(--font-mono); font-size: 10px; color: var(--text3); }
+.forecast-bar-wrap { height: 8px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+.forecast-bar { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
+.forecast-val { font-family: var(--font-mono); font-size: 10px; color: var(--text2); text-align: right; }
+.forecast-row.current .forecast-year { color: var(--accent); }
+.forecast-row.current .forecast-bar { box-shadow: 0 0 8px currentColor; }
+
+/* movers table */
+.movers-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.movers-table th { font-family: var(--font-mono); font-size: 8px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; text-align: left; padding: 4px 8px 8px; border-bottom: 1px solid var(--border); }
+.movers-table td { padding: 7px 8px; border-bottom: 1px solid rgba(30,42,58,0.5); vertical-align: middle; }
+.movers-table tr:last-child td { border-bottom: none; }
+.movers-table tr:hover td { background: var(--surface2); }
+
+.trend-spark { display: flex; gap: 2px; align-items: flex-end; height: 18px; }
+.spark-bar { width: 4px; border-radius: 1px; }
+
+/* signals feed */
+.signals-feed { flex: 1; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
+.signal-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-left: 3px solid transparent;
+  border-radius: 6px;
+  padding: 10px 12px;
+  transition: border-color 0.15s;
+}
+.signal-card:hover { border-color: var(--border2); border-left-color: inherit; }
+.signal-card.bull { border-left-color: var(--green); }
+.signal-card.bear { border-left-color: var(--red); }
+.signal-card.neutral-sig { border-left-color: var(--accent3); }
+.signal-date { font-family: var(--font-mono); font-size: 9px; color: var(--text3); margin-bottom: 4px; }
+.signal-text { font-size: 11px; color: var(--text2); line-height: 1.5; }
+.signal-tags { display: flex; gap: 5px; margin-top: 6px; flex-wrap: wrap; }
+.signal-tag { font-family: var(--font-mono); font-size: 9px; padding: 1px 5px; border-radius: 3px; background: var(--surface); color: var(--text3); }
+
+/* ═══════════════════════════════════════════
+   TECHNOLOGIES PAGE
+═══════════════════════════════════════════ */
+#page-tech {
+  flex-direction: row;
+}
+
+.tech-nav {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.tech-nav-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.tech-nav-title { font-family: var(--font-head); font-size: 12px; font-weight: 700; margin-bottom: 10px; }
+
+.hierarchy-selector { display: flex; gap: 3px; }
+.h-btn {
+  flex: 1;
+  padding: 5px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+  border: 1px solid var(--border);
+  color: var(--text3);
+  background: transparent;
+  transition: all 0.15s;
+}
+.h-btn:hover { color: var(--text2); }
+.h-btn.active { background: rgba(0,201,167,0.12); color: var(--accent); border-color: rgba(0,201,167,0.3); }
+
+.tech-nav-list { flex: 1; overflow-y: auto; padding: 6px 0; }
+
+.tech-nav-group-header {
+  padding: 8px 16px 4px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 500;
+  color: var(--text3);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.tech-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+  border-left: 2px solid transparent;
+}
+
+.tech-nav-item:hover { background: var(--surface2); color: var(--text); }
+.tech-nav-item.active { background: rgba(0,201,167,0.07); border-left-color: var(--accent); color: var(--accent); }
+
+.tech-nav-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.tech-nav-label { font-size: 11px; font-weight: 500; color: inherit; flex: 1; }
+.tech-trl-badge {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  padding: 1px 4px;
+  border-radius: 3px;
+  color: var(--text3);
+  background: var(--surface2);
+}
+
+/* tech main */
+.tech-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.tech-hero {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+.tech-hero-top { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; }
+.tech-hero-name { font-family: var(--font-head); font-size: 20px; font-weight: 800; flex: 1; }
+.tech-hero-meta { display: flex; gap: 8px; align-items: center; margin-top: 5px; flex-wrap: wrap; }
+.tech-badge { font-family: var(--font-mono); font-size: 9px; padding: 3px 8px; border-radius: 4px; letter-spacing: 0.06em; text-transform: uppercase; }
+
+.trl-meter {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  padding: 10px 0;
+}
+.trl-block {
+  height: 8px;
+  flex: 1;
+  border-radius: 2px;
+  background: var(--surface2);
+  transition: background 0.3s;
+  position: relative;
+}
+.trl-block.filled { background: var(--accent); }
+.trl-block.filled.mid { background: var(--accent3); }
+.trl-block.filled.low { background: var(--red); opacity: 0.6; }
+.trl-label { font-family: var(--font-mono); font-size: 9px; color: var(--text3); margin-left: 8px; min-width: 40px; }
+
+/* trl overview grid */
+.trl-overview {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+}
+
+.trl-section {
+  margin-bottom: 28px;
+  display: none;
+}
+.trl-section.visible { display: block; }
+
+.trl-section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.trl-group-name { font-family: var(--font-head); font-size: 14px; font-weight: 700; }
+.trl-range-badge { font-family: var(--font-mono); font-size: 9px; padding: 2px 8px; border-radius: 3px; }
+
+.trl-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+
+.trl-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.trl-card:hover { border-color: var(--border2); background: var(--surface2); transform: translateY(-1px); }
+.trl-card.selected { border-color: var(--accent); background: rgba(0,201,167,0.05); }
+
+.trl-card-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+.trl-card-icon { width: 32px; height: 32px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+.trl-card-name { font-family: var(--font-head); font-size: 12px; font-weight: 700; line-height: 1.3; flex: 1; }
+.trl-card-trl { font-family: var(--font-mono); font-size: 9px; color: var(--text3); margin-top: 2px; }
+
+.trl-card-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.tcm-item { background: var(--bg); border-radius: 5px; padding: 7px 9px; }
+.tcm-label { font-family: var(--font-mono); font-size: 8px; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; }
+.tcm-val { font-family: var(--font-head); font-size: 13px; font-weight: 700; margin-top: 2px; }
+
+.trl-card-dev { font-size: 11px; color: var(--text2); line-height: 1.5; margin-bottom: 8px; }
+.trl-card-ties { display: flex; gap: 5px; flex-wrap: wrap; }
+.tie-chip { font-family: var(--font-mono); font-size: 9px; padding: 2px 7px; border-radius: 3px; background: rgba(0,144,255,0.1); color: var(--accent2); border: 1px solid rgba(0,144,255,0.2); }
+
+/* ═══════════════════════════════════════════
+   REGULATIONS PAGE
+═══════════════════════════════════════════ */
+#page-regs {
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.regs-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.regs-title { font-family: var(--font-head); font-size: 15px; font-weight: 700; }
+
+.regs-filter-row { display: flex; gap: 6px; margin-left: auto; }
+.regs-filter {
+  padding: 4px 10px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  color: var(--text3);
+  background: transparent;
+  transition: all 0.15s;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.regs-filter.active { background: rgba(245,158,11,0.12); color: var(--accent3); border-color: rgba(245,158,11,0.3); }
+.regs-filter:hover { color: var(--text2); }
+
+.regs-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  overflow: hidden;
+}
+
+.regs-timeline-wrap {
+  overflow-y: auto;
+  padding: 24px 24px 24px 28px;
+  border-right: 1px solid var(--border);
+}
+
+.timeline-year-group { margin-bottom: 28px; }
+.timeline-year-label {
+  font-family: var(--font-head);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text3);
+  letter-spacing: 0.08em;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.timeline-year-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+.timeline-entries { display: flex; flex-direction: column; gap: 0; position: relative; }
+.timeline-entries::before {
+  content: '';
+  position: absolute;
+  left: 14px;
+  top: 0; bottom: 0;
+  width: 1px;
+  background: var(--border);
+}
+
+.timeline-entry {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  gap: 0 14px;
+  padding-bottom: 18px;
+  cursor: pointer;
+}
+
+.timeline-node-wrap { display: flex; flex-direction: column; align-items: center; }
+.timeline-node {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  margin-top: 4px;
+  flex-shrink: 0;
+  border: 2px solid var(--bg);
+  position: relative;
+  z-index: 1;
+}
+.timeline-node.critical { background: var(--red); box-shadow: 0 0 8px rgba(255,77,109,0.5); }
+.timeline-node.major { background: var(--accent3); box-shadow: 0 0 6px rgba(245,158,11,0.4); }
+.timeline-node.watch { background: var(--accent2); }
+.timeline-node.passed { background: var(--text3); }
+
+.timeline-content {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  transition: all 0.15s;
+  margin-bottom: 4px;
+}
+.timeline-content:hover { border-color: var(--border2); background: var(--surface2); }
+.timeline-entry.selected .timeline-content { border-color: var(--accent3); background: rgba(245,158,11,0.05); }
+
+.reg-name { font-family: var(--font-head); font-size: 12px; font-weight: 700; margin-bottom: 4px; }
+.reg-meta { display: flex; gap: 8px; align-items: center; margin-bottom: 7px; flex-wrap: wrap; }
+.reg-badge { font-family: var(--font-mono); font-size: 8px; padding: 2px 6px; border-radius: 3px; letter-spacing: 0.06em; text-transform: uppercase; }
+.reg-badge.critical { background: rgba(255,77,109,0.12); color: var(--red); }
+.reg-badge.major { background: rgba(245,158,11,0.12); color: var(--accent3); }
+.reg-badge.watch { background: rgba(0,144,255,0.12); color: var(--accent2); }
+.reg-badge.passed { background: rgba(74,90,114,0.3); color: var(--text3); }
+.reg-geo { font-family: var(--font-mono); font-size: 9px; color: var(--text3); }
+.reg-summary { font-size: 11px; color: var(--text2); line-height: 1.5; }
+
+.reg-effects { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.reg-effect-chip {
+  display: flex; align-items: center; gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  padding: 2px 7px;
+  border-radius: 3px;
+}
+.effect-positive { background: rgba(0,201,167,0.1); color: var(--green); }
+.effect-negative { background: rgba(255,77,109,0.1); color: var(--red); }
+.effect-neutral { background: rgba(245,158,11,0.1); color: var(--accent3); }
+
+/* regs sidebar */
+.regs-sidebar {
+  overflow-y: auto;
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+}
+
+.regs-sidebar-section {
+  padding: 18px 18px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.rss-title { font-family: var(--font-mono); font-size: 9px; color: var(--text3); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 12px; }
+
+.impact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 4px; }
+.impact-box { background: var(--bg); border-radius: 6px; padding: 10px 12px; }
+.impact-box-label { font-family: var(--font-mono); font-size: 8px; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 5px; }
+.impact-box-val { font-family: var(--font-head); font-size: 16px; font-weight: 800; }
+
+.exposure-list { display: flex; flex-direction: column; gap: 6px; }
+.exposure-item { display: flex; align-items: center; gap: 10px; }
+.exposure-entity { font-size: 11px; color: var(--text2); flex: 1; }
+.exposure-bar-wrap { width: 80px; height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
+.exposure-bar { height: 100%; border-radius: 2px; }
+.exposure-level { font-family: var(--font-mono); font-size: 9px; color: var(--text3); min-width: 24px; text-align: right; }
+
+.countdown-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(30,42,58,0.5); }
+.countdown-item:last-child { border-bottom: none; }
+.countdown-name { font-size: 11px; color: var(--text2); flex: 1; }
+.countdown-days {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* ─── SCROLLBARS ─────────────────────────── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+
+/* ─── UTILITY ─────────────────────────────── */
+.flex-center { display: flex; align-items: center; justify-content: center; }
+.gap-8 { gap: 8px; }
+
+/* ══════════════════════════════════════════════
+   AI PANEL
+══════════════════════════════════════════════ */
+
+/* shift main content when panel is open */
+.main { transition: margin-right 0.35s cubic-bezier(0.4,0,0.2,1); }
+.main.panel-open { margin-right: 420px; }
+
+.ai-toggle-btn {
+  display: flex; align-items: center; gap: 7px;
+  padding: 6px 14px;
+  background: linear-gradient(135deg, rgba(0,201,167,0.12), rgba(0,144,255,0.08));
+  border: 1px solid rgba(0,201,167,0.3);
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--accent);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.ai-toggle-btn:hover { background: rgba(0,201,167,0.18); border-color: rgba(0,201,167,0.5); }
+.ai-toggle-btn.active { background: rgba(0,201,167,0.2); border-color: var(--accent); box-shadow: 0 0 12px rgba(0,201,167,0.2); }
+.ai-toggle-btn svg { width: 13px; height: 13px; }
+
+/* sparkle icon animation */
+.ai-toggle-btn .ai-spark {
+  display: inline-block;
+  animation: sparkle 2.5s ease-in-out infinite;
+}
+@keyframes sparkle {
+  0%,100% { opacity:1; transform:scale(1) rotate(0deg); }
+  50% { opacity:0.7; transform:scale(1.2) rotate(15deg); }
+}
+
+/* api key bar */
+.ai-key-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: rgba(0,0,0,0.2);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.ai-key-bar-label {
+  display: flex; align-items: center; gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.ai-key-input-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 4px 8px;
+  transition: border-color 0.15s;
+}
+.ai-key-input-wrap:focus-within { border-color: var(--accent); }
+.ai-key-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text2);
+  min-width: 0;
+}
+.ai-key-input::placeholder { color: var(--text3); }
+.ai-key-status {
+  display: flex; align-items: center; gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text3);
+  white-space: nowrap;
+}
+.ai-key-dot {
+  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+}
+.ai-key-dot.unset  { background: var(--text3); }
+.ai-key-dot.set    { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+.ai-key-dot.error  { background: var(--red); box-shadow: 0 0 6px var(--red); }
+
+/* panel */
+.ai-panel {
+  position: fixed;
+  top: 48px; right: 0; bottom: 0;
+  width: 420px;
+  background: var(--surface);
+  border-left: 1px solid var(--border2);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+  z-index: 50;
+  overflow: hidden;
+}
+.ai-panel.open { transform: translateX(0); }
+
+/* panel header */
+.ai-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  background: linear-gradient(135deg, rgba(0,201,167,0.05), transparent);
+}
+
+.ai-panel-title {
+  font-family: var(--font-head);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  flex: 1;
+}
+
+.ai-panel-ctx {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text3);
+  padding: 2px 7px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-panel-close {
+  cursor: pointer;
+  color: var(--text3);
+  font-size: 16px;
+  line-height: 1;
+  transition: color 0.15s;
+  padding: 2px 4px;
+}
+.ai-panel-close:hover { color: var(--text); }
+
+/* mode tabs */
+.ai-modes {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.ai-mode-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 4px 9px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+  color: var(--text3);
+}
+.ai-mode-tab:hover { color: var(--text2); background: var(--surface2); }
+.ai-mode-tab.active { color: var(--accent); border-bottom-color: var(--accent); background: rgba(0,201,167,0.05); }
+.ai-mode-tab svg { width: 14px; height: 14px; }
+.ai-mode-tab-label { font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.06em; text-transform: uppercase; }
+
+/* quick actions */
+.ai-quick-actions {
+  padding: 12px 14px 8px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.ai-qa-label {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--text3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.ai-qa-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.ai-qa-chip {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  padding: 4px 9px;
+  border-radius: 4px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.ai-qa-chip:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,201,167,0.07); }
+
+/* output area */
+.ai-output-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ai-output-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 12px;
+  color: var(--text3);
+}
+
+.ai-output-empty-icon {
+  font-size: 32px;
+  opacity: 0.4;
+}
+
+.ai-output-empty-text {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* message bubbles */
+.ai-msg {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ai-msg-role {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0 2px;
+}
+.ai-msg.user .ai-msg-role { color: var(--accent2); }
+.ai-msg.assistant .ai-msg-role { color: var(--accent); }
+
+.ai-msg-bubble {
+  padding: 10px 13px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--text2);
+}
+.ai-msg.user .ai-msg-bubble { background: rgba(0,144,255,0.08); border: 1px solid rgba(0,144,255,0.15); color: var(--text); }
+.ai-msg.assistant .ai-msg-bubble { background: var(--surface2); border: 1px solid var(--border); }
+
+/* markdown in output */
+.ai-msg-bubble h2 { font-family: var(--font-head); font-size: 13px; font-weight: 700; color: var(--text); margin: 12px 0 6px; }
+.ai-msg-bubble h3 { font-family: var(--font-head); font-size: 11px; font-weight: 700; color: var(--accent); margin: 10px 0 5px; text-transform: uppercase; letter-spacing: 0.04em; }
+.ai-msg-bubble strong { color: var(--text); font-weight: 600; }
+.ai-msg-bubble em { color: var(--accent3); font-style: normal; }
+.ai-msg-bubble ul { padding-left: 14px; margin: 6px 0; }
+.ai-msg-bubble li { margin-bottom: 3px; color: var(--text2); }
+.ai-msg-bubble p { margin-bottom: 8px; }
+.ai-msg-bubble p:last-child { margin-bottom: 0; }
+.ai-msg-bubble code { font-family: var(--font-mono); font-size: 10px; background: var(--bg); padding: 1px 5px; border-radius: 3px; color: var(--accent3); }
+.ai-msg-bubble hr { border: none; border-top: 1px solid var(--border); margin: 10px 0; }
+
+/* score cards */
+.ai-score-card {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-bottom: 5px;
+}
+.ai-score-rank { font-family: var(--font-head); font-size: 14px; font-weight: 800; color: var(--text3); width: 20px; text-align: center; flex-shrink: 0; }
+.ai-score-name { flex: 1; font-size: 12px; color: var(--text); }
+.ai-score-bar-wrap { width: 60px; height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
+.ai-score-bar { height: 100%; border-radius: 2px; }
+.ai-score-val { font-family: var(--font-mono); font-size: 10px; font-weight: 500; min-width: 28px; text-align: right; }
+
+/* loading / streaming */
+.ai-loading {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 13px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--accent);
+}
+.ai-loading-dots { display: flex; gap: 4px; }
+.ai-loading-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--accent);
+  animation: loadBounce 1.2s ease-in-out infinite;
+}
+.ai-loading-dot:nth-child(2) { animation-delay: 0.2s; }
+.ai-loading-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes loadBounce {
+  0%,60%,100% { transform: translateY(0); opacity:0.4; }
+  30% { transform: translateY(-5px); opacity:1; }
+}
+
+/* cursor blink during streaming */
+.ai-cursor {
+  display: inline-block;
+  width: 2px; height: 12px;
+  background: var(--accent);
+  margin-left: 2px;
+  vertical-align: middle;
+  animation: cursorBlink 0.8s ease-in-out infinite;
+}
+@keyframes cursorBlink { 0%,100% { opacity:1; } 50% { opacity:0; } }
+
+/* input bar */
+.ai-input-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 12px 14px;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+.ai-input {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--text);
+  resize: none;
+  min-height: 36px;
+  max-height: 120px;
+  outline: none;
+  transition: border-color 0.15s;
+  line-height: 1.5;
+}
+.ai-input:focus { border-color: var(--accent); }
+.ai-input::placeholder { color: var(--text3); }
+
+.ai-send-btn {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--accent), #00a085);
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  color: #080b12;
+}
+.ai-send-btn:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(0,201,167,0.4); }
+.ai-send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.ai-send-btn svg { width: 15px; height: 15px; }
+
+/* clear btn */
+.ai-clear-btn {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text3);
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.15s;
+  letter-spacing: 0.06em;
+}
+.ai-clear-btn:hover { color: var(--red); }
+
+
+/* ══════════════════════════════════════════════
+   WEAK SIGNALS MODULE
+══════════════════════════════════════════════ */
+
+/* Nav mode toggle */
+.tech-nav-mode {
+  display: flex;
+  gap: 3px;
+  margin-top: 8px;
+}
+
+.tech-nav-mode-btn {
+  flex: 1;
+  padding: 5px 4px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+  border: 1px solid var(--border);
+  color: var(--text3);
+  background: transparent;
+  transition: all 0.15s;
+  text-transform: uppercase;
+}
+.tech-nav-mode-btn:hover { color: var(--text2); }
+.tech-nav-mode-btn.active-trl { background: rgba(0,201,167,0.12); color: var(--accent); border-color: rgba(0,201,167,0.3); }
+.tech-nav-mode-btn.active-ws  { background: rgba(255,77,109,0.12); color: var(--red); border-color: rgba(255,77,109,0.3); }
+
+/* WS category nav items */
+.ws-nav-cat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+  border-left: 2px solid transparent;
+}
+.ws-nav-cat:hover { background: var(--surface2); }
+.ws-nav-cat.active { background: rgba(255,77,109,0.07); border-left-color: var(--red); }
+
+.ws-nav-cat-icon { font-size: 13px; width: 20px; text-align: center; }
+.ws-nav-cat-label { font-size: 11px; font-weight: 500; color: var(--text2); flex: 1; }
+.ws-nav-cat.active .ws-nav-cat-label { color: var(--red); }
+.ws-nav-cat-count {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: var(--surface2);
+  color: var(--text3);
+}
+.ws-nav-cat.active .ws-nav-cat-count { background: rgba(255,77,109,0.15); color: var(--red); }
+
+/* WS main content */
+.ws-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* WFM pipeline bar */
+.wfm-pipeline {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  padding: 0 20px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.wfm-stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 8px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-bottom: 2px solid transparent;
+}
+.wfm-stage:hover { background: var(--surface2); }
+.wfm-stage.active { border-bottom-color: var(--red); background: rgba(255,77,109,0.05); }
+.wfm-stage:not(:last-child)::after {
+  content: '›';
+  position: absolute;
+  right: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text3);
+  font-size: 14px;
+  z-index: 1;
+}
+
+.wfm-stage-letter {
+  font-family: var(--font-head);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--red);
+  margin-bottom: 2px;
+}
+.wfm-stage.active .wfm-stage-letter { color: var(--red); }
+
+.wfm-stage-label {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--text3);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.3;
+}
+.wfm-stage.active .wfm-stage-label { color: var(--text2); }
+
+.wfm-stage-count {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text3);
+  margin-top: 3px;
+}
+
+/* stage detail panel */
+.wfm-stage-detail {
+  display: none;
+  background: rgba(255,77,109,0.04);
+  border-bottom: 1px solid rgba(255,77,109,0.15);
+  padding: 10px 20px;
+  flex-shrink: 0;
+}
+.wfm-stage-detail.visible { display: block; }
+.wfm-detail-text {
+  font-size: 11px;
+  color: var(--text2);
+  line-height: 1.6;
+}
+.wfm-detail-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
+.wfm-detail-tag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  padding: 2px 7px;
+  border-radius: 3px;
+  background: rgba(255,77,109,0.1);
+  color: var(--red);
+  border: 1px solid rgba(255,77,109,0.2);
+}
+
+/* signal cards area */
+.ws-cards-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+}
+
+.ws-section-hdr {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.ws-section-title { font-family: var(--font-head); font-size: 13px; font-weight: 700; flex: 1; }
+.ws-section-sub { font-family: var(--font-mono); font-size: 9px; color: var(--text3); }
+
+/* Signal card */
+.ws-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--red);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+.ws-card:hover { border-color: var(--border2); border-left-color: var(--red); background: var(--surface2); }
+.ws-card.ws-cross { border-left-color: var(--accent3); }
+.ws-card.ws-cross:hover { border-left-color: var(--accent3); }
+.ws-card.accepted { border-left-color: var(--accent); }
+.ws-card.watching { border-left-color: var(--accent2); }
+.ws-card.rejected { opacity: 0.45; border-left-color: var(--text3); }
+
+.ws-card-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+.ws-card-icon {
+  width: 34px; height: 34px;
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.ws-card-meta { flex: 1; }
+.ws-card-name { font-family: var(--font-head); font-size: 12px; font-weight: 700; margin-bottom: 4px; }
+.ws-card-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+.ws-tag { font-family: var(--font-mono); font-size: 8px; padding: 2px 5px; border-radius: 3px; }
+.ws-tag-trl { background: rgba(255,77,109,0.1); color: var(--red); }
+.ws-tag-cross { background: rgba(245,158,11,0.1); color: var(--accent3); }
+.ws-tag-sector { background: rgba(0,144,255,0.1); color: var(--accent2); }
+
+/* validation badge */
+.ws-validation-badge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.vb-unreviewed { background: var(--surface2); color: var(--text3); border: 1px solid var(--border); }
+.vb-watching   { background: rgba(0,144,255,0.1); color: var(--accent2); border: 1px solid rgba(0,144,255,0.25); }
+.vb-accepted   { background: rgba(0,201,167,0.1); color: var(--accent); border: 1px solid rgba(0,201,167,0.25); }
+.vb-rejected   { background: rgba(74,90,114,0.2); color: var(--text3); border: 1px solid var(--border); }
+
+/* bubble effect row */
+.ws-bubble-row {
+  display: grid;
+  grid-template-columns: repeat(5,1fr);
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.ws-bubble-item { background: var(--bg); border-radius: 5px; padding: 6px 8px; }
+.ws-bubble-label { font-family: var(--font-mono); font-size: 7px; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
+.ws-bubble-bar { height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
+.ws-bubble-fill { height: 100%; border-radius: 2px; }
+.ws-bubble-val { font-family: var(--font-mono); font-size: 9px; font-weight: 500; margin-top: 3px; }
+
+/* scoring row */
+.ws-score-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.ws-score-panel { background: var(--bg); border-radius: 6px; padding: 8px 10px; }
+.ws-score-panel-title { font-family: var(--font-mono); font-size: 8px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+.ws-score-item { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; }
+.ws-score-item:last-child { margin-bottom: 0; }
+.ws-score-dim { font-size: 10px; color: var(--text2); flex: 1; }
+.ws-score-dots { display: flex; gap: 2px; }
+.ws-score-dot { width: 7px; height: 7px; border-radius: 50%; }
+.ws-score-dot.filled-out { background: var(--accent3); }
+.ws-score-dot.filled-in  { background: var(--accent); }
+.ws-score-dot.empty      { background: var(--surface2); }
+.ws-score-num { font-family: var(--font-mono); font-size: 9px; color: var(--text3); min-width: 18px; text-align: right; }
+
+/* trigger point */
+.ws-trigger {
+  background: rgba(245,158,11,0.05);
+  border: 1px solid rgba(245,158,11,0.2);
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-bottom: 10px;
+}
+.ws-trigger-label { font-family: var(--font-mono); font-size: 8px; color: var(--accent3); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+.ws-trigger-text { font-size: 11px; color: var(--text2); line-height: 1.5; }
+
+/* action buttons */
+.ws-actions { display: flex; gap: 6px; }
+.ws-action-btn {
+  flex: 1;
+  padding: 6px 10px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  border: 1px solid var(--border);
+  color: var(--text3);
+  background: var(--surface2);
+  transition: all 0.15s;
+}
+.ws-action-btn:hover { color: var(--text2); border-color: var(--border2); }
+.ws-action-btn.btn-accept:hover { background: rgba(0,201,167,0.12); color: var(--accent); border-color: rgba(0,201,167,0.3); }
+.ws-action-btn.btn-watch:hover  { background: rgba(0,144,255,0.12); color: var(--accent2); border-color: rgba(0,144,255,0.3); }
+.ws-action-btn.btn-reject:hover { background: rgba(74,90,114,0.15); color: var(--text3); }
+.ws-action-btn.is-active-accept { background: rgba(0,201,167,0.12); color: var(--accent); border-color: rgba(0,201,167,0.3); }
+.ws-action-btn.is-active-watch  { background: rgba(0,144,255,0.12); color: var(--accent2); border-color: rgba(0,144,255,0.3); }
+.ws-action-btn.is-active-reject { background: rgba(74,90,114,0.15); color: var(--text3); }
+
+/* cross-industry source tag */
+.ws-source-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 11px;
+  color: var(--text2);
+}
+.ws-source-from { font-family: var(--font-mono); font-size: 9px; color: var(--text3); }
+.ws-source-arrow { color: var(--accent3); }
+.ws-source-to { font-family: var(--font-mono); font-size: 9px; color: var(--accent3); }
+
+/* summary banner */
+.ws-summary-bar {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+.ws-summary-stat {
+  flex: 1;
+  padding: 10px 14px;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ws-summary-stat:last-child { border-right: none; }
+.ws-stat-label { font-family: var(--font-mono); font-size: 8px; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; }
+.ws-stat-val { font-family: var(--font-head); font-size: 16px; font-weight: 800; }
+
+</style>
+</head>
+<body>
+
+<!-- ─── TOPBAR ──────────────────────────────── -->
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-dot"></div>
+    SIGNAL ENGINE
+  </div>
+  <span class="module-badge">Insight &amp; Forecast</span>
+  <nav class="nav-tabs">
+    <div class="nav-tab active" onclick="switchPage('accounts')">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-5 6s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3z"/></svg>
+      Accounts
+    </div>
+    <div class="nav-tab" onclick="switchPage('market')">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M1 11l3-4 3 2 3-5 3 3v4H1z"/><path fill-rule="evenodd" d="M0 15V1h1v14H0z"/></svg>
+      Market
+    </div>
+    <div class="nav-tab" onclick="switchPage('tech')">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M6 1h1v3H6V1zm2 0h1v3H8V1zm2 0h1v3h-1V1zM3 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H3zm0-1h10a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>
+      Technologies
+    </div>
+    <div class="nav-tab" onclick="switchPage('regs')">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zm0 2a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1h-2z"/><path d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5L9.5 0zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/></svg>
+      Regulations
+    </div>
+  </nav>
+  <div class="topbar-right">
+    <div class="pulse-dot"></div>
+    <span class="timestamp" id="ts"></span>
+    <div class="ai-toggle-btn" id="ai-toggle-btn" onclick="toggleAIPanel()">
+      <span class="ai-spark">✦</span>
+      AI Analyst
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ═══════════════════════════════════════════
+     ACCOUNTS PAGE
+═══════════════════════════════════════════ -->
+<div class="page active" id="page-accounts">
+  <aside class="industry-sidebar">
+    <div class="sidebar-header">Industries</div>
+    <div class="industry-list" id="industry-list"></div>
+  </aside>
+  <div class="accounts-main">
+    <div class="accounts-toolbar">
+      <div class="accounts-title" id="accounts-title">All Accounts</div>
+      <div class="accounts-subtitle" id="accounts-count">24 accounts</div>
+    </div>
+    <div class="accounts-grid-wrap">
+      <div class="accounts-grid" id="accounts-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     MARKET PAGE
+═══════════════════════════════════════════ -->
+<div class="page" id="page-market">
+  <div class="market-header">
+    <div>
+      <div class="market-title">Market Intelligence</div>
+      <div class="market-subtitle">Supply · Demand · Forecast · Signals</div>
+    </div>
+    <div class="market-segment-tabs" id="market-seg-tabs"></div>
+  </div>
+  <div class="market-body">
+
+    <!-- Panel 1: Supply vs Demand -->
+    <div class="market-panel">
+      <div class="panel-label"><div class="panel-label-dot" style="background:var(--accent)"></div> Supply vs Demand</div>
+      <div class="kpi-row" id="sd-kpis"></div>
+      <div class="sd-chart" id="sd-chart-wrap"></div>
+    </div>
+
+    <!-- Panel 2: 36M Forecast -->
+    <div class="market-panel">
+      <div class="panel-label"><div class="panel-label-dot" style="background:var(--accent3)"></div> 36-Month Forecast</div>
+      <div class="forecast-bars" id="forecast-bars"></div>
+    </div>
+
+    <!-- Panel 3: Market Movers -->
+    <div class="market-panel">
+      <div class="panel-label"><div class="panel-label-dot" style="background:var(--accent2)"></div> Market Movers</div>
+      <table class="movers-table" id="movers-table"></table>
+    </div>
+
+    <!-- Panel 4: Live Signals -->
+    <div class="market-panel">
+      <div class="panel-label"><div class="panel-label-dot" style="background:var(--red)"></div> Market Signals</div>
+      <div class="signals-feed" id="signals-feed"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TECHNOLOGIES PAGE
+═══════════════════════════════════════════ -->
+<div class="page" id="page-tech">
+  <div class="tech-nav">
+    <div class="tech-nav-header">
+      <div class="tech-nav-title" id="tech-nav-title">Technology Navigator</div>
+      <div class="tech-nav-mode">
+        <div class="tech-nav-mode-btn active-trl" id="mode-btn-trl" onclick="setTechViewMode('trl')">TRL View</div>
+        <div class="tech-nav-mode-btn" id="mode-btn-ws" onclick="setTechViewMode('ws')">⚡ Weak Signals</div>
+      </div>
+      <div class="hierarchy-selector" id="h-selector" style="margin-top:6px">
+        <div class="h-btn active" onclick="setHLevel('h1')">H1</div>
+        <div class="h-btn" onclick="setHLevel('h2')">H2</div>
+        <div class="h-btn" onclick="setHLevel('h3')">H3</div>
+      </div>
+    </div>
+    <div class="tech-nav-list" id="tech-nav-list"></div>
+    <div class="tech-nav-list" id="ws-nav-list" style="display:none"></div>
+  </div>
+  <div class="tech-main">
+    <div class="tech-hero" id="tech-hero">
+      <div class="tech-hero-top">
+        <div>
+          <div class="tech-hero-name" id="tech-hero-name">Select a Technology Domain</div>
+          <div class="tech-hero-meta" id="tech-hero-meta"></div>
+        </div>
+      </div>
+      <div class="trl-meter" id="trl-meter-wrap"></div>
+    </div>
+    <div class="trl-overview" id="trl-overview"></div>
+  </div>
+
+  <!-- WS main view (hidden by default) -->
+  <div class="ws-main" id="ws-main" style="display:none;">
+
+    <!-- WFM Pipeline stages -->
+    <div class="wfm-pipeline" id="wfm-pipeline"></div>
+
+    <!-- Stage detail -->
+    <div class="wfm-stage-detail" id="wfm-stage-detail"></div>
+
+    <!-- Summary bar -->
+    <div class="ws-summary-bar" id="ws-summary-bar"></div>
+
+    <!-- Signal cards -->
+    <div class="ws-cards-area" id="ws-cards-area"></div>
+
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════
+     REGULATIONS PAGE
+═══════════════════════════════════════════ -->
+<div class="page" id="page-regs">
+  <div class="regs-header">
+    <div class="regs-title">Regulatory Landscape</div>
+    <div class="regs-filter-row" id="regs-filters"></div>
+  </div>
+  <div class="regs-body">
+    <div class="regs-timeline-wrap" id="regs-timeline"></div>
+    <div class="regs-sidebar" id="regs-sidebar"></div>
+  </div>
+</div>
+
+</div><!-- end main -->
+
+<!-- Account Modal -->
+<div class="account-modal-overlay" id="account-modal" onclick="if(event.target===this)closeModal()">
+  <div class="account-modal" id="modal-content"></div>
+</div>
+
+<script>
+// ─── TIMESTAMP ────────────────────────────────────────────────
+function updateTS() {
+  const now = new Date();
+  document.getElementById('ts').textContent =
+    now.toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'}) +
+    ' · ' + now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+}
+updateTS(); setInterval(updateTS, 30000);
+
+// ─── PAGE SWITCH ──────────────────────────────────────────────
+function switchPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+// ══════════════════════════════════════════════════════════════
+//  DATA
+// ══════════════════════════════════════════════════════════════
+
+const INDUSTRIES = [
+  { id: 'all',       label: 'All Accounts',    icon: '◉',  color: '#8a9bb8', count: 24 },
+  { id: 'oil-gas',   label: 'Oil & Gas',        icon: '🛢',  color: '#f59e0b', count: 487  },
+  { id: 'energy',    label: 'Clean Energy',     icon: '⚡', color: '#00c9a7', count: 4  },
+  { id: 'auto',      label: 'Automotive',       icon: '🚗', color: '#0090ff', count: 1165  },
+  { id: 'chem',      label: 'Chemicals',        icon: '⚗',  color: '#e040fb', count: 3  },
+  { id: 'mining',    label: 'Mining & Materials',icon: '⛏', color: '#ff4d6d', count: 3  },
+  { id: 'shipping',  label: 'Shipping & Logistics',icon:'🚢',color:'#64b5f6', count: 2  },
+];
+
+const ACCOUNTS = [
+  { id:'shell',    name:'Shell',          industry:'oil-gas', logo:'SHE', color:'#f59e0b', tier:1, signal:'hot',  rev:'$380B', contacts:135, theme:'SAF, Hydrogen, CCS' },
+  { id:'exxon',    name:'ExxonMobil',     industry:'oil-gas', logo:'XOM', color:'#ff4d6d', tier:1, signal:'hot',  rev:'$398B', contacts:145, theme:'CCS, Low-carbon fuels' },
+  { id:'chevron',  name:'Chevron',        industry:'oil-gas', logo:'CVX', color:'#0090ff', tier:1, signal:'warm', rev:'$235B', contacts: 78, theme:'Hard-to-abate, DAC' },
+  { id:'bp',       name:'BP',             industry:'oil-gas', logo:'BP',  color:'#00c9a7', tier:1, signal:'warm', rev:'$241B', contacts: 77, theme:'EV charging, Wind' },
+  { id:'totalenergie', name:'TotalEnergies', industry:'oil-gas', logo:'TTE', color:'#e040fb', tier:2, signal:'cold', rev:'$218B', contacts:52, theme:'LNG, Solar' },
+  { id:'bmw',      name:'BMW Group',      industry:'auto',    logo:'BMW', color:'#64b5f6', tier:1, signal:'hot',  rev:'€143B', contacts:20, theme:'Solid-state, EV platforms' },
+  { id:'mercedes', name:'Mercedes-Benz',  industry:'auto',    logo:'MBZ', color:'#8a9bb8', tier:1, signal:'warm', rev:'€153B', contacts:32, theme:'Fuel cell, Digital cockpit' },
+  { id:'vw',       name:'Volkswagen',     industry:'auto',    logo:'VW',  color:'#0090ff', tier:1, signal:'warm', rev:'€293B', contacts:991, theme:'BEV scale, Synthetic fuels' },
+  { id:'toyota',   name:'Toyota',         industry:'auto',    logo:'TYT', color:'#ff4d6d', tier:2, signal:'cold', rev:'¥45T',  contacts: 16, theme:'Hydrogen ICE, Solid-state' },
+  { id:'stellantis',name:'Stellantis',    industry:'auto',    logo:'STL', color:'#f59e0b', tier:2, signal:'warm', rev:'€189B', contacts: 67, theme:'EV platforms, LFP cells' },
+  { id:'ford',     name:'Ford Motor',     industry:'auto',    logo:'FRD', color:'#00c9a7', tier:2, signal:'cold', rev:'$176B', contacts: 39, theme:'Commercial EV, BlueOval' },
+  { id:'hyundai',  name:'Hyundai',        industry:'auto',    logo:'HYD', color:'#e040fb', tier:3, signal:'cold', rev:'₩162T', contacts: 3, theme:'FCEV, Robotics' },
+  { id:'vestas',   name:'Vestas',         industry:'energy',  logo:'VES', color:'#00c9a7', tier:2, signal:'warm', rev:'€15B',  contacts: 4, theme:'Offshore wind, Digital' },
+  { id:'orsted',   name:'Ørsted',         industry:'energy',  logo:'ØRS', color:'#0090ff', tier:2, signal:'warm', rev:'DKK79B',contacts: 3, theme:'Offshore wind, PtX' },
+  { id:'nel',      name:'Nel Hydrogen',   industry:'energy',  logo:'NEL', color:'#e040fb', tier:2, signal:'hot',  rev:'NOK1.4B',contacts:2, theme:'Electrolyser, H2 infra' },
+  { id:'bloom',    name:'Bloom Energy',   industry:'energy',  logo:'BE',  color:'#f59e0b', tier:3, signal:'cold', rev:'$1.2B', contacts: 2, theme:'Solid oxide fuel cells' },
+  { id:'basf',     name:'BASF',           industry:'chem',    logo:'BSF', color:'#64b5f6', tier:2, signal:'warm', rev:'€68B',  contacts: 5, theme:'Catalysts, Green chemicals' },
+  { id:'sabic',    name:'SABIC',          industry:'chem',    logo:'SBC', color:'#ff4d6d', tier:2, signal:'cold', rev:'$41B',  contacts: 3, theme:'Circular plastics, Blue H2' },
+  { id:'linde',    name:'Linde',          industry:'chem',    logo:'LIN', color:'#00c9a7', tier:2, signal:'warm', rev:'$33B',  contacts: 4, theme:'Industrial gases, H2 supply' },
+  { id:'riotinto', name:'Rio Tinto',      industry:'mining',  logo:'RIO', color:'#f59e0b', tier:2, signal:'warm', rev:'$54B',  contacts: 3, theme:'Critical minerals, Green steel' },
+  { id:'glencore', name:'Glencore',       industry:'mining',  logo:'GLE', color:'#ff4d6d', tier:3, signal:'cold', rev:'$255B', contacts: 2, theme:'Cobalt, Battery supply chain' },
+  { id:'bhp',      name:'BHP',            industry:'mining',  logo:'BHP', color:'#e040fb', tier:2, signal:'cold', rev:'$55B',  contacts: 2, theme:'Potash, Nickel, Copper' },
+  { id:'maersk',   name:'Maersk',         industry:'shipping',logo:'MAE', color:'#0090ff', tier:2, signal:'hot',  rev:'$81B',  contacts: 3, theme:'Green methanol, Carbon neutral' },
+  { id:'dnv',      name:'DNV',            industry:'shipping',logo:'DNV', color:'#64b5f6', tier:3, signal:'cold', rev:'NOK22B',contacts:2, theme:'Maritime decarbonisation' },
+];
+
+// ─── ACCOUNTS ─────────────────────────────────────────────────
+let selectedIndustry = 'all';
+
+function buildIndustryList() {
+  const el = document.getElementById('industry-list');
+  el.innerHTML = INDUSTRIES.map(ind => `
+    <div class="industry-item ${ind.id === selectedIndustry ? 'active' : ''}"
+         onclick="filterIndustry('${ind.id}')">
+      <div class="industry-icon" style="background:${ind.color}22; color:${ind.color}">${ind.icon}</div>
+      <div class="industry-name">${ind.label}</div>
+      <div class="industry-count">${ind.count}</div>
+    </div>
+  `).join('');
+}
+
+function filterIndustry(id) {
+  selectedIndustry = id;
+  buildIndustryList();
+  renderAccountGrid();
+  const ind = INDUSTRIES.find(i => i.id === id);
+  document.getElementById('accounts-title').textContent = ind.label;
+  const filtered = id === 'all' ? ACCOUNTS : ACCOUNTS.filter(a => a.industry === id);
+  document.getElementById('accounts-count').textContent = filtered.length + ' accounts';
+}
+
+function renderAccountGrid() {
+  const filtered = selectedIndustry === 'all' ? ACCOUNTS : ACCOUNTS.filter(a => a.industry === selectedIndustry);
+  document.getElementById('accounts-grid').innerHTML = filtered.map(a => `
+    <div class="account-card" onclick="openAccountModal('${a.id}')">
+      <div class="account-signal signal-${a.signal}"></div>
+      <div class="account-logo" style="background:${a.color}22; color:${a.color}; font-size:${a.logo.length > 3 ? '11px' : '14px'}">${a.logo}</div>
+      <div class="account-name">${a.name}</div>
+      <div class="account-tier tier-${a.tier}">T${a.tier}</div>
+    </div>
+  `).join('');
+}
+
+function openAccountModal(id) {
+  const a = ACCOUNTS.find(x => x.id === id);
+  if (!a) return;
+  document.getElementById('modal-content').innerHTML = `
+    <div class="modal-close" onclick="closeModal()">✕</div>
+    <div class="modal-header">
+      <div class="modal-logo" style="background:${a.color}22; color:${a.color}; font-size:${a.logo.length>3?'16px':'22px'}">${a.logo}</div>
+      <div>
+        <div class="modal-name">${a.name}</div>
+        <div class="modal-sector">${INDUSTRIES.find(i=>i.id===a.industry)?.label || ''} · Tier ${a.tier}</div>
+      </div>
+    </div>
+    <div class="modal-grid">
+      <div class="modal-stat"><div class="modal-stat-label">Revenue</div><div class="modal-stat-value">${a.rev}</div></div>
+      <div class="modal-stat"><div class="modal-stat-label">Contacts</div><div class="modal-stat-value green">${a.contacts}</div></div>
+      <div class="modal-stat"><div class="modal-stat-label">Signal Status</div><div class="modal-stat-value ${a.signal === 'hot' ? '' : 'amber'}">${a.signal.toUpperCase()}</div></div>
+      <div class="modal-stat"><div class="modal-stat-label">Focus Areas</div><div class="modal-stat-value" style="font-size:11px;font-weight:500;margin-top:4px;color:var(--text2)">${a.theme}</div></div>
+    </div>
+    <div class="modal-section-title">Intelligence Signals</div>
+    <div class="modal-signals">
+      <div class="modal-signal-item"><div class="modal-signal-dot" style="background:var(--accent)"></div>Active procurement interest in ${a.theme.split(',')[0].trim()} solutions identified via LinkedIn + press monitoring.</div>
+      <div class="modal-signal-item"><div class="modal-signal-dot" style="background:var(--accent3)"></div>Budget cycle Q3 — decision window opening. ${a.contacts} active contacts mapped across Innovation, Strategy, and C-Suite.</div>
+      <div class="modal-signal-item"><div class="modal-signal-dot" style="background:var(--accent2)"></div>Recent tie-ups with ${a.signal === 'hot' ? 'startups and scale-ups' : 'academic institutions'} signal ecosystem expansion intent.</div>
+    </div>
+  `;
+  document.getElementById('account-modal').classList.add('open');
+}
+
+function closeModal() { document.getElementById('account-modal').classList.remove('open'); }
+
+buildIndustryList();
+renderAccountGrid();
+
+// ══════════════════════════════════════════════════════════════
+//  MARKET PAGE
+// ══════════════════════════════════════════════════════════════
+
+const MARKET_SEGMENTS = ['Clean Hydrogen', 'EV Battery', 'Carbon Capture', 'SAF'];
+
+const MARKET_DATA = {
+  'Clean Hydrogen': {
+    kpis: [
+      { label: 'Market Size 2025', val: '$185B', change: '+34%', dir: 'up' },
+      { label: 'Supply Gap', val: '42MT', change: 'DEFICIT', dir: 'down' },
+      { label: 'Price / kg (green)', val: '$4.80', change: '-18%', dir: 'up' },
+    ],
+    sdData: {
+      years: [2020,2021,2022,2023,2024,2025,2026,2027],
+      supply: [12,18,26,38,55,74,98,130],
+      demand: [25,33,44,60,82,110,142,178],
+    },
+    forecast: [
+      { year:'2024', val:'$136B', pct: 55, isCurrent: false },
+      { year:'2025', val:'$185B', pct: 68, isCurrent: true  },
+      { year:'2026', val:'$247B', pct: 80, isCurrent: false },
+      { year:'2027', val:'$318B', pct: 88, isCurrent: false },
+      { year:'2028', val:'$402B', pct: 96, isCurrent: false },
+    ],
+    movers: [
+      { name:'Nel Hydrogen',  change:'+28%', dir:'up',   spark:[3,4,5,4,6,7,8] },
+      { name:'Plug Power',    change:'-12%', dir:'down', spark:[8,7,6,5,4,4,3] },
+      { name:'ITM Power',     change:'+41%', dir:'up',   spark:[2,3,3,5,6,7,9] },
+      { name:'Air Liquide',   change:'+9%',  dir:'up',   spark:[5,5,6,5,6,7,7] },
+      { name:'Thyssenkrupp',  change:'-5%',  dir:'down', spark:[6,5,5,5,4,4,5] },
+    ],
+    signals: [
+      { date:'28 Feb 2025', type:'bull', text:'EU Green Hydrogen Valleys targets raised to 10MT by 2030; procurement wave expected H2 2025.', tags:['EU Policy','Electrolyser'] },
+      { date:'22 Feb 2025', type:'neutral', text:'Spot price compression continues as pilot-scale projects commission. Cost-out trajectory on track.', tags:['Pricing','Supply'] },
+      { date:'15 Feb 2025', type:'bull', text:'Saudi Aramco JV with Air Products advances — 1.2GW electrolyser order signals OEM demand surge.', tags:['M&A','OEM'] },
+      { date:'08 Feb 2025', type:'bear', text:'US IRA hydrogen credit uncertainty impacting FID timelines; 3 major projects deferred to 2026.', tags:['US Policy','FID Risk'] },
+    ],
+  },
+  'EV Battery': {
+    kpis: [
+      { label: 'Market Size 2025', val: '$312B', change: '+28%', dir: 'up' },
+      { label: 'Supply Surplus', val: '18%', change: 'EXCESS', dir: 'up' },
+      { label: 'Cell Cost / kWh', val: '$98', change: '-22%', dir: 'up' },
+    ],
+    sdData: {
+      years: [2020,2021,2022,2023,2024,2025,2026,2027],
+      supply: [80,110,148,200,260,320,390,460],
+      demand: [65,95,138,195,255,310,375,445],
+    },
+    forecast: [
+      { year:'2024', val:'$244B', pct: 52, isCurrent: false },
+      { year:'2025', val:'$312B', pct: 63, isCurrent: true  },
+      { year:'2026', val:'$395B', pct: 74, isCurrent: false },
+      { year:'2027', val:'$492B', pct: 85, isCurrent: false },
+      { year:'2028', val:'$601B', pct: 94, isCurrent: false },
+    ],
+    movers: [
+      { name:'CATL',       change:'+18%', dir:'up',   spark:[6,6,7,7,8,8,9] },
+      { name:'BYD Battery',change:'+23%', dir:'up',   spark:[5,6,6,7,8,8,9] },
+      { name:'LG Energy',  change:'+6%',  dir:'up',   spark:[5,5,6,5,6,6,7] },
+      { name:'Panasonic',  change:'-8%',  dir:'down', spark:[7,6,6,5,5,5,4] },
+      { name:'Samsung SDI',change:'+11%', dir:'up',   spark:[4,4,5,5,6,6,7] },
+    ],
+    signals: [
+      { date:'27 Feb 2025', type:'bull', text:'Solid-state cell pilots from Toyota & Samsung showing 650Wh/kg density — commercialisation path clearer.', tags:['Solid-state','OEM'] },
+      { date:'20 Feb 2025', type:'bear', text:'EU Critical Raw Materials Act adding sourcing complexity; cobalt-free transition accelerating to avoid risk.', tags:['EU Policy','Materials'] },
+      { date:'12 Feb 2025', type:'bull', text:'LFP price war intensifying — Chinese exports down 15% from peak on export controls. Western OEMs hedging.', tags:['Pricing','Trade'] },
+    ],
+  },
+  'Carbon Capture': {
+    kpis: [
+      { label: 'Market Size 2025', val: '$9.8B', change: '+47%', dir: 'up' },
+      { label: 'Capture Capacity', val: '55MT/yr', change: '+38%', dir: 'up' },
+      { label: 'Cost / tonne', val: '$210', change: '-14%', dir: 'up' },
+    ],
+    sdData: {
+      years: [2020,2021,2022,2023,2024,2025,2026,2027],
+      supply: [2,3,5,8,14,22,35,52],
+      demand: [8,12,18,28,42,62,88,120],
+    },
+    forecast: [
+      { year:'2024', val:'$6.7B', pct: 44, isCurrent: false },
+      { year:'2025', val:'$9.8B', pct: 58, isCurrent: true  },
+      { year:'2026', val:'$14B',  pct: 70, isCurrent: false },
+      { year:'2027', val:'$20B',  pct: 80, isCurrent: false },
+      { year:'2028', val:'$28B',  pct: 90, isCurrent: false },
+    ],
+    movers: [
+      { name:'Climeworks',   change:'+62%', dir:'up',   spark:[2,3,4,5,6,7,9] },
+      { name:'1PointFive',   change:'+35%', dir:'up',   spark:[3,4,4,5,6,7,8] },
+      { name:'Carbon Clean', change:'+28%', dir:'up',   spark:[3,3,4,5,5,6,7] },
+      { name:'Linde CCS',    change:'+14%', dir:'up',   spark:[5,5,6,5,6,6,7] },
+      { name:'Svante',       change:'+19%', dir:'up',   spark:[2,2,3,4,5,5,6] },
+    ],
+    signals: [
+      { date:'01 Mar 2025', type:'bull', text:'Chevron & Shell announce $2.4B multi-operator CCS hub in Permian Basin — largest single tranche in US.', tags:['Deal','Oil Major'] },
+      { date:'24 Feb 2025', type:'neutral', text:'DAC costs on track for $100/tonne by 2030 per NETL roadmap — key threshold for industrial demand unlock.', tags:['DAC','Cost-out'] },
+      { date:'16 Feb 2025', type:'bear', text:'European BECCS projects facing feedstock constraints; 4 biomass facilities paused pending sustainability audits.', tags:['BECCS','EU'] },
+    ],
+  },
+  'SAF': {
+    kpis: [
+      { label: 'Market Size 2025', val: '$8.4B', change: '+52%', dir: 'up' },
+      { label: 'Blend Rate', val: '1.2%', change: 'OF TOTAL JET', dir: 'neutral' },
+      { label: 'Price Premium', val: '3.8×', change: 'vs Jet A', dir: 'down' },
+    ],
+    sdData: {
+      years: [2020,2021,2022,2023,2024,2025,2026,2027],
+      supply: [0.05, 0.1, 0.2, 0.5, 1.0, 1.8, 3.2, 5.5],
+      demand: [0.5, 0.8, 1.4, 2.5, 4.5, 8.0, 13, 20],
+    },
+    forecast: [
+      { year:'2024', val:'$5.5B', pct: 44, isCurrent: false },
+      { year:'2025', val:'$8.4B', pct: 58, isCurrent: true  },
+      { year:'2026', val:'$13B',  pct: 70, isCurrent: false },
+      { year:'2027', val:'$20B',  pct: 80, isCurrent: false },
+      { year:'2028', val:'$30B',  pct: 90, isCurrent: false },
+    ],
+    movers: [
+      { name:'Neste',        change:'+31%', dir:'up',   spark:[4,5,5,6,7,7,8] },
+      { name:'World Energy', change:'+44%', dir:'up',   spark:[3,4,4,5,6,7,8] },
+      { name:'LanzaJet',     change:'+67%', dir:'up',   spark:[1,2,3,4,5,6,8] },
+      { name:'Shell Aviation',change:'+22%',dir:'up',   spark:[4,4,5,5,6,6,7] },
+      { name:'Gevo',         change:'-18%', dir:'down', spark:[5,5,4,4,3,3,3] },
+    ],
+    signals: [
+      { date:'03 Mar 2025', type:'bull', text:'CORSIA Phase 1 compliance window opens Oct 2025 — airline procurement urgency crystallising. Shell Aviation Book & Claim seeing 3× enquiry volumes.', tags:['CORSIA','Airlines'] },
+      { date:'25 Feb 2025', type:'neutral', text:'HEFA feedstock tightness persisting; ATJ and Power-to-Liquid pathways attracting VC interest as alternatives.', tags:['Feedstock','VC'] },
+      { date:'18 Feb 2025', type:'bear', text:'EU ReFuelEU 2% mandate enforcement ambiguity — member state implementation variance creating buyer uncertainty.', tags:['EU Policy','Mandate'] },
+    ],
+  },
+};
+
+let currentSegment = MARKET_SEGMENTS[0];
+
+function buildMarketSegTabs() {
+  document.getElementById('market-seg-tabs').innerHTML = MARKET_SEGMENTS.map(s => `
+    <div class="seg-tab ${s === currentSegment ? 'active' : ''}" onclick="switchSegment('${s}')">${s}</div>
+  `).join('');
+}
+
+function switchSegment(seg) {
+  currentSegment = seg;
+  buildMarketSegTabs();
+  renderMarket();
+}
+
+function renderMarket() {
+  const d = MARKET_DATA[currentSegment];
+  
+  // KPIs
+  document.getElementById('sd-kpis').innerHTML = d.kpis.map(k => `
+    <div class="kpi-box">
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-val">${k.val}</div>
+      <div class="kpi-change ${k.dir}">${k.change}</div>
+    </div>
+  `).join('');
+
+  // SVG Supply vs Demand chart
+  const sd = d.sdData;
+  const W = 400, H = 120;
+  const maxV = Math.max(...sd.supply, ...sd.demand) * 1.1;
+  const px = (i) => (i / (sd.years.length - 1)) * (W - 40) + 20;
+  const py = (v) => H - 20 - (v / maxV) * (H - 30);
+  
+  const supplyPath = sd.supply.map((v,i) => `${i===0?'M':'L'}${px(i)},${py(v)}`).join(' ');
+  const demandPath = sd.demand.map((v,i) => `${i===0?'M':'L'}${px(i)},${py(v)}`).join(' ');
+  const supplyFill = supplyPath + ` L${px(sd.years.length-1)},${H-20} L${px(0)},${H-20} Z`;
+  const demandFill = demandPath + ` L${px(sd.years.length-1)},${H-20} L${px(0)},${H-20} Z`;
+  
+  const todayIdx = 5; // 2025
+  
+  document.getElementById('sd-chart-wrap').innerHTML = `
+    <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="gS" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00c9a7" stop-opacity="0.25"/><stop offset="100%" stop-color="#00c9a7" stop-opacity="0"/></linearGradient>
+        <linearGradient id="gD" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ff4d6d" stop-opacity="0.2"/><stop offset="100%" stop-color="#ff4d6d" stop-opacity="0"/></linearGradient>
+      </defs>
+      ${sd.years.map((y,i) => `<text x="${px(i)}" y="${H-4}" text-anchor="middle" fill="#4a5a72" font-family="DM Mono,monospace" font-size="7">${y}</text>`).join('')}
+      <path d="${supplyFill}" fill="url(#gS)"/>
+      <path d="${demandFill}" fill="url(#gD)"/>
+      <path d="${supplyPath}" fill="none" stroke="#00c9a7" stroke-width="1.5"/>
+      <path d="${demandPath}" fill="none" stroke="#ff4d6d" stroke-width="1.5" stroke-dasharray="4 2"/>
+      <line x1="${px(todayIdx)}" y1="5" x2="${px(todayIdx)}" y2="${H-20}" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3 2" opacity="0.6"/>
+      <text x="${px(todayIdx)+3}" y="13" fill="#f59e0b" font-family="DM Mono,monospace" font-size="7">NOW</text>
+      <circle cx="160" cy="10" r="3" fill="#00c9a7"/>
+      <text x="167" y="14" fill="#8a9bb8" font-family="DM Mono,monospace" font-size="7">Supply</text>
+      <circle cx="205" cy="10" r="3" fill="#ff4d6d"/>
+      <text x="212" y="14" fill="#8a9bb8" font-family="DM Mono,monospace" font-size="7">Demand</text>
+    </svg>
+  `;
+
+  // Forecast bars
+  const accentCol = '#f59e0b';
+  document.getElementById('forecast-bars').innerHTML = d.forecast.map(f => `
+    <div class="forecast-row${f.isCurrent ? ' current' : ''}">
+      <div class="forecast-year">${f.year}</div>
+      <div class="forecast-bar-wrap">
+        <div class="forecast-bar" style="width:${f.pct}%; background:${f.isCurrent ? '#f59e0b' : f.pct > 80 ? '#0090ff' : '#1e2a3a'}"></div>
+      </div>
+      <div class="forecast-val">${f.val}</div>
+    </div>
+  `).join('');
+
+  // Movers table
+  const sparkHTML = (bars, dir) => {
+    const col = dir === 'up' ? '#00c9a7' : '#ff4d6d';
+    const max = Math.max(...bars);
+    return `<div class="trend-spark">${bars.map(b=>`<div class="spark-bar" style="height:${Math.round((b/max)*18)}px;background:${col}"></div>`).join('')}</div>`;
+  };
+  document.getElementById('movers-table').innerHTML = `
+    <thead><tr><th>Entity</th><th>Trend</th><th>Change</th></tr></thead>
+    <tbody>${d.movers.map(m => `
+      <tr>
+        <td style="color:var(--text)">${m.name}</td>
+        <td>${sparkHTML(m.spark, m.dir)}</td>
+        <td class="${m.dir}">${m.change}</td>
+      </tr>
+    `).join('')}</tbody>
+  `;
+
+  // Signals
+  document.getElementById('signals-feed').innerHTML = d.signals.map(s => `
+    <div class="signal-card ${s.type === 'neutral' ? 'neutral-sig' : s.type}">
+      <div class="signal-date">${s.date}</div>
+      <div class="signal-text">${s.text}</div>
+      <div class="signal-tags">${s.tags.map(t=>`<span class="signal-tag">${t}</span>`).join('')}</div>
+    </div>
+  `).join('');
+}
+
+buildMarketSegTabs();
+renderMarket();
+
+// ══════════════════════════════════════════════════════════════
+//  TECHNOLOGIES PAGE
+// ══════════════════════════════════════════════════════════════
+
+const TECH_DATA = {
+  h1: [
+    { id:'h2-energy', name:'Hydrogen & Clean Energy', icon:'⚡', color:'#00c9a7', trl:5, badge:'ENERGY' },
+    { id:'carbon',    name:'Carbon Management',       icon:'♻', color:'#f59e0b', trl:4, badge:'CLIMATE' },
+    { id:'mobility',  name:'Electrified Mobility',    icon:'🚗', color:'#0090ff', trl:7, badge:'MOBILITY' },
+    { id:'industry',  name:'Industrial Decarbonisation', icon:'🏭', color:'#e040fb', trl:4, badge:'INDUSTRY' },
+  ],
+  h2: [
+    { id:'electrolysis', name:'Water Electrolysis',   icon:'💧', color:'#00c9a7', trl:7, badge:'H2',    parent:'h2-energy' },
+    { id:'fuelcell',     name:'Fuel Cell Systems',    icon:'⚗',  color:'#64b5f6', trl:7, badge:'H2',    parent:'h2-energy' },
+    { id:'h2-store',     name:'H₂ Storage & Transport',icon:'🔵', color:'#0090ff', trl:5, badge:'H2',  parent:'h2-energy' },
+    { id:'dac',          name:'Direct Air Capture',   icon:'🌬', color:'#f59e0b', trl:4, badge:'DAC',   parent:'carbon' },
+    { id:'beccs',        name:'BECCS',                icon:'🌿', color:'#00c9a7', trl:5, badge:'CCS',   parent:'carbon' },
+    { id:'point-ccs',    name:'Point Source CCS',     icon:'🏭', color:'#8a9bb8', trl:7, badge:'CCS',   parent:'carbon' },
+    { id:'bev',          name:'Battery Electric Vehicles',icon:'🔋',color:'#0090ff',trl:8,badge:'EV',  parent:'mobility' },
+    { id:'fcev',         name:'Fuel Cell EVs',        icon:'💨', color:'#00c9a7', trl:6, badge:'EV',    parent:'mobility' },
+    { id:'saf',          name:'Sustainable Aviation Fuel',icon:'✈',color:'#e040fb',trl:7,badge:'SAF',  parent:'mobility' },
+    { id:'heatpump',     name:'Industrial Heat Pumps',icon:'🌡', color:'#ff4d6d', trl:6, badge:'IND',   parent:'industry' },
+    { id:'efurnace',     name:'Electric Arc Furnace', icon:'🔥', color:'#f59e0b', trl:7, badge:'STEEL', parent:'industry' },
+    { id:'ecracker',     name:'Electric Steam Cracking',icon:'⚙',color:'#e040fb',trl:3, badge:'CHEM',  parent:'industry' },
+  ],
+  h3: [
+    { id:'pem',       name:'PEM Electrolysis',        icon:'⚛',  color:'#00c9a7', trl:8, badge:'PEM',  parent:'electrolysis' },
+    { id:'alk',       name:'Alkaline Electrolysis',   icon:'🔬', color:'#64b5f6', trl:8, badge:'ALK',  parent:'electrolysis' },
+    { id:'soec',      name:'SOEC Electrolysis',       icon:'🧪', color:'#e040fb', trl:5, badge:'SOEC', parent:'electrolysis' },
+    { id:'pemfc',     name:'PEM Fuel Cells',          icon:'💡', color:'#0090ff', trl:8, badge:'PEMFC',parent:'fuelcell' },
+    { id:'sofc',      name:'Solid Oxide Fuel Cells',  icon:'🔮', color:'#f59e0b', trl:6, badge:'SOFC', parent:'fuelcell' },
+    { id:'lh2',       name:'Liquid H₂ Storage',       icon:'❄',  color:'#64b5f6', trl:6, badge:'LH2',  parent:'h2-store' },
+    { id:'ammonia',   name:'Ammonia H₂ Carrier',      icon:'⚗',  color:'#e040fb', trl:5, badge:'NH3',  parent:'h2-store' },
+    { id:'lfp',       name:'LFP Battery Chemistry',   icon:'🔋', color:'#00c9a7', trl:9, badge:'LFP',  parent:'bev' },
+    { id:'sss',       name:'Solid-State Batteries',   icon:'⬡',  color:'#ff4d6d', trl:5, badge:'SSB',  parent:'bev' },
+    { id:'hefa',      name:'HEFA Pathway',            icon:'🌱', color:'#00c9a7', trl:9, badge:'HEFA', parent:'saf' },
+    { id:'ptl',       name:'Power-to-Liquid',         icon:'⚡', color:'#e040fb', trl:4, badge:'PtL',  parent:'saf' },
+  ]
+};
+
+// Rich tech detail data
+const TECH_DETAIL = {
+  'pem':      { ttm:'$2.8B', size:'$12B by 2030', dev:'Stack costs -40% in 24mo; Plug Power, ITM, Cummins scaling.', ties:['Shell','Nel','ExxonMobil'] },
+  'alk':      { ttm:'$1.9B', size:'$9B by 2030',  dev:'ThyssenKrupp, Nel dominant. Lower cost but slower ramp.', ties:['BASF','Linde','BP'] },
+  'soec':     { ttm:'$0.3B', size:'$4B by 2030',  dev:'Topsoe SOEC pilot at 10MW. High efficiency pathway for industrial H2.', ties:['Shell','TotalEnergies'] },
+  'lfp':      { ttm:'$48B', size:'$140B by 2030', dev:'CATL, BYD dominate. Ford, VW localising LFP supply to avoid China risk.', ties:['BMW','VW','Ford'] },
+  'sss':      { ttm:'$1.1B', size:'$18B by 2030', dev:'Toyota 2027 pilot line confirmed. Samsung SDI, Solid Power scaling.', ties:['BMW','Toyota','Mercedes-Benz'] },
+  'hefa':     { ttm:'$6.4B', size:'$22B by 2030', dev:'Neste, World Energy leading. Feedstock constrained.', ties:['Shell','BP','Maersk'] },
+  'ptl':      { ttm:'$0.4B', size:'$8B by 2030',  dev:'LanzaJet ATJ commercialising. H2-based PtL at TRL 4-5.', ties:['Shell','Maersk','Nel'] },
+  'dac':      { ttm:'$0.8B', size:'$6B by 2030',  dev:'Climeworks Mammoth 36kt/yr. Capture cost $400→$100 trajectory.', ties:['ExxonMobil','Chevron','1PointFive'] },
+  'beccs':    { ttm:'$1.2B', size:'$10B by 2030', dev:'Drax BECCS progressing UK planning. Feedstock sustainability under scrutiny.', ties:['Shell','BP'] },
+  'point-ccs':{ ttm:'$4.2B', size:'$28B by 2030', dev:'Mature amine capture widely deployed. Shell Quest, Boundary Dam. FID activity surging.', ties:['Shell','Chevron','ExxonMobil','Linde'] },
+  'bev':      { ttm:'$140B', size:'$490B by 2030', dev:'BEV penetration 18% globally. Western OEMs scaling despite demand softening.', ties:['BMW','VW','Mercedes-Benz','Ford'] },
+  'fcev':     { ttm:'$3.8B', size:'$15B by 2030', dev:'Toyota Mirai gen 3 confirmed. Heavy duty truck H2 FC adoption accelerating.', ties:['Toyota','Hyundai','BMW'] },
+  'saf':      { ttm:'$8.4B', size:'$52B by 2030', dev:'CORSIA Phase 1 drives urgency. Shell SAF book & claim expanding.', ties:['Shell','BP','TotalEnergies'] },
+  'heatpump': { ttm:'$12B', size:'$45B by 2030',  dev:'Danfoss, Siemens Energy, MAN scaling. Industrial temp >200°C now viable.', ties:['Shell','BASF','Linde'] },
+  'efurnace': { ttm:'$8.2B', size:'$30B by 2030', dev:'SSAB HYBRIT operational. ArcelorMittal scaling. Green steel premium compressing.', ties:['Rio Tinto','BHP','Glencore'] },
+  'ecracker': { ttm:'$0.2B', size:'$5B by 2030',  dev:'BASF/SABIC pilot at TRL 3. Shell, LyondellBasell monitoring closely.', ties:['Shell','BASF','SABIC'] },
+  'pemfc':    { ttm:'$3.1B', size:'$12B by 2030', dev:'Ballard, Plug Power, Cummins leading. Automotive FC volumes picking up.', ties:['BMW','Toyota','Hyundai'] },
+  'sofc':     { ttm:'$1.2B', size:'$6B by 2030',  dev:'Bloom Energy leading commercial SOFCs. Data centre backup power growing use case.', ties:['Shell','ExxonMobil'] },
+  'lh2':      { ttm:'$0.6B', size:'$8B by 2030',  dev:'Japanese-Australian H2 supply chain pilots. Air Liquide, Kawasaki scaling.', ties:['Shell','TotalEnergies','Linde'] },
+  'ammonia':  { ttm:'$0.8B', size:'$10B by 2030', dev:'JERA ammonia co-firing at Hekinan. MHI, Yara commercialising NH3 cracking.', ties:['Shell','SABIC','Linde'] },
+  'h2-energy':{ ttm:'$185B', size:'$640B by 2030', dev:'Cross-cutting hydrogen ecosystem spanning production, storage, and end-use.', ties:['Shell','BP','ExxonMobil','Linde','Nel'] },
+  'carbon':   { ttm:'$9.8B', size:'$60B by 2030',  dev:'CCS capacity on steep growth curve. CCUS credits and policy driving FIDs.', ties:['Shell','Chevron','ExxonMobil','BASF'] },
+  'mobility': { ttm:'$155B', size:'$550B by 2030',  dev:'Electrification of all transport modes advancing at different rates.', ties:['BMW','VW','Mercedes-Benz','Shell','BP'] },
+  'industry': { ttm:'$22B',  size:'$110B by 2030',  dev:'Hard-to-abate sector electrification and H2 switching gaining commercial traction.', ties:['BASF','Shell','Linde','Rio Tinto'] },
+  'electrolysis':{ ttm:'$5B', size:'$25B by 2030', dev:'Electrolyser deployment surging. PEM and Alk dominant; SOEC emerging for high-T.', ties:['Nel','Linde','Shell','ExxonMobil'] },
+  'fuelcell': { ttm:'$4.3B', size:'$18B by 2030', dev:'PEM FC leads mobility; SOFC growing in stationary power. Cost curves compressing.', ties:['Shell','BMW','Toyota'] },
+  'h2-store': { ttm:'$1.4B', size:'$18B by 2030', dev:'LH2 and ammonia leading long-haul H2 carriers. Infrastructure investment starting.', ties:['Shell','Linde','TotalEnergies'] },
+};
+
+// Build TRL-grouped overview
+function getTRLGroup(trl) {
+  if (trl <= 3) return { group: 'Emerging', range: 'TRL 1–3', color: '#ff4d6d', bg: 'rgba(255,77,109,0.08)' };
+  if (trl <= 6) return { group: 'Development', range: 'TRL 4–6', color: '#f59e0b', bg: 'rgba(245,158,11,0.08)' };
+  return { group: 'Commercial', range: 'TRL 7–9', color: '#00c9a7', bg: 'rgba(0,201,167,0.08)' };
+}
+
+let currentHLevel = 'h1';
+let selectedTechId = null;
+
+function setHLevel(level) {
+  currentHLevel = level;
+  document.querySelectorAll('.h-btn').forEach((b,i) => {
+    b.classList.toggle('active', ['h1','h2','h3'][i] === level);
+  });
+  renderTechNav();
+  renderTRLOverview();
+  selectedTechId = null;
+  resetTechHero();
+}
+
+function renderTechNav() {
+  const items = TECH_DATA[currentHLevel];
+  const groups = ['Emerging','Development','Commercial'];
+  
+  let html = '';
+  groups.forEach(gname => {
+    const gItems = items.filter(t => getTRLGroup(t.trl).group === gname);
+    if (!gItems.length) return;
+    const g = getTRLGroup(gname === 'Emerging' ? 3 : gname === 'Development' ? 5 : 8);
+    html += `<div class="tech-nav-group-header">${gname}</div>`;
+    html += gItems.map(t => `
+      <div class="tech-nav-item ${selectedTechId === t.id ? 'active' : ''}" onclick="selectTech('${t.id}')">
+        <div class="tech-nav-dot" style="background:${g.color}"></div>
+        <div class="tech-nav-label">${t.name}</div>
+        <div class="tech-trl-badge">TRL ${t.trl}</div>
+      </div>
+    `).join('');
+  });
+  document.getElementById('tech-nav-list').innerHTML = html;
+}
+
+function resetTechHero() {
+  document.getElementById('tech-hero-name').textContent = 'Technology Overview';
+  document.getElementById('tech-hero-meta').innerHTML = '<span style="font-family:var(--font-mono);font-size:10px;color:var(--text3)">Select a technology to explore details</span>';
+  document.getElementById('trl-meter-wrap').innerHTML = '';
+}
+
+function selectTech(id) {
+  selectedTechId = id;
+  const all = [...TECH_DATA.h1, ...TECH_DATA.h2, ...TECH_DATA.h3];
+  const t = all.find(x => x.id === id);
+  if (!t) return;
+  const detail = TECH_DETAIL[id] || {};
+  const g = getTRLGroup(t.trl);
+
+  document.getElementById('tech-hero-name').textContent = t.name;
+  document.getElementById('tech-hero-meta').innerHTML = `
+    <span class="tech-badge" style="background:${t.color}18;color:${t.color};border:1px solid ${t.color}33">${t.badge}</span>
+    <span class="tech-badge" style="background:${g.bg};color:${g.color};border:1px solid ${g.color}33">${g.group} · ${g.range}</span>
+    ${detail.ttm ? `<span class="tech-badge" style="background:rgba(0,144,255,0.1);color:var(--accent2);border:1px solid rgba(0,144,255,0.25)">TTM ${detail.ttm}</span>` : ''}
+    ${detail.size ? `<span class="tech-badge" style="background:rgba(245,158,11,0.1);color:var(--accent3);border:1px solid rgba(245,158,11,0.25)">→ ${detail.size}</span>` : ''}
+  `;
+  
+  // TRL meter
+  const blocks = Array.from({length:9}, (_,i) => {
+    const filled = i < t.trl;
+    const cls = filled ? (i < 3 ? 'filled low' : i < 6 ? 'filled mid' : 'filled') : '';
+    return `<div class="trl-block ${cls}"></div>`;
+  }).join('');
+  document.getElementById('trl-meter-wrap').innerHTML = blocks + `<span class="trl-label">TRL ${t.trl}/9</span>`;
+
+  // Update nav selection
+  renderTechNav();
+  
+  // Show only selected card in overview (highlight it)
+  renderTRLOverview(id);
+}
+
+function renderTRLOverview(highlightId) {
+  const items = TECH_DATA[currentHLevel];
+  const groups = [
+    { name: 'Commercial', range: 'TRL 7–9', test: t => t.trl >= 7, color: '#00c9a7', bg: 'rgba(0,201,167,0.08)' },
+    { name: 'Development', range: 'TRL 4–6', test: t => t.trl >= 4 && t.trl <= 6, color: '#f59e0b', bg: 'rgba(245,158,11,0.08)' },
+    { name: 'Emerging',    range: 'TRL 1–3', test: t => t.trl <= 3, color: '#ff4d6d', bg: 'rgba(255,77,109,0.08)' },
+  ];
+
+  let html = '';
+  groups.forEach(g => {
+    const gItems = items.filter(g.test);
+    if (!gItems.length) return;
+    html += `
+      <div class="trl-section visible">
+        <div class="trl-section-header">
+          <div class="trl-group-name" style="color:${g.color}">${g.name}</div>
+          <div class="trl-range-badge" style="background:${g.bg};color:${g.color};border:1px solid ${g.color}33">${g.range}</div>
+          <div style="margin-left:auto;font-family:var(--font-mono);font-size:9px;color:var(--text3)">${gItems.length} technologies</div>
+        </div>
+        <div class="trl-cards">
+          ${gItems.map(t => {
+            const detail = TECH_DETAIL[t.id] || {};
+            const isSelected = highlightId === t.id;
+            return `
+              <div class="trl-card${isSelected ? ' selected' : ''}" onclick="selectTech('${t.id}')">
+                <div class="trl-card-header">
+                  <div class="trl-card-icon" style="background:${t.color}18;color:${t.color}">${t.icon}</div>
+                  <div>
+                    <div class="trl-card-name">${t.name}</div>
+                    <div class="trl-card-trl">TRL ${t.trl} · ${t.badge}</div>
+                  </div>
+                </div>
+                ${detail.ttm ? `
+                <div class="trl-card-metrics">
+                  <div class="tcm-item">
+                    <div class="tcm-label">TTM Size</div>
+                    <div class="tcm-val" style="color:${t.color}">${detail.ttm}</div>
+                  </div>
+                  <div class="tcm-item">
+                    <div class="tcm-label">2030 Forecast</div>
+                    <div class="tcm-val" style="color:var(--accent3);font-size:11px">${detail.size}</div>
+                  </div>
+                </div>` : ''}
+                ${detail.dev ? `<div class="trl-card-dev">${detail.dev}</div>` : ''}
+                ${detail.ties && detail.ties.length ? `
+                <div class="trl-card-ties">
+                  ${detail.ties.map(tie => `<div class="tie-chip">${tie}</div>`).join('')}
+                </div>` : ''}
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  });
+  document.getElementById('trl-overview').innerHTML = html;
+}
+
+renderTechNav();
+renderTRLOverview();
+
+// ══════════════════════════════════════════════════════════════
+//  REGULATIONS PAGE
+// ══════════════════════════════════════════════════════════════
+
+const REGS_DATA = [
+  {
+    year: 2024, entries: [
+      {
+        id:'cbam', name:'EU Carbon Border Adjustment Mechanism', status:'passed', geo:'🇪🇺 European Union',
+        summary:'CBAM transitional phase ended Dec 2023. Full financial compliance from Oct 2025 for cement, aluminium, fertilisers, iron/steel, hydrogen, electricity.',
+        effects: [{ text:'Import cost +15-40%', type:'negative' }, { text:'EU producer uplift', type:'positive' }, { text:'H2 trade rules set', type:'neutral' }],
+        sector:'Carbon / Energy'
+      },
+    ]
+  },
+  {
+    year: 2025, entries: [
+      {
+        id:'corsia', name:'ICAO CORSIA Phase 1 Compliance', status:'critical', geo:'🌍 Global Aviation',
+        summary:'Airlines must offset CO₂ above 2019 baseline from Jan 2025. SAF volumes eligible for credit from Oct 2025. Creates direct demand pull for SAF procurement.',
+        effects: [{ text:'SAF demand surge', type:'positive' }, { text:'Offset cost exposure', type:'negative' }, { text:'Book & Claim enabled', type:'neutral' }],
+        sector:'SAF / Aviation'
+      },
+      {
+        id:'cbam-full', name:'EU CBAM Full Financial Compliance', status:'critical', geo:'🇪🇺 European Union',
+        summary:'Full CBAM payments begin Oct 2025. Importers must purchase CBAM certificates. Triggers immediate pricing action for steel, hydrogen and fertiliser traders.',
+        effects: [{ text:'Trade flow disruption', type:'negative' }, { text:'Green H2 premium erosion', type:'positive' }, { text:'Certificate market opens', type:'neutral' }],
+        sector:'Carbon / Industry'
+      },
+      {
+        id:'refueleu', name:'ReFuelEU Aviation Mandate 2%', status:'major', geo:'🇪🇺 European Union',
+        summary:'EU airports must ensure 2% SAF blend by 2025. Enforcement ambiguity between member states creating buyer uncertainty but driving SAF offtake agreements.',
+        effects: [{ text:'SAF offtake surge', type:'positive' }, { text:'Compliance variance risk', type:'negative' }],
+        sector:'SAF'
+      },
+    ]
+  },
+  {
+    year: 2026, entries: [
+      {
+        id:'eu-h2bank', name:'EU Hydrogen Bank Auction Round 3', status:'major', geo:'🇪🇺 European Union',
+        summary:'€3B third round of EU Hydrogen Bank auctions expected H1 2026. Focus shifts to industrial offtakers. Creates procurement signal for electrolysis OEMs and project developers.',
+        effects: [{ text:'Electrolyser demand', type:'positive' }, { text:'Price discovery improvement', type:'positive' }, { text:'Non-EU developer exclusion', type:'negative' }],
+        sector:'Hydrogen'
+      },
+      {
+        id:'uk-ets', name:'UK ETS Price Floor Mechanism', status:'watch', geo:'🇬🇧 United Kingdom',
+        summary:'UK government intends to introduce ETS price floor at £30/tCO₂ from 2026. Creates stable carbon price signal for CCS and industrial decarbonisation investment.',
+        effects: [{ text:'CCS FID unlock', type:'positive' }, { text:'Fossil fuel cost uplift', type:'negative' }],
+        sector:'Carbon / CCS'
+      },
+    ]
+  },
+  {
+    year: 2027, entries: [
+      {
+        id:'eu-battery', name:'EU Battery Regulation Full Scope', status:'major', geo:'🇪🇺 European Union',
+        summary:'Full battery passport requirements from Feb 2027. All EV batteries must declare carbon footprint, recycled content thresholds, and supply chain due diligence.',
+        effects: [{ text:'Supply chain transparency', type:'neutral' }, { text:'Chinese cell disadvantage', type:'positive' }, { text:'Compliance cost for OEMs', type:'negative' }],
+        sector:'EV / Battery'
+      },
+      {
+        id:'imo-ghg', name:'IMO GHG Strategy 2027 Review', status:'watch', geo:'🌍 Global Shipping',
+        summary:'IMO mandatory GHG reduction review with binding mid-term measures expected. Green methanol and ammonia pathways benefit. Shipping decarbonisation spending accelerates.',
+        effects: [{ text:'Green methanol demand', type:'positive' }, { text:'Stranded vessel risk', type:'negative' }],
+        sector:'Shipping'
+      },
+    ]
+  },
+  {
+    year: 2030, entries: [
+      {
+        id:'eu-fit55', name:'EU Fit for 55 — 55% Emissions Cut', status:'watch', geo:'🇪🇺 European Union',
+        summary:'All Fit for 55 measures must deliver 55% net emissions reduction vs 1990. Interconnected across ETS, CBAM, renewable energy, efficiency, and transport. Largest regulatory cluster in energy transition.',
+        effects: [{ text:'Cross-sector demand surge', type:'positive' }, { text:'Fossil fuel phase-down', type:'negative' }, { text:'Technology investment pull', type:'positive' }],
+        sector:'Cross-sector'
+      },
+      {
+        id:'ice-ban', name:'EU ICE Vehicle Sales Ban', status:'major', geo:'🇪🇺 European Union',
+        summary:'New ICE passenger car sales prohibited from 2035 (effectively requiring near-zero CO₂ fleet by 2030 to meet phase-in). OEMs must hit 55% CO₂ reduction by 2030 or face fines.',
+        effects: [{ text:'BEV scale-up urgency', type:'positive' }, { text:'OEM CapEx pressure', type:'negative' }, { text:'Charging infra demand', type:'positive' }],
+        sector:'Automotive / EV'
+      },
+    ]
+  },
+];
+
+let selectedRegFilter = 'all';
+let selectedRegEntry = null;
+
+const REG_FILTER_OPTS = [
+  { id:'all',      label:'All' },
+  { id:'critical', label:'Critical' },
+  { id:'major',    label:'Major' },
+  { id:'watch',    label:'Watch' },
+  { id:'passed',   label:'Passed' },
+];
+
+function buildRegsFilters() {
+  document.getElementById('regs-filters').innerHTML = REG_FILTER_OPTS.map(f => `
+    <div class="regs-filter ${f.id === selectedRegFilter ? 'active' : ''}" onclick="setRegFilter('${f.id}')">${f.label}</div>
+  `).join('');
+}
+
+function setRegFilter(id) {
+  selectedRegFilter = id;
+  buildRegsFilters();
+  renderRegsTimeline();
+}
+
+function renderRegsTimeline() {
+  let html = '';
+  REGS_DATA.forEach(yd => {
+    const entries = selectedRegFilter === 'all' ? yd.entries : yd.entries.filter(e => e.status === selectedRegFilter);
+    if (!entries.length) return;
+    html += `<div class="timeline-year-group">
+      <div class="timeline-year-label">${yd.year}</div>
+      <div class="timeline-entries">`;
+    entries.forEach(e => {
+      const isSelected = selectedRegEntry === e.id;
+      html += `
+        <div class="timeline-entry${isSelected ? ' selected' : ''}" onclick="selectReg('${e.id}')">
+          <div class="timeline-node-wrap">
+            <div class="timeline-node ${e.status}"></div>
+          </div>
+          <div class="timeline-content">
+            <div class="reg-name">${e.name}</div>
+            <div class="reg-meta">
+              <span class="reg-badge ${e.status}">${e.status.toUpperCase()}</span>
+              <span class="reg-geo">${e.geo}</span>
+              <span class="reg-geo">· ${e.sector}</span>
+            </div>
+            <div class="reg-summary">${e.summary}</div>
+            <div class="reg-effects">
+              ${e.effects.map(ef => `<div class="reg-effect-chip effect-${ef.type}">${ef.type === 'positive' ? '↑' : ef.type === 'negative' ? '↓' : '→'} ${ef.text}</div>`).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    });
+    html += `</div></div>`;
+  });
+  document.getElementById('regs-timeline').innerHTML = html;
+}
+
+function selectReg(id) {
+  selectedRegEntry = id;
+  renderRegsTimeline();
+  renderRegsSidebar();
+}
+
+function renderRegsSidebar() {
+  const all = REGS_DATA.flatMap(d => d.entries);
+  const criticalCount = all.filter(e => e.status === 'critical').length;
+  const majorCount = all.filter(e => e.status === 'major').length;
+  const daysToNext = () => {
+    const upcoming = [
+      { name: 'CORSIA Phase 1', days: 52, status: 'critical' },
+      { name: 'EU CBAM Full', days: 108, status: 'critical' },
+      { name: 'ReFuelEU 2%', days: 180, status: 'major' },
+      { name: 'EU H2 Bank Auction 3', days: 380, status: 'major' },
+      { name: 'UK ETS Price Floor', days: 420, status: 'watch' },
+    ];
+    return upcoming;
+  };
+
+  // Client exposure
+  const exposure = [
+    { name: 'Shell', pct: 88, level: 'HIGH' },
+    { name: 'ExxonMobil', pct: 76, level: 'HIGH' },
+    { name: 'Chevron', pct: 71, level: 'HIGH' },
+    { name: 'BMW Group', pct: 62, level: 'MED' },
+    { name: 'VW Group', pct: 58, level: 'MED' },
+    { name: 'Mercedes-Benz', pct: 55, level: 'MED' },
+    { name: 'Maersk', pct: 70, level: 'HIGH' },
+  ];
+
+  const expColor = pct => pct >= 70 ? 'var(--red)' : pct >= 50 ? 'var(--accent3)' : 'var(--accent2)';
+
+  document.getElementById('regs-sidebar').innerHTML = `
+    <div class="regs-sidebar-section">
+      <div class="rss-title">Regulatory Exposure Summary</div>
+      <div class="impact-grid">
+        <div class="impact-box"><div class="impact-box-label">Critical</div><div class="impact-box-val" style="color:var(--red)">${criticalCount}</div></div>
+        <div class="impact-box"><div class="impact-box-label">Major</div><div class="impact-box-val" style="color:var(--accent3)">${majorCount}</div></div>
+        <div class="impact-box"><div class="impact-box-label">Watch</div><div class="impact-box-val" style="color:var(--accent2)">3</div></div>
+        <div class="impact-box"><div class="impact-box-label">Passed</div><div class="impact-box-val" style="color:var(--text3)">1</div></div>
+      </div>
+    </div>
+    <div class="regs-sidebar-section">
+      <div class="rss-title">Client Regulatory Exposure</div>
+      <div class="exposure-list">
+        ${exposure.map(e => `
+          <div class="exposure-item">
+            <div class="exposure-entity">${e.name}</div>
+            <div class="exposure-bar-wrap"><div class="exposure-bar" style="width:${e.pct}%;background:${expColor(e.pct)}"></div></div>
+            <div class="exposure-level" style="color:${expColor(e.pct)}">${e.level}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    <div class="regs-sidebar-section" style="flex:1">
+      <div class="rss-title">Days to Impact</div>
+      ${daysToNext().map(d => `
+        <div class="countdown-item">
+          <div class="countdown-name">${d.name}</div>
+          <div class="countdown-days" style="color:${d.status==='critical'?'var(--red)':d.status==='major'?'var(--accent3)':'var(--accent2)'}">${d.days}d</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+buildRegsFilters();
+renderRegsTimeline();
+renderRegsSidebar();
+
+</script>
+
+<!-- ═══════════════════════════════════════════
+     AI PANEL
+═══════════════════════════════════════════ -->
+<div class="ai-panel" id="ai-panel">
+
+  <!-- Header -->
+  <div class="ai-panel-header">
+    <span style="font-size:16px">✦</span>
+    <div class="ai-panel-title">AI Analyst</div>
+    <div class="ai-panel-ctx" id="ai-ctx-badge">No context loaded</div>
+    <span class="ai-clear-btn" onclick="clearChat()" title="Clear">CLR</span>
+    <div class="ai-panel-close" onclick="toggleAIPanel()">✕</div>
+  </div>
+
+  <!-- API Key bar -->
+  <div class="ai-key-bar" id="ai-key-bar">
+    <div class="ai-key-bar-label">
+      <svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor"><path d="M0 8a4 4 0 0 1 7.465-2H14a.5.5 0 0 1 .354.146l1.5 1.5a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0L13 9.207l-.646.647a.5.5 0 0 1-.708 0L11 9.207l-.646.647a.5.5 0 0 1-.708 0L9 9.207l-.646.647A.5.5 0 0 1 8 10H7.465A4 4 0 0 1 0 8zm4-3a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg>
+      API Key
+    </div>
+    <div class="ai-key-input-wrap">
+      <input type="password" id="ai-key-input" class="ai-key-input"
+        placeholder="sk-ant-api03-..."
+        oninput="onKeyInput(this.value)"
+        autocomplete="off" spellcheck="false"/>
+      <div class="ai-key-status" id="ai-key-status">
+        <span class="ai-key-dot unset"></span>
+        <span id="ai-key-status-txt">Not set</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mode tabs -->
+  <div class="ai-modes">
+    <div class="ai-mode-tab active" id="mode-brief" onclick="setMode('brief')">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M2 2h12v1H2zm0 3h9v1H2zm0 3h12v1H2zm0 3h7v1H2z"/></svg>
+      <span class="ai-mode-tab-label">Brief</span>
+    </div>
+    <div class="ai-mode-tab" id="mode-chat" onclick="setMode('chat')">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M2.678 11.894a1 1 0 0 1 .287.801 10.97 10.97 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8.06 8.06 0 0 0 8 14c3.996 0 7-2.807 7-6 0-3.192-3.004-6-7-6S1 4.808 1 8c0 1.468.617 2.83 1.678 3.894z"/></svg>
+      <span class="ai-mode-tab-label">Chat</span>
+    </div>
+    <div class="ai-mode-tab" id="mode-score" onclick="setMode('score')">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M7 2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5v-1zM0 12a3 3 0 1 1 6 0 3 3 0 0 1-6 0zm7 .5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm0-5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zM0 7a3 3 0 1 1 6 0 3 3 0 0 1-6 0z"/></svg>
+      <span class="ai-mode-tab-label">Score</span>
+    </div>
+    <div class="ai-mode-tab" id="mode-outreach" onclick="setMode('outreach')">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555zM0 4.697v7.104l5.803-3.558L0 4.697zM6.761 8.83l-6.57 4.026A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.025L8 9.586l-1.239-.757zm3.436-.586L16 11.801V4.697l-5.803 3.546z"/></svg>
+      <span class="ai-mode-tab-label">Outreach</span>
+    </div>
+  </div>
+
+  <!-- Quick Actions (context-sensitive) -->
+  <div class="ai-quick-actions">
+    <div class="ai-qa-label">Quick Actions</div>
+    <div class="ai-qa-chips" id="ai-qa-chips"></div>
+  </div>
+
+  <!-- Output area -->
+  <div class="ai-output-area" id="ai-output-area">
+    <div class="ai-output-empty">
+      <div class="ai-output-empty-icon">✦</div>
+      <div class="ai-output-empty-text">Select a quick action<br>or type a question below</div>
+    </div>
+  </div>
+
+  <!-- Input bar -->
+  <div class="ai-input-bar">
+    <textarea class="ai-input" id="ai-input" rows="1"
+      placeholder="Ask anything about the current view..."
+      onkeydown="handleInputKey(event)"
+      oninput="autoResize(this)"></textarea>
+    <button class="ai-send-btn" id="ai-send-btn" onclick="sendMessage()" title="Send">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M15.854.146a.5.5 0 0 1 .11.54L11.02 15.043a.75.75 0 0 1-1.399-.08l-2.182-5.806-5.806-2.182a.75.75 0 0 1-.08-1.4L15.314.037a.5.5 0 0 1 .54.11z"/></svg>
+    </button>
+  </div>
+
+</div>
+
+
+<script>
+// ══════════════════════════════════════════════════════════════
+//  AI PANEL ENGINE
+// ══════════════════════════════════════════════════════════════
+
+let aiPanelOpen = false;
+let currentMode = 'brief';
+let isStreaming = false;
+let chatHistory = [];
+
+// ─── Toggle panel ─────────────────────────────────────────────
+function toggleAIPanel() {
+  aiPanelOpen = !aiPanelOpen;
+  const panel = document.getElementById('ai-panel');
+  const main  = document.querySelector('.main');
+  const btn   = document.getElementById('ai-toggle-btn');
+  panel.classList.toggle('open', aiPanelOpen);
+  main.classList.toggle('panel-open', aiPanelOpen);
+  btn.classList.toggle('active', aiPanelOpen);
+  if (aiPanelOpen) {
+    refreshAIContext();
+  }
+}
+
+// ─── Mode switching ───────────────────────────────────────────
+function setMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.ai-mode-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('mode-' + mode).classList.add('active');
+  refreshQuickActions();
+  const input = document.getElementById('ai-input');
+  const placeholders = {
+    brief:    'Describe what brief you want generated...',
+    chat:     'Ask anything about the current view...',
+    score:    'What should I score or prioritise?',
+    outreach: 'Who should I draft an outreach for?',
+  };
+  input.placeholder = placeholders[mode];
+}
+
+// ─── Context builder ──────────────────────────────────────────
+function getPageContext() {
+  // Detect active page
+  const activePage = document.querySelector('.page.active')?.id || '';
+  let ctx = { page: activePage, data: {} };
+
+  if (activePage === 'page-accounts') {
+    const industry = selectedIndustry;
+    const filtered = industry === 'all' ? ACCOUNTS : ACCOUNTS.filter(a => a.industry === industry);
+    ctx.data = {
+      industry: INDUSTRIES.find(i => i.id === industry)?.label || 'All',
+      accounts: filtered.map(a => ({
+        name: a.name, tier: a.tier, signal: a.signal,
+        revenue: a.rev, theme: a.theme, contacts: a.contacts
+      }))
+    };
+    ctx.label = industry === 'all' ? 'All Accounts' : (INDUSTRIES.find(i=>i.id===industry)?.label || industry);
+  }
+
+  else if (activePage === 'page-market') {
+    const seg = currentSegment;
+    const d = MARKET_DATA[seg];
+    ctx.data = {
+      segment: seg,
+      kpis: d.kpis,
+      forecast: d.forecast,
+      movers: d.movers.map(m => ({ name: m.name, change: m.change, dir: m.dir })),
+      signals: d.signals.map(s => ({ date: s.date, type: s.type, text: s.text, tags: s.tags }))
+    };
+    ctx.label = seg + ' Market';
+  }
+
+  else if (activePage === 'page-tech') {
+    const items = TECH_DATA[currentHLevel];
+    const sel = selectedTechId ? [...TECH_DATA.h1,...TECH_DATA.h2,...TECH_DATA.h3].find(t=>t.id===selectedTechId) : null;
+    const detail = selectedTechId ? (TECH_DETAIL[selectedTechId] || {}) : null;
+    ctx.data = {
+      level: currentHLevel.toUpperCase(),
+      selectedTech: sel ? {
+        name: sel.name, trl: sel.trl, badge: sel.badge,
+        ttm: detail?.ttm, forecast: detail?.size,
+        development: detail?.dev, ties: detail?.ties
+      } : null,
+      allTechs: items.map(t => {
+        const d = TECH_DETAIL[t.id] || {};
+        return { name: t.name, trl: t.trl, ttm: d.ttm, forecast: d.size };
+      })
+    };
+    ctx.label = sel ? sel.name : ('Tech ' + currentHLevel.toUpperCase());
+  }
+
+  else if (activePage === 'page-regs') {
+    const all = REGS_DATA.flatMap(d => d.entries);
+    const filtered = selectedRegFilter === 'all' ? all : all.filter(e => e.status === selectedRegFilter);
+    const sel = selectedRegEntry ? all.find(e => e.id === selectedRegEntry) : null;
+    ctx.data = {
+      filter: selectedRegFilter,
+      selectedReg: sel ? { name: sel.name, status: sel.status, geo: sel.geo, summary: sel.summary, effects: sel.effects, sector: sel.sector } : null,
+      allRegs: filtered.map(e => ({ name: e.name, status: e.status, geo: e.geo, sector: e.sector, summary: e.summary }))
+    };
+    ctx.label = sel ? sel.name : ('Regulations · ' + selectedRegFilter.toUpperCase());
+  }
+
+  return ctx;
+}
+
+// ─── Update context badge ─────────────────────────────────────
+function refreshAIContext() {
+  const ctx = getPageContext();
+  document.getElementById('ai-ctx-badge').textContent = ctx.label || 'Current view';
+  refreshQuickActions();
+}
+
+// ─── Quick actions per page + mode ───────────────────────────
+function refreshQuickActions() {
+  const ctx = getPageContext();
+  const page = ctx.page;
+  const mode = currentMode;
+
+  const actions = {
+    'page-accounts': {
+      brief:    ['Full Account Brief', 'Engagement Priority', 'Sector Overview', 'Signal Summary'],
+      chat:     ['Who has the most signals?', 'Which T1 accounts are hot?', 'Compare oil & gas vs auto'],
+      score:    ['Score by engagement priority', 'Rank by signal strength', 'Tier validation check'],
+      outreach: ['Draft intro email', 'Follow-up sequence', 'Event invite message', 'LinkedIn message'],
+    },
+    'page-market': {
+      brief:    ['Market Snapshot Brief', 'Supply-Demand Analysis', 'Competitor Moves', 'Forecast Narrative'],
+      chat:     ['Why is supply lagging?', 'What are the key risks?', 'Explain market movers'],
+      score:    ['Rank movers by momentum', 'Score segment attractiveness', 'Priority opportunity rank'],
+      outreach: ['Market insight email', 'Thought leadership intro', 'Research invitation', 'Data-led pitch'],
+    },
+    'page-tech': {
+      brief:    ['Technology Brief', 'TRL Readiness Report', 'Commercialisation Outlook', 'Ecosystem Map'],
+      chat:     ['What is the investment outlook?', 'Who are the key players?', 'Explain TRL progression'],
+      score:    ['Rank by investment priority', 'Score commercialisation readiness', 'Strategic fit scoring'],
+      outreach: ['Innovation outreach email', 'R&D partnership pitch', 'Workshop invitation', 'Technical intro'],
+    },
+    'page-regs': {
+      brief:    ['Regulatory Impact Brief', 'Client Exposure Summary', 'Compliance Timeline', 'Risk Assessment'],
+      chat:     ['Which clients are most exposed?', 'When does CBAM kick in?', 'What are the FID implications?'],
+      score:    ['Rank regulations by client impact', 'Score compliance urgency', 'Risk priority matrix'],
+      outreach: ['Regulatory alert email', 'Compliance advisory pitch', 'Policy roundtable invite', 'Risk briefing'],
+    },
+  };
+
+  const chips = (actions[page]?.[mode] || ['Generate analysis', 'Summarise view', 'Key insights', 'Next steps']);
+  document.getElementById('ai-qa-chips').innerHTML = chips.map(c =>
+    `<div class="ai-qa-chip" onclick="quickAction('${c.replace(/'/g,"\'")}')">${c}</div>`
+  ).join('');
+}
+
+// ─── Quick action trigger ─────────────────────────────────────
+function quickAction(prompt) {
+  document.getElementById('ai-input').value = prompt;
+  sendMessage();
+}
+
+// ─── System prompts per mode ──────────────────────────────────
+function getSystemPrompt(mode, ctx) {
+  const base = `You are a senior technology intelligence analyst at FutureBridge Advisory, specialising in energy transition, clean technology, and mobility sectors. You work with major clients including Shell, ExxonMobil, Chevron, BMW, Mercedes-Benz, and Volkswagen.
+
+Current context: ${JSON.stringify(ctx.data, null, 2)}
+
+Be concise, insight-led, and commercially sharp. Avoid generic filler. Use markdown formatting (## for headers, **bold** for key terms, bullet points for lists). Keep responses under 400 words unless a detailed brief is explicitly requested.`;
+
+  const modeInstructions = {
+    brief: `Generate structured intelligence briefs. Use clear sections: ## Executive Summary, ## Key Signals, ## Market Implications, ## Strategic Recommendations. Be specific and data-driven.`,
+    chat: `Answer questions conversationally but with analytical depth. Reference the specific data in context. Be direct and insightful. If asked about data not in context, say so and extrapolate intelligently.`,
+    score: `Generate ranked scores and prioritisations. Use a clear scoring rationale. Output scores as /10 with brief justification per entity. Identify the top 3 priority opportunities explicitly.`,
+    outreach: `Draft professional outreach communications for FutureBridge Advisory. Keep emails under 150 words. Lead with a specific insight or trigger relevant to the recipient. Avoid generic consulting language. Sign off as FutureBridge Advisory team. Always include a clear call to action.`,
+  };
+
+  return base + '\n\n' + modeInstructions[mode];
+}
+
+// ─── Send message ─────────────────────────────────────────────
+async function sendMessage() {
+  if (isStreaming) return;
+  const input = document.getElementById('ai-input');
+  const userText = input.value.trim();
+  if (!userText) return;
+
+  const ctx = getPageContext();
+  input.value = '';
+  autoResize(input);
+
+  // Add user message to UI
+  const outputArea = document.getElementById('ai-output-area');
+  // Clear empty state
+  const empty = outputArea.querySelector('.ai-output-empty');
+  if (empty) empty.remove();
+
+  appendMessage('user', userText);
+
+  // Add to history
+  chatHistory.push({ role: 'user', content: userText });
+
+  // Show loading
+  const loadingId = 'loading-' + Date.now();
+  outputArea.insertAdjacentHTML('beforeend', `
+    <div id="${loadingId}" class="ai-loading">
+      <div class="ai-loading-dots">
+        <div class="ai-loading-dot"></div>
+        <div class="ai-loading-dot"></div>
+        <div class="ai-loading-dot"></div>
+      </div>
+      Analysing context...
+    </div>
+  `);
+  outputArea.scrollTop = outputArea.scrollHeight;
+
+  isStreaming = true;
+  document.getElementById('ai-send-btn').disabled = true;
+
+  try {
+    const systemPrompt = getSystemPrompt(currentMode, ctx);
+    // Build messages — keep last 6 turns for context
+    const msgs = chatHistory.slice(-6);
+
+    if (!window._aiApiKey) {
+      document.getElementById(loadingId)?.remove();
+      appendMessage('assistant', '**API key required.** Enter your Anthropic API key in the field above the mode tabs to get started. Your key is stored in memory only and never leaves your browser.');
+      isStreaming = false;
+      document.getElementById('ai-send-btn').disabled = false;
+      return;
+    }
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': window._aiApiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        stream: true,
+        system: systemPrompt,
+        messages: msgs,
+      })
+    });
+
+    // Remove loading
+    document.getElementById(loadingId)?.remove();
+
+    if (!response.ok) {
+      const err = await response.json();
+      appendMessage('assistant', `**Error:** ${err.error?.message || 'API call failed. Check connection.'}`);
+      isStreaming = false;
+      document.getElementById('ai-send-btn').disabled = false;
+      return;
+    }
+
+    // Create assistant bubble for streaming
+    const bubbleId = 'bubble-' + Date.now();
+    outputArea.insertAdjacentHTML('beforeend', `
+      <div class="ai-msg assistant">
+        <div class="ai-msg-role">AI Analyst · ${currentMode.toUpperCase()}</div>
+        <div class="ai-msg-bubble" id="${bubbleId}"><span class="ai-cursor"></span></div>
+      </div>
+    `);
+    outputArea.scrollTop = outputArea.scrollHeight;
+
+    const bubble = document.getElementById(bubbleId);
+    let fullText = '';
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop();
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const data = line.slice(6).trim();
+        if (data === '[DONE]') continue;
+        try {
+          const parsed = JSON.parse(data);
+          if (parsed.type === 'content_block_delta' && parsed.delta?.type === 'text_delta') {
+            fullText += parsed.delta.text;
+            bubble.innerHTML = renderMarkdown(fullText) + '<span class="ai-cursor"></span>';
+            outputArea.scrollTop = outputArea.scrollHeight;
+          }
+        } catch {}
+      }
+    }
+
+    // Final render without cursor
+    bubble.innerHTML = renderMarkdown(fullText);
+    chatHistory.push({ role: 'assistant', content: fullText });
+    outputArea.scrollTop = outputArea.scrollHeight;
+
+  } catch (err) {
+    document.getElementById(loadingId)?.remove();
+    appendMessage('assistant', `**Connection error:** ${err.message || 'Could not reach API.'}`);
+  }
+
+  isStreaming = false;
+  document.getElementById('ai-send-btn').disabled = false;
+}
+
+// ─── Append message bubble ────────────────────────────────────
+function appendMessage(role, text) {
+  const outputArea = document.getElementById('ai-output-area');
+  const label = role === 'user' ? 'You' : ('AI Analyst · ' + currentMode.toUpperCase());
+  outputArea.insertAdjacentHTML('beforeend', `
+    <div class="ai-msg ${role}">
+      <div class="ai-msg-role">${label}</div>
+      <div class="ai-msg-bubble">${role === 'assistant' ? renderMarkdown(text) : escapeHtml(text)}</div>
+    </div>
+  `);
+  outputArea.scrollTop = outputArea.scrollHeight;
+}
+
+// ─── Clear chat ───────────────────────────────────────────────
+function clearChat() {
+  chatHistory = [];
+  document.getElementById('ai-output-area').innerHTML = `
+    <div class="ai-output-empty">
+      <div class="ai-output-empty-icon">✦</div>
+      <div class="ai-output-empty-text">Select a quick action<br>or type a question below</div>
+    </div>
+  `;
+}
+
+// ─── Keyboard handler ─────────────────────────────────────────
+function handleInputKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+// ─── Auto-resize textarea ─────────────────────────────────────
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+// ─── Markdown renderer ────────────────────────────────────────
+function renderMarkdown(text) {
+  if (!text) return '';
+  // Escape HTML first
+  let t = text
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;');
+
+  // Block-level: process line by line
+  const lines = t.split('\n');
+  const out = [];
+  let inUl = false;
+
+  for (let i = 0; i < lines.length; i++) {
+    let line = lines[i];
+    // Headers
+    if (line.startsWith('### ')) { if(inUl){out.push('</ul>');inUl=false;} out.push('<h3>' + line.slice(4) + '</h3>'); continue; }
+    if (line.startsWith('## '))  { if(inUl){out.push('</ul>');inUl=false;} out.push('<h2>' + line.slice(3) + '</h2>'); continue; }
+    if (line.startsWith('# '))   { if(inUl){out.push('</ul>');inUl=false;} out.push('<h2>' + line.slice(2) + '</h2>'); continue; }
+    // HR
+    if (/^---+$/.test(line.trim())) { if(inUl){out.push('</ul>');inUl=false;} out.push('<hr>'); continue; }
+    // List items
+    if (/^[\-•\*] /.test(line)) {
+      if (!inUl) { out.push('<ul>'); inUl = true; }
+      out.push('<li>' + inlineFormat(line.slice(2)) + '</li>');
+      continue;
+    }
+    // Empty line
+    if (line.trim() === '') {
+      if (inUl) { out.push('</ul>'); inUl = false; }
+      continue;
+    }
+    // Regular paragraph
+    if (inUl) { out.push('</ul>'); inUl = false; }
+    out.push('<p>' + inlineFormat(line) + '</p>');
+  }
+  if (inUl) out.push('</ul>');
+  return out.join('');
+}
+
+function inlineFormat(text) {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>');
+}
+
+function escapeHtml(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ─── Hook page switches to refresh AI context ─────────────────
+const _origSwitchPage = switchPage;
+window.switchPage = function(id) {
+  _origSwitchPage.call(this, id);
+  if (aiPanelOpen) setTimeout(refreshAIContext, 50);
+};
+
+// ─── Hook market segment change ───────────────────────────────
+const _origSwitchSeg = switchSegment;
+window.switchSegment = function(seg) {
+  _origSwitchSeg(seg);
+  if (aiPanelOpen) setTimeout(refreshAIContext, 50);
+};
+
+// ─── Hook tech selection ──────────────────────────────────────
+const _origSelectTech = selectTech;
+window.selectTech = function(id) {
+  _origSelectTech(id);
+  if (aiPanelOpen) setTimeout(refreshAIContext, 50);
+};
+
+// ─── Hook reg selection ───────────────────────────────────────
+const _origSelectReg = selectReg;
+window.selectReg = function(id) {
+  _origSelectReg(id);
+  if (aiPanelOpen) setTimeout(refreshAIContext, 50);
+};
+
+// ─── Hook industry filter ─────────────────────────────────────
+const _origFilterIndustry = filterIndustry;
+window.filterIndustry = function(id) {
+  _origFilterIndustry(id);
+  if (aiPanelOpen) setTimeout(refreshAIContext, 50);
+};
+
+
+// ══════════════════════════════════════════════════════════════
+//  WEAK SIGNALS MODULE
+// ══════════════════════════════════════════════════════════════
+
+// ─── WFM Pipeline stage definitions ──────────────────────────
+const WFM_STAGES = [
+  {
+    id: 'A', letter: 'A', label: 'Universe\nScan', count: null,
+    detail: 'Proprietary WFM Engine scans 20,000+ patent filings, 50,000+ scientific articles, 5,000+ startup/academia activities, 3,000+ news findings, and 500+ funding events across all global industry verticals. GICS and Derwent Class Codes used for structured classification.',
+    tags: ['20k+ Patents', '50k+ Articles', '5k+ Startups', '3k News', '500+ Funding rounds', 'Google Trends', 'Derwent Codes', 'GICS Classification']
+  },
+  {
+    id: 'B', letter: 'B', label: 'Signal\nEvaluation', count: null,
+    detail: 'Technology Hopper (Bubbling Effect) scores each signal on potential (impact, sustainability, economic advantage, disruptiveness, growth), attractiveness (business potential, competitive index, customer POV), and roadmap alignment. Balanced scorecard applied across TRL 2-4 and TRL 5-7 bands.',
+    tags: ['IP Intensity', 'Funding Velocity', 'Player Intensity', 'Market Potential', 'Sustainability', 'Strategic Fit', 'Client Alignment', 'Novelty Index']
+  },
+  {
+    id: 'C', letter: 'C', label: 'Trigger\nPoints', count: null,
+    detail: 'For qualified signals: define data points that confirm movement from early-stage to mainstream adoption. Trigger monitoring covers IP activity, startup funding events, regulatory signals, academic publication velocity, and peer ecosystem moves.',
+    tags: ['IP Monitoring', 'Startup Funding', 'TRL Movement', 'Regulatory Signals', 'Peer Initiatives', 'Publication Velocity', 'Pilot Announcements']
+  },
+  {
+    id: 'D', letter: 'D', label: 'Monitoring\nSupport', count: null,
+    detail: 'Periodic surveillance of accepted signals. Captures new signals emerging in adjacent spaces. Updates qualification scores as market conditions change. Flags when a signal crosses its trigger threshold and recommends strategic response.',
+    tags: ['Quarterly Refresh', 'Radar Movement', 'New Signal Capture', 'Score Updates', 'Trigger Alerts', 'Strategic Response']
+  }
+];
+
+// ─── Weak Signal data ─────────────────────────────────────────
+// Outside-in scores: IP, Players, Funding, Market, Sustainability (1-5)
+// Inside-out scores: StrategicFit, KnowHow, TechCap, InvestFocus, ClientAlign (1-5)
+
+const WS_SIGNALS = [
+  // ── CROSS-INDUSTRY SIGNALS ───────────────────────────────
+  {
+    id:'mycelium', type:'cross', status:'watching',
+    name:'Mycelium Composite Materials',
+    icon:'🍄', iconBg:'rgba(245,158,11,0.15)', iconColor:'#f59e0b',
+    trl: 3,
+    sourceIndustry:'Fashion & Packaging', targetIndustry:'Automotive Interiors',
+    summary:'Fungal mycelium grown into rigid, lightweight composites — used by Adidas, Stella McCartney in footwear. Applicable to automotive headliners, trunk liners, door panels as fully biodegradable structural material.',
+    outsideIn: { IP:2, Players:3, Funding:4, Market:3, Sustainability:5 },
+    insideOut: { StrategicFit:3, KnowHow:2, TechCap:2, InvestFocus:3, ClientAlign:4 },
+    trigger:'First Tier-1 OEM prototype announcement OR mycelium reaching $50/m² cost parity with conventional foam.',
+    wfmStage:'B',
+    ties:['BMW','VW','Mercedes-Benz']
+  },
+  {
+    id:'piezo-road', type:'cross', status:'unreviewed',
+    name:'Piezoelectric Road Surface Energy Harvest',
+    icon:'⚡', iconBg:'rgba(0,144,255,0.15)', iconColor:'#0090ff',
+    trl: 2,
+    sourceIndustry:'Civil Engineering / Smart Cities', targetIndustry:'Mobility Infrastructure',
+    summary:'Piezoelectric crystals embedded in road surfaces convert vehicle-induced pressure into electricity. Israeli startup Innowattech demonstrated 200kWh/km/day. Applicable to motorway charging, fleet depot surfaces, port logistics zones.',
+    outsideIn: { IP:3, Players:2, Funding:2, Market:3, Sustainability:4 },
+    insideOut: { StrategicFit:2, KnowHow:1, TechCap:2, InvestFocus:2, ClientAlign:3 },
+    trigger:'Pilot contract >1km road awarded by national transport authority OR OEM partnership announcement for EV-charging road corridor.',
+    wfmStage:'A',
+    ties:['Shell','BP','VW']
+  },
+  {
+    id:'marine-enzyme', type:'cross', status:'unreviewed',
+    name:'Marine Biofouling Enzyme Coatings',
+    icon:'🌊', iconBg:'rgba(0,201,167,0.15)', iconColor:'#00c9a7',
+    trl: 3,
+    sourceIndustry:'Marine / Aquaculture', targetIndustry:'Industrial Heat Exchangers & Pipelines',
+    summary:'Enzyme-based anti-fouling coatings developed for ship hulls by Hempel, AkzoNobel now showing cross-application potential for industrial heat exchanger efficiency, subsea pipeline integrity, and refinery cooling tower surfaces.',
+    outsideIn: { IP:4, Players:3, Funding:3, Market:4, Sustainability:4 },
+    insideOut: { StrategicFit:3, KnowHow:2, TechCap:2, InvestFocus:3, ClientAlign:3 },
+    trigger:'First energy-sector pilot deployment in refinery cooling circuit OR OPEX saving >15% verified in industrial trial.',
+    wfmStage:'B',
+    ties:['Shell','ExxonMobil','Linde']
+  },
+  {
+    id:'neuromorphic', type:'cross', status:'watching',
+    name:'Neuromorphic Computing for Edge AI',
+    icon:'🧠', iconBg:'rgba(224,64,251,0.15)', iconColor:'#e040fb',
+    trl: 3,
+    sourceIndustry:'Consumer Electronics / Semiconductors', targetIndustry:'Autonomous Vehicles & Grid Control',
+    summary:'Brain-inspired chips (Intel Loihi, IBM NorthPole) process sensor data with 100× lower energy than GPU equivalents. Directly applicable to real-time EV powertrain optimisation, autonomous vehicle edge processing, and smart grid frequency response — without cloud latency.',
+    outsideIn: { IP:5, Players:4, Funding:5, Market:5, Sustainability:3 },
+    insideOut: { StrategicFit:4, KnowHow:2, TechCap:3, InvestFocus:4, ClientAlign:4 },
+    trigger:'Automotive-grade neuromorphic chip qualification (AEC-Q100) by Intel or IBM OR OEM supply agreement announced.',
+    wfmStage:'C',
+    ties:['BMW','Mercedes-Benz','VW','Toyota']
+  },
+  {
+    id:'dna-data', type:'cross', status:'unreviewed',
+    name:'DNA-based Data Storage for Industrial Records',
+    icon:'🧬', iconBg:'rgba(255,77,109,0.15)', iconColor:'#ff4d6d',
+    trl: 2,
+    sourceIndustry:'Life Sciences / Data Centers', targetIndustry:'Energy / Long-term Asset Records',
+    summary:'Synthetic DNA encodes digital data at 215 petabytes/gram — 1,000× denser than flash. Microsoft, Twist Bioscience building read/write systems. Applicable to immutable 50-year asset records for nuclear decommissioning, pipeline integrity, and regulatory audit trails.',
+    outsideIn: { IP:4, Players:2, Funding:4, Market:2, Sustainability:3 },
+    insideOut: { StrategicFit:2, KnowHow:1, TechCap:1, InvestFocus:2, ClientAlign:2 },
+    trigger:'Read speed reaching <1 hour for 1TB dataset OR first industrial proof-of-concept by energy utility.',
+    wfmStage:'A',
+    ties:['Shell','ExxonMobil']
+  },
+  // ── EMERGING TRL 1-3 SIGNALS ─────────────────────────────
+  {
+    id:'thermoacoustic', type:'emerging', status:'unreviewed',
+    name:'Thermoacoustic Heat Engines',
+    icon:'🔊', iconBg:'rgba(255,77,109,0.15)', iconColor:'#ff4d6d',
+    trl: 2,
+    sourceIndustry:null, targetIndustry:null,
+    summary:'Sound-wave-driven engines convert industrial waste heat (>80°C) to electricity with no moving parts. Los Alamos National Lab and Sound Energy (Netherlands) demonstrating units. Applicable to refinery flare stacks, process waste heat, and remote off-grid power.',
+    outsideIn: { IP:3, Players:2, Funding:2, Market:3, Sustainability:5 },
+    insideOut: { StrategicFit:3, KnowHow:2, TechCap:2, InvestFocus:3, ClientAlign:3 },
+    trigger:'Commercial unit >10kWe demonstrated at refinery site OR OEM licensing agreement with energy major.',
+    wfmStage:'A',
+    ties:['Shell','ExxonMobil','Linde']
+  },
+  {
+    id:'proton-ceramic', type:'emerging', status:'watching',
+    name:'Proton Ceramic Fuel Cells (PCFC)',
+    icon:'⚗', iconBg:'rgba(0,201,167,0.15)', iconColor:'#00c9a7',
+    trl: 3,
+    sourceIndustry:null, targetIndustry:null,
+    summary:'Operate at 400-600°C vs 800°C+ for SOFC — enabling faster start-up and compatibility with reformate gas. CoorsTek Membrane Sciences leading. Potential to replace SOFC in distributed generation and enable direct ammonia cracking for H2 delivery.',
+    outsideIn: { IP:3, Players:2, Funding:3, Market:4, Sustainability:4 },
+    insideOut: { StrategicFit:4, KnowHow:2, TechCap:3, InvestFocus:3, ClientAlign:4 },
+    trigger:'Stack lifetime >40,000 hours demonstrated OR first commercial order by utility / industrial gas company.',
+    wfmStage:'B',
+    ties:['Shell','Nel','Linde']
+  },
+  {
+    id:'calcium-loop', type:'emerging', status:'accepted',
+    name:'Calcium Looping for Post-Combustion CCS',
+    icon:'⛰', iconBg:'rgba(245,158,11,0.15)', iconColor:'#f59e0b',
+    trl: 3,
+    sourceIndustry:null, targetIndustry:null,
+    summary:'CaO/CaCO3 sorbent cycles capture CO2 from flue gas at <$30/tonne — half the cost of amine scrubbing. ITRI Taiwan and IFE Norway operating 1.9MW pilots. Cement and steel sectors primary target; retrofit potential to existing fossil power fleet.',
+    outsideIn: { IP:4, Players:3, Funding:4, Market:5, Sustainability:5 },
+    insideOut: { StrategicFit:5, KnowHow:3, TechCap:4, InvestFocus:5, ClientAlign:5 },
+    trigger:'10MW+ pilot at cement/steel facility with verified capture rate >85% OR first commercial FEED initiated.',
+    wfmStage:'C',
+    ties:['Shell','ExxonMobil','Chevron','BASF','Rio Tinto']
+  },
+  {
+    id:'h2-plasma', type:'emerging', status:'watching',
+    name:'H₂ Plasma Direct Iron Reduction',
+    icon:'⚡', iconBg:'rgba(255,77,109,0.15)', iconColor:'#ff4d6d',
+    trl: 2,
+    sourceIndustry:null, targetIndustry:null,
+    summary:'Hydrogen plasma melting replaces entire coking coal and blast furnace chain. Boston Metal and Siderwin demonstrating at lab scale. Produces liquid steel directly from ore — zero process CO2. Could render DRI+EAF route obsolete if cost curve follows electrolyser pattern.',
+    outsideIn: { IP:3, Players:2, Funding:3, Market:4, Sustainability:5 },
+    insideOut: { StrategicFit:3, KnowHow:2, TechCap:2, InvestFocus:4, ClientAlign:3 },
+    trigger:'Pilot at >1tonne/hour output OR first licensing agreement with established steel producer.',
+    wfmStage:'A',
+    ties:['Rio Tinto','BHP','Shell']
+  },
+  {
+    id:'co2-concrete', type:'emerging', status:'unreviewed',
+    name:'CO₂ Mineralisation in Concrete',
+    icon:'🏗', iconBg:'rgba(0,144,255,0.15)', iconColor:'#0090ff',
+    trl: 3,
+    sourceIndustry:null, targetIndustry:null,
+    summary:'CO2 injected during concrete curing reacts with calcium silicate to form stable CaCO3, permanently sequestering carbon while improving compressive strength by 10-15%. CarbonCure deployed in 400+ ready-mix plants. Pathway to carbon-negative construction materials.',
+    outsideIn: { IP:4, Players:3, Funding:4, Market:4, Sustainability:5 },
+    insideOut: { StrategicFit:3, KnowHow:2, TechCap:3, InvestFocus:3, ClientAlign:3 },
+    trigger:'Adoption by top-5 global cement producer OR government mandate for carbon-cured concrete in public infrastructure.',
+    wfmStage:'B',
+    ties:['Shell','Chevron','BASF']
+  },
+  {
+    id:'plasma-n2fix', type:'emerging', status:'unreviewed',
+    name:'Plasma-driven Nitrogen Fixation',
+    icon:'💫', iconBg:'rgba(224,64,251,0.15)', iconColor:'#e040fb',
+    trl: 2,
+    sourceIndustry:null, targetIndustry:null,
+    summary:'Non-thermal plasma converts N2+O2 to NOx fertiliser at ambient conditions — bypassing the Haber-Bosch process entirely (which uses 2% of global energy). DIFFER (Netherlands) and Plasma2Growth consortium showing energy efficiency approaching Haber-Bosch threshold.',
+    outsideIn: { IP:3, Players:2, Funding:3, Market:5, Sustainability:5 },
+    insideOut: { StrategicFit:2, KnowHow:1, TechCap:2, InvestFocus:3, ClientAlign:2 },
+    trigger:'Energy consumption reaching <7 GJ/tonne-N OR first commercial licensing to fertiliser producer.',
+    wfmStage:'A',
+    ties:['BASF','Linde']
+  }
+];
+
+// ─── State ────────────────────────────────────────────────────
+let techViewMode = 'trl'; // 'trl' | 'ws'
+let wsCategory = 'all';
+let wsActiveStage = null;
+// Validation state (persists in session)
+const wsValidation = {}; // id → 'unreviewed'|'watching'|'accepted'|'rejected'
+WS_SIGNALS.forEach(s => { wsValidation[s.id] = s.status; });
+
+// ─── Mode switch ──────────────────────────────────────────────
+function setTechViewMode(mode) {
+  techViewMode = mode;
+  const isTRL = mode === 'trl';
+  document.getElementById('tech-hero').style.display = isTRL ? '' : 'none';
+  document.getElementById('trl-overview').style.display = isTRL ? '' : 'none';
+  document.getElementById('ws-main').style.display = isTRL ? 'none' : 'flex';
+  document.getElementById('h-selector').style.display = isTRL ? '' : 'none';
+  document.getElementById('tech-nav-list').style.display = isTRL ? '' : 'none';
+  document.getElementById('ws-nav-list').style.display = isTRL ? 'none' : '';
+  document.getElementById('mode-btn-trl').className = 'tech-nav-mode-btn' + (isTRL ? ' active-trl' : '');
+  document.getElementById('mode-btn-ws').className  = 'tech-nav-mode-btn' + (!isTRL ? ' active-ws'  : '');
+
+  if (!isTRL) {
+    buildWSNav();
+    renderWSPipeline();
+    renderWSSummary();
+    renderWSCards();
+    if (aiPanelOpen) setTimeout(refreshAIContext, 50);
+  }
+}
+
+// ─── WS Nav ───────────────────────────────────────────────────
+const WS_CATS = [
+  { id:'all',       label:'All Signals',         icon:'◉' },
+  { id:'cross',     label:'Cross-Industry',       icon:'↗' },
+  { id:'emerging',  label:'Emerging TRL 1–3',     icon:'◈' },
+  { id:'accepted',  label:'Accepted',             icon:'✓' },
+  { id:'watching',  label:'Watching',             icon:'◎' },
+  { id:'unreviewed',label:'Unreviewed',           icon:'○' },
+];
+
+function buildWSNav() {
+  const el = document.getElementById('ws-nav-list');
+  el.innerHTML = '<div class="tech-nav-group-header">Signal Categories</div>' +
+    WS_CATS.map(c => {
+      const count = getWSFiltered(c.id).length;
+      return `<div class="ws-nav-cat ${wsCategory === c.id ? 'active' : ''}" onclick="setWSCat('${c.id}')">
+        <div class="ws-nav-cat-icon">${c.icon}</div>
+        <div class="ws-nav-cat-label">${c.label}</div>
+        <div class="ws-nav-cat-count">${count}</div>
+      </div>`;
+    }).join('');
+}
+
+function setWSCat(cat) {
+  wsCategory = cat;
+  buildWSNav();
+  renderWSCards();
+}
+
+function getWSFiltered(cat) {
+  return WS_SIGNALS.filter(s => {
+    if (cat === 'all') return true;
+    if (cat === 'cross') return s.type === 'cross';
+    if (cat === 'emerging') return s.type === 'emerging';
+    if (cat === 'accepted') return wsValidation[s.id] === 'accepted';
+    if (cat === 'watching') return wsValidation[s.id] === 'watching';
+    if (cat === 'unreviewed') return wsValidation[s.id] === 'unreviewed';
+    return true;
+  });
+}
+
+// ─── WFM Pipeline ─────────────────────────────────────────────
+function renderWSPipeline() {
+  const stageCounts = { A:0, B:0, C:0, D:0 };
+  WS_SIGNALS.forEach(s => { if (stageCounts[s.wfmStage] !== undefined) stageCounts[s.wfmStage]++; });
+
+  document.getElementById('wfm-pipeline').innerHTML = WFM_STAGES.map(st => `
+    <div class="wfm-stage ${wsActiveStage === st.id ? 'active' : ''}" onclick="toggleWFMStage('${st.id}')">
+      <div class="wfm-stage-letter">[${st.letter}]</div>
+      <div class="wfm-stage-label">${st.label.replace('\n','<br>')}</div>
+      <div class="wfm-stage-count">${stageCounts[st.id]} signals</div>
+    </div>
+  `).join('');
+}
+
+function toggleWFMStage(id) {
+  wsActiveStage = wsActiveStage === id ? null : id;
+  renderWSPipeline();
+  const detail = document.getElementById('wfm-stage-detail');
+  if (!wsActiveStage) { detail.classList.remove('visible'); return; }
+  const st = WFM_STAGES.find(s => s.id === wsActiveStage);
+  detail.innerHTML = `
+    <div class="wfm-detail-text">${st.detail}</div>
+    <div class="wfm-detail-tags">${st.tags.map(t=>`<span class="wfm-detail-tag">${t}</span>`).join('')}</div>
+  `;
+  detail.classList.add('visible');
+}
+
+// ─── Summary bar ──────────────────────────────────────────────
+function renderWSSummary() {
+  const total = WS_SIGNALS.length;
+  const cross = WS_SIGNALS.filter(s => s.type === 'cross').length;
+  const accepted = WS_SIGNALS.filter(s => wsValidation[s.id] === 'accepted').length;
+  const watching = WS_SIGNALS.filter(s => wsValidation[s.id] === 'watching').length;
+  const unreviewed = WS_SIGNALS.filter(s => wsValidation[s.id] === 'unreviewed').length;
+
+  document.getElementById('ws-summary-bar').innerHTML = `
+    <div class="ws-summary-stat">
+      <div class="ws-stat-label">Total Signals</div>
+      <div class="ws-stat-val" style="color:var(--red)">${total}</div>
+    </div>
+    <div class="ws-summary-stat">
+      <div class="ws-stat-label">Cross-Industry</div>
+      <div class="ws-stat-val" style="color:var(--accent3)">${cross}</div>
+    </div>
+    <div class="ws-summary-stat">
+      <div class="ws-stat-label">Accepted</div>
+      <div class="ws-stat-val" style="color:var(--accent)">${accepted}</div>
+    </div>
+    <div class="ws-summary-stat">
+      <div class="ws-stat-label">Watching</div>
+      <div class="ws-stat-val" style="color:var(--accent2)">${watching}</div>
+    </div>
+    <div class="ws-summary-stat">
+      <div class="ws-stat-label">Unreviewed</div>
+      <div class="ws-stat-val" style="color:var(--text3)">${unreviewed}</div>
+    </div>
+  `;
+}
+
+// ─── Signal cards ─────────────────────────────────────────────
+function renderWSCards() {
+  const filtered = getWSFiltered(wsCategory);
+  const area = document.getElementById('ws-cards-area');
+  if (!filtered.length) {
+    area.innerHTML = '<div style="color:var(--text3);font-family:var(--font-mono);font-size:10px;padding:20px 0;text-align:center">No signals in this category</div>';
+    return;
+  }
+
+  // Group: cross-industry first, then emerging
+  const crossSigs = filtered.filter(s => s.type === 'cross');
+  const emergingSigs = filtered.filter(s => s.type === 'emerging');
+
+  let html = '';
+
+  if (crossSigs.length) {
+    html += `<div class="ws-section-hdr">
+      <div class="ws-section-title" style="color:var(--accent3)">↗ Cross-Industry Signals</div>
+      <div class="ws-section-sub">${crossSigs.length} signals from adjacent sectors</div>
+    </div>`;
+    html += crossSigs.map(s => wsCardHTML(s)).join('');
+  }
+
+  if (emergingSigs.length) {
+    html += `<div class="ws-section-hdr" style="margin-top:${crossSigs.length ? '20px' : '0'}">
+      <div class="ws-section-title" style="color:var(--red)">◈ Emerging Signals — TRL 1–3</div>
+      <div class="ws-section-sub">${emergingSigs.length} early-stage technologies</div>
+    </div>`;
+    html += emergingSigs.map(s => wsCardHTML(s)).join('');
+  }
+
+  area.innerHTML = html;
+}
+
+function wsCardHTML(s) {
+  const v = wsValidation[s.id];
+  const vClass = v === 'accepted' ? 'accepted' : v === 'watching' ? 'watching' : v === 'rejected' ? 'rejected' : '';
+  const cardClass = s.type === 'cross' ? 'ws-cross' : '';
+
+  // Outside-in bar helper
+  const oiBar = (key, val) => {
+    const colors = { IP:'#0090ff', Players:'#e040fb', Funding:'#f59e0b', Market:'#00c9a7', Sustainability:'#64b5f6' };
+    const col = colors[key] || '#8a9bb8';
+    const pct = (val/5)*100;
+    return `<div class="ws-bubble-item">
+      <div class="ws-bubble-label">${key}</div>
+      <div class="ws-bubble-bar"><div class="ws-bubble-fill" style="width:${pct}%;background:${col}"></div></div>
+      <div class="ws-bubble-val" style="color:${col}">${val}/5</div>
+    </div>`;
+  };
+
+  // Score dots helper
+  const scoreDots = (val, type) => {
+    const filledClass = type === 'out' ? 'filled-out' : 'filled-in';
+    return Array.from({length:5},(_,i)=>`<div class="ws-score-dot ${i < val ? filledClass : 'empty'}"></div>`).join('');
+  };
+
+  const vBadgeClass = { unreviewed:'vb-unreviewed', watching:'vb-watching', accepted:'vb-accepted', rejected:'vb-rejected' }[v] || 'vb-unreviewed';
+  const vLabel = v.charAt(0).toUpperCase() + v.slice(1);
+
+  return `
+  <div class="ws-card ${cardClass} ${vClass}" id="wsc-${s.id}">
+    <div class="ws-card-header">
+      <div class="ws-card-icon" style="background:${s.iconBg};color:${s.iconColor}">${s.icon}</div>
+      <div class="ws-card-meta">
+        <div class="ws-card-name">${s.name}</div>
+        <div class="ws-card-tags">
+          <span class="ws-tag ws-tag-trl">TRL ${s.trl}</span>
+          ${s.type === 'cross' ? `<span class="ws-tag ws-tag-cross">Cross-Industry</span>` : `<span class="ws-tag ws-tag-trl">Emerging</span>`}
+          ${s.wfmStage ? `<span class="ws-tag ws-tag-sector">Stage ${s.wfmStage}</span>` : ''}
+          ${s.ties ? s.ties.slice(0,2).map(t=>`<span class="ws-tag ws-tag-sector">${t}</span>`).join('') : ''}
+        </div>
+      </div>
+      <div class="ws-validation-badge ${vBadgeClass}">${vLabel}</div>
+    </div>
+
+    ${s.type === 'cross' ? `
+    <div class="ws-source-row">
+      <span class="ws-source-from">From: ${s.sourceIndustry}</span>
+      <span class="ws-source-arrow">→</span>
+      <span class="ws-source-to">Applicable: ${s.targetIndustry}</span>
+    </div>` : ''}
+
+    <div style="font-size:11px;color:var(--text2);line-height:1.6;margin-bottom:10px">${s.summary}</div>
+
+    <!-- Outside-in Bubbling Effect -->
+    <div style="font-family:var(--font-mono);font-size:8px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px">⬡ Technology Hopper — Outside-In</div>
+    <div class="ws-bubble-row">
+      ${Object.entries(s.outsideIn).map(([k,v]) => oiBar(k,v)).join('')}
+    </div>
+
+    <!-- Inside-out Qualification -->
+    <div class="ws-score-row">
+      <div class="ws-score-panel">
+        <div class="ws-score-panel-title">Outside-In Potential</div>
+        ${Object.entries(s.outsideIn).map(([k,v]) => `
+          <div class="ws-score-item">
+            <div class="ws-score-dim">${k}</div>
+            <div class="ws-score-dots">${scoreDots(v,'out')}</div>
+            <div class="ws-score-num">${v}/5</div>
+          </div>`).join('')}
+      </div>
+      <div class="ws-score-panel">
+        <div class="ws-score-panel-title">Inside-Out — Client Fit</div>
+        ${Object.entries(s.insideOut).map(([k,v]) => `
+          <div class="ws-score-item">
+            <div class="ws-score-dim">${k}</div>
+            <div class="ws-score-dots">${scoreDots(v,'in')}</div>
+            <div class="ws-score-num">${v}/5</div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <!-- Trigger Point -->
+    <div class="ws-trigger">
+      <div class="ws-trigger-label">◈ Trigger Point</div>
+      <div class="ws-trigger-text">${s.trigger}</div>
+    </div>
+
+    <!-- Validation Actions -->
+    <div class="ws-actions">
+      <div class="ws-action-btn btn-accept ${wsValidation[s.id]==='accepted'?'is-active-accept':''}" onclick="validateSignal('${s.id}','accepted')">✓ Accept</div>
+      <div class="ws-action-btn btn-watch  ${wsValidation[s.id]==='watching'?'is-active-watch':''}"  onclick="validateSignal('${s.id}','watching')">◎ Watch</div>
+      <div class="ws-action-btn btn-reject ${wsValidation[s.id]==='rejected'?'is-active-reject':''}" onclick="validateSignal('${s.id}','rejected')">✕ Park</div>
+    </div>
+  </div>`;
+}
+
+// ─── Validation action ────────────────────────────────────────
+function validateSignal(id, state) {
+  // Toggle off if already set
+  wsValidation[id] = wsValidation[id] === state ? 'unreviewed' : state;
+  // Refresh nav counts and summary without full re-render
+  buildWSNav();
+  renderWSSummary();
+  renderWSCards();
+}
+
+// ─── Override getPageContext for WS mode ──────────────────────
+const _origGetPageContext = getPageContext;
+window.getPageContext = function() {
+  const ctx = _origGetPageContext();
+  if (ctx.page === 'page-tech' && techViewMode === 'ws') {
+    const accepted = WS_SIGNALS.filter(s => wsValidation[s.id] === 'accepted');
+    const watching = WS_SIGNALS.filter(s => wsValidation[s.id] === 'watching');
+    ctx.label = 'Weak Signals';
+    ctx.data = {
+      mode: 'WeakSignals',
+      totalSignals: WS_SIGNALS.length,
+      crossIndustry: WS_SIGNALS.filter(s=>s.type==='cross').length,
+      accepted: accepted.map(s=>({ name:s.name, trl:s.trl, type:s.type, trigger:s.trigger })),
+      watching: watching.map(s=>({ name:s.name, trl:s.trl, type:s.type, trigger:s.trigger })),
+      topOutsideIn: WS_SIGNALS.sort((a,b)=>Object.values(b.outsideIn).reduce((x,y)=>x+y,0)-Object.values(a.outsideIn).reduce((x,y)=>x+y,0)).slice(0,3).map(s=>s.name),
+    };
+  }
+  return ctx;
+};
+
+
+// ─── API Key management ───────────────────────────────────────
+window._aiApiKey = '';
+
+function onKeyInput(val) {
+  const trimmed = val.trim();
+  window._aiApiKey = trimmed;
+  const dot = document.getElementById('ai-key-status');
+  const dotEl = dot.querySelector('.ai-key-dot');
+  const txtEl = document.getElementById('ai-key-status-txt');
+  if (!trimmed) {
+    dotEl.className = 'ai-key-dot unset';
+    txtEl.textContent = 'Not set';
+  } else if (trimmed.startsWith('sk-ant-')) {
+    dotEl.className = 'ai-key-dot set';
+    txtEl.textContent = 'Ready';
+  } else {
+    dotEl.className = 'ai-key-dot error';
+    txtEl.textContent = 'Check key';
+  }
+}
+
+</script>
+
+</body>
+</html>
