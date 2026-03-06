@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chris Rolph · Tool Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f3ee;
+    --surface: #ffffff;
+    --border: #e0ddd6;
+    --border-strong: #c8c3b8;
+    --text: #1a1814;
+    --text-muted: #7a7670;
+    --text-light: #a8a49e;
+    --accent: #1a4a8a;
+    --accent-light: #e8eef7;
+    --accent-hover: #123872;
+    --signal: #0f5c3a;
+    --signal-bg: #e8f4ef;
+    --client: #7a2a00;
+    --client-bg: #fdf0e8;
+    --bd: #3a1a6a;
+    --bd-bg: #f0ebf8;
+    --tag-radius: 4px;
+    --card-radius: 8px;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .logo-name {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+
+  .logo-divider {
+    color: var(--border-strong);
+    font-weight: 300;
+    font-size: 20px;
+  }
+
+  .logo-sub {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .header-count {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+
+  .btn-add {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-add:hover { background: var(--accent-hover); }
+
+  /* ── HERO STRIP ── */
+  .hero {
+    background: var(--accent);
+    padding: 36px 40px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .hero h1 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 30px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+  }
+
+  .hero p {
+    color: rgba(255,255,255,0.7);
+    font-size: 14px;
+    margin-top: 6px;
+    font-weight: 300;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 24px;
+    flex-shrink: 0;
+  }
+
+  .stat {
+    text-align: right;
+  }
+
+  .stat-num {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: white;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 3px;
+  }
+
+  /* ── TOOLBAR ── */
+  .toolbar {
+    padding: 20px 40px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 200px;
+    max-width: 320px;
+  }
+
+  .search-wrap svg {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+  }
+
+  .search-input {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px 8px 36px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .search-input::placeholder { color: var(--text-light); }
+  .search-input:focus { border-color: var(--accent); }
+
+  .filters {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    border: 1px solid var(--border);
+    background: transparent;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .filter-btn:hover {
+    border-color: var(--border-strong);
+    color: var(--text);
+  }
+
+  .filter-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+    font-weight: 500;
+  }
+
+  .filter-btn .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .sort-select {
+    margin-left: auto;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 7px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    background: var(--bg);
+    color: var(--text-muted);
+    cursor: pointer;
+    outline: none;
+  }
+
+  /* ── GRID ── */
+  .main {
+    padding: 28px 40px 60px;
+  }
+
+  .section-heading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .section-heading:first-child { margin-top: 0; }
+
+  .section-title {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .section-count {
+    font-size: 12px;
+    color: var(--text-light);
+    font-weight: 400;
+    background: var(--border);
+    border-radius: 10px;
+    padding: 1px 8px;
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: box-shadow 0.15s, transform 0.15s, border-color 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  .card[data-cat="signal"]::before { background: var(--signal); }
+  .card[data-cat="client"]::before { background: var(--client); }
+  .card[data-cat="bd"]::before { background: var(--bd); }
+
+  .card:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+    border-color: var(--border-strong);
+  }
+
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .card-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .card[data-cat="signal"] .card-icon { background: var(--signal-bg); }
+  .card[data-cat="client"] .card-icon { background: var(--client-bg); }
+  .card[data-cat="bd"] .card-icon { background: var(--bd-bg); }
+
+  .card-tag {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: var(--tag-radius);
+  }
+
+  .card[data-cat="signal"] .card-tag { background: var(--signal-bg); color: var(--signal); }
+  .card[data-cat="client"] .card-tag { background: var(--client-bg); color: var(--client); }
+  .card[data-cat="bd"] .card-tag { background: var(--bd-bg); color: var(--bd); }
+
+  .card-title {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.2px;
+    line-height: 1.3;
+  }
+
+  .card-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    flex: 1;
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+
+  .card-date {
+    font-size: 12px;
+    color: var(--text-light);
+  }
+
+  .card-actions {
+    display: flex;
+    gap: 6px;
+  }
+
+  .btn-launch {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .btn-launch:hover { background: var(--accent-hover); }
+
+  .btn-copy {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 5px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .btn-copy:hover { border-color: var(--border-strong); color: var(--text); }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+    grid-column: 1/-1;
+  }
+
+  .empty-state p { font-size: 14px; margin-top: 8px; }
+
+  /* ── ADD MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: white;
+    border-radius: 10px;
+    padding: 28px;
+    width: 480px;
+    max-width: 95vw;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  }
+
+  .modal h2 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+
+  .form-group {
+    margin-bottom: 14px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    background: var(--bg);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus { border-color: var(--accent); }
+
+  .form-group textarea { resize: vertical; min-height: 70px; }
+
+  .modal-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+
+  .btn-cancel {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    color: var(--text-muted);
+  }
+
+  .btn-save {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .hidden { display: none !important; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--text);
+    color: white;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+    z-index: 300;
+  }
+
+  .toast.show { opacity: 1; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    header { padding: 0 20px; }
+    .hero { padding: 24px 20px; flex-direction: column; align-items: flex-start; }
+    .hero-stats { flex-direction: row; }
+    .toolbar { padding: 14px 20px; }
+    .main { padding: 20px 20px 40px; }
+    .grid { grid-template-columns: 1fr; }
+    .stat { text-align: left; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <span class="logo-name">Chris Rolph</span>
+    <span class="logo-divider">/</span>
+    <span class="logo-sub">Tool Portal</span>
+  </div>
+  <div class="header-right">
+    <span class="header-count" id="totalCount"></span>
+    <button class="btn-add" onclick="openModal()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Tool
+    </button>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div>
+    <h1>Intelligence & BD Toolkit</h1>
+    <p>FutureBridge Advisory · Energy & Mobility Practice</p>
+  </div>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num" id="statSignal">—</div>
+      <div class="stat-label">Signal Engine</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="statClient">—</div>
+      <div class="stat-label">Client Tools</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="statBD">—</div>
+      <div class="stat-label">BD & Outreach</div>
+    </div>
+  </div>
+</div>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <div class="search-wrap">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input class="search-input" type="text" id="searchInput" placeholder="Search tools…" oninput="renderAll()">
+  </div>
+  <div class="filters">
+    <button class="filter-btn active" data-filter="all" onclick="setFilter('all', this)">All</button>
+    <button class="filter-btn" data-filter="signal" onclick="setFilter('signal', this)">
+      <span class="dot" style="background:var(--signal)"></span>Signal Engine
+    </button>
+    <button class="filter-btn" data-filter="client" onclick="setFilter('client', this)">
+      <span class="dot" style="background:var(--client)"></span>Client Deliverables
+    </button>
+    <button class="filter-btn" data-filter="bd" onclick="setFilter('bd', this)">
+      <span class="dot" style="background:var(--bd)"></span>BD & Outreach
+    </button>
+  </div>
+  <select class="sort-select" id="sortSelect" onchange="renderAll()">
+    <option value="newest">Newest first</option>
+    <option value="oldest">Oldest first</option>
+    <option value="alpha">A → Z</option>
+  </select>
+</div>
+
+<!-- MAIN GRID -->
+<div class="main" id="mainContent"></div>
+
+<!-- ADD MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2>Add New Tool</h2>
+    <div class="form-group">
+      <label>Tool Name</label>
+      <input type="text" id="f-title" placeholder="e.g. Signal Engine v14">
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <textarea id="f-desc" placeholder="What does this tool do?"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Category</label>
+      <select id="f-cat">
+        <option value="signal">Signal Engine</option>
+        <option value="client">Client Deliverables</option>
+        <option value="bd">BD & Outreach</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>File / URL</label>
+      <input type="text" id="f-url" placeholder="filename.html or https://…">
+    </div>
+    <div class="form-group">
+      <label>Icon (emoji)</label>
+      <input type="text" id="f-icon" placeholder="⚡" maxlength="2">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="addTool()">Save Tool</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DATA ──
+let tools = [
+  {
+    id: 1,
+    title: "Signal Engine v14",
+    desc: "Self-contained intelligence pipeline. Fetches news, scores 1,737 contacts across 138 entities, generates YAMM-ready outreach emails.",
+    cat: "signal",
+    icon: "⚡",
+    url: "signal_engine_v14.html",
+    date: "2025-03-01"
+  },
+  {
+    id: 2,
+    title: "Insight Forecast Dashboard",
+    desc: "Dark-themed intelligence dashboard with Accounts, Market, Technologies & Regulations pages. Includes AI Analyst panel with Brief/Chat/Score/Outreach modes.",
+    cat: "signal",
+    icon: "📡",
+    url: "insight_forecast.html",
+    date: "2025-02-28"
+  },
+  {
+    id: 3,
+    title: "Weak Signals Methodology",
+    desc: "Full replication of the FutureBridge WFM framework. Horizon scanning methodology module embedded in Signal Engine.",
+    cat: "signal",
+    icon: "🔍",
+    url: "weak_signals.html",
+    date: "2025-02-20"
+  },
+  {
+    id: 4,
+    title: "Chevron Intelligence Brief",
+    desc: "HTML leave-behind used live in client meeting. Covers hydrogen, CCUS, and digital oilfield technology signals for Chevron stakeholders.",
+    cat: "client",
+    icon: "🛢️",
+    url: "chevron_brief.html",
+    date: "2025-02-15"
+  },
+  {
+    id: 5,
+    title: "Shell H3 DAC Decision Pack",
+    desc: "25-slide governance-ready presentation evaluating Direct Air Capture for Shell's H3 portfolio. Investment-grade technology assessment framework.",
+    cat: "client",
+    icon: "🌿",
+    url: "shell_dac.html",
+    date: "2025-01-30"
+  },
+  {
+    id: 6,
+    title: "MOL Group — Serbia Biogas Landscape",
+    desc: "Market landscape for Daniel Nagy at MOL Group. Biogas and biomethane opportunity assessment for the Serbian market.",
+    cat: "client",
+    icon: "🇷🇸",
+    url: "mol_serbia_biogas.html",
+    date: "2025-01-22"
+  },
+  {
+    id: 7,
+    title: "TechnipFMC Subsea Analysis",
+    desc: "Competitive approach note — 6-page document with operator interview methodology. Subsea processing technology landscape (€30–35K scope).",
+    cat: "client",
+    icon: "⚓",
+    url: "technipfmc_subsea.html",
+    date: "2025-01-18"
+  },
+  {
+    id: 8,
+    title: "Houston BD Campaign — YAMM Pack",
+    desc: "Persona-based email campaigns for 1,760 Houston energy contacts. Covers ExxonMobil, Chevron, SLB, Baker Hughes with EXPAND/STEADY/RESTRUCTURE postures.",
+    cat: "bd",
+    icon: "🤝",
+    url: "houston_bd.html",
+    date: "2025-02-10"
+  },
+  {
+    id: 9,
+    title: "Market Sentiment Tracker",
+    desc: "Categorises companies into EXPAND / STEADY / RESTRUCTURE / CUT postures. Used to inform pitch angles across the Houston campaign.",
+    cat: "bd",
+    icon: "📊",
+    url: "sentiment_tracker.html",
+    date: "2025-02-05"
+  },
+  {
+    id: 10,
+    title: "Technology Radar — Commercial Vehicles",
+    desc: "Truck OEM technology radar covering electrification, autonomous freight, fuel cells and digital logistics. Built as a BD tool.",
+    cat: "bd",
+    icon: "🚛",
+    url: "tech_radar_cv.html",
+    date: "2025-01-10"
+  }
+];
+
+let nextId = tools.length + 1;
+let activeFilter = 'all';
+
+// ── HELPERS ──
+const $ = id => document.getElementById(id);
+
+function catLabel(cat) {
+  return { signal: 'Signal Engine', client: 'Client Deliverables', bd: 'BD & Outreach' }[cat];
+}
+
+function fmt(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function showToast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ── FILTER & SORT ──
+function setFilter(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAll();
+}
+
+function filteredTools() {
+  const q = $('searchInput').value.trim().toLowerCase();
+  const sort = $('sortSelect').value;
+  let list = tools.filter(t =>
+    (activeFilter === 'all' || t.cat === activeFilter) &&
+    (!q || t.title.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q))
+  );
+  if (sort === 'newest') list.sort((a,b) => new Date(b.date) - new Date(a.date));
+  else if (sort === 'oldest') list.sort((a,b) => new Date(a.date) - new Date(b.date));
+  else list.sort((a,b) => a.title.localeCompare(b.title));
+  return list;
+}
+
+// ── RENDER ──
+function renderAll() {
+  const list = filteredTools();
+  const container = $('mainContent');
+  container.innerHTML = '';
+
+  // Update header count
+  $('totalCount').textContent = `${tools.length} tools`;
+
+  // Update hero stats
+  $('statSignal').textContent = tools.filter(t => t.cat === 'signal').length;
+  $('statClient').textContent = tools.filter(t => t.cat === 'client').length;
+  $('statBD').textContent = tools.filter(t => t.cat === 'bd').length;
+
+  if (list.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div style="font-size:32px">🔎</div><p>No tools match your search.</p></div>`;
+    return;
+  }
+
+  const cats = activeFilter === 'all'
+    ? ['signal', 'client', 'bd']
+    : [activeFilter];
+
+  cats.forEach(cat => {
+    const items = list.filter(t => t.cat === cat);
+    if (!items.length) return;
+
+    const heading = document.createElement('div');
+    heading.className = 'section-heading';
+    heading.innerHTML = `
+      <span class="section-title">${catLabel(cat)}</span>
+      <span class="section-count">${items.length}</span>
+      <div class="section-line"></div>
+    `;
+    container.appendChild(heading);
+
+    const grid = document.createElement('div');
+    grid.className = 'grid';
+
+    items.forEach(tool => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.dataset.cat = tool.cat;
+      card.innerHTML = `
+        <div class="card-top">
+          <div class="card-icon">${tool.icon}</div>
+          <span class="card-tag">${catLabel(tool.cat)}</span>
+        </div>
+        <div class="card-title">${tool.title}</div>
+        <div class="card-desc">${tool.desc}</div>
+        <div class="card-meta">
+          <span class="card-date">${fmt(tool.date)}</span>
+          <div class="card-actions">
+            <button class="btn-copy" title="Copy filename" onclick="copyFile('${tool.url}')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+            <a class="btn-launch" href="${tool.url}" target="_blank">
+              Launch
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+          </div>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+
+    container.appendChild(grid);
+  });
+}
+
+function copyFile(url) {
+  navigator.clipboard.writeText(url).then(() => showToast('Filename copied'));
+}
+
+// ── MODAL ──
+function openModal() {
+  $('modalOverlay').classList.add('open');
+  $('f-title').focus();
+}
+
+function closeModal() {
+  $('modalOverlay').classList.remove('open');
+  ['f-title','f-desc','f-url','f-icon'].forEach(id => $(id).value = '');
+}
+
+function addTool() {
+  const title = $('f-title').value.trim();
+  const desc  = $('f-desc').value.trim();
+  const cat   = $('f-cat').value;
+  const url   = $('f-url').value.trim();
+  const icon  = $('f-icon').value.trim() || '🔧';
+  if (!title || !url) { showToast('Name and file/URL are required'); return; }
+  tools.unshift({
+    id: nextId++,
+    title, desc, cat, icon, url,
+    date: new Date().toISOString().split('T')[0]
+  });
+  closeModal();
+  renderAll();
+  showToast('Tool added ✓');
+}
+
+// Close modal on overlay click
+$('modalOverlay').addEventListener('click', e => {
+  if (e.target === $('modalOverlay')) closeModal();
+});
+
+// Keyboard shortcut
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    e.preventDefault();
+    $('searchInput').focus();
+  }
+});
+
+// ── INIT ──
+renderAll();
+</script>
+</body>
+</html>
