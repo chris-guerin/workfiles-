@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Škoda Auto Intelligence Brief — FutureBridge Advisory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=IBM+Plex+Mono:wght@300;400;500;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #060a0f; --surface: #0b1219; --panel: #0f1922; --panel2: #131f2b;
+  --border: #1c2e3e; --border2: #243444;
+  --gold: #d4a230; --gold2: #f0c060; --cyan: #2dd4bf; --red: #f05252;
+  --green: #22c55e; --amber: #f59e0b; --blue: #38bdf8;
+  --text: #e8eef5; --text-mid: #8fa3b5; --text-dim: #4a6278;
+  --accent: #38bdf8;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+  --font-sans: 'IBM Plex Sans', sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--text);font-family:var(--font-sans);font-size:14px;line-height:1.6}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:9999}
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(6,10,15,0.95);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);display:flex;align-items:center;padding:0 32px;height:52px;gap:24px}
+.nav-brand{font-family:var(--font-mono);font-size:0.65rem;font-weight:700;color:var(--gold);letter-spacing:0.2em;text-transform:uppercase;border-right:1px solid var(--border);padding-right:24px;white-space:nowrap}
+.nav-links{display:flex;gap:4px;flex:1;overflow-x:auto;scrollbar-width:none}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-link{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);text-decoration:none;padding:6px 10px;white-space:nowrap;transition:color 0.15s;border:1px solid transparent}
+.nav-link:hover{color:var(--gold);border-color:var(--border)}
+.nav-badge{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;color:var(--red);border:1px solid var(--red);padding:3px 8px;text-transform:uppercase;animation:blink 2s ease-in-out infinite;white-space:nowrap}
+.posture-badge{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;color:var(--accent);border:1px solid var(--accent);padding:3px 8px;text-transform:uppercase;white-space:nowrap}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.5}}
+.page{max-width:1200px;margin:0 auto;padding:0 32px 80px}
+.hero{padding:110px 0 60px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.hero::before{content:'ŠKODA';position:absolute;right:-30px;top:50%;transform:translateY(-50%);font-family:var(--font-serif);font-size:18rem;font-weight:900;color:rgba(212,162,48,0.04);line-height:1;pointer-events:none;letter-spacing:-0.05em}
+.hero-kicker{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.hero-kicker::before{content:'';width:32px;height:1px;background:var(--gold)}
+.hero-title{font-family:var(--font-serif);font-size:3.5rem;font-weight:900;line-height:1.05;color:var(--text);margin-bottom:16px;max-width:700px}
+.hero-title em{font-style:normal;color:var(--gold)}
+.hero-subtitle{font-family:var(--font-sans);font-size:1rem;color:var(--text-mid);max-width:580px;margin-bottom:36px;font-weight:300;line-height:1.7}
+.hero-meta{display:flex;gap:32px;flex-wrap:wrap}
+.meta-item{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase}
+.meta-label{color:var(--text-dim);margin-bottom:4px}
+.meta-value{color:var(--text);font-weight:700;font-size:0.72rem}
+.section{padding:56px 0 0}
+.section-head{display:flex;align-items:center;gap:16px;margin-bottom:32px}
+.section-num{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.2em;color:var(--text-dim);text-transform:uppercase;background:var(--panel);border:1px solid var(--border);padding:4px 8px}
+.section-title{font-family:var(--font-serif);font-size:1.8rem;font-weight:700;color:var(--text)}
+.section-rule{flex:1;height:1px;background:var(--border)}
+.snapshot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:24px}
+.snap-cell{background:var(--panel);padding:20px;}
+.snap-val{font-family:var(--font-mono);font-size:1.6rem;font-weight:700;color:var(--text);margin-bottom:4px}
+.snap-val.green{color:var(--green)}
+.snap-val.amber{color:var(--amber)}
+.snap-val.cyan{color:var(--cyan)}
+.snap-val.red{color:var(--red)}
+.snap-val.blue{color:var(--blue)}
+.snap-lbl{font-family:var(--font-sans);font-size:0.75rem;color:var(--text-mid);margin-bottom:2px}
+.snap-sub{font-family:var(--font-mono);font-size:0.58rem;color:var(--text-dim)}
+.info-box{background:var(--panel);border-left:3px solid var(--gold);padding:20px 24px;font-size:0.88rem;color:var(--text-mid);line-height:1.7;margin-bottom:24px}
+.callout{background:var(--panel2);border:1px solid var(--border2);border-left:3px solid var(--cyan);padding:20px 24px;font-size:0.88rem;color:var(--text);line-height:1.7;margin-bottom:24px}
+.strategy-box{background:var(--panel);border:1px solid var(--border);padding:24px;margin-bottom:24px}
+.strategy-two-col{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:24px}
+.strategy-col-head{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.strategy-col-head::after{content:'';flex:1;height:1px;background:var(--border)}
+.bullet-list{list-style:none;padding:0}
+.bullet-list li{font-size:0.85rem;color:var(--text-mid);padding:5px 0 5px 16px;position:relative;line-height:1.5;border-bottom:1px solid rgba(28,46,62,0.5)}
+.bullet-list li::before{content:'▸';position:absolute;left:0;color:var(--gold);font-size:0.7rem;top:7px}
+.bullet-list li strong{color:var(--text)}
+.peer-table{width:100%;border-collapse:collapse;font-size:0.78rem;margin-bottom:24px}
+.peer-table th{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);background:var(--panel)}
+.peer-table td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);vertical-align:middle}
+.peer-table .highlight-row td{background:var(--panel2);color:var(--text)}
+.co-name{font-weight:600;color:var(--text);font-size:0.82rem}
+.ticker{font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim)}
+.badge{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.06em;text-transform:uppercase;padding:2px 7px;border-radius:2px;display:inline-block}
+.badge-green{background:rgba(34,197,94,0.15);color:var(--green)}
+.badge-amber{background:rgba(245,158,11,0.15);color:var(--amber)}
+.badge-red{background:rgba(240,82,82,0.15);color:var(--red)}
+.badge-blue{background:rgba(56,189,248,0.15);color:var(--blue)}
+.badge-cyan{background:rgba(45,212,191,0.15);color:var(--cyan)}
+.badge-gold{background:rgba(212,162,48,0.15);color:var(--gold)}
+.initiatives-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:24px}
+.init-card{background:var(--panel);border:1px solid var(--border);padding:20px}
+.init-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:12px}
+.init-name{font-family:var(--font-sans);font-weight:600;font-size:0.88rem;color:var(--text)}
+.init-desc{font-size:0.8rem;color:var(--text-mid);line-height:1.55;margin-bottom:14px}
+.init-progress{}
+.progress-label{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);margin-bottom:4px}
+.progress-bar{height:3px;background:var(--border);}
+.progress-fill{height:100%;background:var(--gold);transition:width 0.3s}
+.progress-fill.green{background:var(--green)}
+.progress-fill.amber{background:var(--amber)}
+.progress-fill.red{background:var(--red)}
+.progress-fill.blue{background:var(--blue)}
+.progress-fill.cyan{background:var(--cyan)}
+.outlook-grid{display:grid;grid-template-columns:1fr 320px;gap:24px}
+.scenario-table{width:100%;border-collapse:collapse;font-size:0.78rem;margin-bottom:16px}
+.scenario-table th{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);background:var(--panel)}
+.scenario-table td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text-mid)}
+.verdict-box{background:var(--panel);border:1px solid var(--border);padding:24px;display:flex;flex-direction:column;gap:16px}
+.verdict-item-head{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px}
+.verdict-score{font-family:var(--font-serif);font-size:1.3rem;font-weight:700;margin-bottom:4px}
+.verdict-note{font-size:0.75rem;color:var(--text-dim);line-height:1.5}
+.signals-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:24px}
+.signal-card{background:var(--panel);border:1px solid var(--border);padding:20px;transition:border-color 0.2s}
+.signal-card:hover{border-color:var(--border2)}
+.signal-num{font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);margin-bottom:6px}
+.signal-name{font-family:var(--font-serif);font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px}
+.signal-trl{font-family:var(--font-mono);font-size:0.58rem;color:var(--gold);margin-bottom:10px}
+.signal-desc{font-size:0.8rem;color:var(--text-mid);line-height:1.55;margin-bottom:12px}
+.signal-why{font-family:var(--font-mono);font-size:0.6rem;color:var(--text-dim)}
+.play-section table{width:100%;border-collapse:collapse}
+.play-section td{padding:12px 16px;border-bottom:1px solid var(--border);font-size:0.82rem;vertical-align:top}
+.play-label{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);white-space:nowrap;width:200px;background:var(--panel)}
+@media(max-width:768px){
+  .snapshot-grid{grid-template-columns:repeat(2,1fr)}
+  .strategy-two-col,.initiatives-grid,.signals-grid,.outlook-grid{grid-template-columns:1fr}
+  .hero-title{font-size:2.2rem}
+  .page{padding:0 16px 60px}
+}
+
+
+/* ── AI SEARCH PANEL ─────────────────────────────────── */
+.search-btn{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;background:transparent;color:var(--gold);border:1px solid var(--gold);padding:4px 12px;cursor:pointer;transition:all 0.15s;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.search-btn:hover{background:rgba(212,162,48,0.12)}
+.search-panel{position:fixed;top:0;right:-520px;width:500px;height:100vh;background:var(--surface);border-left:1px solid var(--border);z-index:1500;display:flex;flex-direction:column;transition:right 0.3s cubic-bezier(.4,0,.2,1);box-shadow:-8px 0 40px rgba(0,0,0,0.5)}
+.search-panel.open{right:0}
+.search-header{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.search-header-left{display:flex;flex-direction:column;gap:4px}
+.search-title{font-family:var(--font-serif);font-size:1.05rem;font-weight:700;color:var(--text)}
+.search-subtitle{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold)}
+.search-close{background:transparent;border:1px solid var(--border);color:var(--text-mid);padding:5px 10px;cursor:pointer;font-family:var(--font-mono);font-size:0.65rem;transition:all 0.15s}
+.search-close:hover{border-color:var(--red);color:var(--red)}
+.search-messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px;scroll-behavior:smooth}
+.search-messages::-webkit-scrollbar{width:4px}
+.search-messages::-webkit-scrollbar-track{background:var(--panel)}
+.search-messages::-webkit-scrollbar-thumb{background:var(--border2)}
+.msg{display:flex;flex-direction:column;gap:6px;max-width:100%}
+.msg-user{align-items:flex-end}
+.msg-ai{align-items:flex-start}
+.msg-bubble{padding:12px 14px;font-size:0.82rem;line-height:1.6;max-width:90%}
+.msg-user .msg-bubble{background:rgba(212,162,48,0.12);border:1px solid rgba(212,162,48,0.25);color:var(--text);border-radius:2px 2px 0 2px;font-family:var(--font-sans)}
+.msg-ai .msg-bubble{background:var(--panel);border:1px solid var(--border);color:var(--text-mid);border-radius:2px 2px 2px 0}
+.msg-ai .msg-bubble strong{color:var(--text)}
+.msg-ai .msg-bubble em{color:var(--cyan);font-style:normal}
+.msg-label{font-family:var(--font-mono);font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim)}
+.msg-sources{font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);padding:6px 14px;border-left:2px solid var(--border);margin-top:2px}
+.msg-sources a{color:var(--cyan);text-decoration:none}
+.msg-sources a:hover{text-decoration:underline}
+.msg-thinking{display:flex;align-items:center;gap:8px;padding:10px 0}
+.thinking-dots span{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--text-dim);animation:dot-pulse 1.2s ease-in-out infinite}
+.thinking-dots span:nth-child(2){animation-delay:0.2s}
+.thinking-dots span:nth-child(3){animation-delay:0.4s}
+@keyframes dot-pulse{0%,80%,100%{transform:scale(0.6);opacity:0.4}40%{transform:scale(1);opacity:1}}
+.search-suggestions{padding:0 20px 16px;display:flex;flex-direction:column;gap:6px}
+.search-suggestions-label{font-family:var(--font-mono);font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:2px}
+.suggestion-chip{background:var(--panel);border:1px solid var(--border);padding:8px 12px;font-size:0.78rem;color:var(--text-mid);cursor:pointer;transition:all 0.15s;text-align:left;font-family:var(--font-sans)}
+.suggestion-chip:hover{border-color:var(--gold);color:var(--text);background:rgba(212,162,48,0.06)}
+.search-input-area{padding:16px 20px;border-top:1px solid var(--border);flex-shrink:0}
+.search-input-row{display:flex;gap:8px}
+.search-input{flex:1;background:var(--panel);border:1px solid var(--border);color:var(--text);font-family:var(--font-sans);font-size:0.82rem;padding:10px 12px;outline:none;resize:none;height:44px;line-height:1.4;transition:border-color 0.15s}
+.search-input:focus{border-color:var(--gold)}
+.search-submit{background:var(--gold);border:none;color:var(--ink);padding:0 16px;cursor:pointer;font-family:var(--font-mono);font-size:0.7rem;font-weight:700;letter-spacing:0.08em;transition:opacity 0.15s;flex-shrink:0}
+.search-submit:hover{opacity:0.85}
+.search-submit:disabled{opacity:0.4;cursor:not-allowed}
+.search-clear{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);background:transparent;border:none;cursor:pointer;padding:6px 0;margin-top:6px;display:block}
+.search-clear:hover{color:var(--text)}
+.search-overlay-bg{position:fixed;inset:0;background:rgba(6,10,15,0.4);z-index:1499;display:none;backdrop-filter:blur(2px)}
+.search-overlay-bg.open{display:block}
+.search-no-key{padding:32px 20px;text-align:center;color:var(--text-dim);font-size:0.82rem;line-height:1.7}
+.search-no-key strong{color:var(--gold);display:block;font-family:var(--font-serif);font-size:1rem;margin-bottom:8px}
+.refresh-btn{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;background:transparent;color:var(--cyan);border:1px solid var(--cyan);padding:4px 12px;cursor:pointer;transition:all 0.15s;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.refresh-btn:hover{background:rgba(45,212,191,0.1)}
+.refresh-btn:disabled{opacity:0.4;cursor:not-allowed}
+.refresh-btn .spin{display:inline-block;animation:spin 1s linear infinite}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.refresh-stamp{font-family:var(--font-mono);font-size:0.52rem;color:var(--text-dim);white-space:nowrap}
+.api-panel{position:fixed;top:52px;right:0;background:var(--surface);border:1px solid var(--border);border-top:none;padding:16px 20px;z-index:999;display:none;min-width:340px;box-shadow:0 8px 32px rgba(0,0,0,0.4)}
+.api-panel.open{display:block}
+.api-panel label{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);display:block;margin-bottom:6px}
+.api-panel input{width:100%;background:var(--panel);border:1px solid var(--border);color:var(--text);font-family:var(--font-mono);font-size:0.72rem;padding:8px 10px;outline:none}
+.api-panel input:focus{border-color:var(--cyan)}
+.api-panel .api-actions{display:flex;gap:8px;margin-top:10px}
+.api-panel button{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.08em;text-transform:uppercase;padding:6px 14px;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--text-mid)}
+.api-panel .btn-save{border-color:var(--cyan);color:var(--cyan)}
+.refresh-overlay{position:fixed;inset:0;background:rgba(6,10,15,0.85);z-index:2000;display:none;align-items:center;justify-content:center;flex-direction:column;gap:20px}
+.refresh-overlay.open{display:flex}
+.refresh-overlay .ro-title{font-family:var(--font-serif);font-size:1.4rem;color:var(--text)}
+.refresh-overlay .ro-status{font-family:var(--font-mono);font-size:0.65rem;color:var(--cyan);letter-spacing:0.1em}
+.refresh-overlay .ro-bar{width:320px;height:2px;background:var(--border);margin-top:4px}
+.refresh-overlay .ro-fill{height:100%;background:var(--cyan);transition:width 0.4s ease;width:0%}
+.refresh-toast{position:fixed;bottom:24px;right:24px;background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--cyan);padding:12px 20px;font-family:var(--font-mono);font-size:0.65rem;color:var(--text);z-index:3000;display:none;max-width:360px;line-height:1.5}
+.refresh-toast.open{display:block}
+
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-brand">FutureBridge // SKODA Brief</div>
+  <div class="nav-links">
+    <a href="#overview" class="nav-link">Overview</a>
+    <a href="#strategy" class="nav-link">Strategy</a>
+    <a href="#peers" class="nav-link">Peers</a>
+    <a href="#initiatives" class="nav-link">Initiatives</a>
+    <a href="#outlook" class="nav-link">Outlook</a>
+    <a href="#signals" class="nav-link">Signals</a>
+    <a href="#playbook" class="nav-link">Playbook</a>
+  </div>
+  <span class="posture-badge" id="postureBadge">STEADY</span>
+  <span class="refresh-stamp" id="refreshStamp"></span>
+  <button class="refresh-btn" id="refreshBtn" onclick="refreshIntelligence()">⟳ Refresh Intelligence</button>
+  <button class="refresh-btn" id="keyBtn" onclick="openApiPanel()" style="border-color:var(--gold);color:var(--gold)">⚙ API Key</button>
+  <button class="search-btn" onclick="openSearch()">🔍 Ask AI</button>
+  <div class="nav-badge">Confidential</div>
+</nav>
+
+<div class="page">
+
+  <section class="hero" id="top">
+    <div class="hero-kicker">Intelligence Brief · Automotive — Value-Premium</div>
+    <h1 class="hero-title">Škoda Auto<br><em>Strategic Intelligence</em></h1>
+    <p class="hero-subtitle">Intelligence briefing on Škoda's value-to-premium EV transition and FutureBridge engagement in Central European mobility.</p>
+    <div class="hero-meta">
+      <div class="meta-item"><div class="meta-label">Sector</div><div class="meta-value">Value-Minded Family Cars · EV Transition · Czech Manufacturing</div></div>
+      <div class="meta-item"><div class="meta-label">Date</div><div class="meta-value">March 2026</div></div>
+      <div class="meta-item"><div class="meta-label">Posture</div><div class="meta-value" style="color:#38bdf8">STEADY</div></div>
+      <div class="meta-item"><div class="meta-label">Prepared by</div><div class="meta-value">FutureBridge Advisory</div></div>
+    </div>
+  </section>
+
+  <section class="section" id="overview">
+    <div class="section-head">
+      <span class="section-num">01</span>
+      <h2 class="section-title">Company Snapshot</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="snapshot-grid">
+      <div class="snap-cell">
+        <div class="snap-val green">~870K</div>
+        <div class="snap-lbl">Škoda Units 2024E</div>
+        <div class="snap-sub">One of VW Group's largest volume brands</div>
+      </div>
+      <div class="snap-cell">
+        <div class="snap-val amber">#3</div>
+        <div class="snap-lbl">Europe Family Car Brand</div>
+        <div class="snap-sub">Behind VW and Renault; ahead of Peugeot in volume</div>
+      </div>
+      <div class="snap-cell">
+        <div class="snap-val green">INDIA</div>
+        <div class="snap-lbl">New Growth Market</div>
+        <div class="snap-sub">Dedicated India platform; aggressive expansion</div>
+      </div>
+      <div class="snap-cell">
+        <div class="snap-val green">ENYAQ</div>
+        <div class="snap-lbl">Flagship EV Success</div>
+        <div class="snap-sub">MEB-based; Škoda's best-received recent launch</div>
+      </div>
+      <div class="snap-cell">
+        <div class="snap-val cyan">€3B+</div>
+        <div class="snap-lbl">Czech R&D + Manufacturing Base</div>
+        <div class="snap-sub">Mladá Boleslav headquarters; growing EV investment</div>
+      </div>
+      <div class="snap-cell">
+        <div class="snap-val green">INDIA SUV</div>
+        <div class="snap-lbl">Kushaq / Slavia Platform</div>
+        <div class="snap-sub">India MQB-A0-IN: major volume opportunity</div>
+      </div>
+      <div class="snap-cell">
+        <div class="snap-val amber">2030</div>
+        <div class="snap-lbl">50-70% EV Target (EU)</div>
+        <div class="snap-sub">Dependent on policy and charger infrastructure</div>
+      </div>
+      <div class="snap-cell">
+        <div class="snap-val">VALUE</div>
+        <div class="snap-lbl">Core Brand Positioning</div>
+        <div class="snap-sub">Simply Clever — value engineering as differentiator</div>
+      </div>
+    </div>
+    <div class="info-box">Škoda is VW Group's most quietly successful brand — consistently delivering strong volumes with high customer satisfaction and VW Group profitability contribution. Built on 'Simply Clever' engineering philosophy, Škoda offers VW-quality vehicles at more accessible price points. The brand's EV strategy (ENYAQ, upcoming Elroq) and India expansion (Kushaq, Slavia) represent the two key growth vectors. <strong>Škoda is less exposed to the VW Group crisis than the headline brands</strong> — its cost base and market position are fundamentally sounder.</div>
+  </section>
+
+  <section class="section" id="strategy">
+    <div class="section-head">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Strategy & Intelligence</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="callout"><strong>Strategic Assessment:</strong> Škoda's intelligence need is about value-optimised EV technology: how to deliver compelling electric vehicles at price points below VW brand while maintaining the quality and reliability that define the brand. FutureBridge's technology intelligence on affordable EV components (LFP batteries, value-market software) is directly applicable.</div>
+    <div class="strategy-box">
+      <div class="strategy-two-col">
+        <div>
+          <div class="strategy-col-head">EV Transition — ENYAQ & Beyond</div>
+          <ul class="bullet-list"><li>Škoda ENYAQ: MEB-based EV SUV — among Europe's best-value premium electric SUVs</li>
+<li>ENYAQ Coupé RS: performance variant positioning Škoda above its traditional value niche</li>
+<li>Elroq (2024): compact EV SUV below ENYAQ — critical for volume EV expansion</li>
+<li>Future platform: MEB+ and SSP compatibility for next-generation Škoda EVs</li>
+<li>Value engineering focus: Škoda delivers MEB technology at lower price than VW ID.4</li></ul>
+        </div>
+        <div>
+          <div class="strategy-col-head">India — The Volume Growth Engine</div>
+          <ul class="bullet-list"><li>MQB-A0-IN: India-specific platform developed at significantly lower cost than global platforms</li>
+<li>Kushaq (SUV) and Slavia (sedan): launched 2021-2022; strong market reception in India</li>
+<li>Škoda Auto Volkswagen India: the JV responsible for delivering 1 million units in India by 2030</li>
+<li>Component localisation: 95%+ local content for India models — genuine cost competitiveness</li>
+<li>Future India EVs: exploring electric versions of India models for 2027+ — with affordable LFP batteries</li></ul>
+        </div>
+      </div>
+    </div>
+    <div class="strategy-two-col">
+      <div>
+        <div class="strategy-col-head">The 'Simply Clever' EV Formula</div>
+        <ul class="bullet-list"><li>Škoda's engineering philosophy is pragmatic over flashy — translate this to EV: best range per euro, not best 0-100</li>
+<li>Customer base values reliability, practicality, and value — these translate well to EV if price is right</li>
+<li>The key technology question: when do LFP batteries make MEB-platform cars viable at €25-30K?</li>
+<li>Škoda Elroq targets exactly this price point — technology choices will define its competitiveness</li>
+<li>FutureBridge: LFP battery cost trajectory and value-market EV software intelligence</li></ul>
+      </div>
+      <div>
+        <div class="strategy-col-head">FutureBridge Entry Points</div>
+        <ul class="bullet-list"><li>Škoda DigiLab: digitalisation and future mobility innovation team (Mladá Boleslav + Prague)</li>
+<li>Technology Academy: Škoda's internal training and technology scouting capability</li>
+<li>India strategy team: market intelligence on India EV landscape and competitive positioning</li>
+<li>FutureBridge's emerging market energy and mobility intelligence is a direct fit for India work</li>
+<li>CEE automotive supply chain intelligence: relevant for Škoda's Czech manufacturing ecosystem</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="peers">
+    <div class="section-head">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Peer Landscape</h2>
+      <div class="section-rule"></div>
+    </div>
+    <table class="peer-table">
+      <thead>
+        <tr>
+          <th>Company</th><th>Strategy</th><th>LC/Tech Invest</th>
+          <th>Renewables/EV</th><th>CCS/H₂</th><th>Returns</th>
+          <th>Dividend</th><th>Risk Profile</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="highlight-row">
+          <td><div class="co-name">Škoda</div><div class="ticker">VOW3</div></td>
+          <td>Value-premium; Simply Clever EV; India growth</td>
+          <td>VW Group-backed</td>
+          <td>ENYAQ-led</td>
+          <td>N/A</td>
+          <td>Solid</td>
+          <td>Group-dependent</td>
+          <td><span class="badge badge-amber">Value leader</span></td>
+        </tr>
+        <tr>
+          <td><div class="co-name">Kia</div><div class="ticker">KIA</div></td>
+          <td>Design + value EV; best value-market EV range</td>
+          <td>High</td>
+          <td>Yes</td>
+          <td>N/A</td>
+          <td>High</td>
+          <td>Consistent</td>
+          <td><span class="badge badge-amber">Direct rival</span></td>
+        </tr>
+        <tr>
+          <td><div class="co-name">Renault</div><div class="ticker">RNO</div></td>
+          <td>Volume EV leader; R5 at €25K is the benchmark</td>
+          <td>High</td>
+          <td>Yes</td>
+          <td>N/A</td>
+          <td>High</td>
+          <td>Variable</td>
+          <td><span class="badge badge-amber">Price leader</span></td>
+        </tr>
+        <tr>
+          <td><div class="co-name">Hyundai</div><div class="ticker">005380</div></td>
+          <td>Quality-value EV; Ioniq 5/6 excellent but more premium</td>
+          <td>High</td>
+          <td>Yes</td>
+          <td>N/A</td>
+          <td>High</td>
+          <td>Consistent</td>
+          <td><span class="badge badge-amber">Premium value</span></td>
+        </tr>
+        <tr>
+          <td><div class="co-name">Dacia</div><div class="ticker">RNO</div></td>
+          <td>Ultra-low-cost value; Spring EV at €15K</td>
+          <td>Renault-backed</td>
+          <td>Yes</td>
+          <td>N/A</td>
+          <td>Growing</td>
+          <td>Growing</td>
+          <td><span class="badge badge-amber">Price floor</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section" id="initiatives">
+    <div class="section-head">
+      <span class="section-num">04</span>
+      <h2 class="section-title">Key Initiatives & Progress</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="initiatives-grid">
+      <div class="init-card">
+        <div class="init-head">
+          <div class="init-name">Škoda Elroq — Compact EV SUV</div>
+          <span class="badge badge-green">LAUNCHED</span>
+        </div>
+        <div class="init-desc">Compact electric SUV below ENYAQ. MEB platform. Target: €33-40K range. Competing vs Renault Megane E-Tech, Kia EV3. Volume sales model for Škoda's EV transition.</div>
+        <div class="init-progress">
+          <div class="progress-label"><span>Progress</span><span>70%</span></div>
+          <div class="progress-bar"><div class="progress-fill green" style="width:70%"></div></div>
+        </div>
+      </div>
+      <div class="init-card">
+        <div class="init-head">
+          <div class="init-name">ENYAQ RS — Performance Variant</div>
+          <span class="badge badge-green">OPERATIONAL</span>
+        </div>
+        <div class="init-desc">Performance EV variant repositioning Škoda upward in brand hierarchy. 299 bhp dual-motor. Competing with VW ID.4 GTX and Kia EV6 GT-Line. Proving Škoda can play in performance EV.</div>
+        <div class="init-progress">
+          <div class="progress-label"><span>Progress</span><span>80%</span></div>
+          <div class="progress-bar"><div class="progress-fill green" style="width:80%"></div></div>
+        </div>
+      </div>
+      <div class="init-card">
+        <div class="init-head">
+          <div class="init-name">India EV Strategy 2027+</div>
+          <span class="badge badge-blue">PLANNING</span>
+        </div>
+        <div class="init-desc">Exploring electric versions of Kushaq/Slavia using LFP battery chemistry for cost viability in India. Government EV incentives and FAME II support. Infrastructure dependency is key constraint.</div>
+        <div class="init-progress">
+          <div class="progress-label"><span>Progress</span><span>20%</span></div>
+          <div class="progress-bar"><div class="progress-fill blue" style="width:20%"></div></div>
+        </div>
+      </div>
+      <div class="init-card">
+        <div class="init-head">
+          <div class="init-name">DigiLab — Czech Innovation Hub</div>
+          <span class="badge badge-cyan">ACTIVE</span>
+        </div>
+        <div class="init-desc">Digitalisation and future mobility innovation team. Focus: connected car, shared mobility, future HMI. Partners with Czech startup ecosystem.</div>
+        <div class="init-progress">
+          <div class="progress-label"><span>Progress</span><span>55%</span></div>
+          <div class="progress-bar"><div class="progress-fill cyan" style="width:55%"></div></div>
+        </div>
+      </div>
+      <div class="init-card">
+        <div class="init-head">
+          <div class="init-name">Mladá Boleslav EV Factory Upgrade</div>
+          <span class="badge badge-amber">BUILDING</span>
+        </div>
+        <div class="init-desc">ENYAQ production and future EV expansion. New battery assembly facility. Targeting Czech EV production hub as complement to Germany. Government support for green transition.</div>
+        <div class="init-progress">
+          <div class="progress-label"><span>Progress</span><span>60%</span></div>
+          <div class="progress-bar"><div class="progress-fill amber" style="width:60%"></div></div>
+        </div>
+      </div>
+      <div class="init-card">
+        <div class="init-head">
+          <div class="init-name">MQB-A0-IN — India Platform</div>
+          <span class="badge badge-green">OPERATIONAL</span>
+        </div>
+        <div class="init-desc">India-specific platform delivering Kushaq and Slavia. 95% local content. One of the automotive industry's best examples of emerging market engineering. Foundation for future India EVs.</div>
+        <div class="init-progress">
+          <div class="progress-label"><span>Progress</span><span>85%</span></div>
+          <div class="progress-bar"><div class="progress-fill green" style="width:85%"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="outlook">
+    <div class="section-head">
+      <span class="section-num">05</span>
+      <h2 class="section-title">5-Year Outlook</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="callout">Škoda's outlook is more positive than the VW Group headline suggests. The brand has structural advantages: value positioning that works in economic downturns, India growth optionality, and a solid EV lineup (ENYAQ, Elroq). Key risks are at group level (SSP delay means next-gen EV platform delayed) and market level (Renault R5 and Dacia Spring create fierce value EV competition).</div>
+    <div class="outlook-grid">
+      <div>
+        <table class="scenario-table">
+          <thead>
+            <tr><th>Scenario</th><th>Key Variable</th><th>Earnings Est.</th><th>Valuation</th><th>5yr Return</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Bull Case</strong></td>
+              <td>India surge + Elroq success</td>
+              <td>~1M+ units</td>
+              <td>Strong contribution</td>
+              <td>+20-35%</td>
+            </tr>
+            <tr>
+              <td><strong>Base Case</strong></td>
+              <td>Steady Europe + India growth</td>
+              <td>~870-920K units</td>
+              <td>Stable</td>
+              <td>+5-15%</td>
+            </tr>
+            <tr>
+              <td><strong>Bear Case</strong></td>
+              <td>Value EV price war + China</td>
+              <td>~750-800K units</td>
+              <td>Margin pressure</td>
+              <td>-5 to +5%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="verdict-box">
+        <div >
+          <div class="verdict-item-head">Strategy Durability</div>
+          <div class="verdict-score" style="color:var(--green)">Good</div>
+          <div class="verdict-note">Value positioning is resilient. India optionality adds growth upside. Simply Clever translates to EV era.</div>
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:16px">
+          <div class="verdict-item-head">FutureBridge Opportunity</div>
+          <div class="verdict-score" style="color:var(--amber)">MEDIUM</div>
+          <div class="verdict-note">LFP battery intelligence and India market scanning are the primary hooks. DigiLab is entry point.</div>
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:16px">
+          <div class="verdict-item-head">Posture Assessment</div>
+          <div class="verdict-score" style="color:var(--cyan)">STEADY</div>
+          <div class="verdict-note">Neither restructuring nor aggressive expansion. Methodical EV transition with India as growth bet.</div>
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:16px">
+          <div class="verdict-item-head">Primary Risk</div>
+          <div class="verdict-score" style="color:var(--amber)">Value EV Price War</div>
+          <div class="verdict-note">Renault R5, Dacia Spring, and BYD Seagull equivalent create intense value-market EV competition. Margin protection is key.</div>
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:16px">
+          <div class="verdict-item-head">Engagement Priority</div>
+          <div class="verdict-score" style="color:var(--gold)">⭐⭐⭐</div>
+          <div class="verdict-note">Tier 2-3 account. DigiLab and India strategy are entry points. Good long-term account, lower priority vs Shell/VW/Audi.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="signals">
+    <div class="section-head">
+      <span class="section-num">06</span>
+      <h2 class="section-title">Weak Signals — FutureBridge Intelligence</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="signals-grid">
+        <div class="signal-card">
+          <div class="signal-num">S-01</div>
+          <div class="signal-name">LFP Battery Mainstream Adoption</div>
+          <div class="signal-trl">Sector: Battery Technology · Signal Strength: 8/10</div>
+          <div class="signal-desc">LFP (lithium iron phosphate) is becoming the dominant chemistry for value-market EVs. Cost parity with NMC expected by 2026. Škoda's Elroq and India EV plans depend on this cost curve.</div>
+          <div class="signal-why">Impact: <span class="badge badge-red">HIGH</span></div>
+        </div>
+        <div class="signal-card">
+          <div class="signal-num">S-02</div>
+          <div class="signal-name">Renault R5 EV — The Benchmark</div>
+          <div class="signal-trl">Sector: Competitive Intelligence · Signal Strength: 8/10</div>
+          <div class="signal-desc">Renault R5 EV at €25K is the most important competitive benchmark for Škoda's value EV positioning. Understanding R5's technology content, margin structure, and customer reception is critical for Elroq.</div>
+          <div class="signal-why">Impact: <span class="badge badge-red">HIGH</span></div>
+        </div>
+        <div class="signal-card">
+          <div class="signal-num">S-03</div>
+          <div class="signal-name">India EV Tipping Point</div>
+          <div class="signal-trl">Sector: Emerging Markets · Signal Strength: 7/10</div>
+          <div class="signal-desc">India's EV adoption is accelerating faster than forecast. Tata Nexon EV and MG ZS EV have proven market. The question is when Škoda should commit to India EV — the window for first-mover advantage in affordable segment is 2025-2027.</div>
+          <div class="signal-why">Impact: <span class="badge badge-red">HIGH</span></div>
+        </div>
+        <div class="signal-card">
+          <div class="signal-num">S-04</div>
+          <div class="signal-name">Simply Clever for EV Software</div>
+          <div class="signal-trl">Sector: Digital/Software · Signal Strength: 6/10</div>
+          <div class="signal-desc">Škoda's brand promise of 'Simply Clever' engineering innovations (umbrella in door, ice scraper in fuel cap) needs a digital equivalent for EV era. What is the 'Simply Clever' in-vehicle tech that differentiates Škoda from VW?</div>
+          <div class="signal-why">Impact: <span class="badge badge-amber">MEDIUM</span></div>
+        </div>
+    </div>
+  </section>
+
+  <section class="section play-section" id="playbook">
+    <div class="section-head">
+      <span class="section-num">07</span>
+      <h2 class="section-title">Meeting Playbook</h2>
+      <div class="section-rule"></div>
+    </div>
+    <table>
+          <tr>
+            <td class="play-label">Strategic alignment hook</td>
+            <td>Škoda's 'Simply Clever' philosophy is a perfect fit for FutureBridge: we find the technologies that will simply and cleverly solve Škoda's EV transition challenge at value-market price points.</td>
+          </tr>
+          <tr>
+            <td class="play-label">Primary pain point</td>
+            <td>Škoda needs technology intelligence on two fronts: LFP battery cost trajectory (for European value EV) and India EV market timing (when to invest in electric Kushaq/Slavia).</td>
+          </tr>
+          <tr>
+            <td class="play-label">Key question to ask</td>
+            <td>"What's your current intelligence on LFP battery adoption in the €30-35K EV segment, and how is that informing the Elroq's technology choices for the 2027 model cycle?"</td>
+          </tr>
+          <tr>
+            <td class="play-label">Avoid</td>
+            <td>Don't conflate Škoda with the VW Group crisis — the brand team is sensitive about being lumped in with VW brand's problems. Škoda has its own story.</td>
+          </tr>
+          <tr>
+            <td class="play-label">Best entry point</td>
+            <td>Škoda DigiLab (Mladá Boleslav / Prague). Also: future product planning and India strategy team. Technology Academy for a broader intelligence relationship.</td>
+          </tr>
+    </table>
+  </section>
+
+</div>
+
+<div class="api-panel" id="apiPanel">
+  <label>Anthropic API Key</label>
+  <input type="password" id="apiKeyInput" placeholder="sk-ant-..." />
+  <div style="font-family:var(--font-mono);font-size:0.52rem;color:var(--text-dim);margin-top:6px">Stored locally in your browser only. Never sent to any server except api.anthropic.com.</div>
+  <div class="api-actions">
+    <button onclick="closeApiPanel()">Cancel</button>
+    <button class="btn-save" onclick="saveApiKey()">Save Key</button>
+  </div>
+</div>
+
+<div class="refresh-overlay" id="refreshOverlay">
+  <div class="ro-title">Refreshing Intelligence</div>
+  <div class="ro-status" id="roStatus">Connecting to Anthropic...</div>
+  <div class="ro-bar"><div class="ro-fill" id="roFill"></div></div>
+</div>
+
+<div class="refresh-toast" id="refreshToast"></div>
+
+<script>
+const COMPANY_NAME = "Škoda Auto";
+const COMPANY_SECTOR = "Automotive — Value-Premium";
+const COMPANY_ID = "skoda";
+
+function getApiKey() { return localStorage.getItem('fb_api_key') || ''; }
+function saveApiKey() {
+  const k = document.getElementById('apiKeyInput').value.trim();
+  if (!k) { showToast('Please enter an API key'); return; }
+  localStorage.setItem('fb_api_key', k);
+  closeApiPanel();
+  showToast('API key saved ✓');
+}
+function openApiPanel() {
+  const panel = document.getElementById('apiPanel');
+  panel.classList.toggle('open');
+  const k = getApiKey();
+  if (k) document.getElementById('apiKeyInput').value = k;
+}
+function closeApiPanel() { document.getElementById('apiPanel').classList.remove('open'); }
+
+function showToast(msg, duration=3000) {
+  const t = document.getElementById('refreshToast');
+  t.textContent = msg;
+  t.classList.add('open');
+  setTimeout(() => t.classList.remove('open'), duration);
+}
+
+function setProgress(pct, status) {
+  document.getElementById('roFill').style.width = pct + '%';
+  document.getElementById('roStatus').textContent = status;
+}
+
+async function refreshIntelligence() {
+  const apiKey = getApiKey();
+  if (!apiKey) { openApiPanel(); showToast('Enter your API key first'); return; }
+
+  const btn = document.getElementById('refreshBtn');
+  const overlay = document.getElementById('refreshOverlay');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin">⟳</span> Refreshing...';
+  overlay.classList.add('open');
+  setProgress(10, 'Connecting to Anthropic API...');
+
+  const prompt = `You are a senior intelligence analyst at FutureBridge Advisory. 
+Search the web for the very latest news and developments about ${COMPANY_NAME} (${COMPANY_SECTOR}).
+Focus on: strategy announcements, financial results, technology investments, partnerships, executive changes, regulatory developments, and competitive moves from the past 90 days.
+
+Return ONLY a valid JSON object with this exact structure (no markdown, no preamble):
+{
+  "posture": "EXPAND" or "STEADY" or "RESTRUCTURE" or "CUT",
+  "posture_rationale": "One sentence explaining the posture",
+  "refreshed": "Q1 2026",
+  "signals": [
+    {
+      "name": "Signal title (5-8 words)",
+      "sector": "Technology area or theme",
+      "strength": 8,
+      "desc": "2-3 sentence description of the signal, what it means, and why it matters for ${COMPANY_NAME}. Include specific data points or announcements where possible.",
+      "impact": "HIGH" or "MEDIUM" or "LOW"
+    },
+    {
+      "name": "Signal title",
+      "sector": "Technology area",
+      "strength": 7,
+      "desc": "Description.",
+      "impact": "HIGH"
+    },
+    {
+      "name": "Signal title",
+      "sector": "Technology area",
+      "strength": 6,
+      "desc": "Description.",
+      "impact": "MEDIUM"
+    },
+    {
+      "name": "Signal title",
+      "sector": "Technology area",
+      "strength": 5,
+      "desc": "Description.",
+      "impact": "MEDIUM"
+    }
+  ],
+  "snapshot_updates": [
+    {"label": "metric label", "value": "new value", "color": "green"},
+    {"label": "metric label", "value": "new value", "color": "amber"}
+  ]
+}
+
+Return exactly 4 signals. Use current, specific, real intelligence. Do not fabricate. If you cannot find recent news, say so in the signal descriptions.`;
+
+  try {
+    setProgress(25, 'Searching web for latest intelligence...');
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-beta': 'interleaved-thinking-2025-05-14'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 2000,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    setProgress(60, 'Analysing intelligence...');
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.error?.message || 'API error ' + response.status);
+    }
+
+    const data = await response.json();
+    setProgress(80, 'Parsing results...');
+
+    // Extract text from response blocks
+    let rawText = '';
+    for (const block of data.content) {
+      if (block.type === 'text') rawText += block.text;
+    }
+
+    // Strip markdown fences if present
+    rawText = rawText.replace(/```json
+?/g, '').replace(/```
+?/g, '').trim();
+
+    // Find JSON object
+    const jsonStart = rawText.indexOf('{');
+    const jsonEnd = rawText.lastIndexOf('}') + 1;
+    if (jsonStart === -1) throw new Error('No JSON found in response');
+    const jsonStr = rawText.slice(jsonStart, jsonEnd);
+    const result = JSON.parse(jsonStr);
+
+    setProgress(95, 'Updating brief...');
+
+    // ── UPDATE SIGNALS SECTION ──
+    const badgeColors = { HIGH: 'badge-red', MEDIUM: 'badge-amber', LOW: 'badge-green' };
+    const signalsGrid = document.querySelector('.signals-grid');
+    if (signalsGrid && result.signals) {
+      signalsGrid.innerHTML = result.signals.map((s, i) => `
+        <div class="signal-card">
+          <div class="signal-num">S-${String(i+1).padStart(2,'0')} · LIVE REFRESH</div>
+          <div class="signal-name">${s.name}</div>
+          <div class="signal-trl">Sector: ${s.sector} · Signal Strength: ${s.strength}/10</div>
+          <div class="signal-desc">${s.desc}</div>
+          <div class="signal-why">Impact: <span class="badge ${badgeColors[s.impact] || 'badge-amber'}">${s.impact}</span></div>
+        </div>
+      `).join('');
+    }
+
+    // ── UPDATE POSTURE BADGE ──
+    if (result.posture) {
+      const postureEls = document.querySelectorAll('.posture-badge');
+      postureEls.forEach(el => el.textContent = result.posture);
+      const postureMetaVal = document.querySelector('.meta-value[data-field="posture"]');
+      if (postureMetaVal) postureMetaVal.textContent = result.posture;
+    }
+
+    // ── UPDATE STAMP ──
+    const stamp = document.getElementById('refreshStamp');
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'});
+    if (stamp) stamp.textContent = 'Refreshed ' + dateStr;
+
+    // ── UPDATE SECTION TITLE TO SHOW LIVE ──
+    const signalHead = document.querySelector('#signals .section-title');
+    if (signalHead) signalHead.textContent = 'Weak Signals — Live Intelligence';
+
+    setProgress(100, 'Complete');
+    setTimeout(() => {
+      overlay.classList.remove('open');
+      btn.disabled = false;
+      btn.innerHTML = '⟳ Refresh Intelligence';
+      showToast('Intelligence refreshed ✓ — ' + result.signals.length + ' signals updated · Posture: ' + (result.posture || 'unchanged'), 5000);
+    }, 600);
+
+  } catch(err) {
+    overlay.classList.remove('open');
+    btn.disabled = false;
+    btn.innerHTML = '⟳ Refresh Intelligence';
+    console.error('Refresh error:', err);
+    showToast('Error: ' + err.message + ' — Check API key and try again.', 6000);
+  }
+}
+
+// Close api panel on outside click
+document.addEventListener('click', (e) => {
+  const panel = document.getElementById('apiPanel');
+  if (panel.classList.contains('open') && !panel.contains(e.target) && e.target.id !== 'keyBtn') {
+    closeApiPanel();
+  }
+});
+
+// Check for saved key on load
+window.addEventListener('load', () => {
+  const k = getApiKey();
+  const stamp = document.getElementById('refreshStamp');
+  if (k && stamp) {
+    stamp.textContent = 'Key saved ✓';
+  }
+});
+</script>
+
+
+<!-- ── AI SEARCH PANEL ─────────────────────────────── -->
+<div class="search-overlay-bg" id="searchBg" onclick="closeSearch()"></div>
+
+<div class="search-panel" id="searchPanel">
+  <div class="search-header">
+    <div class="search-header-left">
+      <div class="search-title">Ask AI — Škoda Auto</div>
+      <div class="search-subtitle">⚡ Live Intelligence · Web Search Enabled</div>
+    </div>
+    <button class="search-close" onclick="closeSearch()">✕ Close</button>
+  </div>
+
+  <div class="search-messages" id="searchMessages">
+    <div class="search-no-key" id="searchWelcome">
+      <strong>AI Analyst Ready</strong>
+      Ask anything about Škoda Auto — strategy, financials, technology, competitors, or how FutureBridge can engage. Answers draw on live web search and deep company context.
+    </div>
+  </div>
+
+  <div class="search-suggestions" id="searchSuggestions">
+    <div class="search-suggestions-label">Suggested questions</div>
+    <button class="suggestion-chip" onclick="sendSuggestion(this)">What are Škoda Auto's most urgent strategic priorities right now?</button>
+    <button class="suggestion-chip" onclick="sendSuggestion(this)">How should FutureBridge position for a first meeting with Škoda Auto?</button>
+    <button class="suggestion-chip" onclick="sendSuggestion(this)">What are the biggest technology risks facing Škoda Auto by 2030?</button>
+  </div>
+
+  <div class="search-input-area">
+    <div class="search-input-row">
+      <textarea class="search-input" id="searchInput" placeholder="Ask anything about Škoda Auto..." rows="1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitSearch()}}"
+        oninput="autoResizeInput(this)"></textarea>
+      <button class="search-submit" id="searchSubmit" onclick="submitSearch()">Ask →</button>
+    </div>
+    <button class="search-clear" onclick="clearSearch()">⟳ Clear conversation</button>
+  </div>
+</div>
+
+<script>
+// ── SEARCH STATE ─────────────────────────────────────────
+const SEARCH_COMPANY = "Škoda Auto";
+const SEARCH_SECTOR  = "Automotive — Value-Premium";
+const SEARCH_POSTURE = "STEADY";
+const SEARCH_CONTEXT = `You are a senior intelligence analyst at FutureBridge Advisory with deep expertise in ${SEARCH_SECTOR}. You are advising the team ahead of an engagement with ${SEARCH_COMPANY}.
+
+Company context:
+- Name: ${SEARCH_COMPANY}
+- Sector: ${SEARCH_SECTOR}
+- Current strategic posture: ${SEARCH_POSTURE}
+- FutureBridge is a technology intelligence and innovation advisory firm. Our value proposition is H3 horizon scanning (15-20 year emerging technology discovery), H2 strategy validation, competitive intelligence, and technology radar services.
+
+When answering questions:
+- Be specific, analytical, and direct — no filler or generic statements
+- Use actual data, figures, and named initiatives where possible
+- When discussing FutureBridge engagement strategy, think like a senior BD director
+- Format responses clearly using bold for key points
+- Keep answers focused and actionable — max 4-5 paragraphs
+- If asked about recent events, use web search to find current information
+- Always end with one pointed insight or recommended action`;
+
+let searchHistory = [];
+
+function openSearch() {
+  const panel = document.getElementById('searchPanel');
+  const bg    = document.getElementById('searchBg');
+  panel.classList.add('open');
+  bg.classList.add('open');
+  setTimeout(() => document.getElementById('searchInput').focus(), 320);
+}
+
+function closeSearch() {
+  document.getElementById('searchPanel').classList.remove('open');
+  document.getElementById('searchBg').classList.remove('open');
+}
+
+function autoResizeInput(el) {
+  el.style.height = '44px';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function sendSuggestion(btn) {
+  document.getElementById('searchInput').value = btn.textContent.trim();
+  document.getElementById('searchSuggestions').style.display = 'none';
+  submitSearch();
+}
+
+function clearSearch() {
+  searchHistory = [];
+  const msgs = document.getElementById('searchMessages');
+  msgs.innerHTML = `<div class="search-no-key" id="searchWelcome">
+    <strong>AI Analyst Ready</strong>
+    Ask anything about ${SEARCH_COMPANY} — strategy, financials, technology, competitors, or how FutureBridge can engage.
+  </div>`;
+  document.getElementById('searchSuggestions').style.display = 'flex';
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchInput').style.height = '44px';
+}
+
+function addMessage(role, text, sources) {
+  const msgs = document.getElementById('searchMessages');
+  // Remove welcome message
+  const welcome = document.getElementById('searchWelcome');
+  if (welcome) welcome.remove();
+
+  const div = document.createElement('div');
+  div.className = `msg msg-${role}`;
+
+  const label = document.createElement('div');
+  label.className = 'msg-label';
+  label.textContent = role === 'user' ? 'You' : 'AI Analyst';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+
+  if (role === 'ai') {
+    // Convert **bold** and line breaks
+    const formatted = text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/
+
+/g, '</p><p>')
+      .replace(/
+/g, '<br>');
+    bubble.innerHTML = '<p>' + formatted + '</p>';
+  } else {
+    bubble.textContent = text;
+  }
+
+  div.appendChild(label);
+  div.appendChild(bubble);
+
+  if (sources && sources.length > 0) {
+    const srcDiv = document.createElement('div');
+    srcDiv.className = 'msg-sources';
+    srcDiv.innerHTML = 'Sources: ' + sources.slice(0, 3).map((s, i) =>
+      `<a href="${s.url}" target="_blank" rel="noopener">${s.title || s.url}</a>`
+    ).join(' · ');
+    div.appendChild(srcDiv);
+  }
+
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function addThinking() {
+  const msgs = document.getElementById('searchMessages');
+  const div = document.createElement('div');
+  div.className = 'msg msg-ai';
+  div.id = 'thinkingMsg';
+  div.innerHTML = `
+    <div class="msg-label">AI Analyst</div>
+    <div class="msg-thinking">
+      <div class="thinking-dots"><span></span><span></span><span></span></div>
+      <span style="font-family:var(--font-mono);font-size:0.58rem;color:var(--text-dim)">Searching & analysing...</span>
+    </div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function removeThinking() {
+  const t = document.getElementById('thinkingMsg');
+  if (t) t.remove();
+}
+
+async function submitSearch() {
+  const input = document.getElementById('searchInput');
+  const btn   = document.getElementById('searchSubmit');
+  const question = input.value.trim();
+  if (!question) return;
+
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    openApiPanel();
+    showToast('Enter your API key to use AI Search');
+    return;
+  }
+
+  // Hide suggestions after first message
+  document.getElementById('searchSuggestions').style.display = 'none';
+
+  // Add user message
+  addMessage('user', question);
+  searchHistory.push({ role: 'user', content: question });
+
+  // Clear input
+  input.value = '';
+  input.style.height = '44px';
+  btn.disabled = true;
+
+  // Show thinking
+  addThinking();
+
+  try {
+    const messages = [
+      ...searchHistory.slice(0, -1), // history minus last user msg
+      {
+        role: 'user',
+        content: `${SEARCH_CONTEXT}
+
+---
+
+User question: ${question}
+
+Use web search to find current, specific information where relevant. Be analytical and FutureBridge-specific in your framing.`
+      }
+    ];
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1024,
+        system: SEARCH_CONTEXT,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: searchHistory
+      })
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.error?.message || 'API error ' + response.status);
+    }
+
+    const data = await response.json();
+    removeThinking();
+
+    // Extract text and sources
+    let answerText = '';
+    let sources = [];
+
+    for (const block of data.content) {
+      if (block.type === 'text') {
+        answerText += block.text;
+      }
+      if (block.type === 'tool_result' && Array.isArray(block.content)) {
+        for (const item of block.content) {
+          if (item.type === 'document' && item.document?.url) {
+            sources.push({ url: item.document.url, title: item.document.title || item.document.url });
+          }
+        }
+      }
+    }
+
+    if (!answerText) answerText = 'I found some information but could not format a clear answer. Please try rephrasing your question.';
+
+    // Add AI response to history
+    searchHistory.push({ role: 'assistant', content: answerText });
+
+    addMessage('ai', answerText, sources);
+
+  } catch(err) {
+    removeThinking();
+    addMessage('ai', '⚠ Error: ' + err.message + '
+
+Check your API key and try again.');
+    console.error('Search error:', err);
+  } finally {
+    btn.disabled = false;
+  }
+}
+</script>
+
+</body>
+</html>
