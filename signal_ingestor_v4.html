@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signal Engine · Ingestor</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg:          #F7F6F3;
+  --surface:     #FFFFFF;
+  --surface2:    #F0EEE9;
+  --border:      #D8D5CE;
+  --border-dark: #B8B4AC;
+  --text:        #1A1916;
+  --text-mid:    #4B4845;
+  --text-dim:    #8A8680;
+  --red:         #F84E5D;
+  --green:       #22AE8A;
+  --yellow:      #D4A017;
+  --blue:        #3F43AD;
+  --blue-light:  #EEF0FF;
+  --purple:      #7A5CB8;
+  --purple-light:#F3EEFF;
+  --green-light: #EBF9F5;
+  --red-light:   #FFF0F1;
+  --font:        'DM Sans', sans-serif;
+  --mono:        'DM Mono', monospace;
+  --radius:      6px;
+  --shadow:      0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md:   0 4px 12px rgba(0,0,0,0.10);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+.hdr {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 20px;
+  padding: 0 28px;
+  height: 56px;
+  box-shadow: var(--shadow);
+}
+
+.hdr-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.hdr-brand-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.hdr-brand-bar div {
+  background: var(--text);
+  height: 3px;
+  border-radius: 1px;
+}
+.hdr-brand-bar div:nth-child(1) { width: 28px; }
+.hdr-brand-bar div:nth-child(2) { width: 19px; }
+.hdr-brand-bar div:nth-child(3) { width: 11px; }
+.hdr-brand-name {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-mid);
+  margin-top: 3px;
+}
+.hdr-brand-name span { color: var(--red); }
+
+/* Steps */
+.hdr-steps {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.step-pill {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 13px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-dim);
+  border-radius: 20px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.step-pill.active {
+  background: var(--text);
+  color: #fff;
+}
+.step-pill.done {
+  color: var(--green);
+}
+.step-num {
+  font-family: var(--mono);
+  font-size: 10px;
+  opacity: 0.6;
+}
+.step-pill.active .step-num { opacity: 0.7; }
+.step-sep {
+  color: var(--border-dark);
+  font-size: 14px;
+  user-select: none;
+}
+
+/* API Key */
+.hdr-key {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.hdr-key input {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 6px 12px;
+  width: 200px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.hdr-key input:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(63,67,173,0.1);
+}
+.hdr-key input::placeholder { color: var(--text-dim); }
+.key-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--border-dark);
+  transition: background 0.3s;
+  flex-shrink: 0;
+}
+.key-dot.live { background: var(--green); }
+
+/* ── LAYOUT ── */
+.main { padding: 32px 28px; max-width: 1100px; margin: 0 auto; }
+
+/* ── PANELS ── */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* ── LOAD SCREEN ── */
+.load-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 70vh;
+  justify-content: center;
+  gap: 28px;
+}
+
+.load-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 40px 48px;
+  width: 480px;
+  box-shadow: var(--shadow-md);
+  text-align: center;
+}
+
+.load-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.load-sub {
+  color: var(--text-mid);
+  font-size: 13px;
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+.load-checks {
+  text-align: left;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.load-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-mid);
+}
+.check-icon {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  flex-shrink: 0;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  transition: all 0.3s;
+}
+.check-icon.ok   { background: var(--green-light); border-color: var(--green); color: var(--green); }
+.check-icon.err  { background: var(--red-light);   border-color: var(--red);   color: var(--red); }
+.check-icon.spin { animation: spin 0.8s linear infinite; border-top-color: var(--blue); background: var(--blue-light); border-color: var(--blue); }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.load-status {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 12px;
+  min-height: 20px;
+  text-align: center;
+}
+.load-status.ok  { color: var(--green); }
+.load-status.err { color: var(--red); }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--radius);
+  border: none;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn:hover { filter: brightness(0.95); }
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; filter: none; }
+
+.btn-primary { background: var(--text); color: #fff; }
+.btn-primary:hover { background: #333; filter: none; }
+.btn-ghost {
+  background: transparent;
+  color: var(--text-mid);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover { border-color: var(--border-dark); color: var(--text); filter: none; }
+.btn-red   { background: var(--red);   color: #fff; }
+.btn-green { background: var(--green); color: #fff; }
+.btn-blue  { background: var(--blue);  color: #fff; }
+
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+.btn-full { width: 100%; justify-content: center; }
+
+/* ── SECTION LABEL ── */
+.section-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 14px;
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.page-sub {
+  font-size: 13px;
+  color: var(--text-mid);
+  margin-bottom: 24px;
+}
+
+/* ── TOOLBAR ── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 16px;
+}
+.toolbar-left { display: flex; flex-direction: column; gap: 2px; }
+.toolbar-right { display: flex; gap: 8px; align-items: center; }
+
+/* ── SIGNAL CARDS ── */
+.signal-list { display: flex; flex-direction: column; gap: 8px; }
+
+.signal-card {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 14px;
+  align-items: start;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  box-shadow: var(--shadow);
+}
+.signal-card:hover { border-color: var(--border-dark); box-shadow: var(--shadow-md); }
+.signal-card.selected { border-color: var(--text); }
+.signal-card.rejected { opacity: 0.4; border-color: var(--border); box-shadow: none; }
+
+.signal-check {
+  width: 22px; height: 22px;
+  border: 2px solid var(--border-dark);
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+  font-size: 13px;
+  color: var(--text);
+  transition: all 0.15s;
+  background: var(--surface);
+}
+.signal-card.selected .signal-check {
+  background: var(--text);
+  color: #fff;
+  border-color: var(--text);
+}
+
+.signal-headline {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.45;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+.signal-meta {
+  display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+}
+.signal-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 3px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.signal-tag         { background: var(--surface2); color: var(--text-mid); }
+.signal-tag.entity  { background: var(--blue-light); color: var(--blue); }
+.signal-tag.tech    { background: var(--purple-light); color: var(--purple); }
+.signal-tag.high    { background: var(--red-light); color: var(--red); }
+.signal-tag.medium  { background: #FFF8E6; color: var(--yellow); }
+.signal-source { font-size: 12px; color: var(--text-dim); font-style: italic; }
+
+/* ── RESULT CARDS ── */
+.result-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  margin-bottom: 12px;
+}
+.result-header {
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.result-entity { font-weight: 600; font-size: 14px; }
+.result-signal {
+  font-size: 12px; color: var(--text-dim); font-style: italic;
+  max-width: 480px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.result-body { padding: 18px; }
+
+.bet-hit {
+  background: var(--green-light);
+  border: 1px solid rgba(34,174,138,0.3);
+  border-radius: 4px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+}
+.bet-hit-title { font-weight: 500; font-size: 13px; margin-bottom: 4px; }
+.bet-hit-step {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--green);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.persona-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--blue-light);
+  color: var(--blue);
+  border-radius: 3px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-family: var(--mono);
+  margin: 2px;
+}
+
+/* ── EMAIL TABS ── */
+.email-tabs {
+  display: flex;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 16px;
+  gap: 0;
+}
+.email-tab {
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--text-dim);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.15s;
+}
+.email-tab:hover { color: var(--text); }
+.email-tab.active { color: var(--text); border-bottom-color: var(--text); }
+
+.email-week { display: none; }
+.email-week.active { display: block; }
+
+.email-subject-row {
+  font-size: 12px;
+  color: var(--text-mid);
+  margin-bottom: 10px;
+  font-family: var(--mono);
+  letter-spacing: 0.05em;
+}
+.email-subject-row strong {
+  font-family: var(--font);
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+.email-body {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 16px 18px;
+  font-size: 13px;
+  line-height: 1.75;
+  white-space: pre-wrap;
+  color: var(--text);
+}
+
+/* ── EXPORT ── */
+.export-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+.export-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 18px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+.export-num {
+  font-family: var(--mono);
+  font-size: 36px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  line-height: 1;
+}
+.export-type {
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+.export-desc {
+  font-size: 12px;
+  color: var(--text-mid);
+  line-height: 1.5;
+  margin-bottom: 16px;
+  min-height: 48px;
+}
+.export-count {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 14px;
+}
+.export-count strong { color: var(--text); font-size: 16px; }
+
+/* ── PROGRESS ── */
+.progress-wrap {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  height: 6px;
+  margin: 14px 0;
+  overflow: hidden;
+}
+.progress-bar {
+  height: 100%;
+  background: var(--text);
+  border-radius: 4px;
+  width: 0%;
+  transition: width 0.4s ease;
+}
+
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-mid);
+}
+.status-row.ok  { color: var(--green); }
+.status-row.err { color: var(--red); }
+
+/* ── ACTION BAR ── */
+.action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 28px;
+  padding: 16px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.action-desc { font-size: 13px; color: var(--text-mid); }
+
+/* ── DIAGNOSTICS BOX ── */
+.diag-box {
+  background: #FFFBF0;
+  border: 1px solid #F0D080;
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-top: 16px;
+  font-size: 13px;
+}
+.diag-box h4 { font-size: 13px; font-weight: 600; margin-bottom: 10px; color: var(--yellow); }
+.diag-box code {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 2px 7px;
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.diag-box .diag-step {
+  margin-bottom: 8px;
+  padding-left: 16px;
+  line-height: 1.6;
+  color: var(--text-mid);
+}
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--text); color: #fff;
+  padding: 11px 18px;
+  border-radius: var(--radius);
+  font-size: 13px; font-weight: 500;
+  opacity: 0; transform: translateY(6px);
+  transition: opacity 0.2s, transform 0.2s;
+  pointer-events: none; z-index: 999;
+  box-shadow: var(--shadow-md);
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.err  { background: var(--red); }
+.toast.ok   { background: var(--green); }
+
+.spinner {
+  width: 14px; height: 14px;
+  border: 2px solid rgba(0,0,0,0.15);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+.empty {
+  text-align: center;
+  padding: 56px 24px;
+  color: var(--text-dim);
+  font-size: 14px;
+}
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border-dark); border-radius: 3px; }
+
+/* ── DB DROP ZONE ── */
+.db-drop {
+  border: 2px dashed var(--border-dark);
+  border-radius: var(--radius);
+  padding: 22px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--surface2);
+  margin-bottom: 4px;
+  position: relative;
+}
+.db-drop:hover, .db-drop.dragover {
+  border-color: var(--blue);
+  background: var(--blue-light);
+}
+.db-drop.loaded {
+  border-color: var(--green);
+  background: var(--green-light);
+  border-style: solid;
+}
+.db-drop input[type=file] { display: none; }
+.db-drop-icon { font-size: 24px; margin-bottom: 6px; }
+.db-drop-label { font-size: 13px; font-weight: 500; color: var(--text-mid); }
+.db-drop-sub { font-size: 12px; color: var(--text-dim); margin-top: 3px; }
+
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-brand">
+    <div class="hdr-brand-bar">
+      <div></div><div></div><div></div>
+    </div>
+    <div class="hdr-brand-name">Signal<span>Engine</span></div>
+  </div>
+
+  <nav class="hdr-steps">
+    <div class="step-pill active" id="s-load"><span class="step-num">01</span>Load</div>
+    <div class="step-sep">›</div>
+    <div class="step-pill" id="s-review"><span class="step-num">02</span>Review</div>
+    <div class="step-sep">›</div>
+    <div class="step-pill" id="s-classify"><span class="step-num">03</span>Classify</div>
+    <div class="step-sep">›</div>
+    <div class="step-pill" id="s-generate"><span class="step-num">04</span>Generate</div>
+    <div class="step-sep">›</div>
+    <div class="step-pill" id="s-export"><span class="step-num">05</span>Export</div>
+  </nav>
+
+  <div class="hdr-key">
+    <div class="key-dot" id="keyDot"></div>
+    <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-…"
+      oninput="onApiKey(this.value)" autocomplete="off" />
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- PANEL 1: LOAD -->
+  <div class="panel active" id="panel-load">
+    <div class="load-screen">
+      <div class="load-card">
+        <div class="load-title">Morning signal run</div>
+        <div class="load-sub">
+          Drop your database file below, then click Load. No Python or server needed — everything runs in the browser.
+        </div>
+
+        <div class="load-checks">
+          <div class="load-check">
+            <div class="check-icon" id="chk-key">—</div>
+            <div>
+              <div style="font-weight:500">Anthropic API key</div>
+              <div style="font-size:12px;color:var(--text-dim)">Enter above in the header</div>
+            </div>
+          </div>
+          <div class="load-check">
+            <div class="check-icon" id="chk-db">—</div>
+            <div>
+              <div style="font-weight:500">signal_engine_final.db</div>
+              <div style="font-size:12px;color:var(--text-dim)" id="db-detail">Drop the file below</div>
+            </div>
+          </div>
+          <div class="load-check">
+            <div class="check-icon" id="chk-n8n">—</div>
+            <div>
+              <div style="font-weight:500">n8n · WF-11 signals</div>
+              <div style="font-size:12px;color:var(--text-dim)" id="n8n-detail">Loaded on click</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="db-drop" id="dbDrop"
+             onclick="document.getElementById('dbFile').click()"
+             ondragover="onDragOver(event)"
+             ondragleave="onDragLeave(event)"
+             ondrop="onDrop(event)">
+          <input type="file" id="dbFile" accept=".db,.sqlite,.sqlite3" onchange="onFileSelect(event)">
+          <div class="db-drop-icon" id="dropIcon">📂</div>
+          <div class="db-drop-label" id="dropLabel">Click or drag your .db file here</div>
+          <div class="db-drop-sub" id="dropSub">signal_engine_final.db · stays on your machine</div>
+        </div>
+
+        <div id="loadStatus" class="load-status">Drop your database file to begin</div>
+        <div style="height:16px"></div>
+
+        <button class="btn btn-primary btn-full" id="loadBtn" onclick="loadAll()" disabled>
+          <div class="spinner" id="loadSpinner" style="display:none"></div>
+          Load today's signals
+        </button>
+      </div>
+
+      <div id="diagBox" style="display:none" class="diag-box">
+        <h4>⚠ n8n connection issue — how to fix</h4>
+        <div id="diagContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 2: REVIEW -->
+  <div class="panel" id="panel-review">
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <div class="page-title">Today's signals</div>
+        <div class="page-sub" id="reviewSub">Select signals to classify</div>
+      </div>
+      <div class="toolbar-right">
+        <button class="btn btn-ghost btn-sm" onclick="selectAll()">Select all</button>
+        <button class="btn btn-ghost btn-sm" onclick="selectNone()">Clear</button>
+        <button class="btn btn-primary" id="classifyBtn" onclick="goClassify()" disabled>
+          Classify <span id="selCount">0</span> signals →
+        </button>
+      </div>
+    </div>
+    <div class="signal-list" id="signalList"></div>
+  </div>
+
+  <!-- PANEL 3: CLASSIFY -->
+  <div class="panel" id="panel-classify">
+    <div class="page-title">Classification</div>
+    <div class="page-sub">Matching signals against initiative gate and bet register</div>
+    <div class="progress-wrap"><div class="progress-bar" id="classifyProgress"></div></div>
+    <div class="status-row" id="classifyStatus"><div class="spinner" style="display:none" id="classifySpinner"></div><span id="classifyStatusText">Processing…</span></div>
+    <div style="height:24px"></div>
+    <div id="classifyResults"></div>
+    <div id="classifyActionBar" style="display:none">
+      <div class="action-bar">
+        <div class="action-desc" id="classifyActionDesc"></div>
+        <button class="btn btn-primary" onclick="goGenerate()">Generate emails →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 4: GENERATE -->
+  <div class="panel" id="panel-generate">
+    <div class="page-title">Email generation</div>
+    <div class="page-sub">Four-week campaign sequence per matched entity and persona</div>
+    <div class="progress-wrap"><div class="progress-bar" id="generateProgress"></div></div>
+    <div class="status-row" id="generateStatus"><div class="spinner" style="display:none" id="generateSpinner"></div><span id="generateStatusText">Generating…</span></div>
+    <div style="height:24px"></div>
+    <div id="generateResults"></div>
+    <div id="generateActionBar" style="display:none">
+      <div class="action-bar">
+        <div class="action-desc" id="generateActionDesc"></div>
+        <button class="btn btn-green" onclick="goExport()">Export YAMM CSVs →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 5: EXPORT -->
+  <div class="panel" id="panel-export">
+    <div class="page-title">Export</div>
+    <div class="page-sub" style="margin-bottom:28px">Four YAMM-ready files. Send Week 1 today.</div>
+    <div class="export-grid" id="exportGrid"></div>
+    <div class="action-bar" style="margin-top:24px">
+      <button class="btn btn-ghost" onclick="resetAll()">← New run</button>
+      <button class="btn btn-primary" onclick="downloadAll()">Download all 4 CSVs</button>
+    </div>
+  </div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────
+const WF11_URL     = 'https://n8n-production-86279.up.railway.app/webhook/client-data';
+const CLAUDE_URL   = 'https://api.anthropic.com/v1/messages';
+const CLAUDE_MODEL = 'claude-sonnet-4-20250514';
+const SQLJS_WASM   = 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.wasm';
+
+// ── STATE ─────────────────────────────────────────────────────
+let apiKey       = localStorage.getItem('se_api_key') || '';
+let sqlDb        = null;   // sql.js DB instance
+let dbLoaded     = false;
+let signals      = [];
+let bets         = [];
+let initiatives  = [];
+let entities     = [];
+let personas     = [];
+let selectedIds  = new Set();
+let classified   = [];
+let emailData    = {};
+
+// ── INIT ──────────────────────────────────────────────────────
+if (apiKey) {
+  document.getElementById('apiKeyInput').value = apiKey;
+  updateKeyDot();
+}
+checkReady();
+
+function onApiKey(val) {
+  apiKey = val.trim();
+  localStorage.setItem('se_api_key', apiKey);
+  updateKeyDot();
+  checkReady();
+}
+
+function updateKeyDot() {
+  const ok = apiKey.startsWith('sk-ant');
+  document.getElementById('keyDot').classList.toggle('live', ok);
+  setCheckIcon('chk-key', ok ? 'ok' : 'idle');
+}
+
+function checkReady() {
+  const keyOk = apiKey.startsWith('sk-ant');
+  const ready  = keyOk && dbLoaded;
+  document.getElementById('loadBtn').disabled = !ready;
+  if (!keyOk) {
+    document.getElementById('loadStatus').textContent = 'Enter API key above to begin';
+  } else if (!dbLoaded) {
+    document.getElementById('loadStatus').textContent = 'Drop your .db file to continue';
+  } else {
+    document.getElementById('loadStatus').textContent = 'Ready — click Load';
+  }
+  setCheckIcon('chk-key', keyOk ? 'ok' : 'idle');
+}
+
+function setCheckIcon(id, state) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.className = 'check-icon';
+  if (state === 'ok')   { el.className += ' ok';  el.textContent = '✓'; }
+  if (state === 'err')  { el.className += ' err'; el.textContent = '✕'; }
+  if (state === 'spin') { el.className += ' spin'; el.textContent = ''; }
+  if (state === 'idle') { el.textContent = '—'; }
+}
+
+// ── STEP INDICATOR ────────────────────────────────────────────
+function setStep(name) {
+  const steps = ['load','review','classify','generate','export'];
+  const idx = steps.indexOf(name);
+  steps.forEach((s, i) => {
+    const el = document.getElementById('s-'+s);
+    el.classList.toggle('active', i === idx);
+    el.classList.toggle('done', i < idx);
+  });
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+}
+
+// ── LOAD ──────────────────────────────────────────────────────
+async function loadAll() {
+  const btn = document.getElementById('loadBtn');
+  const sp  = document.getElementById('loadSpinner');
+  const st  = document.getElementById('loadStatus');
+  btn.disabled = true;
+  sp.style.display = '';
+  document.getElementById('diagBox').style.display = 'none';
+
+  // Step 1: read DB
+  st.textContent = 'Reading database…';
+  st.className = 'load-status';
+  try {
+    await loadFromDb();
+    setCheckIcon('chk-db', 'ok');
+  } catch(e) {
+    setCheckIcon('chk-db', 'err');
+    document.getElementById('db-detail').textContent = e.message;
+    st.textContent = 'Database error — try dropping the file again';
+    st.className = 'load-status err';
+    sp.style.display = 'none';
+    btn.disabled = false;
+    return;
+  }
+
+  // Step 2: n8n signals
+  setCheckIcon('chk-n8n', 'spin');
+  st.textContent = 'Fetching signals from n8n…';
+  try {
+    await fetchSignals();
+    setCheckIcon('chk-n8n', 'ok');
+    document.getElementById('n8n-detail').textContent = `${signals.length} signals loaded`;
+  } catch(e) {
+    setCheckIcon('chk-n8n', 'err');
+    document.getElementById('n8n-detail').textContent = e.message;
+    showDiag('n8n', e.message);
+    st.textContent = 'n8n connection failed — see fix below';
+    st.className = 'load-status err';
+    sp.style.display = 'none';
+    btn.disabled = false;
+    return;
+  }
+
+  st.textContent = `Loaded ${signals.length} signals · ${bets.length} bets · ${initiatives.length} initiatives · ${entities.length} entities`;
+  st.className = 'load-status ok';
+  sp.style.display = 'none';
+
+  setTimeout(() => {
+    renderReview();
+    setStep('review');
+  }, 500);
+}
+
+// ── SQL.JS DB READER ──────────────────────────────────────────
+async function loadFromDb() {
+  if (!sqlDb) throw new Error('No database loaded — drop the .db file first');
+
+  const q = (sql) => {
+    const stmt = sqlDb.prepare(sql);
+    const rows = [];
+    while (stmt.step()) rows.push(stmt.getAsObject());
+    stmt.free();
+    return rows;
+  };
+
+  // Load all tables
+  entities = q(`SELECT entity_id, name, sector, entity_type, strategic_posture FROM entities ORDER BY name`);
+
+  const betRows = q(`SELECT bet_id, register, entity_id, title, probability, velocity_direction, steps, total_steps, current_step FROM bets ORDER BY register, entity_id`);
+  bets = betRows;
+
+  initiatives = q(`SELECT initiative_id, entity_id, name, match_keywords, anti_keywords, priority FROM initiatives ORDER BY entity_id, priority DESC`);
+
+  personas = q(`SELECT persona_id, name, framing, lead_with, avoid, email_length FROM personas ORDER BY persona_id`);
+
+  if (!entities.length) throw new Error('entities table empty — check this is the correct .db file');
+}
+
+// ── FILE DROP HANDLERS ────────────────────────────────────────
+function onDragOver(e) {
+  e.preventDefault();
+  document.getElementById('dbDrop').classList.add('dragover');
+}
+function onDragLeave(e) {
+  document.getElementById('dbDrop').classList.remove('dragover');
+}
+function onDrop(e) {
+  e.preventDefault();
+  document.getElementById('dbDrop').classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) loadDbFile(file);
+}
+function onFileSelect(e) {
+  const file = e.target.files[0];
+  if (file) loadDbFile(file);
+}
+
+async function loadDbFile(file) {
+  setCheckIcon('chk-db', 'spin');
+  document.getElementById('dropLabel').textContent = 'Reading…';
+  document.getElementById('dropSub').textContent = file.name;
+
+  try {
+    const SQL = await initSqlJs({ locateFile: () => SQLJS_WASM });
+    const buf = await file.arrayBuffer();
+    sqlDb = new SQL.Database(new Uint8Array(buf));
+    dbLoaded = true;
+
+    document.getElementById('dbDrop').classList.add('loaded');
+    document.getElementById('dropIcon').textContent = '✅';
+    document.getElementById('dropLabel').textContent = file.name;
+    document.getElementById('dropSub').textContent = `${(file.size/1024/1024).toFixed(1)} MB · ready`;
+    document.getElementById('db-detail').textContent = `${file.name} · ${(file.size/1024/1024).toFixed(1)} MB`;
+    setCheckIcon('chk-db', 'ok');
+    checkReady();
+  } catch(e) {
+    dbLoaded = false;
+    setCheckIcon('chk-db', 'err');
+    document.getElementById('dropIcon').textContent = '❌';
+    document.getElementById('dropLabel').textContent = 'Failed to read file';
+    document.getElementById('dropSub').textContent = e.message;
+    document.getElementById('db-detail').textContent = e.message;
+  }
+}
+
+function showDiag(type, error) {
+  const box = document.getElementById('diagBox');
+  const content = document.getElementById('diagContent');
+  box.style.display = '';
+  content.innerHTML = `
+    <div class="diag-step">WF-11 returned: <code>${esc(error)}</code></div>
+    <div class="diag-step">1. Open n8n and check <strong>WF-11</strong> is <strong>Active</strong> (green toggle)</div>
+    <div class="diag-step">2. In WF-11, confirm the Webhook node is set to <strong>Production URL</strong> (not Test URL)</div>
+    <div class="diag-step">3. Check the Executions tab in WF-11 for recent errors</div>
+    <div class="diag-step">4. Confirm the Signal Tracker Google Sheet has today's signals in it</div>`;
+}
+
+// ── SIGNALS FETCHER (n8n) ─────────────────────────────────────
+async function fetchSignals() {
+  const r = await fetch(WF11_URL, { method: 'GET' });
+  if (!r.ok) throw new Error(`HTTP ${r.status} from n8n`);
+  const data = await r.json();
+  const raw = Array.isArray(data) ? data : (data.signals || data.items || [data]);
+  signals = raw.map((s, i) => ({
+    id:        s.signal_id || s.id || `SIG-${Date.now()}-${i}`,
+    headline:  s.headline || s.title || s.summary || String(s).slice(0, 120),
+    source:    s.source || s.feed || '',
+    date:      s.date || s.published || '',
+    priority:  s.priority || s.signal_strength || 'MEDIUM',
+    entities:  parseList(s.matched_entities || s.entity_tags || s.entities || ''),
+    tech_tags: parseList(s.tech_tags || s.technologies || ''),
+    snippet:   s.snippet || s.description || '',
+  }));
+  if (!signals.length) throw new Error('No signals returned — check Signal Tracker has today\'s data');
+}
+
+function parseList(val) {
+  if (!val) return [];
+  if (Array.isArray(val)) return val;
+  return String(val).split(/[,;|]/).map(s => s.trim()).filter(Boolean);
+}
+
+// ── REVIEW ────────────────────────────────────────────────────
+function renderReview() {
+  signals.forEach(s => selectedIds.add(s.id));
+  const list = document.getElementById('signalList');
+  if (!signals.length) {
+    list.innerHTML = '<div class="empty">No signals found. Check the Signal Tracker sheet has today\'s data.</div>';
+    return;
+  }
+  list.innerHTML = signals.map(s => `
+    <div class="signal-card selected" id="card-${s.id}" onclick="toggleSignal('${s.id}')">
+      <div class="signal-check" id="chk-sig-${s.id}">✓</div>
+      <div>
+        <div class="signal-headline">${esc(s.headline)}</div>
+        <div class="signal-meta">
+          ${s.priority === 'HIGH' ? '<span class="signal-tag high">HIGH</span>' :
+            s.priority === 'MEDIUM' ? '<span class="signal-tag medium">MEDIUM</span>' :
+            `<span class="signal-tag">${esc(s.priority)}</span>`}
+          ${s.entities.map(e=>`<span class="signal-tag entity">${esc(e)}</span>`).join('')}
+          ${s.tech_tags.map(t=>`<span class="signal-tag tech">${esc(t)}</span>`).join('')}
+          ${s.source ? `<span class="signal-source">${esc(s.source)}</span>` : ''}
+        </div>
+        ${s.snippet ? `<div style="margin-top:7px;font-size:12px;color:var(--text-dim);line-height:1.5">${esc(s.snippet.slice(0,220))}${s.snippet.length>220?'…':''}</div>` : ''}
+      </div>
+    </div>`).join('');
+  updateSelCount();
+}
+
+function toggleSignal(id) {
+  if (selectedIds.has(id)) {
+    selectedIds.delete(id);
+    document.getElementById('card-'+id).className = 'signal-card rejected';
+    document.getElementById('chk-sig-'+id).textContent = '';
+  } else {
+    selectedIds.add(id);
+    document.getElementById('card-'+id).className = 'signal-card selected';
+    document.getElementById('chk-sig-'+id).textContent = '✓';
+  }
+  updateSelCount();
+}
+
+function selectAll()  { signals.forEach(s => { selectedIds.add(s.id); document.getElementById('card-'+s.id).className='signal-card selected'; document.getElementById('chk-sig-'+s.id).textContent='✓'; }); updateSelCount(); }
+function selectNone() { signals.forEach(s => { selectedIds.delete(s.id); document.getElementById('card-'+s.id).className='signal-card rejected'; document.getElementById('chk-sig-'+s.id).textContent=''; }); updateSelCount(); }
+
+function updateSelCount() {
+  const n = selectedIds.size;
+  document.getElementById('selCount').textContent = n;
+  document.getElementById('reviewSub').textContent = `${n} of ${signals.length} selected for classification`;
+  document.getElementById('classifyBtn').disabled = n === 0;
+}
+
+// ── CLASSIFY ─────────────────────────────────────────────────
+async function goClassify() {
+  setStep('classify');
+  classified = [];
+  const selected = signals.filter(s => selectedIds.has(s.id));
+  const prog = document.getElementById('classifyProgress');
+  const sp   = document.getElementById('classifySpinner');
+  const stEl = document.getElementById('classifyStatusText');
+  const res  = document.getElementById('classifyResults');
+  res.innerHTML = '';
+  prog.style.width = '0%';
+  sp.style.display = '';
+
+  for (let i = 0; i < selected.length; i++) {
+    const sig = selected[i];
+    stEl.textContent = `Classifying ${i+1} of ${selected.length}: ${sig.headline.slice(0,60)}…`;
+    prog.style.width = `${(i/selected.length)*100}%`;
+    try {
+      const result = await classifySignal(sig);
+      classified.push(result);
+      renderClassifyCard(result, res);
+    } catch(e) { console.error(e); }
+  }
+
+  prog.style.width = '100%';
+  sp.style.display = 'none';
+  const matched = classified.filter(c => c.entity_hits.length > 0);
+  stEl.textContent = `${matched.length} entity matches from ${selected.length} signals`;
+  document.getElementById('classifyStatus').className = 'status-row ok';
+
+  await fetchContactsForMatches(matched);
+
+  const totalContacts = matched.reduce((sum, c) =>
+    sum + c.entity_hits.reduce((s2, h) =>
+      s2 + Object.values(c.contacts_by_persona[h.entity_id]||{}).reduce((s3,a)=>s3+a.length,0), 0), 0);
+
+  document.getElementById('classifyActionDesc').textContent =
+    `${matched.length} entities matched · ${totalContacts} contacts ready for email generation`;
+  document.getElementById('classifyActionBar').style.display = '';
+}
+
+async function classifySignal(sig) {
+  const betsCtx = bets.map(b => {
+    let steps = [];
+    try { steps = JSON.parse(b.steps||'[]'); } catch(e) {}
+    return `BET ${b.bet_id} (${b.register}/${b.entity_id||'INDUSTRY'}): ${b.title}\nSteps: ${steps.map(s=>`[${s.status}] ${s.what}`).join(' | ')}`;
+  }).join('\n\n');
+
+  const initCtx = initiatives.map(i =>
+    `${i.initiative_id} (${i.entity_id}): ${i.name} | match: ${i.match_keywords} | anti: ${i.anti_keywords}`
+  ).join('\n');
+
+  const entCtx = entities.map(e =>
+    `${e.entity_id}: ${e.name} (${e.sector} · ${e.entity_type})`
+  ).join('\n');
+
+  const prompt = `You are the Signal Engine classifier. Analyse this signal and return ONLY valid JSON.
+
+SIGNAL: ${sig.headline}
+${sig.snippet ? 'Context: '+sig.snippet.slice(0,300) : ''}
+
+ENTITIES:
+${entCtx}
+
+INITIATIVES (id · entity · name | match_keywords | anti_keywords):
+${initCtx}
+
+BETS:
+${betsCtx}
+
+Return this exact JSON schema:
+{
+  "tech_match": "tech_id or null",
+  "sector": "ENERGY|MOBILITY|BOTH",
+  "entity_hits": [
+    {
+      "entity_id": "SHELL",
+      "entity_name": "Shell plc",
+      "match_reason": "one sentence",
+      "initiative_hits": ["initiative_id"],
+      "bet_hits": [
+        {"bet_id": "BET_AC_SHEL_01", "step_advanced": 1, "direction": "CONFIRMS|CHALLENGES|NEUTRAL", "reason": "one sentence"}
+      ]
+    }
+  ],
+  "consequence": 7,
+  "novelty": 6,
+  "confidence": 8
+}
+
+Rules: only entities where signal genuinely matches an active initiative · apply anti_keywords as hard blockers · max 5 entity_hits · return {"entity_hits":[]} if no valid match`;
+
+  const resp = await callClaude(prompt, 900);
+  let parsed = { entity_hits: [] };
+  try {
+    parsed = JSON.parse(resp.replace(/```json|```/g,'').trim());
+  } catch(e) { console.warn('Parse error', e); }
+
+  return {
+    signal: sig,
+    tech_match: parsed.tech_match || null,
+    sector: parsed.sector || '',
+    entity_hits: parsed.entity_hits || [],
+    consequence: parsed.consequence || 5,
+    novelty: parsed.novelty || 5,
+    confidence: parsed.confidence || 5,
+    contacts_by_persona: {},
+  };
+}
+
+function renderClassifyCard(result, container) {
+  if (!result.entity_hits.length) {
+    const el = document.createElement('div');
+    el.style.cssText = 'padding:12px 16px;border:1px solid var(--border);border-radius:6px;font-size:13px;color:var(--text-dim);background:var(--surface);margin-bottom:8px';
+    el.textContent = `No initiative match — suppressed: ${result.signal.headline.slice(0,80)}…`;
+    container.appendChild(el);
+    return;
+  }
+  result.entity_hits.forEach(hit => {
+    const card = document.createElement('div');
+    card.className = 'result-card';
+    const betsHtml = (hit.bet_hits||[]).map(b => `
+      <div class="bet-hit">
+        <div class="bet-hit-title">${esc(b.bet_id)}</div>
+        <div class="bet-hit-step">Step ${b.step_advanced} · ${b.direction} · ${esc(b.reason)}</div>
+      </div>`).join('');
+
+    card.innerHTML = `
+      <div class="result-header">
+        <div class="result-entity">${esc(hit.entity_name)}</div>
+        <div class="result-signal">${esc(result.signal.headline)}</div>
+      </div>
+      <div class="result-body">
+        <div style="font-size:13px;color:var(--text-mid);margin-bottom:12px">${esc(hit.match_reason)}</div>
+        ${betsHtml}
+        <div style="margin-bottom:10px">
+          ${(hit.initiative_hits||[]).map(i=>`<span class="persona-badge">${esc(i)}</span>`).join('')}
+        </div>
+        <div id="contacts-${hit.entity_id}" style="font-size:12px;color:var(--text-dim)">Fetching contacts…</div>
+      </div>`;
+    container.appendChild(card);
+  });
+}
+
+// ── CONTACTS FROM SQL.JS ──────────────────────────────────────
+async function fetchContactsForMatches(matched) {
+  for (const result of matched) {
+    for (const hit of result.entity_hits) {
+      try {
+        const contacts = queryContacts(hit.entity_id);
+        const byPersona = {};
+        contacts.forEach(c => {
+          const p = c.persona_id || 'GENERAL';
+          if (!byPersona[p]) byPersona[p] = [];
+          byPersona[p].push(c);
+        });
+        result.contacts_by_persona[hit.entity_id] = byPersona;
+        const el = document.getElementById(`contacts-${hit.entity_id}`);
+        if (el) {
+          el.innerHTML = Object.entries(byPersona).map(([p, cs]) =>
+            `<span class="persona-badge">${esc(p)} · ${cs.length}</span>`
+          ).join('') + `<span style="margin-left:8px;color:var(--green)">✓ ${contacts.length} contacts</span>`;
+        }
+      } catch(e) {
+        const el = document.getElementById(`contacts-${hit.entity_id}`);
+        if (el) el.innerHTML = `<span style="color:var(--red)">Contact read failed: ${e.message}</span>`;
+      }
+    }
+  }
+}
+
+function queryContacts(entityId) {
+  if (!sqlDb) return [];
+  const stmt = sqlDb.prepare(
+    `SELECT contact_id, name, title, email, linkedin, entity_id, persona_id, sector, hq
+     FROM contacts
+     WHERE entity_id = ? AND email IS NOT NULL AND email != ''
+     ORDER BY persona_id, name`
+  );
+  stmt.bind([entityId]);
+  const rows = [];
+  while (stmt.step()) rows.push(stmt.getAsObject());
+  stmt.free();
+  return rows;
+}
+
+// ── GENERATE ──────────────────────────────────────────────────
+async function goGenerate() {
+  setStep('generate');
+  emailData = {};
+  const prog  = document.getElementById('generateProgress');
+  const sp    = document.getElementById('generateSpinner');
+  const stEl  = document.getElementById('generateStatusText');
+  const res   = document.getElementById('generateResults');
+  res.innerHTML = '';
+  prog.style.width = '0%';
+  sp.style.display = '';
+
+  const matched = classified.filter(c => c.entity_hits.length > 0);
+  const total   = matched.reduce((s, c) => s + c.entity_hits.length, 0);
+  let done = 0;
+
+  for (const result of matched) {
+    for (const hit of result.entity_hits) {
+      stEl.textContent = `Generating for ${hit.entity_name}…`;
+      prog.style.width = `${(done/total)*100}%`;
+
+      const byPersona = result.contacts_by_persona[hit.entity_id] || {};
+      if (!Object.keys(byPersona).length) { done++; continue; }
+
+      const entity = entities.find(e => e.entity_id === hit.entity_id) || {};
+      emailData[hit.entity_id] = emailData[hit.entity_id] || {w1:[],w2:[],w3:[],w4:[]};
+
+      for (const [personaId, contacts] of Object.entries(byPersona)) {
+        const persona = personas.find(p => p.persona_id === personaId) || { persona_id: personaId };
+        try {
+          const emails = await generateEmailSet(result.signal, hit, entity, persona, contacts);
+          ['w1','w2','w3','w4'].forEach(w => emailData[hit.entity_id][w].push(...emails[w]));
+        } catch(e) { console.error(e); }
+      }
+
+      renderEmailPreview(hit, entity, emailData[hit.entity_id], res);
+      done++;
+    }
+  }
+
+  prog.style.width = '100%';
+  sp.style.display = 'none';
+  const totalRows = Object.values(emailData).reduce((s,d) => s+d.w1.length, 0);
+  stEl.textContent = `${totalRows} contacts ready across ${Object.keys(emailData).length} entities`;
+  document.getElementById('generateStatus').className = 'status-row ok';
+  document.getElementById('generateActionDesc').textContent = `${totalRows} rows per YAMM file`;
+  document.getElementById('generateActionBar').style.display = '';
+}
+
+async function generateEmailSet(signal, hit, entity, persona, contacts) {
+  const personaLine = [
+    persona.name || persona.persona_id,
+    persona.framing ? `Framing: ${persona.framing}` : '',
+    persona.lead_with ? `Lead with: ${persona.lead_with}` : '',
+    persona.avoid ? `Avoid: ${persona.avoid}` : '',
+    persona.email_length ? `Target length: ${persona.email_length} words` : '120 words max',
+  ].filter(Boolean).join('\n');
+
+  const betRef = hit.bet_hits?.[0] ?
+    `Signal ${hit.bet_hits[0].direction} hypothesis: "${bets.find(b=>b.bet_id===hit.bet_hits[0].bet_id)?.title||hit.bet_hits[0].bet_id}"` : '';
+
+  const prompt = `You are writing outreach emails for FutureBridge Advisory. Generate a four-week email campaign. Return ONLY valid JSON.
+
+SIGNAL: ${signal.headline}
+${signal.snippet ? 'Context: '+signal.snippet.slice(0,300) : ''}
+
+TARGET: ${entity.name||hit.entity_id} (${entity.sector||''})
+MATCH: ${hit.match_reason}
+${betRef}
+
+PERSONA:
+${personaLine}
+
+EMAIL FRAMEWORK (every email follows this):
+1. HOOK — one sentence, something specific about their strategic direction
+2. BRIDGE — "Something crossed my desk today that I thought worth sharing —" then the signal
+3. PERSONALISATION — "I'm sending this because your focus on [initiative] suggests this lands in your world"
+4. DIFFERENTIATION — "I track these things — where I hope I'm different is taking the time to apply the news: reducing the noise-to-signal ratio and compressing signal-to-value time"
+5. CTA — "Let me know if it hits the spot"
+
+RULES:
+- No em dashes. No AI clichés (leverage, ecosystem, operationalise).
+- Week 1: under 120 words
+- Week 2: new angle, brief reference to week 1, no recap
+- Week 3: implication they haven't considered, shorter still
+- Week 4: under 80 words, softest possible close
+- Subject lines: specific, no clickbait, no question marks
+
+Return:
+{"w1":{"subject":"...","body":"..."},"w2":{"subject":"...","body":"..."},"w3":{"subject":"...","body":"..."},"w4":{"subject":"...","body":"..."}}`;
+
+  const resp = await callClaude(prompt, 1400);
+  let parsed = {w1:{},w2:{},w3:{},w4:{}};
+  try { parsed = JSON.parse(resp.replace(/```json|```/g,'').trim()); } catch(e) {}
+
+  const makeRows = w => contacts.map(c => ({
+    Email:    c.email,
+    Name:     c.name,
+    Title:    c.title||'',
+    Company:  entity.name||hit.entity_id,
+    Subject:  (parsed[w]||{}).subject||'',
+    Body:     (parsed[w]||{}).body||'',
+    Week:     w.toUpperCase(),
+    Persona:  persona.persona_id||'',
+    SignalID: signal.id,
+  }));
+
+  return {w1:makeRows('w1'),w2:makeRows('w2'),w3:makeRows('w3'),w4:makeRows('w4')};
+}
+
+function renderEmailPreview(hit, entity, emails, container) {
+  const uid = hit.entity_id.replace(/[^a-z0-9]/gi,'_');
+  const card = document.createElement('div');
+  card.className = 'result-card';
+  card.style.marginBottom = '16px';
+
+  const weeks = [
+    {key:'w1',label:'Week 1 · News'},
+    {key:'w2',label:'Week 2 · Research'},
+    {key:'w3',label:'Week 3 · CTA'},
+    {key:'w4',label:'Week 4 · Close'},
+  ];
+
+  card.innerHTML = `
+    <div class="result-header">
+      <div class="result-entity">${esc(entity.name||hit.entity_id)}</div>
+      <div style="font-size:12px;color:var(--text-dim)">${emails.w1.length} contacts</div>
+    </div>
+    <div class="result-body">
+      <div class="email-tabs">
+        ${weeks.map((w,i)=>`<div class="email-tab ${i===0?'active':''}" onclick="switchTab(this,'${uid}-${w.key}')">${w.label}</div>`).join('')}
+      </div>
+      ${weeks.map((w,i)=>{
+        const row = emails[w.key][0]||{};
+        return `
+          <div class="email-week ${i===0?'active':''}" id="${uid}-${w.key}">
+            <div class="email-subject-row">Subject <strong>${esc(row.Subject||'')}</strong></div>
+            <div class="email-body">${esc(row.Body||'(not generated)')}</div>
+          </div>`;
+      }).join('')}
+    </div>`;
+  container.appendChild(card);
+}
+
+function switchTab(tab, targetId) {
+  const body = tab.closest('.result-body');
+  body.querySelectorAll('.email-tab').forEach(t=>t.classList.remove('active'));
+  body.querySelectorAll('.email-week').forEach(w=>w.classList.remove('active'));
+  tab.classList.add('active');
+  const t = document.getElementById(targetId);
+  if (t) t.classList.add('active');
+}
+
+// ── EXPORT ────────────────────────────────────────────────────
+function goExport() {
+  setStep('export');
+  const w1=[],w2=[],w3=[],w4=[];
+  Object.values(emailData).forEach(d=>{w1.push(...d.w1);w2.push(...d.w2);w3.push(...d.w3);w4.push(...d.w4);});
+  const allData = {w1,w2,w3,w4};
+
+  const weeks = [
+    {key:'w1',num:'01',type:'News',    color:'var(--blue)',  desc:'First contact. Hook, signal, positioning. Send today.'},
+    {key:'w2',num:'02',type:'Research',color:'var(--purple)',desc:'New angle on same topic. Send next Monday.'},
+    {key:'w3',num:'03',type:'CTA',     color:'var(--yellow)',desc:'Implication not yet considered. Week 3.'},
+    {key:'w4',num:'04',type:'Close',   color:'var(--green)', desc:'Soft close, under 80 words. Week 4.'},
+  ];
+
+  document.getElementById('exportGrid').innerHTML = weeks.map(w=>`
+    <div class="export-card">
+      <div class="export-num" style="color:${w.color}">${w.num}</div>
+      <div class="export-type">${w.type}</div>
+      <div class="export-desc">${w.desc}</div>
+      <div class="export-count"><strong>${allData[w.key].length}</strong> contacts</div>
+      <button class="btn btn-ghost btn-full btn-sm" onclick="downloadCSV('${w.key}','${w.type}')">
+        Download CSV
+      </button>
+    </div>`).join('');
+}
+
+function downloadCSV(weekKey, label) {
+  const allData = {w1:[],w2:[],w3:[],w4:[]};
+  Object.values(emailData).forEach(d=>Object.keys(allData).forEach(w=>allData[w].push(...d[w])));
+  const rows = allData[weekKey]||[];
+  if (!rows.length) { toast('No rows to export', true); return; }
+  const headers = ['Email','Name','Title','Company','Subject','Body','Week','Persona','SignalID'];
+  const csv = [headers.join(','), ...rows.map(r=>headers.map(h=>csvCell(r[h]||'')).join(','))].join('\n');
+  const date = new Date().toISOString().slice(0,10).replace(/-/g,'');
+  dlFile(`YAMM_${weekKey.toUpperCase()}_${label}_${date}.csv`, csv, 'text/csv');
+  toast(`Downloaded YAMM_${weekKey.toUpperCase()}_${label}_${date}.csv`);
+}
+
+function downloadAll() {
+  ['w1','w2','w3','w4'].forEach((w,i)=>
+    setTimeout(()=>downloadCSV(w,['News','Research','CTA','Close'][i]), i*400));
+}
+
+// ── CLAUDE API ────────────────────────────────────────────────
+async function callClaude(prompt, maxTokens=1000) {
+  const r = await fetch(CLAUDE_URL, {
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true',
+    },
+    body: JSON.stringify({
+      model: CLAUDE_MODEL,
+      max_tokens: maxTokens,
+      messages:[{role:'user',content:prompt}],
+    })
+  });
+  if (!r.ok) {
+    const err = await r.json().catch(()=>({}));
+    throw new Error(err.error?.message || `Claude API ${r.status}`);
+  }
+  const data = await r.json();
+  return data.content?.[0]?.text || '';
+}
+
+// ── UTILS ─────────────────────────────────────────────────────
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function csvCell(val) {
+  const s = String(val||'').replace(/"/g,'""');
+  return /[,"\n\r]/.test(s) ? `"${s}"` : s;
+}
+function dlFile(name, content, mime) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([content],{type:mime}));
+  a.download = name;
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+}
+function toast(msg, err=false) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show' + (err?' err':'');
+  setTimeout(()=>el.classList.remove('show'), 3000);
+}
+function resetAll() {
+  signals=[]; bets=[]; initiatives=[]; entities=[]; personas=[];
+  selectedIds.clear(); classified=[]; emailData={};
+  sqlDb = null; dbLoaded = false;
+  ['chk-key','chk-db','chk-n8n'].forEach(id => setCheckIcon(id,'idle'));
+  document.getElementById('dbDrop').classList.remove('loaded');
+  document.getElementById('dropIcon').textContent = '📂';
+  document.getElementById('dropLabel').textContent = 'Click or drag your .db file here';
+  document.getElementById('dropSub').textContent = 'signal_engine_final.db · stays on your machine';
+  document.getElementById('db-detail').textContent = 'Drop the file below';
+  document.getElementById('diagBox').style.display = 'none';
+  setStep('load');
+  checkReady();
+}
+</script>
+</body>
+</html>
