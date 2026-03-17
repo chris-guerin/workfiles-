@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signal Engine · Ingestor</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+:root {
+  --bg:#F7F6F3; --surface:#FFFFFF; --surface2:#F0EEE9;
+  --border:#D8D5CE; --border-dark:#B8B4AC;
+  --text:#1A1916; --text-mid:#4B4845; --text-dim:#8A8680;
+  --red:#F84E5D; --green:#22AE8A; --yellow:#D4A017;
+  --blue:#3F43AD; --blue-light:#EEF0FF;
+  --purple:#7A5CB8; --purple-light:#F3EEFF;
+  --green-light:#EBF9F5; --red-light:#FFF0F1;
+  --font:'DM Sans',sans-serif; --mono:'DM Mono',monospace;
+  --radius:6px;
+  --shadow:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md:0 4px 12px rgba(0,0,0,0.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.5;min-height:100vh}
+
+/* HEADER */
+.hdr{position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:1px solid var(--border);display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:20px;padding:0 28px;height:56px;box-shadow:var(--shadow)}
+.hdr-brand{display:flex;flex-direction:column;gap:3px}
+.hdr-bars{display:flex;flex-direction:column;gap:2px}
+.hdr-bars div{background:var(--text);height:3px;border-radius:1px}
+.hdr-bars div:nth-child(1){width:28px}
+.hdr-bars div:nth-child(2){width:19px}
+.hdr-bars div:nth-child(3){width:11px}
+.hdr-name{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-mid);margin-top:2px}
+.hdr-name span{color:var(--red)}
+.hdr-steps{display:flex;align-items:center;gap:4px}
+.step-pill{display:flex;align-items:center;gap:7px;padding:5px 13px;font-size:12px;font-weight:500;color:var(--text-dim);border-radius:20px;transition:all 0.2s;white-space:nowrap}
+.step-pill.active{background:var(--text);color:#fff}
+.step-pill.done{color:var(--green)}
+.step-num{font-family:var(--mono);font-size:10px;opacity:0.6}
+.step-pill.active .step-num{opacity:0.7}
+.step-sep{color:var(--border-dark);font-size:14px;user-select:none}
+.hdr-key{display:flex;align-items:center;gap:8px}
+.hdr-key input{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:11px;padding:6px 12px;width:200px;outline:none;transition:border-color 0.2s}
+.hdr-key input:focus{border-color:var(--blue)}
+.hdr-key input::placeholder{color:var(--text-dim)}
+.key-dot{width:8px;height:8px;border-radius:50%;background:var(--border-dark);transition:background 0.3s;flex-shrink:0}
+.key-dot.live{background:var(--green)}
+
+/* LAYOUT */
+.main{padding:32px 28px;max-width:1100px;margin:0 auto}
+.panel{display:none}
+.panel.active{display:block}
+
+/* LOAD */
+.load-screen{display:flex;flex-direction:column;align-items:center;min-height:70vh;justify-content:center;gap:24px}
+.load-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:36px 44px;width:500px;box-shadow:var(--shadow-md)}
+.load-title{font-size:20px;font-weight:600;margin-bottom:8px}
+.load-sub{color:var(--text-mid);font-size:13px;line-height:1.6;margin-bottom:24px}
+.load-checks{display:flex;flex-direction:column;gap:14px;margin-bottom:24px}
+.load-check{display:flex;align-items:flex-start;gap:12px;font-size:13px}
+.check-icon{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;margin-top:1px;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);transition:all 0.3s}
+.check-icon.ok{background:var(--green-light);border-color:var(--green);color:var(--green)}
+.check-icon.err{background:var(--red-light);border-color:var(--red);color:var(--red)}
+.check-icon.spin{animation:spin 0.8s linear infinite;border-top-color:var(--blue);background:var(--blue-light);border-color:var(--blue)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.check-label{font-weight:500;margin-bottom:2px}
+.check-sub{font-size:12px;color:var(--text-dim)}
+
+/* DROP ZONE */
+.drop-zone{border:2px dashed var(--border-dark);border-radius:var(--radius);padding:20px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--surface2);margin-top:8px}
+.drop-zone:hover,.drop-zone.dragover{border-color:var(--blue);background:var(--blue-light)}
+.drop-zone.loaded{border-color:var(--green);background:var(--green-light);border-style:solid}
+.drop-zone input{display:none}
+.drop-icon{font-size:22px;margin-bottom:4px}
+.drop-label{font-size:13px;font-weight:500;color:var(--text-mid)}
+.drop-sub{font-size:11px;color:var(--text-dim);margin-top:2px}
+
+.load-status{font-family:var(--mono);font-size:12px;color:var(--text-dim);margin:14px 0;min-height:18px;text-align:center}
+.load-status.ok{color:var(--green)}
+.load-status.err{color:var(--red)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--radius);border:none;font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s}
+.btn:hover{filter:brightness(0.95)}
+.btn:active{transform:scale(0.98)}
+.btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;filter:none}
+.btn-primary{background:var(--text);color:#fff}
+.btn-primary:hover{background:#333;filter:none}
+.btn-ghost{background:transparent;color:var(--text-mid);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--border-dark);color:var(--text);filter:none}
+.btn-green{background:var(--green);color:#fff}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-full{width:100%;justify-content:center}
+
+/* PAGE */
+.page-title{font-size:20px;font-weight:600;margin-bottom:4px}
+.page-sub{font-size:13px;color:var(--text-mid);margin-bottom:24px}
+.section-label{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:14px}
+.toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:16px}
+.toolbar-right{display:flex;gap:8px;align-items:center}
+
+/* SIGNAL CARDS */
+.signal-list{display:flex;flex-direction:column;gap:8px}
+.signal-card{background:var(--surface);border:2px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:grid;grid-template-columns:28px 1fr;gap:14px;align-items:start;cursor:pointer;transition:border-color 0.15s,box-shadow 0.15s;box-shadow:var(--shadow)}
+.signal-card:hover{border-color:var(--border-dark);box-shadow:var(--shadow-md)}
+.signal-card.selected{border-color:var(--text)}
+.signal-card.rejected{opacity:0.4;border-color:var(--border);box-shadow:none}
+.signal-check{width:22px;height:22px;border:2px solid var(--border-dark);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-size:13px;transition:all 0.15s;background:var(--surface)}
+.signal-card.selected .signal-check{background:var(--text);color:#fff;border-color:var(--text)}
+.signal-headline{font-weight:500;font-size:14px;line-height:1.45;margin-bottom:8px}
+.signal-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.signal-tag{font-family:var(--mono);font-size:10px;font-weight:500;padding:2px 8px;border-radius:3px;letter-spacing:0.05em;text-transform:uppercase;background:var(--surface2);color:var(--text-mid)}
+.signal-tag.entity{background:var(--blue-light);color:var(--blue)}
+.signal-tag.tech{background:var(--purple-light);color:var(--purple)}
+.signal-tag.high{background:var(--red-light);color:var(--red)}
+.signal-tag.medium{background:#FFF8E6;color:var(--yellow)}
+.signal-source{font-size:12px;color:var(--text-dim);font-style:italic}
+
+/* RESULT CARDS */
+.result-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-bottom:12px}
+.result-header{background:var(--surface2);border-bottom:1px solid var(--border);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.result-entity{font-weight:600;font-size:14px}
+.result-signal{font-size:12px;color:var(--text-dim);font-style:italic;max-width:480px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.result-body{padding:18px}
+.bet-hit{background:var(--green-light);border:1px solid rgba(34,174,138,0.3);border-radius:4px;padding:10px 14px;margin-bottom:10px}
+.bet-hit-title{font-weight:500;font-size:13px;margin-bottom:4px}
+.bet-hit-step{font-family:var(--mono);font-size:10px;color:var(--green);letter-spacing:0.06em;text-transform:uppercase}
+.persona-badge{display:inline-flex;align-items:center;gap:6px;background:var(--blue-light);color:var(--blue);border-radius:3px;padding:3px 10px;font-size:11px;font-family:var(--mono);margin:2px}
+
+/* EMAIL TABS */
+.email-tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:16px}
+.email-tab{padding:8px 16px;font-size:12px;font-weight:500;cursor:pointer;color:var(--text-dim);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.15s}
+.email-tab:hover{color:var(--text)}
+.email-tab.active{color:var(--text);border-bottom-color:var(--text)}
+.email-week{display:none}
+.email-week.active{display:block}
+.email-subject-row{font-size:12px;color:var(--text-mid);margin-bottom:10px;font-family:var(--mono);letter-spacing:0.05em}
+.email-subject-row strong{font-family:var(--font);font-size:14px;color:var(--text);font-weight:500;letter-spacing:0}
+.email-body{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:16px 18px;font-size:13px;line-height:1.75;white-space:pre-wrap;color:var(--text)}
+
+/* EXPORT */
+.export-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.export-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px 18px;text-align:center;box-shadow:var(--shadow)}
+.export-num{font-family:var(--mono);font-size:36px;font-weight:500;margin-bottom:4px;line-height:1}
+.export-type{font-weight:600;font-size:16px;margin-bottom:6px}
+.export-desc{font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:16px;min-height:48px}
+.export-count{font-family:var(--mono);font-size:12px;color:var(--text-dim);margin-bottom:14px}
+.export-count strong{color:var(--text);font-size:16px}
+
+/* PROGRESS */
+.progress-wrap{background:var(--surface2);border:1px solid var(--border);border-radius:4px;height:6px;margin:14px 0;overflow:hidden}
+.progress-bar{height:100%;background:var(--text);border-radius:4px;width:0%;transition:width 0.4s ease}
+.status-row{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-mid)}
+.status-row.ok{color:var(--green)}
+.status-row.err{color:var(--red)}
+
+/* ACTION BAR */
+.action-bar{display:flex;align-items:center;justify-content:space-between;margin-top:28px;padding:16px 20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+.action-desc{font-size:13px;color:var(--text-mid)}
+
+/* DIAG */
+.diag-box{background:#FFFBF0;border:1px solid #F0D080;border-radius:var(--radius);padding:16px 20px;margin-top:16px;font-size:13px;max-width:500px}
+.diag-box h4{font-size:13px;font-weight:600;margin-bottom:10px;color:var(--yellow)}
+.diag-step{margin-bottom:8px;padding-left:16px;line-height:1.6;color:var(--text-mid)}
+.diag-step code{background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:2px 7px;font-family:var(--mono);font-size:12px}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:#fff;padding:11px 18px;border-radius:var(--radius);font-size:13px;font-weight:500;opacity:0;transform:translateY(6px);transition:opacity 0.2s,transform 0.2s;pointer-events:none;z-index:999;box-shadow:var(--shadow-md)}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.err{background:var(--red)}
+.toast.ok{background:var(--green)}
+
+.spinner{width:14px;height:14px;border:2px solid rgba(0,0,0,0.15);border-top-color:currentColor;border-radius:50%;animation:spin 0.7s linear infinite;flex-shrink:0}
+.empty{text-align:center;padding:56px 24px;color:var(--text-dim);font-size:14px}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border-dark);border-radius:3px}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-brand">
+    <div class="hdr-bars"><div></div><div></div><div></div></div>
+    <div class="hdr-name">Signal<span>Engine</span></div>
+  </div>
+  <nav class="hdr-steps">
+    <div class="step-pill active" id="s-load"><span class="step-num">01</span>Load</div>
+    <div class="step-sep">›</div>
+    <div class="step-pill" id="s-review"><span class="step-num">02</span>Review</div>
+    <div class="step-sep">›</div>
+    <div class="step-pill" id="s-classify"><span class="step-num">03</span>Classify</div>
+    <div class="step-sep">›</div>
+    <div class="step-pill" id="s-generate"><span class="step-num">04</span>Generate</div>
+    <div class="step-sep">›</div>
+    <div class="step-pill" id="s-export"><span class="step-num">05</span>Export</div>
+  </nav>
+  <div class="hdr-key">
+    <div class="key-dot" id="keyDot"></div>
+    <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-…" oninput="onApiKey(this.value)" autocomplete="off"/>
+  </div>
+</header>
+
+<main class="main">
+
+<!-- PANEL 1: LOAD -->
+<div class="panel active" id="panel-load">
+  <div class="load-screen">
+    <div class="load-card">
+      <div class="load-title">Morning signal run</div>
+      <div class="load-sub">Enter your API key, drop your contacts CSV, then load signals from n8n. No Python or server required.</div>
+
+      <div class="load-checks">
+        <div class="load-check">
+          <div class="check-icon" id="chk-key">—</div>
+          <div>
+            <div class="check-label">Anthropic API key</div>
+            <div class="check-sub">Enter in header above</div>
+          </div>
+        </div>
+
+        <div class="load-check">
+          <div class="check-icon" id="chk-csv">—</div>
+          <div style="flex:1">
+            <div class="check-label">contacts.csv</div>
+            <div class="check-sub" id="csv-detail">Export from your DB browser → drag below</div>
+            <div class="drop-zone" id="csvDrop" style="margin-top:8px"
+                 onclick="document.getElementById('csvFile').click()"
+                 ondragover="onDragOver(event,'csvDrop')"
+                 ondragleave="onDragLeave(event,'csvDrop')"
+                 ondrop="onDropCSV(event)">
+              <input type="file" id="csvFile" accept=".csv" onchange="onCSVSelect(event)">
+              <div class="drop-icon" id="csvIcon">📋</div>
+              <div class="drop-label" id="csvLabel">Click or drag contacts.csv</div>
+              <div class="drop-sub" id="csvSub">Export from DB Browser: File → Export → Table as CSV</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="load-check">
+          <div class="check-icon" id="chk-n8n">—</div>
+          <div>
+            <div class="check-label">n8n · Today's signals</div>
+            <div class="check-sub" id="n8n-detail">Loaded when you click Load</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="loadStatus" class="load-status">Enter API key and drop contacts.csv to begin</div>
+
+      <button class="btn btn-primary btn-full" id="loadBtn" onclick="loadAll()" disabled>
+        <div class="spinner" id="loadSpinner" style="display:none"></div>
+        Load today's signals
+      </button>
+    </div>
+
+    <div id="diagBox" style="display:none" class="diag-box">
+      <h4>⚠ n8n connection issue</h4>
+      <div id="diagContent"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PANEL 2: REVIEW -->
+<div class="panel" id="panel-review">
+  <div class="toolbar">
+    <div>
+      <div class="page-title">Today's signals</div>
+      <div class="page-sub" id="reviewSub">Select signals to classify</div>
+    </div>
+    <div class="toolbar-right">
+      <button class="btn btn-ghost btn-sm" onclick="selectAll()">Select all</button>
+      <button class="btn btn-ghost btn-sm" onclick="selectNone()">Clear</button>
+      <button class="btn btn-primary" id="classifyBtn" onclick="goClassify()" disabled>
+        Classify <span id="selCount">0</span> signals →
+      </button>
+    </div>
+  </div>
+  <div class="signal-list" id="signalList"></div>
+</div>
+
+<!-- PANEL 3: CLASSIFY -->
+<div class="panel" id="panel-classify">
+  <div class="page-title">Classification</div>
+  <div class="page-sub">Matching signals against initiative gate and bet register</div>
+  <div class="progress-wrap"><div class="progress-bar" id="classifyProgress"></div></div>
+  <div class="status-row" id="classifyStatus">
+    <div class="spinner" id="classifySpinner" style="display:none"></div>
+    <span id="classifyStatusText">Processing…</span>
+  </div>
+  <div style="height:24px"></div>
+  <div id="classifyResults"></div>
+  <div id="classifyActionBar" style="display:none">
+    <div class="action-bar">
+      <div class="action-desc" id="classifyActionDesc"></div>
+      <button class="btn btn-primary" onclick="goGenerate()">Generate emails →</button>
+    </div>
+  </div>
+</div>
+
+<!-- PANEL 4: GENERATE -->
+<div class="panel" id="panel-generate">
+  <div class="page-title">Email generation</div>
+  <div class="page-sub">Four-week campaign sequence per matched entity and persona</div>
+  <div class="progress-wrap"><div class="progress-bar" id="generateProgress"></div></div>
+  <div class="status-row" id="generateStatus">
+    <div class="spinner" id="generateSpinner" style="display:none"></div>
+    <span id="generateStatusText">Generating…</span>
+  </div>
+  <div style="height:24px"></div>
+  <div id="generateResults"></div>
+  <div id="generateActionBar" style="display:none">
+    <div class="action-bar">
+      <div class="action-desc" id="generateActionDesc"></div>
+      <button class="btn btn-green" onclick="goExport()">Export YAMM CSVs →</button>
+    </div>
+  </div>
+</div>
+
+<!-- PANEL 5: EXPORT -->
+<div class="panel" id="panel-export">
+  <div class="page-title">Export</div>
+  <div class="page-sub" style="margin-bottom:28px">Four YAMM-ready files. Send Week 1 today.</div>
+  <div class="export-grid" id="exportGrid"></div>
+  <div class="action-bar" style="margin-top:24px">
+    <button class="btn btn-ghost" onclick="resetAll()">← New run</button>
+    <button class="btn btn-primary" onclick="downloadAll()">Download all 4 CSVs</button>
+  </div>
+</div>
+
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+// ── BAKED INTELLIGENCE DATA ───────────────────────────────────
+const INTEL = {"bets":[{"bet_id":"BET_AC_AUDI_01","register":"ACCOUNT","entity_id":"AUDI","title":"Audi will lose its position as China's #1 premium EV brand permanently to Li Auto and NIO by 2027","probability":62,"steps":[{"step":1,"what":"Li Auto and NIO maintain >20% market share growth in premium segment","status":"confirmed"},{"step":2,"what":"Audi's FAW-VW China program launches 18+ months behind schedule","status":"watching"},{"step":3,"what":"Audi China sales drop below 400k units annually","status":"pending"}]},{"bet_id":"BET_AC_AUDI_02","register":"ACCOUNT","entity_id":"AUDI","title":"The PPE platform will become the standard for all VW Group premium EVs by 2028","probability":71,"steps":[{"step":1,"what":"A6 e-tron achieves >100k annual volume with positive margins","status":"watching"},{"step":2,"what":"VW Group announces PPE adoption for additional brands beyond Audi/Porsche","status":"pending"},{"step":3,"what":"PPE cost parity with 400V systems achieved","status":"pending"}]},{"bet_id":"BET_AC_AUDI_03","register":"ACCOUNT","entity_id":"AUDI","title":"Audi's ARTEMIS software division will be spun off or merged with a major tech company by 2029","probability":54,"steps":[{"step":1,"what":"ARTEMIS fails to achieve Level 3 autonomy by 2026 target","status":"watching"},{"step":2,"what":"Partnership discussions with Google or other tech giants intensify","status":"watching"},{"step":3,"what":"Formal announcement of ARTEMIS strategic restructuring","status":"pending"}]},{"bet_id":"BET_AC_AUDI_04","register":"ACCOUNT","entity_id":"AUDI","title":"Solid-state batteries will create a new tier of premium differentiation that Audi successfully captures by 2028","probability":43,"steps":[{"step":1,"what":"QuantumScape or Samsung SDI announce commercial solid-state production timeline","status":"watching"},{"step":2,"what":"Audi announces solid-state battery partnership or supply agreement","status":"pending"},{"step":3,"what":"First Audi solid-state EV enters production","status":"pending"}]},{"bet_id":"BET_AC_AUDI_05","register":"ACCOUNT","entity_id":"AUDI","title":"BMW's Neue Klasse will force Audi into a premium price war that destroys industry margins by 2027","probability":58,"steps":[{"step":1,"what":"BMW Neue Klasse achieves technical superiority in key metrics vs PPE","status":"watching"},{"step":2,"what":"Audi reduces A6 e-tron pricing by >15% within 12 months of Neue Klasse launch","status":"pending"},{"step":3,"what":"German premium EV segment average margins drop below 5%","status":"pending"}]},{"bet_id":"BET_AC_AUDI_06","register":"ACCOUNT","entity_id":"AUDI","title":"The 18,000 job cuts will be the first of multiple restructuring waves through 2030","probability":47,"steps":[{"step":1,"what":"First 18,000 job reduction completes with union agreement","status":"watching"},{"step":2,"what":"Audi EBIT margins remain below 6% for 24+ consecutive months","status":"pending"},{"step":3,"what":"Second major restructuring announcement of 10,000+ jobs","status":"pending"}]},{"bet_id":"BET_AC_AUDI_07","register":"ACCOUNT","entity_id":"AUDI","title":"Lamborghini's full EV transition will fail and the brand will remain hybrid-dominant through 2035","probability":52,"steps":[{"step":1,"what":"Urus PHEV achieves higher sales volumes than anticipated pure EV demand","status":"confirmed"},{"step":2,"what":"Customer research shows ultra-premium EV acceptance rates <30%","status":"pending"},{"step":3,"what":"Lamborghini announces hybrid-first strategy beyond 2030","status":"pending"}]},{"bet_id":"BET_AC_AUDI_08","register":"ACCOUNT","entity_id":"AUDI","title":"Audi will acquire or merge with a Chinese premium EV startup by 2029","probability":38,"steps":[{"step":1,"what":"FAW-VW China program underperforms volume targets by >30%","status":"watching"},{"step":2,"what":"VW Group announces strategic review of China operations","status":"pending"},{"step":3,"what":"Formal acquisition or joint venture announcement with Chinese OEM","status":"pending"}]},{"bet_id":"BET_AC_AUDI_09","register":"ACCOUNT","entity_id":"AUDI","title":"800V charging infrastructure will become the determining factor in premium EV success by 2027","probability":64,"steps":[{"step":1,"what":"IONITY and Audi charging hubs achieve >1000 800V locations in Europe","status":"watching"},{"step":2,"what":"Tesla opens Supercharger network to 800V vehicles with adapter","status":"pending"},{"step":3,"what":"800V charging speed proves decisive in premium EV purchase decisions","status":"pending"}]},{"bet_id":"BET_AC_AUDI_10","register":"ACCOUNT","entity_id":"AUDI","title":"VW Group will restructure Audi's brand positioning to focus exclusively on electric performance by 2030","probability":41,"steps":[{"step":1,"what":"RS e-tron GT and performance EVs gain disproportionate marketing investment","status":"watching"},{"step":2,"what":"VW Group announces formal brand architecture changes for Audi positioning","status":"pending"},{"step":3,"what":"Audi discontinues all ICE vehicles including hybrids in key markets","status":"pending"}]},{"bet_id":"BET_AC_BP_01","register":"ACCOUNT","entity_id":"BP","title":"BP will become an M&A target within 24 months, likely acquired by Shell or a US major","probability":65,"steps":[{"step":1,"what":"Elliott Management escalates activist pressure for strategic review","status":"confirmed"},{"step":2,"what":"BP trading discount to peers widens beyond 30%","status":"watching"},{"step":3,"what":"Formal takeover approach announced","status":"pending"}]},{"bet_id":"BET_AC_BP_02","register":"ACCOUNT","entity_id":"BP","title":"Archaea Energy's biogas/RNG business will become BP's flagship transition success story by 2028","probability":58,"steps":[{"step":1,"what":"Archaea Energy delivers 15%+ IRR while wind assets are written down","status":"confirmed"},{"step":2,"what":"BP announces major RNG expansion beyond current 50 sites","status":"watching"},{"step":3,"what":"RNG becomes 20%+ of BP's clean energy revenue","status":"pending"}]},{"bet_id":"BET_AC_BP_03","register":"ACCOUNT","entity_id":"BP","title":"BP's blue hydrogen strategy will fail due to UK carbon capture policy reversal by 2029","probability":45,"steps":[{"step":1,"what":"H2Teesside reaches FID with government backing","status":"watching"},{"step":2,"what":"UK government reduces CCUS cluster funding commitments","status":"pending"},{"step":3,"what":"BP writes down blue hydrogen investments","status":"pending"}]},{"bet_id":"BET_AC_BP_04","register":"ACCOUNT","entity_id":"BP","title":"BP's upstream refocus will deliver $20B+ annual cash flow by 2030 through disciplined capital allocation","probability":52,"steps":[{"step":1,"what":"Mad Dog 2 and Argos reach full 280K bbl/day production","status":"confirmed"},{"step":2,"what":"ACG life extension maintains 200K+ bbl/day through 2030","status":"watching"},{"step":3,"what":"BP upstream delivers $20B+ annual operating cash flow","status":"pending"}]},{"bet_id":"BET_AC_BP_05","register":"ACCOUNT","entity_id":"BP","title":"BP will lose 30% of its clean energy talent within 18 months due to strategy whiplash","probability":48,"steps":[{"step":1,"what":"Senior renewables executives depart following wind asset sales","status":"watching"},{"step":2,"what":"BP Ventures team reduced by 40%+ headcount","status":"pending"},{"step":3,"what":"Public talent exodus to Orsted, Equinor, or clean energy startups","status":"pending"}]},{"bet_id":"BET_AC_BP_06","register":"ACCOUNT","entity_id":"BP","title":"bp pulse EV charging network will be divested by 2027 as retail energy transformation fails","probability":42,"steps":[{"step":1,"what":"bp pulse requires $2B+ additional investment for competitive parity","status":"watching"},{"step":2,"what":"EV charging margins compress below 10% due to competition","status":"pending"},{"step":3,"what":"BP announces strategic review or sale of bp pulse","status":"pending"}]},{"bet_id":"BET_AC_BP_07","register":"ACCOUNT","entity_id":"BP","title":"BP's $5B asset disposal target will be exceeded, reaching $8B+ as balance sheet pressure intensifies","probability":55,"steps":[{"step":1,"what":"Initial $5B disposal target 50% complete","status":"confirmed"},{"step":2,"what":"Elliott pressure forces expansion of disposal programme","status":"watching"},{"step":3,"what":"Total asset sales exceed $8B within 24 months","status":"pending"}]},{"bet_id":"BET_AC_BP_08","register":"ACCOUNT","entity_id":"BP","title":"European carbon border adjustment mechanism will boost BP's upstream competitive position by 2030","probability":38,"steps":[{"step":1,"what":"EU extends CBAM to include oil and gas imports","status":"pending"},{"step":2,"what":"BP's ACG and North Sea assets certified as lower-carbon","status":"pending"},{"step":3,"what":"CBAM delivers 5%+ price premium for BP crude","status":"pending"}]},{"bet_id":"BET_AC_BP_09","register":"ACCOUNT","entity_id":"BP","title":"BP will pioneer industrial-scale direct air capture by 2032 as its third-generation climate technology","probability":35,"steps":[{"step":1,"what":"BP announces major DAC pilot project or partnership","status":"pending"},{"step":2,"what":"Commercial DAC costs fall below $200/tonne CO2","status":"pending"},{"step":3,"what":"BP operates 1Mt+ annual DAC capacity","status":"pending"}]},{"bet_id":"BET_AC_BP_10","register":"ACCOUNT","entity_id":"BP","title":"BP's Lightsource solar partnership will become its largest renewable energy revenue source by 2031","probability":44,"steps":[{"step":1,"what":"Lightsource bp delivers positive returns while wind assets are written down","status":"confirmed"},{"step":2,"what":"Lightsource expands to 10GW+ development pipeline","status":"watching"},{"step":3,"what":"Solar generates 40%+ of BP's clean energy revenues","status":"pending"}]},{"bet_id":"BET_AC_DATW_01","register":"ACCOUNT","entity_id":"DATWYLER","title":"EV Battery Sealing Market Dominance","probability":75,"steps":[{"step":1,"what":"EV sealing revenue exceeds \u20ac300M annually","status":"watching"},{"step":2,"what":"Major OEM partnerships with 3+ automotive manufacturers","status":"pending"},{"step":3,"what":"Market leadership in thermal runaway protection seals","status":"pending"}]},{"bet_id":"BET_AC_DATW_02","register":"ACCOUNT","entity_id":"DATWYLER","title":"CRSIP PLUS Healthcare Platform Success","probability":65,"steps":[{"step":1,"what":"CRSIP PLUS adoption by top 5 pharma companies","status":"watching"},{"step":2,"what":"Platform scales to 80%+ of biologic closure applications","status":"pending"},{"step":3,"what":"Healthcare margin expansion above current levels","status":"pending"}]},{"bet_id":"BET_AC_DATW_03","register":"ACCOUNT","entity_id":"DATWYLER","title":"Solid-State Battery Disruption Risk","probability":45,"steps":[{"step":1,"what":"Major OEM announces solid-state battery timeline","status":"watching"},{"step":2,"what":"Datwyler R&D investment in solid-state sealing solutions","status":"pending"},{"step":3,"what":"Revenue impact from changing sealing requirements","status":"pending"}]},{"bet_id":"BET_AC_DATW_04","register":"ACCOUNT","entity_id":"DATWYLER","title":"Strategic M&A Acceleration","probability":70,"steps":[{"step":1,"what":"Announcement of first major acquisition target","status":"watching"},{"step":2,"what":"Integration delivers synergies in R&D capabilities","status":"pending"},{"step":3,"what":"Enhanced market position in target segments","status":"pending"}]},{"bet_id":"BET_AC_DATW_05","register":"ACCOUNT","entity_id":"DATWYLER","title":"Regulatory Compliance Becomes Competitive Advantage","probability":80,"steps":[{"step":1,"what":"New regulatory requirements announced in key markets","status":"watching"},{"step":2,"what":"Competitor struggles with compliance costs","status":"pending"},{"step":3,"what":"Datwyler gains market share from compliance advantages","status":"pending"}]},{"bet_id":"BET_AC_DATW_06","register":"ACCOUNT","entity_id":"DATWYLER","title":"Healthcare Margin Pressure from Biosimilars","probability":55,"steps":[{"step":1,"what":"Biosimilar market share exceeds 25% in key therapeutic areas","status":"watching"},{"step":2,"what":"Pricing pressure evident in healthcare division","status":"pending"},{"step":3,"what":"Healthcare margin compression below historical levels","status":"pending"}]},{"bet_id":"BET_AC_DATW_07","register":"ACCOUNT","entity_id":"DATWYLER","title":"Next-Generation Elastomer Breakthrough","probability":40,"steps":[{"step":1,"what":"Patent filing for novel elastomer composition","status":"watching"},{"step":2,"what":"Customer validation in critical applications","status":"pending"},{"step":3,"what":"Commercial rollout generates premium pricing","status":"pending"}]},{"bet_id":"BET_AC_DATW_08","register":"ACCOUNT","entity_id":"DATWYLER","title":"EV Charging Infrastructure Growth Driver","probability":85,"steps":[{"step":1,"what":"EV charging infrastructure investments exceed $50B globally","status":"watching"},{"step":2,"what":"Datwyler secures partnerships with charging equipment OEMs","status":"pending"},{"step":3,"what":"Charging infrastructure sealing becomes material revenue stream","status":"pending"}]},{"bet_id":"BET_AC_DATW_09","register":"ACCOUNT","entity_id":"DATWYLER","title":"Asian Competition Intensifies","probability":60,"steps":[{"step":1,"what":"Asian competitors gain certification for automotive applications","status":"watching"},{"step":2,"what":"Price competition intensifies in standard EV sealing products","status":"pending"},{"step":3,"what":"Datwyler market share decline in commodity segments","status":"pending"}]},{"bet_id":"BET_AC_DATW_10","register":"ACCOUNT","entity_id":"DATWYLER","title":"Biologic Drug Delivery Revolution","probability":90,"steps":[{"step":1,"what":"Self-administered biologics market exceeds $100B","status":"watching"},{"step":2,"what":"Datwyler develops specialized sealing solutions for auto-injectors","status":"pending"},{"step":3,"what":"Healthcare division growth accelerates above company average","status":"pending"}]},{"bet_id":"BET_AC_EDF_01","register":"ACCOUNT","entity_id":"EDF","title":"EDF will secure the first major AI data center nuclear PPA in Europe by 2025, establishing a new revenue model for its existing fleet","probability":68,"steps":[{"step":1,"what":"Major tech company announces European AI expansion requiring clean baseload power","status":"confirmed"},{"step":2,"what":"EDF enters formal PPA negotiations with major tech company","status":"watching"},{"step":3,"what":"First French nuclear-to-datacenter PPA signed","status":"pending"}]},{"bet_id":"BET_AC_EDF_02","register":"ACCOUNT","entity_id":"EDF","title":"NUWARD SMR will win the European regulatory approval race, giving EDF a 5-10 year market advantage over competitors","probability":45,"steps":[{"step":1,"what":"EU establishes common SMR regulatory framework","status":"watching"},{"step":2,"what":"NUWARD completes design validation and submits for approval","status":"pending"},{"step":3,"what":"NUWARD receives first European SMR design certification","status":"pending"}]},{"bet_id":"BET_AC_EDF_03","register":"ACCOUNT","entity_id":"EDF","title":"The EPR2 programme will experience significant delays and cost overruns, pushing first power beyond 2040","probability":62,"steps":[{"step":1,"what":"First EPR2 construction begins at Penly site","status":"watching"},{"step":2,"what":"Significant cost overruns or schedule delays announced","status":"pending"},{"step":3,"what":"Official schedule revision pushing first power past 2040","status":"pending"}]},{"bet_id":"BET_AC_EDF_04","register":"ACCOUNT","entity_id":"EDF","title":"EDF will launch commercial nuclear-hydrogen operations by 2028, creating Europe's largest baseload green hydrogen source","probability":52,"steps":[{"step":1,"what":"EDF announces pilot nuclear-hydrogen project at existing reactor site","status":"watching"},{"step":2,"what":"Successful pilot demonstration with industrial hydrogen offtaker","status":"pending"},{"step":3,"what":"Commercial-scale nuclear-hydrogen facility operational","status":"pending"}]},{"bet_id":"BET_AC_EDF_05","register":"ACCOUNT","entity_id":"EDF","title":"French nuclear fleet will achieve sustained 400+ TWh annual generation by 2026, exceeding pre-2022 levels","probability":58,"steps":[{"step":1,"what":"2024 generation reaches 360+ TWh target","status":"watching"},{"step":2,"what":"2025 generation exceeds 380 TWh with fleet improvements","status":"pending"},{"step":3,"what":"Sustained 400+ TWh generation achieved in 2026","status":"pending"}]},{"bet_id":"BET_AC_EDF_06","register":"ACCOUNT","entity_id":"EDF","title":"EDF will lose the UK Sizewell C project to political pressure or financing challenges by 2027","probability":48,"steps":[{"step":1,"what":"UK government raises concerns about Chinese partnership in nuclear projects","status":"confirmed"},{"step":2,"what":"Sizewell C financing discussions stall or face political opposition","status":"watching"},{"step":3,"what":"UK formally cancels or reassigns Sizewell C to different vendor","status":"pending"}]},{"bet_id":"BET_AC_EDF_07","register":"ACCOUNT","entity_id":"EDF","title":"Framatome's accident-tolerant fuels will capture 25%+ of the global nuclear fuel market by 2030","probability":41,"steps":[{"step":1,"what":"First commercial ATF deployment in EDF reactor","status":"pending"},{"step":2,"what":"Multiple international utilities adopt Framatome ATF technology","status":"pending"},{"step":3,"what":"Framatome achieves 25% global market share in advanced nuclear fuels","status":"pending"}]},{"bet_id":"BET_AC_EDF_08","register":"ACCOUNT","entity_id":"EDF","title":"Nuclear-powered district heating will expand to 5+ French cities by 2029, creating a new business model for waste heat monetization","probability":55,"steps":[{"step":1,"what":"Caen pilot project demonstrates successful commercial operation","status":"watching"},{"step":2,"what":"Second French city announces nuclear district heating project","status":"pending"},{"step":3,"what":"Five or more French cities operating nuclear-powered district heating","status":"pending"}]},{"bet_id":"BET_AC_EDF_09","register":"ACCOUNT","entity_id":"EDF","title":"EDF will face a major political crisis over nuclear waste management by 2030, threatening the renaissance programme","probability":38,"steps":[{"step":1,"what":"Increased nuclear waste production from fleet recovery creates storage pressure","status":"confirmed"},{"step":2,"what":"Major public opposition emerges to nuclear waste storage projects","status":"watching"},{"step":3,"what":"Political pressure forces reconsideration of new nuclear programme","status":"pending"}]},{"bet_id":"BET_AC_EDF_10","register":"ACCOUNT","entity_id":"EDF","title":"Advanced reactor designs will make current EPR technology obsolete by 2035, stranding EDF's massive EPR2 investments","probability":35,"steps":[{"step":1,"what":"Multiple SMR and Generation IV designs achieve commercial operation","status":"watching"},{"step":2,"what":"Advanced reactors demonstrate superior economics to large EPR plants","status":"pending"},{"step":3,"what":"Global nuclear market shifts away from large reactor designs","status":"pending"}]},{"bet_id":"BET_AC_EON_01","register":"ACCOUNT","entity_id":"EON","title":"E.ON will achieve above-regulated returns through Virtual Power Plant monetization by 2028","probability":45,"steps":[{"step":1,"what":"VPP capacity reaches 1GW aggregated","status":"watching"},{"step":2,"what":"EU flexibility markets provide clear monetization path","status":"pending"},{"step":3,"what":"VPP revenues exceed 5% of customer solutions division","status":"pending"}]},{"bet_id":"BET_AC_EON_02","register":"ACCOUNT","entity_id":"EON","title":"German regulatory reset will compress E.ON's WACC below 5% by 2027","probability":38,"steps":[{"step":1,"what":"Political pressure on energy infrastructure costs intensifies","status":"confirmed"},{"step":2,"what":"BNETZA signals lower returns in consultation process","status":"watching"},{"step":3,"what":"New regulatory period implements sub-5% WACC","status":"pending"}]},{"bet_id":"BET_AC_EON_03","register":"ACCOUNT","entity_id":"EON","title":"E.ON will deploy solid-state transformers commercially across 10,000+ sites by 2031","probability":42,"steps":[{"step":1,"what":"Pilot deployments demonstrate technical viability","status":"watching"},{"step":2,"what":"Cost parity with conventional transformers achieved","status":"pending"},{"step":3,"what":"Regulatory approval for widespread deployment","status":"pending"}]},{"bet_id":"BET_AC_EON_04","register":"ACCOUNT","entity_id":"EON","title":"Heat pump network integration will drive \u20ac2B+ in additional CAPEX annually by 2028","probability":58,"steps":[{"step":1,"what":"Heat pump installations accelerate beyond 500K annually in Germany","status":"confirmed"},{"step":2,"what":"Grid constraint incidents increase by 50%+ in residential areas","status":"watching"},{"step":3,"what":"Emergency grid reinforcement programs approved","status":"pending"}]},{"bet_id":"BET_AC_EON_05","register":"ACCOUNT","entity_id":"EON","title":"E.ON will spin off or IPO its hydrogen pipeline business by 2030","probability":35,"steps":[{"step":1,"what":"10,000 km of H2-ready pipes operational","status":"watching"},{"step":2,"what":"Hydrogen market creates clear revenue streams","status":"pending"},{"step":3,"what":"Investor appetite for H2 infrastructure reaches premium valuations","status":"pending"}]},{"bet_id":"BET_AC_EON_06","register":"ACCOUNT","entity_id":"EON","title":"Vehicle-to-Grid services will become E.ON's fastest growing revenue stream by 2029","probability":41,"steps":[{"step":1,"what":"V2G pilots demonstrate commercial viability","status":"watching"},{"step":2,"what":"EV penetration reaches 30% in core markets","status":"pending"},{"step":3,"what":"V2G revenues exceed \u20ac500M annually","status":"pending"}]},{"bet_id":"BET_AC_EON_07","register":"ACCOUNT","entity_id":"EON","title":"E.ON will acquire a major European smart meter data analytics company by 2026","probability":48,"steps":[{"step":1,"what":"E.ON identifies data analytics as strategic priority","status":"confirmed"},{"step":2,"what":"Target acquisition identified and due diligence initiated","status":"watching"},{"step":3,"what":"Acquisition completed and integration announced","status":"pending"}]},{"bet_id":"BET_AC_EON_08","register":"ACCOUNT","entity_id":"EON","title":"Brexit complications will force E.ON to restructure UK operations by 2027","probability":32,"steps":[{"step":1,"what":"UK-EU regulatory frameworks diverge significantly","status":"watching"},{"step":2,"what":"Cross-border operational costs exceed 10% of UK division EBIT","status":"pending"},{"step":3,"what":"Board approves UK restructuring or divestiture plan","status":"pending"}]},{"bet_id":"BET_AC_EON_09","register":"ACCOUNT","entity_id":"EON","title":"Advanced conductor deployment will double E.ON's transmission capacity without new infrastructure by 2032","probability":52,"steps":[{"step":1,"what":"HTLS technology proves economic viability in pilots","status":"watching"},{"step":2,"what":"Regulatory approval for widespread conductor replacement","status":"pending"},{"step":3,"what":"50%+ of critical transmission lines upgraded with HTLS","status":"pending"}]},{"bet_id":"BET_AC_EON_10","register":"ACCOUNT","entity_id":"EON","title":"E.ON One venture fund will generate first major exit exceeding \u20ac500M by 2028","probability":28,"steps":[{"step":1,"what":"Portfolio company reaches Series B+ funding round","status":"watching"},{"step":2,"what":"Technology achieves commercial scale deployment","status":"pending"},{"step":3,"what":"IPO or strategic acquisition exceeds \u20ac500M valuation","status":"pending"}]},{"bet_id":"BET_AC_HALL_01","register":"ACCOUNT","entity_id":"HALLIBURTON","title":"Halliburton will establish geothermal as a major revenue stream comparable to traditional completion services by 2030","probability":45,"steps":[{"step":1,"what":"Successful deployment in multiple geothermal projects","status":"watching"},{"step":2,"what":"Dedicated geothermal business unit formation","status":"pending"},{"step":3,"what":"Geothermal revenue exceeds $1B annually","status":"pending"}]},{"bet_id":"BET_AC_HALL_02","register":"ACCOUNT","entity_id":"HALLIBURTON","title":"Halliburton's ZEUS electric frac platform will dominate international markets within 3 years","probability":62,"steps":[{"step":1,"what":"ZEUS deployment across major US shale basins","status":"confirmed"},{"step":2,"what":"International expansion contracts signed","status":"watching"},{"step":3,"what":"Market leadership in international e-frac services","status":"pending"}]},{"bet_id":"BET_AC_HALL_03","register":"ACCOUNT","entity_id":"HALLIBURTON","title":"Autonomous completions will become commercially viable and deployed at scale by Halliburton within 5 years","probability":52,"steps":[{"step":1,"what":"LOGIX autonomous drilling proves NPT reduction at scale","status":"confirmed"},{"step":2,"what":"Autonomous completion pilot programs launched","status":"watching"},{"step":3,"what":"Full autonomous completion suite commercially deployed","status":"pending"}]},{"bet_id":"BET_AC_HALL_04","register":"ACCOUNT","entity_id":"HALLIBURTON","title":"Halliburton's Saudi Aramco relationship will face material disruption due to diversification or contract renegotiation pressures","probability":38,"steps":[{"step":1,"what":"Current multi-billion integrated contracts maintained","status":"confirmed"},{"step":2,"what":"Aramco begins in-sourcing key capabilities or demands significant price concessions","status":"watching"},{"step":3,"what":"Contract terms materially deteriorate or volumes significantly reduced","status":"pending"}]},{"bet_id":"BET_AC_HALL_05","register":"ACCOUNT","entity_id":"HALLIBURTON","title":"AI-driven production optimization will generate measurable competitive advantage and premium pricing for Halliburton","probability":67,"steps":[{"step":1,"what":"Pilot deployments demonstrate consistent production uplift","status":"confirmed"},{"step":2,"what":"Major customer contracts include AI optimization premium pricing","status":"watching"},{"step":3,"what":"AI optimization becomes standard offering with measurable margin improvement","status":"pending"}]},{"bet_id":"BET_AC_HALL_06","register":"ACCOUNT","entity_id":"HALLIBURTON","title":"iEnergy platform will fail to meaningfully compete with SLB's Delfi despite open architecture positioning","probability":41,"steps":[{"step":1,"what":"iEnergy achieves growing adoption in Middle East markets","status":"confirmed"},{"step":2,"what":"Market share gains against Delfi stagnate or reverse","status":"watching"},{"step":3,"what":"Halliburton scales back iEnergy investment or pivots strategy","status":"pending"}]},{"bet_id":"BET_AC_HALL_07","register":"ACCOUNT","entity_id":"HALLIBURTON","title":"Halliburton's oil cycle thesis will prove partially incorrect as energy transition accelerates faster than expected","probability":44,"steps":[{"step":1,"what":"Oil demand maintains current trajectory above $65-75 range","status":"confirmed"},{"step":2,"what":"Energy transition acceleration creates visible demand destruction signals","status":"watching"},{"step":3,"what":"Halliburton forced to materially pivot strategy toward new energy markets","status":"pending"}]},{"bet_id":"BET_AC_HALL_08","register":"ACCOUNT","entity_id":"HALLIBURTON","title":"Halliburton will successfully monetize CCUS for oilfield emissions as a major service line driven by NOC requirements","probability":49,"steps":[{"step":1,"what":"Halliburton Labs CCUS investments show technical viability","status":"watching"},{"step":2,"what":"Major NOC contracts include CCUS service requirements","status":"pending"},{"step":3,"what":"CCUS becomes standard service offering with dedicated business unit","status":"pending"}]},{"bet_id":"BET_AC_HALL_09","register":"ACCOUNT","entity_id":"HALLIBURTON","title":"International revenue mix will exceed 65% within 3 years driven by Middle East and Latin America expansion","probability":58,"steps":[{"step":1,"what":"International revenue growing faster than North America","status":"confirmed"},{"step":2,"what":"Long-cycle contracts in Iraq, Kuwait, UAE extended through 2027+","status":"watching"},{"step":3,"what":"International revenue mix exceeds 65% of total company revenue","status":"pending"}]},{"bet_id":"BET_AC_HALL_10","register":"ACCOUNT","entity_id":"HALLIBURTON","title":"Halliburton will establish breakthrough subsurface applications beyond geothermal through deep tech innovation by 2035","probability":35,"steps":[{"step":1,"what":"Halliburton Labs identifies viable subsurface applications beyond current focus","status":"watching"},{"step":2,"what":"Pilot projects demonstrate commercial viability in new subsurface markets","status":"pending"},{"step":3,"what":"New subsurface applications become material revenue contributors","status":"pending"}]},{"bet_id":"BET_AC_INFI_01","register":"ACCOUNT","entity_id":"INFINEON","title":"Infineon's Dresden 200mm SiC fab will create decisive cost leadership by 2027, forcing competitors to abandon SiC or accept margin compression","probability":68,"steps":[{"step":1,"what":"Dresden fab achieves full production capacity","status":"confirmed"},{"step":2,"what":"Cost per wafer drops 40%+ versus competitors","status":"watching"},{"step":3,"what":"Market share gains in automotive SiC exceed 70%","status":"pending"}]},{"bet_id":"BET_AC_INFI_02","register":"ACCOUNT","entity_id":"INFINEON","title":"Chinese SiC manufacturers will capture 25%+ of global automotive SiC market by 2029, primarily in lower-tier vehicle applications","probability":62,"steps":[{"step":1,"what":"Chinese SiC quality reaches automotive Grade 1 standards","status":"watching"},{"step":2,"what":"Major Chinese OEM adopts Chinese SiC for mass production","status":"pending"},{"step":3,"what":"Chinese players achieve 25% global automotive SiC share","status":"pending"}]},{"bet_id":"BET_AC_INFI_03","register":"ACCOUNT","entity_id":"INFINEON","title":"Gallium Oxide will emerge as a commercial threat to SiC by 2032, forcing Infineon to make major R&D pivot decisions","probability":45,"steps":[{"step":1,"what":"Ga\u2082O\u2083 achieves pilot production at automotive quality levels","status":"watching"},{"step":2,"what":"Major automotive OEM commits to Ga\u2082O\u2083 qualification program","status":"pending"},{"step":3,"what":"Infineon announces major Ga\u2082O\u2083 R&D investment or acquisition","status":"pending"}]},{"bet_id":"BET_AC_INFI_04","register":"ACCOUNT","entity_id":"INFINEON","title":"AI data center power semiconductors will become Infineon's largest growth segment, exceeding automotive revenue by 2030","probability":52,"steps":[{"step":1,"what":"AI data center becomes fastest-growing segment","status":"confirmed"},{"step":2,"what":"Data center revenue exceeds \u20ac3B annually","status":"watching"},{"step":3,"what":"Data center revenue surpasses automotive segment","status":"pending"}]},{"bet_id":"BET_AC_INFI_05","register":"ACCOUNT","entity_id":"INFINEON","title":"GaN will successfully scale to 400V automotive applications by 2027, creating genuine competition for SiC in specific use cases","probability":48,"steps":[{"step":1,"what":"GaN achieves 400V automotive qualification standards","status":"watching"},{"step":2,"what":"Major OEM adopts GaN for 400V auxiliary power systems","status":"pending"},{"step":3,"what":"GaN captures 15%+ market share in specific automotive applications","status":"pending"}]},{"bet_id":"BET_AC_INFI_06","register":"ACCOUNT","entity_id":"INFINEON","title":"Infineon will face significant EV demand cyclical headwinds through 2025, but emerge stronger due to structural market position","probability":65,"steps":[{"step":1,"what":"Global EV sales growth decelerates below 15% annually","status":"watching"},{"step":2,"what":"Infineon automotive revenue declines 10%+ year-over-year","status":"pending"},{"step":3,"what":"Market share in automotive SiC increases despite volume decline","status":"pending"}]},{"bet_id":"BET_AC_INFI_07","register":"ACCOUNT","entity_id":"INFINEON","title":"800V EV architecture will become dominant platform by 2028, massively increasing SiC content per vehicle and benefiting Infineon","probability":71,"steps":[{"step":1,"what":"800V architecture adoption exceeds 50% in premium EVs","status":"watching"},{"step":2,"what":"Mid-market EVs begin 800V platform adoption","status":"pending"},{"step":3,"what":"SiC content per vehicle doubles versus 400V systems","status":"pending"}]},{"bet_id":"BET_AC_INFI_08","register":"ACCOUNT","entity_id":"INFINEON","title":"Infineon will make a major acquisition in the Ga\u2082O\u2083 or advanced materials space by 2029 to defend technology leadership","probability":42,"steps":[{"step":1,"what":"Ga\u2082O\u2083 technology reaches commercial proof-of-concept","status":"watching"},{"step":2,"what":"Competitor announces major Ga\u2082O\u2083 investment or partnership","status":"pending"},{"step":3,"what":"Infineon announces acquisition of Ga\u2082O\u2083 technology company","status":"pending"}]},{"bet_id":"BET_AC_INFI_09","register":"ACCOUNT","entity_id":"INFINEON","title":"Industrial motor electrification will emerge as Infineon's third major growth pillar alongside automotive and data centers by 2030","probability":38,"steps":[{"step":1,"what":"IE5 motor efficiency standards gain regulatory adoption","status":"pending"},{"step":2,"what":"Industrial motor SiC market reaches \u20ac1B+ annually","status":"pending"},{"step":3,"what":"Industrial becomes 20%+ of Infineon's total revenue","status":"pending"}]},{"bet_id":"BET_AC_INFI_10","register":"ACCOUNT","entity_id":"INFINEON","title":"Infineon's sustainability impact narrative will become central to ESG investor positioning, quantifying massive CO\u2082 avoidance from their semiconductors","probability":58,"steps":[{"step":1,"what":"Sustainability impact reporting methodology finalized","status":"watching"},{"step":2,"what":"Published metric: X tonnes CO\u2082 avoided per tonne of Infineon chips","status":"pending"},{"step":3,"what":"ESG investors cite Infineon as top sustainability semiconductor play","status":"pending"}]},{"bet_id":"BET_AC_MERC_01","register":"ACCOUNT","entity_id":"MERCEDES","title":"Mercedes will successfully maintain 14%+ EBIT margins through 2030 despite EV transition costs","probability":48,"steps":[{"step":1,"what":"Sustained 12-14% margins through 2026-2027","status":"watching"},{"step":2,"what":"EQS and Maybach EV profitability proven at scale","status":"pending"},{"step":3,"what":"Top-end strategy delivers 15%+ margins by 2030","status":"pending"}]},{"bet_id":"BET_AC_MERC_02","register":"ACCOUNT","entity_id":"MERCEDES","title":"MB.OS will generate \u20ac2B+ annual software revenue by 2030","probability":42,"steps":[{"step":1,"what":"MB.OS successfully deployed across E-Class and new models","status":"watching"},{"step":2,"what":"OTA update revenue model proven with paying customers","status":"pending"},{"step":3,"what":"Software revenue reaches \u20ac2B+ annually","status":"pending"}]},{"bet_id":"BET_AC_MERC_03","register":"ACCOUNT","entity_id":"MERCEDES","title":"China JV profits will decline to under 30% of group profits by 2028","probability":62,"steps":[{"step":1,"what":"China JV contribution drops below 40% of group profits","status":"watching"},{"step":2,"what":"Local Chinese brands capture 25%+ of ultra-premium EV market","status":"pending"},{"step":3,"what":"China contributes less than 30% of Mercedes group profits","status":"pending"}]},{"bet_id":"BET_AC_MERC_04","register":"ACCOUNT","entity_id":"MERCEDES","title":"Level 4 autonomous driving will be commercially available in Mercedes vehicles by 2029","probability":38,"steps":[{"step":1,"what":"Level 3 Drive Pilot expands to 5+ markets successfully","status":"watching"},{"step":2,"what":"Level 4 prototype testing achieves regulatory milestones","status":"pending"},{"step":3,"what":"Commercial Level 4 system launched in production vehicles","status":"pending"}]},{"bet_id":"BET_AC_MERC_05","register":"ACCOUNT","entity_id":"MERCEDES","title":"Mercedes will launch a fully autonomous luxury shuttle service by 2031","probability":35,"steps":[{"step":1,"what":"Level 4 technology proven in production vehicles","status":"pending"},{"step":2,"what":"Pilot autonomous service launched in select cities","status":"pending"},{"step":3,"what":"Commercial autonomous shuttle service operational","status":"pending"}]},{"bet_id":"BET_AC_MERC_06","register":"ACCOUNT","entity_id":"MERCEDES","title":"Sustainable luxury materials will comprise 50%+ of Mercedes interior components by 2030","probability":44,"steps":[{"step":1,"what":"Sustainable materials proven in production across multiple models","status":"watching"},{"step":2,"what":"Cost parity achieved with traditional luxury materials","status":"pending"},{"step":3,"what":"50%+ of interior components use sustainable materials","status":"pending"}]},{"bet_id":"BET_AC_MERC_07","register":"ACCOUNT","entity_id":"MERCEDES","title":"Mercedes will acquire or partner with a Chinese luxury EV brand by 2027","probability":52,"steps":[{"step":1,"what":"Chinese luxury EV brands demonstrate sustained ultra-premium success","status":"confirmed"},{"step":2,"what":"Mercedes announces strategic Chinese partnership or acquisition talks","status":"pending"},{"step":3,"what":"Deal completed with Chinese luxury EV player","status":"pending"}]},{"bet_id":"BET_AC_MERC_08","register":"ACCOUNT","entity_id":"MERCEDES","title":"G-Class Electric will become Mercedes' best-selling EV model by 2028","probability":41,"steps":[{"step":1,"what":"G-Class Electric production scales beyond limited availability","status":"watching"},{"step":2,"what":"Annual sales exceed 50,000 units globally","status":"pending"},{"step":3,"what":"G-Class Electric becomes #1 Mercedes EV by volume","status":"pending"}]},{"bet_id":"BET_AC_MERC_09","register":"ACCOUNT","entity_id":"MERCEDES","title":"Biometric personalization will be standard in all new Mercedes models by 2029","probability":46,"steps":[{"step":1,"what":"Biometric sensors successfully integrated in flagship models","status":"watching"},{"step":2,"what":"AI personalization algorithms proven effective and safe","status":"pending"},{"step":3,"what":"Biometric systems deployed across all new model lines","status":"pending"}]},{"bet_id":"BET_AC_MERC_10","register":"ACCOUNT","entity_id":"MERCEDES","title":"Mercedes will spin off MB.OS as a separate software licensing business by 2032","probability":31,"steps":[{"step":1,"what":"MB.OS proves successful across Mercedes vehicle lineup","status":"pending"},{"step":2,"what":"External licensing partnerships established with other OEMs","status":"pending"},{"step":3,"what":"MB.OS spun off as independent software business","status":"pending"}]},{"bet_id":"BET_AC_MICH_01","register":"ACCOUNT","entity_id":"MICHELIN","title":"UPTIS airless tire technology will achieve commercial scale by 2027, capturing 15-20% of fleet vehicle segments","probability":42,"steps":[{"step":1,"what":"GM UPTIS production launch successful","status":"confirmed"},{"step":2,"what":"Second major OEM partnership announced","status":"watching"},{"step":3,"what":"Commercial fleet adoption reaches 15% market share","status":"pending"}]},{"bet_id":"BET_AC_MICH_02","register":"ACCOUNT","entity_id":"MICHELIN","title":"Chinese tire manufacturers will capture 25-30% of European premium EV tire market by 2030","probability":52,"steps":[{"step":1,"what":"Chinese manufacturers achieve European quality certifications","status":"watching"},{"step":2,"what":"First premium European OEM contracts secured","status":"pending"},{"step":3,"what":"Market share reaches 25% in premium EV segment","status":"pending"}]},{"bet_id":"BET_AC_MICH_03","register":"ACCOUNT","entity_id":"MICHELIN","title":"Symbio will become Europe's leading commercial vehicle fuel cell supplier with \u20ac2B+ revenue by 2032","probability":38,"steps":[{"step":1,"what":"Lyon factory reaches 50,000 annual production capacity","status":"confirmed"},{"step":2,"what":"Major European truck OEMs commit to hydrogen platforms","status":"watching"},{"step":3,"what":"Symbio achieves \u20ac2B annual revenue milestone","status":"pending"}]},{"bet_id":"BET_AC_MICH_04","register":"ACCOUNT","entity_id":"MICHELIN","title":"Bio-sourced synthetic rubber will replace 40% of petroleum-derived rubber in Michelin tires by 2035","probability":35,"steps":[{"step":1,"what":"Commercial viability demonstrated for fermentation-based rubber","status":"watching"},{"step":2,"what":"Cost parity achieved with petroleum-derived synthetic rubber","status":"pending"},{"step":3,"what":"Bio-sourced materials reach 40% of tire composition","status":"pending"}]},{"bet_id":"BET_AC_MICH_05","register":"ACCOUNT","entity_id":"MICHELIN","title":"Michelin will launch tire-as-a-service subscription model for consumer EVs by 2028","probability":48,"steps":[{"step":1,"what":"Effifuel commercial fleet model proves profitable","status":"confirmed"},{"step":2,"what":"Consumer pilot program launched in key European markets","status":"watching"},{"step":3,"what":"Full consumer tire-as-a-service rollout completed","status":"pending"}]},{"bet_id":"BET_AC_MICH_06","register":"ACCOUNT","entity_id":"MICHELIN","title":"Premium EV tire margins will compress 15-20% as competition intensifies by 2030","probability":58,"steps":[{"step":1,"what":"Competitive EV tire offerings reach performance parity","status":"watching"},{"step":2,"what":"OEM price negotiations intensify across premium segment","status":"pending"},{"step":3,"what":"Michelin premium margins decline 15-20% from current levels","status":"pending"}]},{"bet_id":"BET_AC_MICH_07","register":"ACCOUNT","entity_id":"MICHELIN","title":"Acoustic foam integration will become standard across 80% of EV tire market by 2029","probability":62,"steps":[{"step":1,"what":"Acoustic foam standard on Michelin premium EV fitments","status":"confirmed"},{"step":2,"what":"Competitors launch equivalent acoustic foam solutions","status":"watching"},{"step":3,"what":"Technology becomes standard across 80% of premium EV tires","status":"pending"}]},{"bet_id":"BET_AC_MICH_08","register":"ACCOUNT","entity_id":"MICHELIN","title":"Michelin will achieve 80% sustainable materials target by 2030 through vertical integration","probability":44,"steps":[{"step":1,"what":"Bio-sourced materials scaling demonstrates commercial viability","status":"watching"},{"step":2,"what":"Strategic acquisitions of bio-materials suppliers completed","status":"pending"},{"step":3,"what":"80% sustainable materials target achieved across product lines","status":"pending"}]},{"bet_id":"BET_AC_MICH_09","register":"ACCOUNT","entity_id":"MICHELIN","title":"European hydrogen truck adoption will reach 150,000 units by 2032, validating Symbio investment","probability":32,"steps":[{"step":1,"what":"Major European truck OEMs announce hydrogen platform commitments","status":"watching"},{"step":2,"what":"Hydrogen refueling infrastructure reaches critical mass","status":"pending"},{"step":3,"what":"European hydrogen truck fleet reaches 150,000 units","status":"pending"}]},{"bet_id":"BET_AC_MICH_10","register":"ACCOUNT","entity_id":"MICHELIN","title":"Michelin will spin off Symbio as independent company by 2030 to unlock hydrogen value","probability":28,"steps":[{"step":1,"what":"Symbio achieves profitability and scale milestones","status":"pending"},{"step":2,"what":"Hydrogen market validation creates strategic buyer interest","status":"pending"},{"step":3,"what":"Symbio divested through IPO or strategic sale","status":"pending"}]},{"bet_id":"BET_AC_MOL_01","register":"ACCOUNT","entity_id":"MOL","title":"MOL will successfully commercialize bio-based polypropylene production at TVK by 2030, capturing 15-25% of CEE market share","probability":45,"steps":[{"step":1,"what":"Bio-PP pilot plant construction begins at TVK","status":"watching"},{"step":2,"what":"Commercial-scale bio-PP production commences","status":"pending"},{"step":3,"what":"Market share capture in CEE bio-polymer segment","status":"pending"}]},{"bet_id":"BET_AC_MOL_02","register":"ACCOUNT","entity_id":"MOL","title":"Hungary's divergent EU energy policy will create regulatory arbitrage opportunities that boost MOL's margins by 2027","probability":62,"steps":[{"step":1,"what":"Hungary implements slower ETS compliance timeline","status":"confirmed"},{"step":2,"what":"MOL's refining margins improve relative to Western peers","status":"watching"},{"step":3,"what":"Sustained 2-3 year competitive advantage period","status":"pending"}]},{"bet_id":"BET_AC_MOL_03","register":"ACCOUNT","entity_id":"MOL","title":"MOL's plastic waste pyrolysis initiative will scale to industrial levels, reducing fossil feedstock dependency by 30% by 2029","probability":38,"steps":[{"step":1,"what":"Pilot plant demonstrates commercial viability","status":"watching"},{"step":2,"what":"Industrial-scale pyrolysis facility construction","status":"pending"},{"step":3,"what":"30% reduction in fossil feedstock dependency achieved","status":"pending"}]},{"bet_id":"BET_AC_MOL_04","register":"ACCOUNT","entity_id":"MOL","title":"EU CBAM implementation will force MOL to divest or significantly restructure its chemicals export business by 2026","probability":51,"steps":[{"step":1,"what":"CBAM fully implemented affecting MOL exports","status":"confirmed"},{"step":2,"what":"Export margins become uneconomical","status":"watching"},{"step":3,"what":"Strategic restructuring or divestment executed","status":"pending"}]},{"bet_id":"BET_AC_MOL_05","register":"ACCOUNT","entity_id":"MOL","title":"MOL's EV charging network will achieve profitability and become the dominant CEE charging infrastructure by 2028","probability":44,"steps":[{"step":1,"what":"2,000+ charge points operational across network","status":"watching"},{"step":2,"what":"Charging network achieves positive unit economics","status":"pending"},{"step":3,"what":"Market leadership established in CEE charging","status":"pending"}]},{"bet_id":"BET_AC_MOL_06","register":"ACCOUNT","entity_id":"MOL","title":"PKN Orlen will attempt a hostile takeover or strategic consolidation of MOL within 4 years","probability":33,"steps":[{"step":1,"what":"PKN Orlen builds strategic stake in MOL","status":"watching"},{"step":2,"what":"Formal takeover or merger proposal submitted","status":"pending"},{"step":3,"what":"Transaction completed or definitively blocked","status":"pending"}]},{"bet_id":"BET_AC_MOL_07","register":"ACCOUNT","entity_id":"MOL","title":"MOL will pivot its upstream oil & gas production assets to geothermal energy operations by 2031","probability":42,"steps":[{"step":1,"what":"Geothermal pilot projects demonstrate viability","status":"watching"},{"step":2,"what":"Major geothermal development projects initiated","status":"pending"},{"step":3,"what":"Upstream assets fully converted to geothermal","status":"pending"}]},{"bet_id":"BET_AC_MOL_08","register":"ACCOUNT","entity_id":"MOL","title":"FutureBridge will secure a \u20ac2M+ annual retainer with MOL covering chemicals transition intelligence and CEE regulatory monitoring","probability":68,"steps":[{"step":1,"what":"Daniel Nagy relationship expanded to chemicals team","status":"confirmed"},{"step":2,"what":"Pilot engagement with MOL chemicals/strategy teams","status":"watching"},{"step":3,"what":"Annual retainer contract signed and operational","status":"pending"}]},{"bet_id":"BET_AC_MOL_09","register":"ACCOUNT","entity_id":"MOL","title":"MOL's integrated refining margins will decline by 40%+ as CEE fuel demand peaks and carbon costs surge by 2027","probability":47,"steps":[{"step":1,"what":"EU ETS carbon prices reach \u20ac100+ per tonne","status":"watching"},{"step":2,"what":"CEE fuel demand begins structural decline","status":"pending"},{"step":3,"what":"Refining margins compressed to sub-economic levels","status":"pending"}]},{"bet_id":"BET_AC_MOL_10","register":"ACCOUNT","entity_id":"MOL","title":"MOL will establish a separate sustainable chemicals subsidiary by 2030, eventually spinning it off as an independent entity","probability":29,"steps":[{"step":1,"what":"Sustainable chemicals unit established within MOL","status":"pending"},{"step":2,"what":"Subsidiary attracts external strategic partners","status":"pending"},{"step":3,"what":"IPO or strategic sale of chemicals subsidiary","status":"pending"}]},{"bet_id":"BET_AC_SEAT_01","register":"ACCOUNT","entity_id":"SEAT_CUPRA","title":"CUPRA will establish itself as Europe's leading lifestyle EV brand by capturing 300K+ annual units by 2028","probability":45,"steps":[{"step":1,"what":"CUPRA Tavascan achieves 50K+ units annually","status":"watching"},{"step":2,"what":"Brand recognition exceeds 40% in Germany/UK markets","status":"pending"},{"step":3,"what":"Annual unit sales surpass 300K across all models","status":"pending"}]},{"bet_id":"BET_AC_SEAT_02","register":"ACCOUNT","entity_id":"SEAT_CUPRA","title":"Chinese lifestyle brands will capture 25%+ of CUPRA's target segment by 2029","probability":58,"steps":[{"step":1,"what":"Lynk&Co subscription model gains 20K+ European customers","status":"watching"},{"step":2,"what":"ZEEKR establishes European dealer network in 5+ countries","status":"pending"},{"step":3,"what":"Combined Chinese lifestyle brands reach 100K+ European sales","status":"pending"}]},{"bet_id":"BET_AC_SEAT_03","register":"ACCOUNT","entity_id":"SEAT_CUPRA","title":"SEAT's sub-\u20ac20K EV will fail to compete effectively against Chinese affordable EVs","probability":52,"steps":[{"step":1,"what":"BYD Seagull equivalent launches in Europe under \u20ac18K","status":"watching"},{"step":2,"what":"SEAT EV delayed beyond 2026 due to cost pressures","status":"pending"},{"step":3,"what":"SEAT EV captures less than 10% of affordable EV segment","status":"pending"}]},{"bet_id":"BET_AC_SEAT_04","register":"ACCOUNT","entity_id":"SEAT_CUPRA","title":"Spain will become VW Group's primary European EV manufacturing hub by 2030","probability":67,"steps":[{"step":1,"what":"Martorell EV expansion reaches 70% completion","status":"confirmed"},{"step":2,"what":"Spanish battery supply chain partnerships finalized","status":"watching"},{"step":3,"what":"Martorell produces 400K+ EV units annually","status":"pending"}]},{"bet_id":"BET_AC_SEAT_05","register":"ACCOUNT","entity_id":"SEAT_CUPRA","title":"CUPRA will successfully expand beyond automotive into lifestyle brand ecosystem by 2027","probability":42,"steps":[{"step":1,"what":"CUPRA lifestyle products generate \u20ac50M+ annual revenue","status":"watching"},{"step":2,"what":"CUPRA community platform reaches 500K active members","status":"pending"},{"step":3,"what":"Non-automotive revenue exceeds 15% of total CUPRA income","status":"pending"}]},{"bet_id":"BET_AC_SEAT_06","register":"ACCOUNT","entity_id":"SEAT_CUPRA","title":"Formula E technology transfer will give CUPRA measurable efficiency advantages by 2026","probability":38,"steps":[{"step":1,"what":"Silicon carbide inverters integrated into CUPRA EV production","status":"pending"},{"step":2,"what":"CUPRA EVs achieve 10%+ efficiency improvement over MEB baseline","status":"pending"},{"step":3,"what":"Formula E tech adoption documented in production vehicles","status":"pending"}]},{"bet_id":"BET_AC_SEAT_07","register":"ACCOUNT","entity_id":"SEAT_CUPRA","title":"CUPRA will struggle to maintain brand differentiation as VW Group standardizes EV platforms","probability":48,"steps":[{"step":1,"what":"CUPRA Born sales plateau due to VW ID.3 price competition","status":"watching"},{"step":2,"what":"VW Group enforces stricter platform standardization policies","status":"pending"},{"step":3,"what":"CUPRA premium pricing becomes unsustainable vs group siblings","status":"pending"}]},{"bet_id":"BET_AC_SEAT_08","register":"ACCOUNT","entity_id":"SEAT_CUPRA","title":"European EV supply chain localization will reduce Martorell production costs by 20% by 2029","probability":55,"steps":[{"step":1,"what":"Three major tier 1 suppliers establish Spanish operations","status":"watching"},{"step":2,"what":"Local battery supply covers 50%+ of Martorell requirements","status":"pending"},{"step":3,"what":"Production cost reduction reaches 20% versus 2024 baseline","status":"pending"}]},{"bet_id":"BET_AC_SEAT_09","register":"ACCOUNT","entity_id":"SEAT_CUPRA","title":"SEAT brand will be discontinued or absorbed into CUPRA by 2031","probability":43,"steps":[{"step":1,"what":"SEAT market share drops below 2% in non-Spanish markets","status":"pending"},{"step":2,"what":"VW Group announces brand portfolio rationalization study","status":"pending"},{"step":3,"what":"SEAT nameplate officially discontinued or merged into CUPRA","status":"pending"}]},{"bet_id":"BET_AC_SEAT_10","register":"ACCOUNT","entity_id":"SEAT_CUPRA","title":"CUPRA will achieve profitability independence from VW Group subsidy by 2028","probability":35,"steps":[{"step":1,"what":"CUPRA achieves positive EBITDA on automotive operations","status":"pending"},{"step":2,"what":"Brand generates \u20ac200M+ annual operating profit","status":"pending"},{"step":3,"what":"Financial independence from VW Group confirmed publicly","status":"pending"}]},{"bet_id":"BET_AC_SHEL_01","register":"ACCOUNT","entity_id":"SHELL","title":"Shell will establish LNG as the primary data center fuel source by creating dedicated supply chains bypassing traditional grids","probability":45,"steps":[{"step":1,"what":"Pilot agreements with major cloud providers","status":"watching"},{"step":2,"what":"Dedicated LNG infrastructure for data centers deployed","status":"pending"},{"step":3,"what":"LNG-to-datacenter becomes 10%+ of Shell's gas trading volume","status":"pending"}]},{"bet_id":"BET_AC_SHEL_02","register":"ACCOUNT","entity_id":"SHELL","title":"Namibia Orange Basin will become Shell's next transformational upstream asset rivaling Guyana's impact","probability":65,"steps":[{"step":1,"what":"Final investment decision on Orange Basin development","status":"watching"},{"step":2,"what":"First oil production from Orange Basin","status":"pending"},{"step":3,"what":"Orange Basin contributing 200k+ boe/d to Shell production","status":"pending"}]},{"bet_id":"BET_AC_SHEL_03","register":"ACCOUNT","entity_id":"SHELL","title":"Shell will pivot its chemicals division from commodity refining to high-margin performance chemicals within 3 years","probability":72,"steps":[{"step":1,"what":"Announcement of major refinery restructuring and headcount reduction","status":"confirmed"},{"step":2,"what":"Acquisition or partnership in specialty chemicals capabilities","status":"watching"},{"step":3,"what":"Performance chemicals representing 40%+ of chemicals division revenue","status":"pending"}]},{"bet_id":"BET_AC_SHEL_04","register":"ACCOUNT","entity_id":"SHELL","title":"Shell will commercialize carbon capture as a service business generating $2B+ annual revenue by 2030","probability":52,"steps":[{"step":1,"what":"Shell announces formal CCS-as-a-Service business unit","status":"watching"},{"step":2,"what":"10+ industrial clients signed for CCS services","status":"pending"},{"step":3,"what":"CCS services generating $2B+ annual revenue","status":"pending"}]},{"bet_id":"BET_AC_SHEL_05","register":"ACCOUNT","entity_id":"SHELL","title":"Shell's LNG market share will exceed 60% globally as competitors struggle with capital allocation","probability":48,"steps":[{"step":1,"what":"Shell acquires LNG assets from retreating European majors","status":"watching"},{"step":2,"what":"Shell's LNG portfolio reaches 55% global market share","status":"pending"},{"step":3,"what":"Shell achieves 60%+ global LNG trading market share","status":"pending"}]},{"bet_id":"BET_AC_SHEL_06","register":"ACCOUNT","entity_id":"SHELL","title":"Shell will face forced asset divestiture or breakup pressure if energy transition accelerates post-2028","probability":38,"steps":[{"step":1,"what":"IEA or government policies signal faster transition timeline","status":"watching"},{"step":2,"what":"Shell's valuation discount to peers exceeds 30%","status":"pending"},{"step":3,"what":"Activist campaign or regulatory pressure forces Shell breakup","status":"pending"}]},{"bet_id":"BET_AC_SHEL_07","register":"ACCOUNT","entity_id":"SHELL","title":"Shell Recharge will become Europe's dominant EV charging network through acquisition-driven consolidation","probability":58,"steps":[{"step":1,"what":"Shell reaches 500k+ global charge points target","status":"watching"},{"step":2,"what":"Major acquisition of European charging network competitor","status":"pending"},{"step":3,"what":"Shell Recharge achieves 25%+ European market share","status":"pending"}]},{"bet_id":"BET_AC_SHEL_08","register":"ACCOUNT","entity_id":"SHELL","title":"Shell will achieve 10% SAF blending across its aviation fuel portfolio by 2030 through trading rather than production","probability":61,"steps":[{"step":1,"what":"Expansion of airline offtake agreements beyond current Lufthansa/Delta deals","status":"watching"},{"step":2,"what":"Shell's refinery network optimized for SAF blending operations","status":"pending"},{"step":3,"what":"SAF represents 10% of Shell's aviation fuel portfolio","status":"pending"}]},{"bet_id":"BET_AC_SHEL_09","register":"ACCOUNT","entity_id":"SHELL","title":"Shell will maintain 3M boe/d production plateau for 10+ years through selective deepwater and tight oil investments","probability":44,"steps":[{"step":1,"what":"Shell achieves and maintains 3M boe/d production target","status":"watching"},{"step":2,"what":"Deepwater projects in Namibia and Nigeria reach full production","status":"pending"},{"step":3,"what":"Production plateau sustained above 2.8M boe/d through 2035","status":"pending"}]},{"bet_id":"BET_AC_SHEL_10","register":"ACCOUNT","entity_id":"SHELL","title":"Shell's selective transition strategy will prove correct as European green transition policies reverse by 2027","probability":42,"steps":[{"step":1,"what":"Major European governments scale back renewable energy mandates","status":"watching"},{"step":2,"what":"Shell outperforms European peers on returns metrics","status":"pending"},{"step":3,"what":"European majors follow Shell's selective transition model","status":"pending"}]},{"bet_id":"BET_AC_SKOD_01","register":"ACCOUNT","entity_id":"SKODA","title":"\u0160koda will achieve 1 million annual units globally by 2028, driven by India market success and European EV adoption","probability":45,"steps":[{"step":1,"what":"India platform reaches 300K+ annual units","status":"watching"},{"step":2,"what":"ENYAQ/Elroq achieve 200K+ combined European volume","status":"watching"},{"step":3,"what":"Total \u0160koda volume exceeds 1M units annually","status":"pending"}]},{"bet_id":"BET_AC_SKOD_02","register":"ACCOUNT","entity_id":"SKODA","title":"LFP battery adoption will enable \u0160koda to deliver competitive EVs under \u20ac30K by 2027","probability":52,"steps":[{"step":1,"what":"LFP battery costs reach competitive levels for value EVs","status":"watching"},{"step":2,"what":"Elroq achieves sub-\u20ac35K pricing with acceptable margins","status":"watching"},{"step":3,"what":"\u0160koda delivers sub-\u20ac30K EV by 2027 model cycle","status":"pending"}]},{"bet_id":"BET_AC_SKOD_03","register":"ACCOUNT","entity_id":"SKODA","title":"\u0160koda will launch electric versions of Kushaq and Slavia in India by 2027-2028","probability":38,"steps":[{"step":1,"what":"India EV market reaches sustainable scale for non-luxury brands","status":"watching"},{"step":2,"what":"\u0160koda commits to India EV investment with LFP battery strategy","status":"pending"},{"step":3,"what":"Electric Kushaq or Slavia launches in Indian market","status":"pending"}]},{"bet_id":"BET_AC_SKOD_04","register":"ACCOUNT","entity_id":"SKODA","title":"Renault R5 EV success will force \u0160koda to accelerate value EV development and reduce Elroq pricing","probability":48,"steps":[{"step":1,"what":"Renault R5 EV achieves significant market share in value segment","status":"watching"},{"step":2,"what":"\u0160koda adjusts Elroq pricing or specification to remain competitive","status":"pending"},{"step":3,"what":"Value EV price war emerges with sub-\u20ac30K as new battleground","status":"pending"}]},{"bet_id":"BET_AC_SKOD_05","register":"ACCOUNT","entity_id":"SKODA","title":"\u0160koda will outperform VW Group's overall financial performance through 2027 due to stronger market positioning","probability":41,"steps":[{"step":1,"what":"\u0160koda maintains stable margins despite VW Group pressures","status":"confirmed"},{"step":2,"what":"India and value EV markets prove more resilient than premium segments","status":"watching"},{"step":3,"what":"\u0160koda delivers above-average returns within VW Group portfolio","status":"pending"}]},{"bet_id":"BET_AC_SKOD_06","register":"ACCOUNT","entity_id":"SKODA","title":"DigiLab will develop \u0160koda's signature 'Simply Clever' digital innovations for EVs by 2026","probability":35,"steps":[{"step":1,"what":"DigiLab identifies key digital innovation priorities for EV differentiation","status":"watching"},{"step":2,"what":"Prototype 'Simply Clever' digital features developed and tested","status":"pending"},{"step":3,"what":"Digital innovations launched in production \u0160koda EVs","status":"pending"}]},{"bet_id":"BET_AC_SKOD_07","register":"ACCOUNT","entity_id":"SKODA","title":"SSP platform delays will force \u0160koda to extend MEB platform lifecycle through 2030","probability":55,"steps":[{"step":1,"what":"VW Group announces SSP timeline extensions affecting \u0160koda roadmap","status":"watching"},{"step":2,"what":"\u0160koda commits to extended MEB platform optimization program","status":"pending"},{"step":3,"what":"MEB-based \u0160koda models continue production through 2030","status":"pending"}]},{"bet_id":"BET_AC_SKOD_08","register":"ACCOUNT","entity_id":"SKODA","title":"Chinese EV brands will establish significant European presence by 2029, pressuring \u0160koda's value positioning","probability":58,"steps":[{"step":1,"what":"Chinese EV brands establish European manufacturing or import scale","status":"watching"},{"step":2,"what":"Sub-\u20ac25K EVs become available from Chinese manufacturers in Europe","status":"pending"},{"step":3,"what":"European value brands forced into cost restructuring to compete","status":"pending"}]},{"bet_id":"BET_AC_SKOD_09","register":"ACCOUNT","entity_id":"SKODA","title":"\u0160koda will become VW Group's primary EV volume brand in emerging markets by 2030","probability":42,"steps":[{"step":1,"what":"India EV success proves \u0160koda's emerging market EV capability","status":"pending"},{"step":2,"what":"VW Group assigns additional emerging markets to \u0160koda platform","status":"pending"},{"step":3,"what":"\u0160koda becomes lead brand for VW Group EV expansion in developing economies","status":"pending"}]},{"bet_id":"BET_AC_SKOD_10","register":"ACCOUNT","entity_id":"SKODA","title":"Mlad\u00e1 Boleslav will emerge as VW Group's Central European EV production hub by 2032","probability":38,"steps":[{"step":1,"what":"Mlad\u00e1 Boleslav EV factory upgrade completed successfully","status":"watching"},{"step":2,"what":"Additional VW Group EV models allocated to Czech production","status":"pending"},{"step":3,"what":"Mlad\u00e1 Boleslav becomes multi-brand VW Group EV manufacturing center","status":"pending"}]},{"bet_id":"BET_AC_VW_G_01","register":"ACCOUNT","entity_id":"VW_GROUP","title":"VW will close at least one German factory by Q2 2026, marking the first plant closure in company history","probability":68,"steps":[{"step":1,"what":"IG Metall union negotiations conclude with closure agreement","status":"watching"},{"step":2,"what":"Official closure announcement for Emden or Osnabr\u00fcck","status":"pending"},{"step":3,"what":"Physical plant closure and workforce transition completed","status":"pending"}]},{"bet_id":"BET_AC_VW_G_02","register":"ACCOUNT","entity_id":"VW_GROUP","title":"VW's China market share will drop below 10% by 2028 as BYD and local EV brands continue dominance","probability":52,"steps":[{"step":1,"what":"SAIC joint venture EV launches show limited market traction","status":"watching"},{"step":2,"what":"BYD expands model lineup faster than VW China response","status":"pending"},{"step":3,"what":"VW China market share falls below 10% threshold","status":"pending"}]},{"bet_id":"BET_AC_VW_G_03","register":"ACCOUNT","entity_id":"VW_GROUP","title":"The Trinity/SSP platform delay to 2030 will prove strategically fatal to VW's EV cost competitiveness","probability":45,"steps":[{"step":1,"what":"Chinese OEMs achieve sub-\u20ac20k EV production costs by 2027","status":"watching"},{"step":2,"what":"VW's MEB platform costs remain 20%+ above Chinese competition","status":"pending"},{"step":3,"what":"VW announces permanent exit from volume EV segments","status":"pending"}]},{"bet_id":"BET_AC_VW_G_04","register":"ACCOUNT","entity_id":"VW_GROUP","title":"VW will achieve less than 15% EV share by 2030, falling far short of the 22% target","probability":48,"steps":[{"step":1,"what":"ID family sales plateau below 800k units annually by 2026","status":"watching"},{"step":2,"what":"SSP platform launch encounters further delays beyond 2030","status":"pending"},{"step":3,"what":"2030 EV share remains below 15% despite \u20ac35B investment","status":"pending"}]},{"bet_id":"BET_AC_VW_G_05","register":"ACCOUNT","entity_id":"VW_GROUP","title":"BYD will enter European mass market by 2027, directly threatening VW's core volume segments","probability":42,"steps":[{"step":1,"what":"EU-China EV tariff negotiations conclude favorably for Chinese OEMs","status":"watching"},{"step":2,"what":"BYD announces European manufacturing or pricing strategy for sub-\u20ac25k EVs","status":"pending"},{"step":3,"what":"VW loses 5%+ European market share to Chinese brands","status":"pending"}]},{"bet_id":"BET_AC_VW_G_06","register":"ACCOUNT","entity_id":"VW_GROUP","title":"VW's QuantumScape solid-state battery investment will fail to commercialize before 2030","probability":38,"steps":[{"step":1,"what":"QuantumScape production trials show scaling challenges by 2026","status":"watching"},{"step":2,"what":"Toyota or Samsung achieves commercial solid-state production first","status":"pending"},{"step":3,"what":"VW writes down QuantumScape investment as failed technology bet","status":"pending"}]},{"bet_id":"BET_AC_VW_G_07","register":"ACCOUNT","entity_id":"VW_GROUP","title":"CARIAD software restructuring will force VW into permanent dependency on external partners by 2026","probability":55,"steps":[{"step":1,"what":"VW.OS development shows continued delays and cost overruns","status":"confirmed"},{"step":2,"what":"Partnership agreements expand to cover core vehicle software functions","status":"watching"},{"step":3,"what":"VW officially abandons in-house software-defined vehicle development","status":"pending"}]},{"bet_id":"BET_AC_VW_G_08","register":"ACCOUNT","entity_id":"VW_GROUP","title":"VW will fail to close the software monetization gap with Tesla, earning under \u20ac200 per vehicle annually by 2030","probability":62,"steps":[{"step":1,"what":"VW's OTA and in-vehicle services launch shows limited user adoption","status":"watching"},{"step":2,"what":"Chinese OEMs achieve \u20ac500+ per vehicle software revenue, widening competitive gap","status":"pending"},{"step":3,"what":"VW software revenue remains below \u20ac200 per vehicle despite investments","status":"pending"}]},{"bet_id":"BET_AC_VW_G_09","register":"ACCOUNT","entity_id":"VW_GROUP","title":"PowerCo battery joint venture will fail to achieve cost parity with CATL and BYD by 2030","probability":44,"steps":[{"step":1,"what":"PowerCo Salzgitter production costs exceed Chinese competition by 15%+ at launch","status":"watching"},{"step":2,"what":"Chinese battery costs continue declining faster than PowerCo improvements","status":"pending"},{"step":3,"what":"VW forced to source majority batteries from Chinese suppliers despite PowerCo investment","status":"pending"}]},{"bet_id":"BET_AC_VW_G_10","register":"ACCOUNT","entity_id":"VW_GROUP","title":"VW Group will spin off or sell the VW brand by 2032 to focus on premium Porsche/Audi segments","probability":32,"steps":[{"step":1,"what":"VW brand consistently underperforms group average profitability through 2028","status":"watching"},{"step":2,"what":"Porsche and Audi demonstrate sustainable premium EV profitability while VW struggles","status":"pending"},{"step":3,"what":"VW Group announces strategic review or divestiture process for VW brand","status":"pending"}]},{"bet_id":"BET_AC_WOCO_01","register":"ACCOUNT","entity_id":"WOCO","title":"WOCO EV Motor Mount Dominance","probability":75,"steps":[{"step":1,"what":"Expand beyond VW/BMW to Mercedes and Stellantis platforms","status":"watching"},{"step":2,"what":"Achieve 10%+ market share in European EV motor mounts","status":"pending"},{"step":3,"what":"Launch second-generation frequency-adaptive technology","status":"pending"}]},{"bet_id":"BET_AC_WOCO_02","register":"ACCOUNT","entity_id":"WOCO","title":"Battery Sealing Revenue Explosion","probability":85,"steps":[{"step":1,"what":"Battery sealing revenue reaches \u20ac100M annually","status":"watching"},{"step":2,"what":"Secure contracts with 3+ new EV OEMs","status":"pending"},{"step":3,"what":"Launch next-gen flame retardant foam sealing technology","status":"pending"}]},{"bet_id":"BET_AC_WOCO_03","register":"ACCOUNT","entity_id":"WOCO","title":"Active NVH Partnership Strategy","probability":65,"steps":[{"step":1,"what":"Announce partnership with major electronics/software NVH supplier","status":"watching"},{"step":2,"what":"Launch pilot active NVH system with premium OEM","status":"pending"},{"step":3,"what":"Scale integrated active-passive NVH to volume production","status":"pending"}]},{"bet_id":"BET_AC_WOCO_04","register":"ACCOUNT","entity_id":"WOCO","title":"Thermal Management Hose Breakthrough","probability":55,"steps":[{"step":1,"what":"Complete 150\u00b0C thermal management hose validation testing","status":"watching"},{"step":2,"what":"Develop dielectric cooling fluid compatible materials","status":"pending"},{"step":3,"what":"Secure first OEM contract for immersion cooling hoses","status":"pending"}]},{"bet_id":"BET_AC_WOCO_05","register":"ACCOUNT","entity_id":"WOCO","title":"Chinese Market Entry Failure","probability":70,"steps":[{"step":1,"what":"WOCO announces Chinese EV market expansion strategy","status":"watching"},{"step":2,"what":"Limited progress in securing Chinese OEM partnerships","status":"pending"},{"step":3,"what":"Strategic retreat or joint venture announcement","status":"pending"}]},{"bet_id":"BET_AC_WOCO_06","register":"ACCOUNT","entity_id":"WOCO","title":"Vibracoustic Competitive Pressure","probability":60,"steps":[{"step":1,"what":"Vibracoustic launches competitive EV motor mount technology","status":"watching"},{"step":2,"what":"WOCO loses key contract renewals to Vibracoustic","status":"pending"},{"step":3,"what":"WOCO forced to reduce pricing or exit certain segments","status":"pending"}]},{"bet_id":"BET_AC_WOCO_07","register":"ACCOUNT","entity_id":"WOCO","title":"FutureBridge Technology Intelligence Value","probability":80,"steps":[{"step":1,"what":"WOCO implements FutureBridge acoustic frequency insights","status":"watching"},{"step":2,"what":"Accelerated product development cycles measurable vs competitors","status":"pending"},{"step":3,"what":"Market launch 12+ months ahead of traditional timeline","status":"pending"}]},{"bet_id":"BET_AC_WOCO_08","register":"ACCOUNT","entity_id":"WOCO","title":"ICE Business Decline Acceleration","probability":75,"steps":[{"step":1,"what":"ICE NVH revenue declines 20%+ year-over-year","status":"watching"},{"step":2,"what":"WOCO announces plant consolidation or workforce reduction","status":"pending"},{"step":3,"what":"Major ICE product line discontinuation announced","status":"pending"}]},{"bet_id":"BET_AC_WOCO_09","register":"ACCOUNT","entity_id":"WOCO","title":"Premium EV Acoustic Specialization","probability":70,"steps":[{"step":1,"what":"Secure exclusive partnerships with 2+ luxury EV brands","status":"watching"},{"step":2,"what":"Demonstrate measurable NVH performance advantages","status":"pending"},{"step":3,"what":"Achieve consistent 20%+ pricing premium in premium segments","status":"pending"}]},{"bet_id":"BET_AC_WOCO_10","register":"ACCOUNT","entity_id":"WOCO","title":"Family Ownership Strategic Advantage","probability":65,"steps":[{"step":1,"what":"WOCO increases R&D spending while competitors cut costs","status":"watching"},{"step":2,"what":"Long-term technology investments begin showing returns","status":"pending"},{"step":3,"what":"Market share gains vs public competitors in key segments","status":"pending"}]},{"bet_id":"BET_C001","register":"CHRIS","entity_id":null,"title":"Green hydrogen reaches $3/kg in one geography by 2027","probability":28,"steps":[{"step":1,"what":"Electrolyser system cost below $500/kW at scale","status":"watching"},{"step":2,"what":"Renewable electricity reaches $20/MWh at candidate site","status":"watching"},{"step":3,"what":"Integrated project demonstrates $3/kg or below","status":"pending"},{"step":4,"what":"Third-party verified LCOH published for operating project","status":"pending"}]},{"bet_id":"BET_C002","register":"CHRIS","entity_id":null,"title":"Solid-state batteries reach automotive series production by 2027","probability":22,"steps":[{"step":1,"what":"Pilot production line >1GWh/yr operational","status":"watching"},{"step":2,"what":"AEC-Q100 automotive qualification achieved","status":"pending"},{"step":3,"what":"OEM announces series production model with SSB","status":"pending"},{"step":4,"what":"First customer deliveries of SSB vehicle","status":"pending"}]},{"bet_id":"BET_C003","register":"CHRIS","entity_id":null,"title":"Chinese OEMs operate EU manufacturing by 2028","probability":42,"steps":[{"step":1,"what":"Chinese OEM commits to EU manufacturing site","status":"confirmed"},{"step":2,"what":"EU tariff policy stabilises above 20%","status":"confirmed"},{"step":3,"what":"Second Chinese OEM commits to EU manufacturing","status":"watching"},{"step":4,"what":"First EU-manufactured Chinese EV reaches showrooms","status":"pending"},{"step":5,"what":"50,000+ units/year EU-built by end 2028","status":"pending"}]},{"bet_id":"BET_C004","register":"CHRIS","entity_id":null,"title":"CCS-as-a-Service becomes a commercial product by 2027","probability":45,"steps":[{"step":1,"what":"Energy major publicly offers CCS capacity to third parties","status":"confirmed"},{"step":2,"what":"First commercial contract with non-oil industrial customer","status":"watching"},{"step":3,"what":"Second energy major launches CCS service offering","status":"watching"},{"step":4,"what":"Capture cost below $100/tonne at commercial scale","status":"pending"},{"step":5,"what":"5+ contracted industrial customers across two operators","status":"pending"}]},{"bet_id":"BET_C005","register":"CHRIS","entity_id":null,"title":"SAF mandate triggers first wave of long-term offtake by 2026","probability":52,"steps":[{"step":1,"what":"CORSIA Phase 1 compliance active","status":"confirmed"},{"step":2,"what":"ReFuelEU 2% mandate enforced","status":"watching"},{"step":3,"what":"5+ long-term SAF offtake agreements signed 2025","status":"watching"},{"step":4,"what":"New SAF production FID citing demand contract","status":"pending"},{"step":5,"what":"10+ total agreements by end 2026","status":"pending"}]},{"bet_id":"BET_C006","register":"CHRIS","entity_id":null,"title":"SDV OS market consolidates to 3 platforms by 2028","probability":35,"steps":[{"step":1,"what":"Major OEM abandons proprietary OS for third-party","status":"watching"},{"step":2,"what":"Chinese platform wins first non-Chinese OEM partnership","status":"pending"},{"step":3,"what":"Android Automotive reaches 5+ OEM partnerships","status":"watching"},{"step":4,"what":"Two OEM OS programmes cancelled or merged","status":"watching"},{"step":5,"what":"Top 3 platforms at 70%+ of new model launches","status":"pending"}]},{"bet_id":"BET_C007","register":"CHRIS","entity_id":null,"title":"Nuclear power experiences genuine commercial renaissance by 2030","probability":38,"steps":[{"step":1,"what":"Major economy government announces new nuclear programme","status":"confirmed"},{"step":2,"what":"First SMR design receives full regulatory approval","status":"watching"},{"step":3,"what":"Private capital finances nuclear without sovereign guarantee","status":"pending"},{"step":4,"what":"5+ SMR or large-scale nuclear FIDs in single year","status":"pending"},{"step":5,"what":"10 total FIDs 2025-2030","status":"pending"}]},{"bet_id":"BET_C008","register":"CHRIS","entity_id":null,"title":"Synthetic fuels reach commercial scale in aviation by 2030","probability":20,"steps":[{"step":1,"what":"First commercial PtL facility reaches 50ML/yr","status":"watching"},{"step":2,"what":"PtL cost falls below 3x fossil jet price","status":"pending"},{"step":3,"what":"Regulatory framework recognises PtL as qualifying SAF","status":"confirmed"},{"step":4,"what":"Airline signs 5yr+ PtL offtake agreement","status":"pending"},{"step":5,"what":"500ML/yr single facility operational","status":"pending"}]},{"bet_id":"BET_C009","register":"CHRIS","entity_id":null,"title":"Direct air capture reaches $200/tonne at commercial scale by 2028","probability":18,"steps":[{"step":1,"what":"DAC facility at 100,000 tonne/yr scale operational","status":"watching"},{"step":2,"what":"Capture cost below $400/tonne at existing scale","status":"watching"},{"step":3,"what":"Third-party verified cost below $300/tonne","status":"pending"},{"step":4,"what":"Cost below $200/tonne at commercial scale","status":"pending"}]},{"bet_id":"BET_C010","register":"CHRIS","entity_id":null,"title":"Grid-scale long-duration storage crosses economic threshold by 2027","probability":25,"steps":[{"step":1,"what":"Iron-air or flow battery reaches 10MWh+ commercial deployment","status":"watching"},{"step":2,"what":"Duration >10 hours at utility scale demonstrated","status":"watching"},{"step":3,"what":"Installed cost below $150/kWh at 10hr duration","status":"pending"},{"step":4,"what":"Cost below $100/kWh \u2014 economic vs peaker plants","status":"pending"}]},{"bet_id":"BET_C011","register":"CHRIS","entity_id":null,"title":"Autonomous trucking reaches commercial scale on US corridors by 2027","probability":48,"steps":[{"step":1,"what":"L4 autonomous truck completes 10,000 commercial miles driverless","status":"confirmed"},{"step":2,"what":"FMCSA regulatory framework for driverless trucks published","status":"watching"},{"step":3,"what":"Second operator reaches commercial driverless operation","status":"watching"},{"step":4,"what":"3+ corridors with commercial driverless freight","status":"pending"},{"step":5,"what":"10,000 commercial driverless trucks operating in US","status":"pending"}]},{"bet_id":"BET_C012","register":"CHRIS","entity_id":null,"title":"AI infrastructure drives a new wave of energy demand that reshapes power markets by 2028","probability":62,"steps":[{"step":1,"what":"Hyperscaler energy demand >10GW each for top 3 companies","status":"confirmed"},{"step":2,"what":"Nuclear PPA signed by tech company for new capacity","status":"confirmed"},{"step":3,"what":"Grid operator declares AI demand as systemic planning factor","status":"watching"},{"step":4,"what":"AI datacentre power >50GW globally","status":"watching"},{"step":5,"what":"AI demand drives material change in grid investment plans in 3+ countries","status":"pending"}]},{"bet_id":"BET_I001","register":"INDUSTRY","entity_id":null,"title":"European EV adoption trajectory stalls below 2030 targets","probability":45,"steps":[{"step":1,"what":"European EV monthly sales growth rate falls below 5% YoY","status":"confirmed"},{"step":2,"what":"Major OEM revises EV volume target downward by 20%+","status":"confirmed"},{"step":3,"what":"EU considers ICE ban delay or exemptions","status":"watching"},{"step":4,"what":"Public charging infrastructure below 50% of 2030 target in 5+ member states","status":"watching"},{"step":5,"what":"2030 EV penetration forecast revised below 50% of new car sales","status":"pending"}]},{"bet_id":"BET_I002","register":"INDUSTRY","entity_id":null,"title":"Blue hydrogen retains industrial role as green hydrogen cost reduction stalls","probability":52,"steps":[{"step":1,"what":"Green hydrogen cost still above $4/kg in major markets at end 2025","status":"watching"},{"step":2,"what":"Two or more major green H2 projects cancelled or delayed","status":"confirmed"},{"step":3,"what":"Blue H2 industrial offtake contracts exceed green H2 contracts","status":"watching"},{"step":4,"what":"IEA or BloombergNEF revises green H2 2030 forecast downward 30%+","status":"pending"}]},{"bet_id":"BET_I003","register":"INDUSTRY","entity_id":null,"title":"Chinese EV price pressure forces Western OEM consolidation by 2028","probability":32,"steps":[{"step":1,"what":"Chinese EV average transaction price in Europe reaches 80% of Western equivalent","status":"watching"},{"step":2,"what":"Western OEM reports operating loss on EV segment for full year","status":"confirmed"},{"step":3,"what":"OEM announces brand discontinuation or major consolidation","status":"watching"},{"step":4,"what":"Two Western OEM M&A events directly driven by Chinese competition","status":"pending"}]},{"bet_id":"BET_I004","register":"INDUSTRY","entity_id":null,"title":"Offshore wind cost crisis forces project cancellations and policy reset 2024-2026","probability":55,"steps":[{"step":1,"what":"3+ major offshore wind contracts cancelled citing economics","status":"confirmed"},{"step":2,"what":"Offshore wind LCOE floor rises above onshore solar+storage","status":"confirmed"},{"step":3,"what":"Government policy adjustments to CfD or PPA mechanisms","status":"watching"},{"step":4,"what":"Market recovery \u2014 new projects FID at revised economics","status":"pending"}]},{"bet_id":"BET_I005","register":"INDUSTRY","entity_id":null,"title":"Carbon border adjustment mechanisms trigger green premium compression in industrial sectors","probability":40,"steps":[{"step":1,"what":"EU CBAM full financial compliance begins","status":"confirmed"},{"step":2,"what":"US equivalent carbon border mechanism proposed","status":"watching"},{"step":3,"what":"Green steel price premium falls below 20% vs conventional","status":"pending"},{"step":4,"what":"Green hydrogen import competitiveness reaches parity in 3+ sectors","status":"pending"}]},{"bet_id":"BET_I006","register":"INDUSTRY","entity_id":null,"title":"Sodium-ion batteries displace LFP in stationary storage and emerging market EVs by 2027","probability":35,"steps":[{"step":1,"what":"CATL or BYD begins volume production of sodium-ion cells","status":"confirmed"},{"step":2,"what":"Sodium-ion cell cost falls below $60/kWh","status":"watching"},{"step":3,"what":"10% share of emerging market EV sales (India, SE Asia)","status":"pending"},{"step":4,"what":"20% share of stationary storage market","status":"pending"}]},{"bet_id":"BET_I007","register":"INDUSTRY","entity_id":null,"title":"Digital twin and AI-driven manufacturing reduces automotive production cost by 15%+ by 2028","probability":38,"steps":[{"step":1,"what":"3+ major OEMs deploy AI-driven manufacturing at scale","status":"watching"},{"step":2,"what":"Verified 5%+ cost reduction from digital twin deployment","status":"watching"},{"step":3,"what":"Industry standard for AI manufacturing metrics published","status":"pending"},{"step":4,"what":"15%+ cost reduction verified at full production scale","status":"pending"}]},{"bet_id":"BET_I008","register":"INDUSTRY","entity_id":null,"title":"Geopolitical fragmentation creates two parallel EV supply chains by 2028","probability":52,"steps":[{"step":1,"what":"US IRA and EU CRA create local content requirements >50%","status":"confirmed"},{"step":2,"what":"Western OEMs announce Chinese battery supplier exit timeline","status":"watching"},{"step":3,"what":"Separate software platform ecosystems confirmed (no cross-compatibility)","status":"watching"},{"step":4,"what":"Critical mineral sourcing >80% domestic/allied for Western OEMs","status":"pending"},{"step":5,"what":"Full supply chain decoupling verified by tier 1 audit","status":"pending"}]},{"bet_id":"BET_I009","register":"INDUSTRY","entity_id":null,"title":"Industrial heat decarbonisation becomes the next major energy transition market by 2030","probability":42,"steps":[{"step":1,"what":"Industrial heat pump reaches 200\u00b0C+ at commercial scale","status":"confirmed"},{"step":2,"what":"EU industrial decarbonisation regulation targets heat specifically","status":"watching"},{"step":3,"what":"Industrial heat electrification market reaches $10B","status":"watching"},{"step":4,"what":"Major industrial player commits to full electric heat by 2030","status":"pending"}]},{"bet_id":"BET_I010","register":"INDUSTRY","entity_id":null,"title":"Gigacasting adoption reshapes automotive supply chain structure by 2027","probability":45,"steps":[{"step":1,"what":"3 OEMs beyond Tesla confirm gigacasting in production programmes","status":"confirmed"},{"step":2,"what":"Traditional body panel supplier announces major restructuring","status":"watching"},{"step":3,"what":"5+ OEMs in production with gigacasting","status":"watching"},{"step":4,"what":"Stamping supplier tier 1 base contracts by 30%+ (revenue)","status":"pending"}]},{"bet_id":"BET_I011","register":"INDUSTRY","entity_id":null,"title":"Carbon capture becomes standard practice in cement and steel by 2030","probability":28,"steps":[{"step":1,"what":"First commercial CCS attachment to cement plant","status":"watching"},{"step":2,"what":"Steel sector CCS pilot at 1Mt/yr+ scale","status":"watching"},{"step":3,"what":"Regulatory mandate for industrial CCS in EU or major economy","status":"watching"},{"step":4,"what":"10% of cement/steel capacity with CCS","status":"pending"}]},{"bet_id":"BET_I012","register":"INDUSTRY","entity_id":null,"title":"AI accelerates drug discovery timelines by 50%+ creating pharma pipeline wave by 2028","probability":42,"steps":[{"step":1,"what":"First AI-designed drug reaches Phase 2 trials","status":"confirmed"},{"step":2,"what":"5+ AI-designed drugs in Phase 2 simultaneously","status":"watching"},{"step":3,"what":"Verified timeline reduction >30% vs historical average","status":"pending"},{"step":4,"what":"First AI-designed drug achieves regulatory approval","status":"pending"}]},{"bet_id":"BET_I013","register":"INDUSTRY","entity_id":null,"title":"Critical mineral supply security forces Western government stockpiling programmes by 2026","probability":58,"steps":[{"step":1,"what":"US IRA critical mineral sourcing rules published and enforced","status":"confirmed"},{"step":2,"what":"EU Critical Raw Materials Act strategic reserve mechanism activated","status":"confirmed"},{"step":3,"what":"Japan joins allied critical mineral agreement","status":"watching"},{"step":4,"what":"Formal stockpile or guaranteed purchase for 5+ critical minerals","status":"watching"},{"step":5,"what":"Allied supply chain for top 10 critical minerals at 50%+ of demand","status":"pending"}]},{"bet_id":"BET_I014","register":"INDUSTRY","entity_id":null,"title":"Vertical integration of energy into tech company core operations by 2028","probability":48,"steps":[{"step":1,"what":"Hyperscaler signs PPA for dedicated new nuclear capacity","status":"confirmed"},{"step":2,"what":"Tech company acquires or develops >1GW owned generation","status":"watching"},{"step":3,"what":"Tech company files for utility or power provider licence","status":"watching"},{"step":4,"what":"Top 5 tech companies combined owned/dedicated generation >10GW","status":"pending"},{"step":5,"what":"20GW total owned/dedicated generation across top 5","status":"pending"}]}],"entities":[{"entity_id":"BMW","name":"BMW Group","sector":"MOBILITY","entity_type":"OEM_PREMIUM"},{"entity_id":"MERCEDES","name":"Mercedes-Benz Group","sector":"MOBILITY","entity_type":"OEM_PREMIUM"},{"entity_id":"VW_GROUP","name":"Volkswagen Group","sector":"MOBILITY","entity_type":"OEM_VOLUME"},{"entity_id":"JLR","name":"Jaguar Land Rover","sector":"MOBILITY","entity_type":"OEM_PREMIUM"},{"entity_id":"TESLA","name":"Tesla Inc","sector":"MOBILITY","entity_type":"OEM_VOLUME"},{"entity_id":"BYD","name":"BYD Company","sector":"BOTH","entity_type":"OEM_CHINESE"},{"entity_id":"STELLANTIS","name":"Stellantis NV","sector":"MOBILITY","entity_type":"OEM_VOLUME"},{"entity_id":"TOYOTA","name":"Toyota Motor Corporation","sector":"MOBILITY","entity_type":"OEM_VOLUME"},{"entity_id":"HYUNDAI_KIA","name":"Hyundai Motor Group","sector":"MOBILITY","entity_type":"OEM_VOLUME"},{"entity_id":"DAIMLER_TRUCK","name":"Daimler Truck AG","sector":"MOBILITY","entity_type":"OEM_TRUCK"},{"entity_id":"VOLVO_GROUP","name":"Volvo Group","sector":"MOBILITY","entity_type":"OEM_TRUCK"},{"entity_id":"TRATON","name":"TRATON SE (VW Group)","sector":"MOBILITY","entity_type":"OEM_TRUCK"},{"entity_id":"PACCAR","name":"PACCAR Inc","sector":"MOBILITY","entity_type":"OEM_TRUCK"},{"entity_id":"TESLA_SEMI","name":"Tesla Semi (Tesla Inc)","sector":"MOBILITY","entity_type":"OEM_TRUCK"},{"entity_id":"BYD_COMMERCIAL","name":"BYD Commercial Vehicles","sector":"MOBILITY","entity_type":"OEM_TRUCK"},{"entity_id":"SHELL","name":"Shell plc","sector":"ENERGY","entity_type":"ENERGY_MAJOR"},{"entity_id":"BP","name":"BP plc","sector":"ENERGY","entity_type":"ENERGY_MAJOR"},{"entity_id":"TOTALENERGIES","name":"TotalEnergies SE","sector":"ENERGY","entity_type":"ENERGY_MAJOR"},{"entity_id":"EXXONMOBIL","name":"ExxonMobil Corporation","sector":"ENERGY","entity_type":"ENERGY_MAJOR"},{"entity_id":"EQUINOR","name":"Equinor ASA","sector":"ENERGY","entity_type":"ENERGY_MAJOR"},{"entity_id":"BOSCH","name":"Robert Bosch GmbH","sector":"MOBILITY","entity_type":"TIER1_SUPPLIER"},{"entity_id":"CONTINENTAL","name":"Continental AG","sector":"MOBILITY","entity_type":"TIER1_SUPPLIER"},{"entity_id":"QUANTUMSCAPE","name":"QuantumScape Corporation","sector":"MOBILITY","entity_type":"STARTUP"},{"entity_id":"NORTHVOLT","name":"Northvolt AB","sector":"BOTH","entity_type":"STARTUP"},{"entity_id":"AURORA","name":"Aurora Innovation","sector":"MOBILITY","entity_type":"STARTUP"},{"entity_id":"AUDI","name":"Audi AG","sector":"MOBILITY","entity_type":"OEM_PREMIUM"},{"entity_id":"DATWYLER","name":"Datwyler Group","sector":"MOBILITY","entity_type":"TIER1_SUPPLIER"},{"entity_id":"EDF","name":"EDF Group","sector":"ENERGY","entity_type":"ENERGY_MAJOR"},{"entity_id":"EON","name":"E.ON SE","sector":"ENERGY","entity_type":"ENERGY_MAJOR"},{"entity_id":"INFINEON","name":"Infineon Technologies AG","sector":"MOBILITY","entity_type":"TIER1_SUPPLIER"},{"entity_id":"MICHELIN","name":"Michelin Group","sector":"MOBILITY","entity_type":"TIER1_SUPPLIER"},{"entity_id":"MOL","name":"MOL Group","sector":"ENERGY","entity_type":"ENERGY_MAJOR"},{"entity_id":"SEAT_CUPRA","name":"SEAT S.A. / CUPRA","sector":"MOBILITY","entity_type":"OEM_VOLUME"},{"entity_id":"SKODA","name":"\u0160koda Auto","sector":"MOBILITY","entity_type":"OEM_VOLUME"},{"entity_id":"WOCO","name":"WOCO Group","sector":"MOBILITY","entity_type":"TIER1_SUPPLIER"}],"technologies":[{"tech_id":"BEV_PLATFORMS","name":"Battery Electric Vehicle Platforms","sector":"MOBILITY"},{"tech_id":"SOLID_STATE_BATTERY","name":"Solid-State Batteries","sector":"MOBILITY"},{"tech_id":"SODIUM_ION","name":"Sodium-Ion Batteries","sector":"BOTH"},{"tech_id":"LFP_BATTERY","name":"LFP Battery Technology","sector":"BOTH"},{"tech_id":"VEHICLE_TO_GRID","name":"Vehicle-to-Grid (V2G)","sector":"BOTH"},{"tech_id":"AUTONOMOUS_L3","name":"Level 3 Autonomous Driving","sector":"MOBILITY"},{"tech_id":"AUTONOMOUS_L4_TRUCK","name":"Level 4 Autonomous Trucking","sector":"MOBILITY"},{"tech_id":"SDV","name":"Software-Defined Vehicles","sector":"MOBILITY"},{"tech_id":"HYDROGEN_FCEV","name":"Hydrogen Fuel Cell Vehicles","sector":"MOBILITY"},{"tech_id":"HYDROGEN_ICE","name":"Hydrogen Internal Combustion","sector":"MOBILITY"},{"tech_id":"GIGACASTING","name":"Gigacasting / Megacasting","sector":"MOBILITY"},{"tech_id":"CHARGING_MEGAWATT","name":"Megawatt Charging System (MCS)","sector":"MOBILITY"},{"tech_id":"SAF","name":"Sustainable Aviation Fuel","sector":"ENERGY"},{"tech_id":"DAC","name":"Direct Air Capture","sector":"ENERGY"},{"tech_id":"CCS","name":"Carbon Capture & Storage","sector":"ENERGY"},{"tech_id":"GREEN_HYDROGEN","name":"Green Hydrogen Production","sector":"ENERGY"},{"tech_id":"ENHANCED_GEOTHERMAL","name":"Enhanced Geothermal Systems","sector":"ENERGY"},{"tech_id":"PUMPED_STORAGE","name":"Pumped Hydro Storage","sector":"ENERGY"},{"tech_id":"OFFSHORE_WIND","name":"Offshore Wind","sector":"ENERGY"},{"tech_id":"BATTERY_STORAGE_GRID","name":"Grid-Scale Battery Storage","sector":"BOTH"}]};
+
+// ── CONFIG ────────────────────────────────────────────────────
+const WF11_URL     = 'https://n8n-production-86279.up.railway.app/webhook/client-data';
+const CLAUDE_URL   = 'https://api.anthropic.com/v1/messages';
+const CLAUDE_MODEL = 'claude-sonnet-4-20250514';
+
+// ── STATE ─────────────────────────────────────────────────────
+let apiKey      = localStorage.getItem('se_api_key') || '';
+let contacts    = [];   // from dropped CSV
+let csvLoaded   = false;
+let signals     = [];
+let selectedIds = new Set();
+let classified  = [];
+let emailData   = {};
+
+const bets        = INTEL.bets        || [];
+const entities    = INTEL.entities    || [];
+const technologies= INTEL.technologies|| [];
+
+// Personas — hardcoded from DB (these rarely change)
+const personas = [
+  {persona_id:'EXECUTIVE_STRATEGY', name:'C-Suite / Executive', framing:'commercial impact and strategic positioning', lead_with:'revenue, market position, competitive threat', avoid:'technical detail, process, feature lists', email_length:'100'},
+  {persona_id:'RD_INNOVATION',      name:'R&D / Innovation',    framing:'technology signals and competitive intelligence', lead_with:'technical developments, patent activity, TRL movement', avoid:'commercial messaging, sales language', email_length:'130'},
+  {persona_id:'STRATEGY_BD',        name:'Strategy / BD',       framing:'market shifts and partnership opportunities', lead_with:'market dynamics, emerging players, deal activity', avoid:'pure technology detail without commercial angle', email_length:'120'},
+  {persona_id:'SUSTAINABILITY',      name:'Sustainability',      framing:'decarbonisation progress and regulatory signals', lead_with:'emissions, policy, transition metrics', avoid:'financial framing without sustainability angle', email_length:'120'},
+  {persona_id:'PROCUREMENT_OPS',    name:'Procurement / Ops',   framing:'supply chain and operational impact', lead_with:'supplier landscape, cost drivers, operational risk', avoid:'high-level strategy without operational grounding', email_length:'110'},
+  {persona_id:'HR_TALENT',          name:'HR / People',         framing:'talent market and organisational change signals', lead_with:'workforce trends, skills gap, org restructuring', avoid:'technical or commercial framing', email_length:'110'},
+];
+
+// Initiatives — will be enriched from WF-11 response; fallback to entity matching
+let initiatives = [];
+
+// ── INIT ──────────────────────────────────────────────────────
+if (apiKey) {
+  document.getElementById('apiKeyInput').value = apiKey;
+  updateKeyDot();
+}
+checkReady();
+
+function onApiKey(val) {
+  apiKey = val.trim();
+  localStorage.setItem('se_api_key', apiKey);
+  updateKeyDot();
+  checkReady();
+}
+function updateKeyDot() {
+  const ok = apiKey.startsWith('sk-ant');
+  document.getElementById('keyDot').classList.toggle('live', ok);
+  setCheckIcon('chk-key', ok ? 'ok' : 'idle');
+}
+function checkReady() {
+  const keyOk = apiKey.startsWith('sk-ant');
+  const ready  = keyOk && csvLoaded;
+  document.getElementById('loadBtn').disabled = !ready;
+  if (!keyOk && !csvLoaded)    document.getElementById('loadStatus').textContent = 'Enter API key and drop contacts.csv to begin';
+  else if (!keyOk)             document.getElementById('loadStatus').textContent = 'Enter API key above to begin';
+  else if (!csvLoaded)         document.getElementById('loadStatus').textContent = 'Drop your contacts.csv to continue';
+  else                         document.getElementById('loadStatus').textContent = 'Ready — click Load';
+  setCheckIcon('chk-key', keyOk ? 'ok' : 'idle');
+}
+
+// ── STEP INDICATOR ────────────────────────────────────────────
+function setStep(name) {
+  const steps = ['load','review','classify','generate','export'];
+  const idx = steps.indexOf(name);
+  steps.forEach((s, i) => {
+    const el = document.getElementById('s-'+s);
+    el.classList.toggle('active', i === idx);
+    el.classList.toggle('done', i < idx);
+  });
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+}
+
+function setCheckIcon(id, state) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.className = 'check-icon';
+  if (state === 'ok')   { el.className += ' ok';  el.textContent = '✓'; }
+  if (state === 'err')  { el.className += ' err'; el.textContent = '✕'; }
+  if (state === 'spin') { el.className += ' spin'; el.textContent = ''; }
+  if (state === 'idle') { el.textContent = '—'; }
+}
+
+// ── CSV DROP ──────────────────────────────────────────────────
+function onDragOver(e, id) { e.preventDefault(); document.getElementById(id).classList.add('dragover'); }
+function onDragLeave(e, id) { document.getElementById(id).classList.remove('dragover'); }
+function onDropCSV(e) {
+  e.preventDefault();
+  document.getElementById('csvDrop').classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) loadCSV(file);
+}
+function onCSVSelect(e) {
+  const file = e.target.files[0];
+  if (file) loadCSV(file);
+}
+
+async function loadCSV(file) {
+  setCheckIcon('chk-csv', 'spin');
+  document.getElementById('csvLabel').textContent = 'Reading…';
+  try {
+    const text = await file.text();
+    let data;
+    try { data = JSON.parse(text); } catch(e) { throw new Error('File is not valid JSON — did you use signal_engine_setup.html to generate it?'); }
+
+    const rows = data.contacts || data;
+    if (!Array.isArray(rows) || !rows.length) throw new Error('No contacts found in file');
+    if (!rows[0].email) throw new Error('contacts.json missing email field — regenerate with setup page');
+    if (!rows[0].entity_id) throw new Error('contacts.json missing entity_id — regenerate with setup page');
+
+    contacts = rows.filter(r => r.email && r.email.includes('@')).map(r => ({
+      email:      r.email     || '',
+      name:       r.name      || '',
+      title:      r.title     || '',
+      entity_id:  r.entity_id || '',
+      persona_id: r.persona_id|| 'GENERAL',
+      hq:         r.hq        || '',
+    }));
+
+    csvLoaded = true;
+    setCheckIcon('chk-csv', 'ok');
+    document.getElementById('csvDrop').classList.add('loaded');
+    document.getElementById('csvIcon').textContent = '✅';
+    document.getElementById('csvLabel').textContent = `${contacts.length.toLocaleString()} contacts loaded`;
+    document.getElementById('csvSub').textContent = file.name + (data.exported ? ' · exported '+data.exported.slice(0,10) : '');
+    document.getElementById('csv-detail').textContent = `${contacts.length.toLocaleString()} contacts · ${new Set(contacts.map(c=>c.entity_id)).size} entities`;
+    document.getElementById('loadStatus').className = 'load-status';
+    checkReady();
+  } catch(e) {
+    csvLoaded = false;
+    setCheckIcon('chk-csv', 'err');
+    document.getElementById('csvIcon').textContent = '❌';
+    document.getElementById('csvLabel').textContent = 'Failed to read file';
+    document.getElementById('csvSub').textContent = e.message;
+    document.getElementById('loadStatus').textContent = e.message;
+    document.getElementById('loadStatus').className = 'load-status err';
+  }
+}
+
+function parseCSV(text) {
+  const rows = [];
+  const lines = text.split(/\r?\n/);
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    const row = [];
+    let inQuote = false, cell = '';
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"' && !inQuote) { inQuote = true; continue; }
+      if (ch === '"' && inQuote) {
+        if (line[i+1] === '"') { cell += '"'; i++; }
+        else inQuote = false;
+        continue;
+      }
+      if (ch === ',' && !inQuote) { row.push(cell); cell = ''; continue; }
+      cell += ch;
+    }
+    row.push(cell);
+    rows.push(row);
+  }
+  return rows;
+}
+
+// ── LOAD ──────────────────────────────────────────────────────
+async function loadAll() {
+  const btn = document.getElementById('loadBtn');
+  const sp  = document.getElementById('loadSpinner');
+  const st  = document.getElementById('loadStatus');
+  btn.disabled = true;
+  sp.style.display = '';
+  document.getElementById('diagBox').style.display = 'none';
+
+  setCheckIcon('chk-n8n', 'spin');
+  st.textContent = 'Fetching signals from n8n…';
+  st.className = 'load-status';
+
+  try {
+    await fetchSignals();
+    setCheckIcon('chk-n8n', 'ok');
+    document.getElementById('n8n-detail').textContent = `${signals.length} signals loaded`;
+  } catch(e) {
+    setCheckIcon('chk-n8n', 'err');
+    document.getElementById('n8n-detail').textContent = e.message;
+    showDiag(e.message);
+    st.textContent = 'n8n connection failed — see fix below';
+    st.className = 'load-status err';
+    sp.style.display = 'none';
+    btn.disabled = false;
+    return;
+  }
+
+  st.textContent = `${signals.length} signals · ${contacts.length.toLocaleString()} contacts · ${bets.length} bets ready`;
+  st.className = 'load-status ok';
+  sp.style.display = 'none';
+
+  setTimeout(() => { renderReview(); setStep('review'); }, 400);
+}
+
+async function fetchSignals() {
+  const r = await fetch(WF11_URL, { method: 'GET' });
+  if (!r.ok) throw new Error(`HTTP ${r.status} from n8n`);
+  const data = await r.json();
+
+  // WF-11 also returns initiatives if available
+  if (data.initiatives) initiatives = data.initiatives;
+
+  const raw = Array.isArray(data) ? data : (data.signals || data.items || [data]);
+  signals = raw.map((s, i) => ({
+    id:        s.signal_id || s.id || `SIG-${Date.now()}-${i}`,
+    headline:  s.headline || s.title || s.summary || String(s).slice(0,120),
+    source:    s.source || s.feed || '',
+    date:      s.date || s.published || '',
+    priority:  s.priority || s.signal_strength || 'MEDIUM',
+    entities:  parseList(s.matched_entities || s.entity_tags || s.entities || ''),
+    tech_tags: parseList(s.tech_tags || s.technologies || ''),
+    snippet:   s.snippet || s.description || '',
+  }));
+  if (!signals.length) throw new Error('No signals returned — check Signal Tracker has today\'s data');
+}
+
+function parseList(val) {
+  if (!val) return [];
+  if (Array.isArray(val)) return val;
+  return String(val).split(/[,;|]/).map(s => s.trim()).filter(Boolean);
+}
+
+function showDiag(error) {
+  const box = document.getElementById('diagBox');
+  box.style.display = '';
+  document.getElementById('diagContent').innerHTML = `
+    <div class="diag-step">Error: <code>${esc(error)}</code></div>
+    <div class="diag-step">1. Open n8n and confirm <strong>WF-11</strong> is <strong>Active</strong> (green toggle)</div>
+    <div class="diag-step">2. Check the Webhook node shows Production URL: <code>webhook/client-data</code></div>
+    <div class="diag-step">3. Check Executions tab for recent errors</div>
+    <div class="diag-step">4. Confirm Signal Tracker Google Sheet has today\'s data</div>`;
+}
+
+// ── REVIEW ────────────────────────────────────────────────────
+function renderReview() {
+  signals.forEach(s => selectedIds.add(s.id));
+  const list = document.getElementById('signalList');
+  if (!signals.length) {
+    list.innerHTML = '<div class="empty">No signals found. Check n8n Signal Tracker has today\'s data.</div>';
+    return;
+  }
+  list.innerHTML = signals.map(s => `
+    <div class="signal-card selected" id="card-${s.id}" onclick="toggleSignal('${s.id}')">
+      <div class="signal-check" id="chk-sig-${s.id}">✓</div>
+      <div>
+        <div class="signal-headline">${esc(s.headline)}</div>
+        <div class="signal-meta">
+          ${s.priority==='HIGH' ? '<span class="signal-tag high">HIGH</span>' :
+            s.priority==='MEDIUM' ? '<span class="signal-tag medium">MEDIUM</span>' :
+            `<span class="signal-tag">${esc(s.priority)}</span>`}
+          ${s.entities.map(e=>`<span class="signal-tag entity">${esc(e)}</span>`).join('')}
+          ${s.tech_tags.map(t=>`<span class="signal-tag tech">${esc(t)}</span>`).join('')}
+          ${s.source ? `<span class="signal-source">${esc(s.source)}</span>` : ''}
+        </div>
+        ${s.snippet ? `<div style="margin-top:7px;font-size:12px;color:var(--text-dim);line-height:1.5">${esc(s.snippet.slice(0,220))}${s.snippet.length>220?'…':''}</div>` : ''}
+      </div>
+    </div>`).join('');
+  updateSelCount();
+}
+
+function toggleSignal(id) {
+  if (selectedIds.has(id)) {
+    selectedIds.delete(id);
+    document.getElementById('card-'+id).className = 'signal-card rejected';
+    document.getElementById('chk-sig-'+id).textContent = '';
+  } else {
+    selectedIds.add(id);
+    document.getElementById('card-'+id).className = 'signal-card selected';
+    document.getElementById('chk-sig-'+id).textContent = '✓';
+  }
+  updateSelCount();
+}
+function selectAll()  { signals.forEach(s => { selectedIds.add(s.id); document.getElementById('card-'+s.id).className='signal-card selected'; document.getElementById('chk-sig-'+s.id).textContent='✓'; }); updateSelCount(); }
+function selectNone() { signals.forEach(s => { selectedIds.delete(s.id); document.getElementById('card-'+s.id).className='signal-card rejected'; document.getElementById('chk-sig-'+s.id).textContent=''; }); updateSelCount(); }
+function updateSelCount() {
+  const n = selectedIds.size;
+  document.getElementById('selCount').textContent = n;
+  document.getElementById('reviewSub').textContent = `${n} of ${signals.length} selected for classification`;
+  document.getElementById('classifyBtn').disabled = n === 0;
+}
+
+// ── CLASSIFY ─────────────────────────────────────────────────
+async function goClassify() {
+  setStep('classify');
+  classified = [];
+  const selected = signals.filter(s => selectedIds.has(s.id));
+  const prog  = document.getElementById('classifyProgress');
+  const sp    = document.getElementById('classifySpinner');
+  const stEl  = document.getElementById('classifyStatusText');
+  const res   = document.getElementById('classifyResults');
+  res.innerHTML = ''; prog.style.width = '0%'; sp.style.display = '';
+
+  for (let i = 0; i < selected.length; i++) {
+    const sig = selected[i];
+    stEl.textContent = `Classifying ${i+1} of ${selected.length}: ${sig.headline.slice(0,60)}…`;
+    prog.style.width = `${(i/selected.length)*100}%`;
+    try {
+      const result = await classifySignal(sig);
+      classified.push(result);
+      renderClassifyCard(result, res);
+    } catch(e) { console.error(e); }
+  }
+
+  prog.style.width = '100%';
+  sp.style.display = 'none';
+  const matched = classified.filter(c => c.entity_hits.length > 0);
+
+  // Attach contacts to each matched entity
+  matched.forEach(result => {
+    result.entity_hits.forEach(hit => {
+      const entityContacts = contacts.filter(c => c.entity_id === hit.entity_id && c.email);
+      const byPersona = {};
+      entityContacts.forEach(c => {
+        const p = c.persona_id || 'GENERAL';
+        if (!byPersona[p]) byPersona[p] = [];
+        byPersona[p].push(c);
+      });
+      result.contacts_by_persona[hit.entity_id] = byPersona;
+
+      const el = document.getElementById(`contacts-${hit.entity_id}`);
+      if (el) {
+        const total = entityContacts.length;
+        el.innerHTML = Object.entries(byPersona).map(([p,cs])=>
+          `<span class="persona-badge">${esc(p)} · ${cs.length}</span>`
+        ).join('') + `<span style="margin-left:8px;color:var(--green)">✓ ${total} contacts</span>`;
+      }
+    });
+  });
+
+  const totalContacts = matched.reduce((sum,c) =>
+    sum + c.entity_hits.reduce((s2,h) =>
+      s2 + Object.values(c.contacts_by_persona[h.entity_id]||{}).reduce((s3,a)=>s3+a.length,0),0),0);
+
+  stEl.textContent = `${matched.length} entity matches · ${totalContacts} contacts ready`;
+  document.getElementById('classifyStatus').className = 'status-row ok';
+  document.getElementById('classifyActionDesc').textContent = `${matched.length} entities matched · ${totalContacts} contacts ready for email generation`;
+  document.getElementById('classifyActionBar').style.display = '';
+}
+
+async function classifySignal(sig) {
+  const betsCtx = bets.map(b =>
+    `BET ${b.bet_id} (${b.register}/${b.entity_id||'INDUSTRY'}): ${b.title}\nSteps: ${(b.steps||[]).map(s=>`[${s.status}] ${s.what}`).join(' | ')}`
+  ).join('\n\n');
+
+  const entCtx = entities.map(e =>
+    `${e.entity_id}: ${e.name} (${e.sector} · ${e.entity_type})`
+  ).join('\n');
+
+  const initCtx = initiatives.length > 0
+    ? initiatives.map(i=>`${i.initiative_id||''} (${i.entity_id}): ${i.name} | match: ${i.match_keywords} | anti: ${i.anti_keywords}`).join('\n')
+    : 'No initiative register loaded — route by entity sector match and signal relevance.';
+
+  const prompt = `You are the Signal Engine classifier. Analyse this signal and return ONLY valid JSON.
+
+SIGNAL: ${sig.headline}
+${sig.snippet ? 'Context: '+sig.snippet.slice(0,300) : ''}
+
+ENTITIES:
+${entCtx}
+
+INITIATIVES:
+${initCtx}
+
+BETS:
+${betsCtx}
+
+Return this exact JSON schema — no markdown, no explanation, JSON only:
+{
+  "tech_match": "tech_id or null",
+  "sector": "ENERGY|MOBILITY|BOTH",
+  "entity_hits": [
+    {
+      "entity_id": "SHELL",
+      "entity_name": "Shell plc",
+      "match_reason": "one sentence",
+      "initiative_hits": ["initiative_id or descriptive string"],
+      "bet_hits": [
+        {"bet_id": "BET_AC_SHEL_01", "step_advanced": 1, "direction": "CONFIRMS|CHALLENGES|NEUTRAL", "reason": "one sentence"}
+      ]
+    }
+  ],
+  "consequence": 7,
+  "novelty": 6,
+  "confidence": 8
+}
+
+Rules: only include entities where signal genuinely relates to their business · max 5 entity_hits · return {"entity_hits":[]} if no valid match`;
+
+  const resp = await callClaude(prompt, 1000);
+  let parsed = {entity_hits:[]};
+  try { parsed = JSON.parse(resp.replace(/\`\`\`json|\`\`\`/g,'').trim()); } catch(e) { console.warn('Parse error',e,resp.slice(0,200)); }
+
+  return {
+    signal: sig,
+    tech_match: parsed.tech_match || null,
+    sector: parsed.sector || '',
+    entity_hits: parsed.entity_hits || [],
+    consequence: parsed.consequence || 5,
+    novelty: parsed.novelty || 5,
+    confidence: parsed.confidence || 5,
+    contacts_by_persona: {},
+  };
+}
+
+function renderClassifyCard(result, container) {
+  if (!result.entity_hits.length) {
+    const el = document.createElement('div');
+    el.style.cssText = 'padding:12px 16px;border:1px solid var(--border);border-radius:6px;font-size:13px;color:var(--text-dim);background:var(--surface);margin-bottom:8px';
+    el.textContent = `No match — suppressed: ${result.signal.headline.slice(0,80)}…`;
+    container.appendChild(el);
+    return;
+  }
+  result.entity_hits.forEach(hit => {
+    const card = document.createElement('div');
+    card.className = 'result-card';
+    const betsHtml = (hit.bet_hits||[]).map(b=>`
+      <div class="bet-hit">
+        <div class="bet-hit-title">${esc(b.bet_id)}</div>
+        <div class="bet-hit-step">Step ${b.step_advanced} · ${b.direction} · ${esc(b.reason)}</div>
+      </div>`).join('');
+
+    card.innerHTML = `
+      <div class="result-header">
+        <div class="result-entity">${esc(hit.entity_name)}</div>
+        <div class="result-signal">${esc(result.signal.headline)}</div>
+      </div>
+      <div class="result-body">
+        <div style="font-size:13px;color:var(--text-mid);margin-bottom:12px">${esc(hit.match_reason)}</div>
+        ${betsHtml}
+        <div style="margin-bottom:10px">
+          ${(hit.initiative_hits||[]).map(i=>`<span class="persona-badge">${esc(i)}</span>`).join('')}
+        </div>
+        <div id="contacts-${hit.entity_id}" style="font-size:12px;color:var(--text-dim)">Counting contacts…</div>
+      </div>`;
+    container.appendChild(card);
+  });
+}
+
+// ── GENERATE ──────────────────────────────────────────────────
+async function goGenerate() {
+  setStep('generate');
+  emailData = {};
+  const prog  = document.getElementById('generateProgress');
+  const sp    = document.getElementById('generateSpinner');
+  const stEl  = document.getElementById('generateStatusText');
+  const res   = document.getElementById('generateResults');
+  res.innerHTML = ''; prog.style.width = '0%'; sp.style.display = '';
+
+  const matched = classified.filter(c => c.entity_hits.length > 0);
+  const total   = matched.reduce((s,c)=>s+c.entity_hits.length,0);
+  let done = 0;
+
+  for (const result of matched) {
+    for (const hit of result.entity_hits) {
+      stEl.textContent = `Generating for ${hit.entity_name}…`;
+      prog.style.width = `${(done/total)*100}%`;
+
+      const byPersona = result.contacts_by_persona[hit.entity_id] || {};
+      if (!Object.keys(byPersona).length) { done++; continue; }
+
+      const entity = entities.find(e=>e.entity_id===hit.entity_id) || {};
+      emailData[hit.entity_id] = emailData[hit.entity_id] || {w1:[],w2:[],w3:[],w4:[]};
+
+      for (const [personaId, cts] of Object.entries(byPersona)) {
+        const persona = personas.find(p=>p.persona_id===personaId) || {persona_id:personaId};
+        try {
+          const emails = await generateEmailSet(result.signal, hit, entity, persona, cts);
+          ['w1','w2','w3','w4'].forEach(w=>emailData[hit.entity_id][w].push(...emails[w]));
+        } catch(e) { console.error(e); }
+      }
+
+      renderEmailPreview(hit, entity, emailData[hit.entity_id], res);
+      done++;
+    }
+  }
+
+  prog.style.width = '100%';
+  sp.style.display = 'none';
+  const totalRows = Object.values(emailData).reduce((s,d)=>s+d.w1.length,0);
+  stEl.textContent = `${totalRows} contacts ready across ${Object.keys(emailData).length} entities`;
+  document.getElementById('generateStatus').className = 'status-row ok';
+  document.getElementById('generateActionDesc').textContent = `${totalRows} rows per YAMM file`;
+  document.getElementById('generateActionBar').style.display = '';
+}
+
+async function generateEmailSet(signal, hit, entity, persona, cts) {
+  const personaLine = [
+    `Persona: ${persona.name||persona.persona_id}`,
+    persona.framing     ? `Framing: ${persona.framing}` : '',
+    persona.lead_with   ? `Lead with: ${persona.lead_with}` : '',
+    persona.avoid       ? `Avoid: ${persona.avoid}` : '',
+    `Target length: ${persona.email_length||'120'} words`,
+  ].filter(Boolean).join('\n');
+
+  const betRef = hit.bet_hits?.[0]
+    ? `Signal ${hit.bet_hits[0].direction} hypothesis: "${bets.find(b=>b.bet_id===hit.bet_hits[0].bet_id)?.title||hit.bet_hits[0].bet_id}"`
+    : '';
+
+  const prompt = `You are writing outreach emails for FutureBridge Advisory. Generate a four-week campaign. Return ONLY valid JSON — no markdown.
+
+SIGNAL: ${signal.headline}
+${signal.snippet ? 'Context: '+signal.snippet.slice(0,300) : ''}
+
+TARGET: ${entity.name||hit.entity_id} (${entity.sector||''})
+MATCH: ${hit.match_reason}
+${betRef}
+
+${personaLine}
+
+EMAIL FRAMEWORK (every email must follow this exactly):
+1. HOOK — one sentence referencing something specific about their strategic direction
+2. BRIDGE — "Something crossed my desk today that I thought worth sharing —" then the signal fact
+3. PERSONALISATION — "I'm sending this because your focus on [initiative/area] suggests this lands directly in your world"
+4. DIFFERENTIATION — "I track these things — where I hope I'm different is taking the time to apply the news: reducing the noise-to-signal ratio and compressing signal-to-value time"
+5. CTA — "Let me know if it hits the spot"
+
+RULES:
+- No em dashes anywhere. Use regular dashes if needed.
+- No AI clichés: leverage, ecosystem, operationalise, game-changer
+- Week 1: under 120 words
+- Week 2: new angle on same topic, brief reference to week 1, no recap of signal
+- Week 3: implication they may not have considered, shorter still
+- Week 4: under 80 words, softest close possible — "Has this been useful?"
+- Subject lines: specific fact-based, no question marks, no clickbait
+
+Return:
+{"w1":{"subject":"...","body":"..."},"w2":{"subject":"...","body":"..."},"w3":{"subject":"...","body":"..."},"w4":{"subject":"...","body":"..."}}`;
+
+  const resp = await callClaude(prompt, 1400);
+  let parsed = {w1:{},w2:{},w3:{},w4:{}};
+  try { parsed = JSON.parse(resp.replace(/\`\`\`json|\`\`\`/g,'').trim()); } catch(e) { console.warn('Email parse error',e); }
+
+  const makeRows = w => cts.map(c => ({
+    Email:    c.email,
+    Name:     c.name,
+    Title:    c.title||'',
+    Company:  entity.name||hit.entity_id,
+    Subject:  (parsed[w]||{}).subject||'',
+    Body:     (parsed[w]||{}).body||'',
+    Week:     w.toUpperCase(),
+    Persona:  persona.persona_id||'',
+    SignalID: signal.id,
+  }));
+  return {w1:makeRows('w1'),w2:makeRows('w2'),w3:makeRows('w3'),w4:makeRows('w4')};
+}
+
+function renderEmailPreview(hit, entity, emails, container) {
+  const uid = hit.entity_id.replace(/[^a-z0-9]/gi,'_');
+  const card = document.createElement('div');
+  card.className = 'result-card';
+  card.style.marginBottom = '16px';
+  const weeks = [{key:'w1',label:'Week 1 · News'},{key:'w2',label:'Week 2 · Research'},{key:'w3',label:'Week 3 · CTA'},{key:'w4',label:'Week 4 · Close'}];
+  card.innerHTML = `
+    <div class="result-header">
+      <div class="result-entity">${esc(entity.name||hit.entity_id)}</div>
+      <div style="font-size:12px;color:var(--text-dim)">${emails.w1.length} contacts</div>
+    </div>
+    <div class="result-body">
+      <div class="email-tabs">
+        ${weeks.map((w,i)=>`<div class="email-tab ${i===0?'active':''}" onclick="switchTab(this,'${uid}-${w.key}')">${w.label}</div>`).join('')}
+      </div>
+      ${weeks.map((w,i)=>{
+        const row = emails[w.key][0]||{};
+        return `<div class="email-week ${i===0?'active':''}" id="${uid}-${w.key}">
+          <div class="email-subject-row">Subject <strong>${esc(row.Subject||'')}</strong></div>
+          <div class="email-body">${esc(row.Body||'(not generated)')}</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  container.appendChild(card);
+}
+
+function switchTab(tab, targetId) {
+  const body = tab.closest('.result-body');
+  body.querySelectorAll('.email-tab').forEach(t=>t.classList.remove('active'));
+  body.querySelectorAll('.email-week').forEach(w=>w.classList.remove('active'));
+  tab.classList.add('active');
+  const t = document.getElementById(targetId);
+  if (t) t.classList.add('active');
+}
+
+// ── EXPORT ────────────────────────────────────────────────────
+function goExport() {
+  setStep('export');
+  const allW = {w1:[],w2:[],w3:[],w4:[]};
+  Object.values(emailData).forEach(d=>Object.keys(allW).forEach(w=>allW[w].push(...d[w])));
+  const weeks = [
+    {key:'w1',num:'01',type:'News',    color:'var(--blue)',  desc:'First contact. Hook, signal, positioning. Send today.'},
+    {key:'w2',num:'02',type:'Research',color:'var(--purple)',desc:'New angle on same topic. Send next Monday.'},
+    {key:'w3',num:'03',type:'CTA',     color:'var(--yellow)',desc:'Implication not yet considered. Week 3.'},
+    {key:'w4',num:'04',type:'Close',   color:'var(--green)', desc:'Soft close, under 80 words. Week 4.'},
+  ];
+  document.getElementById('exportGrid').innerHTML = weeks.map(w=>`
+    <div class="export-card">
+      <div class="export-num" style="color:${w.color}">${w.num}</div>
+      <div class="export-type">${w.type}</div>
+      <div class="export-desc">${w.desc}</div>
+      <div class="export-count"><strong>${allW[w.key].length}</strong> contacts</div>
+      <button class="btn btn-ghost btn-full btn-sm" onclick="downloadCSV('${w.key}','${w.type}')">Download CSV</button>
+    </div>`).join('');
+}
+
+function downloadCSV(weekKey, label) {
+  const allW = {w1:[],w2:[],w3:[],w4:[]};
+  Object.values(emailData).forEach(d=>Object.keys(allW).forEach(w=>allW[w].push(...d[w])));
+  const rows = allW[weekKey]||[];
+  if (!rows.length) { toast('No rows to export',true); return; }
+  const headers = ['Email','Name','Title','Company','Subject','Body','Week','Persona','SignalID'];
+  const csv = [headers.join(','), ...rows.map(r=>headers.map(h=>csvCell(r[h]||'')).join(','))].join('\n');
+  const date = new Date().toISOString().slice(0,10).replace(/-/g,'');
+  dlFile(`YAMM_${weekKey.toUpperCase()}_${label}_${date}.csv`, csv, 'text/csv');
+  toast(`Downloaded YAMM_${weekKey.toUpperCase()}_${label}_${date}.csv`);
+}
+
+function downloadAll() {
+  ['w1','w2','w3','w4'].forEach((w,i)=>
+    setTimeout(()=>downloadCSV(w,['News','Research','CTA','Close'][i]),i*400));
+}
+
+// ── CLAUDE API ────────────────────────────────────────────────
+async function callClaude(prompt, maxTokens=1000) {
+  const r = await fetch(CLAUDE_URL, {
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key':apiKey,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true',
+    },
+    body:JSON.stringify({model:CLAUDE_MODEL, max_tokens:maxTokens, messages:[{role:'user',content:prompt}]})
+  });
+  if (!r.ok) {
+    const err = await r.json().catch(()=>({}));
+    throw new Error(err.error?.message||`Claude API ${r.status}`);
+  }
+  const data = await r.json();
+  return data.content?.[0]?.text||'';
+}
+
+// ── UTILS ─────────────────────────────────────────────────────
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function csvCell(val) { const s=String(val||'').replace(/"/g,'""'); return /[,"\n\r]/.test(s)?`"${s}"`:s; }
+function dlFile(name,content,mime) { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([content],{type:mime})); a.download=name; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000); }
+function toast(msg,err=false) { const el=document.getElementById('toast'); el.textContent=msg; el.className='toast show'+(err?' err':''); setTimeout(()=>el.classList.remove('show'),3000); }
+function resetAll() {
+  contacts=[]; csvLoaded=false; signals=[]; selectedIds.clear(); classified=[]; emailData={};
+  ['chk-key','chk-csv','chk-n8n'].forEach(id=>setCheckIcon(id,'idle'));
+  document.getElementById('csvDrop').classList.remove('loaded');
+  document.getElementById('csvIcon').textContent='📋';
+  document.getElementById('csvLabel').textContent='Click or drag contacts.csv';
+  document.getElementById('csvSub').textContent='Export from DB Browser: File → Export → Table as CSV';
+  document.getElementById('diagBox').style.display='none';
+  setStep('load');
+  checkReady();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Signal Engine · Setup</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400&display=swap');
+:root{--bg:#F7F6F3;--surface:#fff;--border:#D8D5CE;--text:#1A1916;--text-mid:#4B4845;--text-dim:#8A8680;--green:#22AE8A;--red:#F84E5D;--blue:#3F43AD;--blue-light:#EEF0FF;--green-light:#EBF9F5;--font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;--radius:6px;--shadow:0 1px 3px rgba(0,0,0,0.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);font-family:var(--font);font-size:14px;color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:44px 48px;width:520px;box-shadow:0 4px 24px rgba(0,0,0,0.08)}
+.bars{display:flex;flex-direction:column;gap:2px;margin-bottom:20px}
+.bars div{background:var(--text);height:3px;border-radius:1px}
+.bars div:nth-child(1){width:32px}.bars div:nth-child(2){width:22px}.bars div:nth-child(3){width:14px}
+h1{font-size:22px;font-weight:600;margin-bottom:6px}
+.sub{color:var(--text-mid);font-size:13px;line-height:1.6;margin-bottom:32px}
+.step{display:flex;gap:14px;margin-bottom:20px;align-items:flex-start}
+.step-num{width:28px;height:28px;background:var(--text);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;margin-top:1px}
+.step-num.done{background:var(--green)}
+.step-num.spin{animation:spin 0.8s linear infinite;background:var(--blue)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.step-body{flex:1}
+.step-label{font-weight:500;margin-bottom:2px}
+.step-sub{font-size:12px;color:var(--text-dim);line-height:1.5}
+.step-sub.ok{color:var(--green)}
+.step-sub.err{color:var(--red)}
+.drop-zone{border:2px dashed #B8B4AC;border-radius:var(--radius);padding:24px;text-align:center;cursor:pointer;transition:all 0.2s;background:#F0EEE9;margin-top:10px}
+.drop-zone:hover,.drop-zone.over{border-color:var(--blue);background:var(--blue-light)}
+.drop-zone.done{border-color:var(--green);background:var(--green-light);border-style:solid}
+.drop-zone input{display:none}
+.drop-icon{font-size:24px;margin-bottom:6px}
+.drop-label{font-size:13px;font-weight:500;color:var(--text-mid)}
+.drop-sub{font-size:11px;color:var(--text-dim);margin-top:3px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 22px;border-radius:var(--radius);border:none;font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;width:100%;margin-top:24px;transition:all 0.15s}
+.btn-primary{background:var(--text);color:#fff}
+.btn-primary:hover{background:#333}
+.btn:disabled{opacity:0.3;cursor:not-allowed}
+.status{font-family:var(--mono);font-size:11px;color:var(--text-dim);margin-top:16px;text-align:center;min-height:18px}
+.status.ok{color:var(--green)}.status.err{color:var(--red)}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="bars"><div></div><div></div><div></div></div>
+  <h1>Signal Engine · One-time setup</h1>
+  <div class="sub">This page reads your SQLite database and exports a contacts file for the ingestor. Run it once whenever your contacts change.</div>
+
+  <div class="step">
+    <div class="step-num" id="n1">1</div>
+    <div class="step-body">
+      <div class="step-label">Drop your database file</div>
+      <div class="step-sub" id="s1">signal_engine_final.db from your Downloads folder</div>
+      <div class="drop-zone" id="dropZone"
+           onclick="document.getElementById('dbFile').click()"
+           ondragover="ev(event,'over')" ondragleave="ev(event,'')" ondrop="drop(event)">
+        <input type="file" id="dbFile" accept=".db,.sqlite,.sqlite3" onchange="onPick(event)">
+        <div class="drop-icon" id="dropIcon">🗄️</div>
+        <div class="drop-label" id="dropLabel">Click or drag .db file here</div>
+        <div class="drop-sub" id="dropSub">signal_engine_final.db</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num" id="n2" style="opacity:0.3">2</div>
+    <div class="step-body">
+      <div class="step-label" style="opacity:0.5" id="l2">Export contacts.json</div>
+      <div class="step-sub" id="s2" style="opacity:0.5">Reads all contacts with email addresses from your DB</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num" id="n3" style="opacity:0.3">3</div>
+    <div class="step-body">
+      <div class="step-label" style="opacity:0.5" id="l3">Drop contacts.json onto the ingestor</div>
+      <div class="step-sub" id="s3" style="opacity:0.5">The ingestor accepts contacts.json on its load screen</div>
+    </div>
+  </div>
+
+  <div id="status" class="status">Drop your .db file to begin</div>
+</div>
+
+<script>
+const WASM = 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.wasm';
+let sqlLoaded = false;
+
+function ev(e, cls) { e.preventDefault(); document.getElementById('dropZone').classList.toggle('over', cls==='over'); }
+function drop(e) { e.preventDefault(); ev(e,''); const f=e.dataTransfer.files[0]; if(f) process(f); }
+function onPick(e) { const f=e.target.files[0]; if(f) process(f); }
+
+async function process(file) {
+  const st = document.getElementById('status');
+  const dz = document.getElementById('dropZone');
+  const di = document.getElementById('dropIcon');
+  const dl = document.getElementById('dropLabel');
+  const ds = document.getElementById('dropSub');
+
+  di.textContent='⏳'; dl.textContent='Loading sql.js…'; ds.textContent='Downloading from CDN once';
+  st.textContent='Loading sql.js library…'; st.className='status';
+  setStep(1,'spin');
+
+  try {
+    // Load sql.js dynamically
+    if (!sqlLoaded) {
+      await new Promise((res,rej) => {
+        const s=document.createElement('script');
+        s.src='https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.js';
+        s.onload=res; s.onerror=()=>rej(new Error('CDN load failed'));
+        document.head.appendChild(s);
+      });
+      sqlLoaded=true;
+    }
+
+    st.textContent='Reading database…'; dl.textContent='Reading '+file.name+'…';
+    const SQL = await initSqlJs({ locateFile:()=>WASM });
+    const buf = await file.arrayBuffer();
+    const db  = new SQL.Database(new Uint8Array(buf));
+
+    st.textContent='Extracting contacts…';
+    const stmt = db.prepare(
+      "SELECT contact_id,name,title,email,linkedin,sector,hq,entity_id,persona_id FROM contacts WHERE email IS NOT NULL AND email != '' ORDER BY entity_id,persona_id,name"
+    );
+    const rows=[];
+    while(stmt.step()) rows.push(stmt.getAsObject());
+    stmt.free(); db.close();
+
+    if(!rows.length) throw new Error('No contacts with email found in this database');
+
+    setStep(1,'done');
+    setStep(2,'done');
+    setStep(3,'on');
+
+    di.textContent='✅'; dl.textContent=rows.length.toLocaleString()+' contacts extracted';
+    ds.textContent=file.name+' · '+Math.round(file.size/1024)+'KB';
+    dz.classList.add('done');
+
+    document.getElementById('l2').style.opacity='1';
+    document.getElementById('s2').textContent=rows.length.toLocaleString()+' contacts with email addresses';
+    document.getElementById('s2').style.opacity='1';
+    document.getElementById('s2').className='step-sub ok';
+    document.getElementById('n2').style.opacity='1';
+
+    document.getElementById('l3').style.opacity='1';
+    document.getElementById('s3').style.opacity='1';
+    document.getElementById('n3').style.opacity='1';
+
+    // Download as JSON
+    const json=JSON.stringify({contacts:rows, exported:new Date().toISOString(), count:rows.length});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([json],{type:'application/json'}));
+    a.download='contacts.json';
+    a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+
+    st.textContent='✓ contacts.json downloaded — drop it onto the ingestor load screen';
+    st.className='status ok';
+
+  } catch(e) {
+    setStep(1,'err');
+    di.textContent='❌'; dl.textContent='Error'; ds.textContent=e.message;
+    st.textContent='Error: '+e.message; st.className='status err';
+    console.error(e);
+  }
+}
+
+function setStep(n, state) {
+  const el=document.getElementById('n'+n);
+  if(!el)return;
+  el.style.opacity='1';
+  if(state==='done') { el.style.background='#22AE8A'; el.textContent='✓'; }
+  if(state==='spin') { el.style.background='#3F43AD'; el.classList.add('spin'); }
+  if(state==='err')  { el.style.background='#F84E5D'; el.textContent='✕'; }
+  if(state==='on')   { el.style.background='#1A1916'; }
+}
+</script>
+</body>
+</html>
