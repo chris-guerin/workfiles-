@@ -1,0 +1,14 @@
+{
+  "title": "FutureBridge Signal Engine",
+  "description": "Contact and signal intelligence database",
+  "databases": {
+    "signal_engine_pe": {
+      "tables": {
+        "contacts": {
+          "sort_desc": "tier"
+        }
+      }
+    }
+  },
+  "allow_sql": true
+}
