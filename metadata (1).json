@@ -1,23 +1,17 @@
 {
-  "title": "FutureBridge Signal Engine",
-  "description": "Contact and signal intelligence database",
-  "plugins": {
-    "datasette-insert": {
-      "allow_insert": true,
-      "allow_upsert": true
-    }
-  },
-  "databases": {
-    "signal_engine_pe": {
-      "allow_insert_row": true,
-      "tables": {
-        "contacts": {
-          "sort_desc": "tier"
+    "plugins": {
+        "datasette-auth-tokens": {
+            "tokens": [
+                {
+                    "token": {"$env": "DATASETTE_API_TOKEN"},
+                    "actor": {"bot": "insert-bot"}
+                }
+            ]
         },
-        "signals": {
-          "allow_insert_row": true
+        "datasette-insert": {
+            "allow": {
+                "bot": "insert-bot"
+            }
         }
-      }
     }
-  }
 }
