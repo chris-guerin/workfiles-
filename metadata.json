@@ -16,9 +16,3 @@
     }
 }
 ```
-
-Then click **Commit changes** → **Commit directly to main** → **Commit changes**.
-
-That will auto-trigger a Render deploy. While that's happening, also run the build command update in cmd:
-```
-curl -X PATCH -H "Authorization: Bearer rnd_MxO9IaHUwefEEU8sJFoLTAChhqaT" -H "Content-Type: application/json" -d "{\"serviceDetails\":{\"buildCommand\":\"pip install datasette datasette-insert-api datasette-auth-tokens\"}}" https://api.render.com/v1/services/srv-d6tj9atm5p6s73be5020
