@@ -12,6 +12,11 @@
             "allow": {
                 "bot": "insert-bot"
             }
+        },
+        "datasette-write": {
+            "allow": {
+                "bot": "insert-bot"
+            }
         }
     }
 }
