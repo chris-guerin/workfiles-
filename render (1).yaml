@@ -2,7 +2,7 @@ services:
   - type: web
     name: futurbridge-signals
     runtime: python
-    buildCommand: pip install datasette datasette-insert datasette-cors
+   buildCommand: pip install datasette datasette-insert datasette-cors datasette-write
     startCommand: datasette serve signal_engine_pe.db --host 0.0.0.0 --port $PORT --cors --setting max_returned_rows 500 --setting sql_time_limit_ms 5000 --metadata metadata.json
     envVars:
       - key: PYTHON_VERSION
