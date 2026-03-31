@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shell · Horizon-3 Hypothesis Repository</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&display=swap');
+
+:root {
+  --shell-red:    #DD1D21;
+  --shell-yellow: #FBCE07;
+  --shell-dark:   #0E0E0E;
+  --shell-panel:  #161616;
+  --shell-card:   #1C1C1C;
+  --shell-border: #2A2A2A;
+  --shell-mid:    #404040;
+  --shell-grey:   #6B6B6B;
+  --shell-light:  #A0A0A0;
+  --shell-white:  #F4F4F4;
+  --white:        #FFFFFF;
+
+  --green:   #22AE8A;
+  --blue:    #48B8E7;
+  --purple:  #9D7AD2;
+
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'DM Mono', 'Courier New', monospace;
+
+  --sidebar-w: 260px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-sans);
+  background: var(--shell-dark);
+  color: var(--shell-white);
+  display: flex;
+  min-height: 100vh;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* ── SIDEBAR ─────────────────────────────── */
+#sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--shell-panel);
+  border-right: 1px solid var(--shell-border);
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  overflow-y: auto;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+.sb-head {
+  padding: 20px 16px 16px;
+  border-bottom: 1px solid var(--shell-border);
+  flex-shrink: 0;
+}
+
+/* Shell graphic device */
+.gd { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+.gd-bar { height: 4px; background: var(--shell-yellow); }
+.gd-bar:nth-child(1) { width: 32px; }
+.gd-bar:nth-child(2) { width: 24px; }
+.gd-bar:nth-child(3) { width: 16px; }
+
+.sb-brand { font-size: 11px; font-weight: 700; color: var(--shell-grey); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 4px; }
+.sb-title { font-size: 14px; font-weight: 700; color: var(--white); line-height: 1.3; }
+.sb-sub   { font-size: 10px; color: var(--shell-grey); margin-top: 3px; font-family: var(--font-mono); }
+
+/* Search */
+.sb-search { padding: 12px; border-bottom: 1px solid var(--shell-border); flex-shrink: 0; }
+#search {
+  width: 100%; padding: 8px 10px;
+  background: var(--shell-card);
+  border: 1px solid var(--shell-border);
+  color: var(--white); font-size: 12px;
+  font-family: var(--font-mono);
+  outline: none;
+}
+#search:focus { border-color: var(--shell-yellow); }
+#search::placeholder { color: var(--shell-mid); }
+.sb-count { font-size: 10px; color: var(--shell-grey); padding: 6px 12px 0; font-family: var(--font-mono); min-height: 20px; }
+
+/* Domain filters */
+.sb-filters { padding: 10px 12px; border-bottom: 1px solid var(--shell-border); flex-shrink: 0; }
+.filter-label { font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: var(--shell-grey); margin-bottom: 8px; font-family: var(--font-mono); }
+.filter-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.filter-chip {
+  padding: 3px 9px; font-size: 10px; font-weight: 600;
+  border: 1px solid var(--shell-border); color: var(--shell-light);
+  cursor: pointer; transition: all .12s;
+  font-family: var(--font-mono);
+}
+.filter-chip:hover { border-color: var(--shell-yellow); color: var(--shell-yellow); }
+.filter-chip.active { background: var(--shell-yellow); color: var(--shell-dark); border-color: var(--shell-yellow); }
+
+/* Nav list */
+.sb-nav { flex: 1; overflow-y: auto; padding: 8px 0; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 14px; cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: all .12s; text-decoration: none;
+}
+.nav-item:hover { background: rgba(255,255,255,.04); border-left-color: var(--shell-border); }
+.nav-item.active { background: rgba(251,206,7,.06); border-left-color: var(--shell-yellow); }
+.nav-id { font-family: var(--font-mono); font-size: 9px; font-weight: 500; color: var(--shell-yellow); width: 72px; flex-shrink: 0; }
+.nav-name { font-size: 11px; color: var(--shell-light); line-height: 1.3; flex: 1; }
+.nav-item.active .nav-name { color: var(--white); }
+.nav-prob { font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--shell-grey); flex-shrink: 0; }
+.nav-item.active .nav-prob { color: var(--shell-yellow); }
+
+/* Stats */
+.sb-stats { padding: 14px 14px; border-top: 1px solid var(--shell-border); flex-shrink: 0; }
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.stat-cell { padding: 8px 10px; background: var(--shell-card); border: 1px solid var(--shell-border); }
+.stat-val { font-family: var(--font-mono); font-size: 18px; font-weight: 500; color: var(--shell-yellow); line-height: 1; margin-bottom: 2px; }
+.stat-lbl { font-size: 9px; color: var(--shell-grey); text-transform: uppercase; letter-spacing: .08em; }
+
+/* ── MAIN ─────────────────────────────────── */
+#main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  padding: 0;
+  max-width: 900px;
+}
+
+/* Top bar */
+.topbar {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--shell-dark);
+  border-bottom: 1px solid var(--shell-border);
+  padding: 14px 32px;
+  display: flex; align-items: center; gap: 16px;
+}
+.topbar-label { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--shell-grey); font-family: var(--font-mono); }
+.topbar-title { font-size: 15px; font-weight: 700; color: var(--white); flex: 1; }
+.sort-wrap { display: flex; gap: 6px; }
+.sort-btn {
+  padding: 4px 10px; font-size: 10px; font-weight: 600;
+  border: 1px solid var(--shell-border); color: var(--shell-grey);
+  cursor: pointer; background: transparent; font-family: var(--font-mono);
+  transition: all .12s;
+}
+.sort-btn:hover { border-color: var(--shell-light); color: var(--white); }
+.sort-btn.active { background: var(--shell-red); border-color: var(--shell-red); color: var(--white); }
+
+/* Content area */
+.content { padding: 24px 32px 80px; }
+
+/* No results */
+#no-results { display: none; padding: 60px 0; text-align: center; color: var(--shell-grey); font-family: var(--font-mono); font-size: 12px; }
+
+/* ── HYPOTHESIS CARD ─────────────────────── */
+.hyp-card {
+  margin-bottom: 16px;
+  border: 1px solid var(--shell-border);
+  background: var(--shell-card);
+  transition: border-color .15s;
+  scroll-margin-top: 70px;
+}
+.hyp-card:hover { border-color: var(--shell-mid); }
+.hyp-card.open { border-color: var(--shell-yellow); }
+.hyp-card.hidden { display: none; }
+
+/* Card header */
+.card-header {
+  padding: 16px 18px;
+  cursor: pointer;
+  display: flex; align-items: flex-start; gap: 14px;
+  user-select: none;
+}
+.card-header:hover .card-toggle { color: var(--shell-yellow); }
+
+.card-id-block { flex-shrink: 0; }
+.card-id {
+  display: inline-block; padding: 3px 8px;
+  font-family: var(--font-mono); font-size: 9px; font-weight: 500;
+  background: var(--shell-red); color: var(--white);
+  letter-spacing: .06em; margin-bottom: 4px;
+}
+.card-status-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  margin: 0 auto;
+}
+.status-open    { background: var(--green); }
+.status-future  { background: var(--blue); }
+.status-closing { background: var(--shell-yellow); }
+
+.card-main { flex: 1; min-width: 0; }
+.card-title { font-size: 13px; font-weight: 700; color: var(--white); line-height: 1.4; margin-bottom: 5px; }
+.card-decision { font-size: 11px; color: var(--shell-light); line-height: 1.5; font-style: italic; }
+
+.card-meta { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.meta-pill {
+  padding: 2px 7px; font-size: 9px; font-weight: 600;
+  letter-spacing: .06em; border: 1px solid;
+  font-family: var(--font-mono);
+}
+.pill-window  { border-color: var(--green);   color: var(--green); }
+.pill-future  { border-color: var(--blue);    color: var(--blue); }
+.pill-hz      { border-color: var(--shell-mid); color: var(--shell-grey); }
+.pill-layer   { border-color: var(--purple);  color: var(--purple); }
+.pill-type    { border-color: var(--shell-mid); color: var(--shell-grey); }
+
+.card-prob-block { flex-shrink: 0; text-align: right; }
+.prob-val { font-family: var(--font-mono); font-size: 32px; font-weight: 500; color: var(--white); line-height: 1; }
+.prob-lbl { font-size: 9px; color: var(--shell-grey); letter-spacing: .08em; text-transform: uppercase; font-family: var(--font-mono); }
+.conf-val { font-size: 10px; color: var(--shell-grey); font-family: var(--font-mono); margin-top: 2px; }
+
+.card-toggle { font-size: 14px; color: var(--shell-mid); flex-shrink: 0; margin-top: 6px; transition: all .15s; }
+.hyp-card.open .card-toggle { color: var(--shell-yellow); transform: rotate(180deg); }
+
+/* Card body */
+.card-body { display: none; border-top: 1px solid var(--shell-border); }
+.hyp-card.open .card-body { display: block; }
+
+/* Section within card body */
+.card-section {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--shell-border);
+}
+.card-section:last-child { border-bottom: none; }
+
+.section-head {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 10px;
+}
+.section-label {
+  font-size: 9px; font-weight: 600; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--shell-red);
+  font-family: var(--font-mono);
+}
+.section-rule { flex: 1; height: 1px; background: var(--shell-border); }
+
+/* WNTBT block */
+.wntbt-box {
+  background: var(--shell-dark);
+  border-left: 3px solid var(--shell-yellow);
+  padding: 12px 14px;
+}
+.wntbt-text { font-size: 13px; font-weight: 500; color: var(--white); line-height: 1.6; }
+
+/* Two-col layout */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* Decision logic */
+.dl-cell {
+  padding: 10px 12px;
+  background: var(--shell-dark);
+  border: 1px solid var(--shell-border);
+}
+.dl-cell.if-true  { border-top: 2px solid var(--green); }
+.dl-cell.if-false { border-top: 2px solid var(--shell-red); }
+.dl-lbl { font-size: 8px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--shell-grey); margin-bottom: 5px; font-family: var(--font-mono); }
+.dl-val { font-size: 11px; color: var(--shell-light); line-height: 1.5; }
+
+/* Evidence ladder */
+.ladder { display: flex; gap: 0; overflow: hidden; }
+.ladder-step {
+  flex: 1; padding: 10px 10px; position: relative;
+  background: var(--shell-dark);
+  border: 1px solid var(--shell-border);
+  border-right: none;
+  min-width: 0;
+}
+.ladder-step:last-child { border-right: 1px solid var(--shell-border); }
+.ladder-step.current { border-top: 2px solid var(--shell-red); background: rgba(221,29,33,.06); }
+.ladder-step.future  { opacity: .55; }
+.step-num { font-family: var(--font-mono); font-size: 8px; font-weight: 500; color: var(--shell-grey); margin-bottom: 4px; letter-spacing: .08em; }
+.ladder-step.current .step-num { color: var(--shell-red); }
+.step-txt { font-size: 10px; color: var(--shell-light); line-height: 1.4; }
+.ladder-step.current .step-txt { color: var(--white); font-weight: 500; }
+.step-date { font-family: var(--font-mono); font-size: 9px; color: var(--shell-grey); margin-top: 4px; font-style: italic; }
+.step-now-badge {
+  display: inline-block; margin-top: 4px;
+  padding: 1px 5px; background: var(--shell-red); color: var(--white);
+  font-size: 8px; font-weight: 700; font-family: var(--font-mono);
+}
+
+/* Falsifiers */
+.falsifier-list { list-style: none; }
+.falsifier-item {
+  padding: 6px 0 6px 16px; position: relative;
+  border-bottom: 1px solid var(--shell-border);
+  font-size: 12px; color: var(--shell-light); line-height: 1.5;
+}
+.falsifier-item:last-child { border-bottom: none; }
+.falsifier-item::before {
+  content: '✕'; position: absolute; left: 0; top: 7px;
+  font-size: 9px; color: var(--shell-red); font-weight: 700;
+}
+
+/* Signals & sources */
+.signals-grid { display: flex; flex-wrap: wrap; gap: 5px; }
+.signal-chip {
+  padding: 3px 9px; font-size: 9px; font-weight: 600;
+  background: rgba(255,255,255,.05); border: 1px solid var(--shell-border);
+  color: var(--shell-light); font-family: var(--font-mono);
+}
+
+/* Risk/upside */
+.risk-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.risk-cell { padding: 10px 12px; background: var(--shell-dark); border: 1px solid var(--shell-border); }
+.risk-lbl { font-size: 8px; color: var(--shell-grey); letter-spacing: .1em; text-transform: uppercase; font-family: var(--font-mono); margin-bottom: 4px; }
+.risk-val { font-size: 11px; color: var(--shell-light); line-height: 1.5; }
+.risk-cell.risk { border-left: 2px solid var(--shell-red); }
+.risk-cell.upside { border-left: 2px solid var(--green); }
+
+/* Related / tags */
+.tag-row { display: flex; flex-wrap: wrap; gap: 5px; }
+.tag { padding: 2px 8px; font-size: 9px; font-family: var(--font-mono); border: 1px solid var(--shell-border); color: var(--shell-grey); }
+
+/* Owner / meta footer */
+.card-footer {
+  padding: 10px 18px;
+  background: var(--shell-panel);
+  border-top: 1px solid var(--shell-border);
+  display: flex; align-items: center; gap: 16px;
+}
+.footer-item { font-family: var(--font-mono); font-size: 10px; color: var(--shell-grey); }
+.footer-item strong { color: var(--shell-light); }
+.footer-item.owner { margin-left: auto; }
+
+/* Window badge */
+.win-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; font-size: 9px; font-weight: 600;
+  font-family: var(--font-mono); border: 1px solid;
+}
+.win-badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.win-open    { border-color: rgba(34,174,138,.4); color: var(--green); }
+.win-future  { border-color: rgba(72,184,231,.4); color: var(--blue); }
+.win-closing { border-color: rgba(251,206,7,.4);  color: var(--shell-yellow); }
+
+/* Weighting rule */
+.weighting-box {
+  padding: 10px 12px; background: var(--shell-dark);
+  border: 1px solid var(--shell-border); border-left: 2px solid var(--purple);
+  font-family: var(--font-mono); font-size: 11px; color: var(--shell-light);
+  line-height: 1.6;
+}
+
+/* Sources */
+.sources-text { font-size: 11px; color: var(--shell-light); line-height: 1.7; font-family: var(--font-mono); }
+
+/* Urgency dots */
+.urgency-dots { display: flex; gap: 3px; margin-top: 4px; }
+.urgency-dot { width: 14px; height: 3px; background: var(--shell-border); }
+.urgency-dot.lit { background: var(--shell-red); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--shell-border); }
+::-webkit-scrollbar-thumb:hover { background: var(--shell-mid); }
+</style>
+</head>
+<body>
+
+<!-- ════ SIDEBAR ════ -->
+<aside id="sidebar">
+  <div class="sb-head">
+    <div class="gd">
+      <div class="gd-bar"></div>
+      <div class="gd-bar"></div>
+      <div class="gd-bar"></div>
+    </div>
+    <div class="sb-brand">Shell · FutureBridge</div>
+    <div class="sb-title">Horizon-3 Hypothesis Repository</div>
+    <div class="sb-sub">Next-Gen Production · v4 schema · 2026-03</div>
+  </div>
+
+  <div class="sb-search">
+    <input id="search" type="text" placeholder="Search hypotheses…" autocomplete="off">
+    <div class="sb-count" id="sb-count"></div>
+  </div>
+
+  <div class="sb-filters">
+    <div class="filter-label">Filter by domain</div>
+    <div class="filter-chips">
+      <span class="filter-chip active" data-filter="all">All</span>
+      <span class="filter-chip" data-filter="co2">CO₂-to-X</span>
+      <span class="filter-chip" data-filter="h2">Low-C H₂</span>
+      <span class="filter-chip" data-filter="turquoise">Turquoise</span>
+      <span class="filter-chip" data-filter="ammonia">Ammonia</span>
+      <span class="filter-chip" data-filter="waste">Waste</span>
+    </div>
+  </div>
+
+  <nav class="sb-nav" id="sb-nav">
+    <a class="nav-item" href="#h3-001" onclick="openCard('h3-001')">
+      <span class="nav-id">SHELL_H3_001</span>
+      <span class="nav-name">Electrified DME Production</span>
+      <span class="nav-prob">70%</span>
+    </a>
+    <a class="nav-item" href="#h3-002" onclick="openCard('h3-002')">
+      <span class="nav-id">SHELL_H3_002</span>
+      <span class="nav-name">Electrochemical Chemicals Hub</span>
+      <span class="nav-prob">65%</span>
+    </a>
+    <a class="nav-item" href="#h3-003" onclick="openCard('h3-003')">
+      <span class="nav-id">SHELL_H3_003</span>
+      <span class="nav-name">Modular Photocatalytic H₂</span>
+      <span class="nav-prob">65%</span>
+    </a>
+    <a class="nav-item" href="#h3-004" onclick="openCard('h3-004')">
+      <span class="nav-id">SHELL_H3_004</span>
+      <span class="nav-name">Biomass Electrolysis H₂</span>
+      <span class="nav-prob">60%</span>
+    </a>
+    <a class="nav-item" href="#h3-005" onclick="openCard('h3-005')">
+      <span class="nav-id">SHELL_H3_005</span>
+      <span class="nav-name">Methane Pyrolysis: H₂ + Carbon</span>
+      <span class="nav-prob">65%</span>
+    </a>
+    <a class="nav-item" href="#h3-006" onclick="openCard('h3-006')">
+      <span class="nav-id">SHELL_H3_006</span>
+      <span class="nav-name">Electrochemical Ammonia</span>
+      <span class="nav-prob">55%</span>
+    </a>
+    <a class="nav-item" href="#h3-007" onclick="openCard('h3-007')">
+      <span class="nav-id">SHELL_H3_007</span>
+      <span class="nav-name">Industrial Waste Refinery</span>
+      <span class="nav-prob">65%</span>
+    </a>
+  </nav>
+
+  <div class="sb-stats">
+    <div class="stat-grid">
+      <div class="stat-cell"><div class="stat-val">7</div><div class="stat-lbl">Hypotheses</div></div>
+      <div class="stat-cell"><div class="stat-val">64%</div><div class="stat-lbl">Avg probability</div></div>
+      <div class="stat-cell"><div class="stat-val">5</div><div class="stat-lbl">Window open</div></div>
+      <div class="stat-cell"><div class="stat-val">24mo</div><div class="stat-lbl">Avg horizon</div></div>
+    </div>
+  </div>
+</aside>
+
+<!-- ════ MAIN ════ -->
+<main id="main">
+  <div class="topbar">
+    <div>
+      <div class="topbar-label">Shell · Horizon-3 · Client Account Hypotheses</div>
+      <div class="topbar-title">Next-Generation Production Processes</div>
+    </div>
+    <div class="sort-wrap">
+      <button class="sort-btn active" onclick="sortCards('prob')">Probability ↓</button>
+      <button class="sort-btn" onclick="sortCards('hz')">Horizon</button>
+      <button class="sort-btn" onclick="sortCards('id')">ID</button>
+    </div>
+  </div>
+
+  <div class="content" id="cards-container">
+
+    <div id="no-results">No hypotheses match your search.</div>
+
+    <!-- ── H3-001 ── -->
+    <div class="hyp-card" id="h3-001" data-prob="70" data-hz="24" data-domain="co2" data-search="DME dimethyl ether SEDMES CO2 LPG maritime fuel TNO electrolysis green">
+      <div class="card-header" onclick="toggle('h3-001')">
+        <div class="card-id-block">
+          <div class="card-id">SHELL_H3_001</div>
+          <div class="card-status-dot status-open" title="Window open"></div>
+        </div>
+        <div class="card-main">
+          <div class="card-title">Green DME production becomes commercially viable for Shell as a low-carbon LPG replacement and maritime fuel by 2029</div>
+          <div class="card-decision">Should Shell invest in a pilot-scale SEDMES-based DME production asset co-located with an electrolyser — targeting LPG replacement and IMO-compliant maritime bunkering markets?</div>
+          <div class="card-meta">
+            <span class="win-badge win-open">Window open</span>
+            <span class="meta-pill pill-hz">24 months</span>
+            <span class="meta-pill pill-layer">client_account</span>
+            <span class="meta-pill pill-type">INVEST</span>
+          </div>
+        </div>
+        <div class="card-prob-block">
+          <div class="prob-val">70%</div>
+          <div class="prob-lbl">probability</div>
+          <div class="conf-val">conf: 65%</div>
+          <div class="urgency-dots">
+            <div class="urgency-dot lit"></div><div class="urgency-dot lit"></div>
+            <div class="urgency-dot lit"></div><div class="urgency-dot lit"></div>
+            <div class="urgency-dot lit"></div><div class="urgency-dot lit"></div>
+            <div class="urgency-dot"></div><div class="urgency-dot"></div>
+            <div class="urgency-dot"></div><div class="urgency-dot"></div>
+          </div>
+        </div>
+        <div class="card-toggle">▼</div>
+      </div>
+
+      <div class="card-body">
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">What needs to be true — next step</span><span class="section-rule"></span></div>
+          <div class="wntbt-box">
+            <div class="wntbt-text">TNO BUTTERFLY project publishes TRL 7 results from biomass gasifier integration in France — confirming SEDMES can operate at industrial scale with renewable feedstocks</div>
+          </div>
+        </div>
+
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Evidence ladder — steps to confirmation</span><span class="section-rule"></span></div>
+          <div class="ladder">
+            <div class="ladder-step current">
+              <div class="step-num">STEP 1</div>
+              <div class="step-txt">BUTTERFLY project TRL 7 results published</div>
+              <div class="step-date">~Q4 2026</div>
+              <div class="step-now-badge">NOW</div>
+            </div>
+            <div class="ladder-step future">
+              <div class="step-num">STEP 2</div>
+              <div class="step-txt">Shell feasibility study for Pernis/Singapore site</div>
+              <div class="step-date">~Q2 2027</div>
+            </div>
+            <div class="ladder-step future">
+              <div class="step-num">STEP 3</div>
+              <div class="step-txt">Electrolyser procurement at &lt;$400/kW confirmed</div>
+              <div class="step-date">~Q4 2027</div>
+            </div>
+            <div class="ladder-step future">
+              <div class="step-num">STEP 4</div>
+              <div class="step-txt">FID on pilot plant</div>
+              <div class="step-date">~Q2 2028</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Decision logic</span><span class="section-rule"></span></div>
+          <div class="two-col">
+            <div class="dl-cell if-true">
+              <div class="dl-lbl">If confirmed →</div>
+              <div class="dl-val">Commission feasibility study for 23 kt/year SEDMES plant co-located with 100 MW electrolyser at Pernis or Singapore</div>
+            </div>
+            <div class="dl-cell if-false">
+              <div class="dl-lbl">If refuted →</div>
+              <div class="dl-val">Park DME pathway. Redirect CO₂-utilisation budget to methanol or e-kerosene routes where cost curve is more advanced</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Risk / upside</span><span class="section-rule"></span></div>
+          <div class="risk-row">
+            <div class="risk-cell risk">
+              <div class="risk-lbl">Risk if wrong</div>
+              <div class="risk-val">Missing the LPG decarbonisation window as coal-market DME demand grows; competitor first-mover advantage in maritime bunkering</div>
+            </div>
+            <div class="risk-cell upside">
+              <div class="risk-lbl">Upside if right</div>
+              <div class="risk-val">First commercially operating green DME asset; integrated CO₂+H₂ supply chain; green premium pricing in Asian LPG markets</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Falsifiers — what would prove this wrong</span><span class="section-rule"></span></div>
+          <ul class="falsifier-list">
+            <li class="falsifier-item">Green H₂ cost fails to reach &lt;€2/kg by 2028 in any major market</li>
+            <li class="falsifier-item">IMO excludes DME from LCA-based carbon intensity methodology</li>
+            <li class="falsifier-item">Coal-based DME producers scale faster than green routes making premium economics impossible</li>
+            <li class="falsifier-item">Electrolyser CAPEX remains above $600/kW at scale through 2028</li>
+          </ul>
+        </div>
+
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Signal types to monitor</span><span class="section-rule"></span></div>
+          <div class="signals-grid">
+            <span class="signal-chip">commercial_contract</span>
+            <span class="signal-chip">project_announcement</span>
+            <span class="signal-chip">regulatory_mandate</span>
+            <span class="signal-chip">cost_curve_data</span>
+            <span class="signal-chip">patent_filing</span>
+          </div>
+          <div style="margin-top: 10px;">
+            <div class="weighting-box">Signed maritime fuel offtake contract outweighs project announcements 5:1. Electrolyser cost from actual procurement outweighs analyst projections 4:1. Regulatory mandate outweighs draft policy 3:1.</div>
+          </div>
+        </div>
+
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Primary sources</span><span class="section-rule"></span></div>
+          <div class="sources-text">TNO project publications · BloombergNEF hydrogen cost tracker · IEA hydrogen reports · IMO GHG strategy updates · Topsoe and Sunfire investor presentations · EU carbon price (ETS) daily feed</div>
+        </div>
+
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Tags</span><span class="section-rule"></span></div>
+          <div class="tag-row">
+            <span class="tag">SHELL</span><span class="tag">TNO</span><span class="tag">Topsoe</span><span class="tag">Sunfire</span>
+            <span class="tag">green DME</span><span class="tag">SEDMES</span><span class="tag">CO₂-to-fuels</span>
+            <span class="tag">LPG replacement</span><span class="tag">maritime fuel</span>
+            <span class="tag">SHELL_NEW_ENERGIES</span><span class="tag">SHELL_DECARBONISATION</span>
+            <span class="tag">Netherlands</span><span class="tag">Singapore</span><span class="tag">Global</span>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span class="footer-item">Related: <strong>SHELL_H3_002 · SHELL_H3_003</strong></span>
+          <span class="footer-item">Shared dep: <strong>green_H2_cost_curve</strong></span>
+          <span class="footer-item">Updated: <strong>2026-03-27</strong></span>
+          <span class="footer-item owner">Owner: <strong>Chris Guerin</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── H3-002 ── -->
+    <div class="hyp-card" id="h3-002" data-prob="65" data-hz="18" data-domain="co2" data-search="formic acid CO carbon monoxide electrochemical CO2 chemicals OCOchem Dioxyle VoltaChem Topsoe Sunfire CBAM">
+      <div class="card-header" onclick="toggle('h3-002')">
+        <div class="card-id-block">
+          <div class="card-id">SHELL_H3_002</div>
+          <div class="card-status-dot status-open"></div>
+        </div>
+        <div class="card-main">
+          <div class="card-title">Electrochemical CO and formic acid production from CO₂ becomes a viable Shell chemicals business as CBAM expands and fossil feedstock costs rise</div>
+          <div class="card-decision">Should Shell establish an electrochemical chemicals hub producing CO and formic acid from captured CO₂ — targeting chemical manufacturers facing carbon border costs?</div>
+          <div class="card-meta">
+            <span class="win-badge win-open">Window open</span>
+            <span class="meta-pill pill-hz">18 months</span>
+            <span class="meta-pill pill-layer">client_account</span>
+            <span class="meta-pill pill-type">INVEST</span>
+          </div>
+        </div>
+        <div class="card-prob-block">
+          <div class="prob-val">65%</div>
+          <div class="prob-lbl">probability</div>
+          <div class="conf-val">conf: 60%</div>
+          <div class="urgency-dots">
+            <div class="urgency-dot lit"></div><div class="urgency-dot lit"></div>
+            <div class="urgency-dot lit"></div><div class="urgency-dot lit"></div>
+            <div class="urgency-dot lit"></div><div class="urgency-dot lit"></div>
+            <div class="urgency-dot"></div><div class="urgency-dot"></div>
+            <div class="urgency-dot"></div><div class="urgency-dot"></div>
+          </div>
+        </div>
+        <div class="card-toggle">▼</div>
+      </div>
+      <div class="card-body">
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">What needs to be true — next step</span><span class="section-rule"></span></div>
+          <div class="wntbt-box">
+            <div class="wntbt-text">Topsoe or Sunfire announce first commercial CO production plant at &gt;10 MW using solid oxide electrolysis — proving the scale economics that underpin this business</div>
+          </div>
+        </div>
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Evidence ladder</span><span class="section-rule"></span></div>
+          <div class="ladder">
+            <div class="ladder-step current">
+              <div class="step-num">STEP 1</div>
+              <div class="step-txt">Topsoe/Sunfire 10 MW+ SOEC CO plant commissioned</div>
+              <div class="step-date">~Q2 2026</div>
+              <div class="step-now-badge">NOW</div>
+            </div>
+            <div class="ladder-step future">
+              <div class="step-num">STEP 2</div>
+              <div class="step-txt">EU CBAM scope confirmed to include chemical feedstocks</div>
+              <div class="step-date">~Q4 2026</div>
+            </div>
+            <div class="ladder-step future">
+              <div class="step-num">STEP 3</div>
+              <div class="step-txt">Anchor offtake candidate from Shell chemical cluster</div>
+              <div class="step-date">~Q1 2027</div>
+            </div>
+            <div class="ladder-step future">
+              <div class="step-num">STEP 4</div>
+              <div class="step-txt">FID on first electrochemical chemicals module</div>
+              <div class="step-date">~Q4 2027</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Decision logic</span><span class="section-rule"></span></div>
+          <div class="two-col">
+            <div class="dl-cell if-true">
+              <div class="dl-lbl">If confirmed →</div>
+              <div class="dl-val">Market assessment for CO and formic acid demand in Shell chemical cluster; identify 3 anchor offtake candidates</div>
+            </div>
+            <div class="dl-cell if-false">
+              <div class="dl-lbl">If refuted →</div>
+              <div class="dl-val">Do not invest in electrochemical CO production. Monitor formic acid separately as energy carrier play for fuel cell applications</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Falsifiers</span><span class="section-rule"></span></div>
+          <ul class="falsifier-list">
+            <li class="falsifier-item">Topsoe SOEC fails to reach cost parity with conventional CO production by 2028</li>
+            <li class="falsifier-item">EU CBAM scope formally excludes chemical feedstocks</li>
+            <li class="falsifier-item">Industrial gas majors (Air Products, Linde) lock up all anchor offtake before Shell enters</li>
+            <li class="falsifier-item">Formic acid electrolysis energy efficiency fails to cross 70% at commercial scale</li>
+          </ul>
+        </div>
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Signal weighting</span><span class="section-rule"></span></div>
+          <div class="weighting-box">Commercial CO offtake contracts outweigh project announcements 5:1. EU legislative text outweighs draft proposals 4:1.</div>
+        </div>
+        <div class="card-footer">
+          <span class="footer-item">Related: <strong>SHELL_H3_001</strong></span>
+          <span class="footer-item">Shared dep: <strong>green_H2_cost_curve · CO2_capture_infrastructure</strong></span>
+          <span class="footer-item">Updated: <strong>2026-03-27</strong></span>
+          <span class="footer-item owner">Owner: <strong>Chris Guerin</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── H3-003 ── -->
+    <div class="hyp-card" id="h3-003" data-prob="65" data-hz="24" data-domain="h2" data-search="photocatalytic hydrogen syngas Syzygy plasmonic microwave plasma methane reforming distributed modular LED fence-line">
+      <div class="card-header" onclick="toggle('h3-003')">
+        <div class="card-id-block">
+          <div class="card-id">SHELL_H3_003</div>
+          <div class="card-status-dot status-open"></div>
+        </div>
+        <div class="card-main">
+          <div class="card-title">Modular photocatalytic and plasma-based H₂ production becomes cost-competitive for distributed industrial supply without large electrolyser capital by 2028–2030</div>
+          <div class="card-decision">Should Shell take a strategic position in modular photocatalytic H₂ — via equity stake, offtake agreement, or technology licensing — to establish distributed H₂ supply capability at industrial fence lines?</div>
+          <div class="card-meta">
+            <span class="win-badge win-open">Window open</span>
+            <span class="meta-pill pill-hz">24 months</span>
+            <span class="meta-pill pill-layer">client_account</span>
+            <span class="meta-pill pill-type">EXPLORE</span>
+          </div>
+        </div>
+        <div class="card-prob-block">
+          <div class="prob-val">65%</div>
+          <div class="prob-lbl">probability</div>
+          <div class="conf-val">conf: 60%</div>
+          <div class="urgency-dots">
+            <div class="urgency-dot lit"></div><div class="urgency-dot lit"></div>
+            <div class="urgency-dot lit"></div><div class="urgency-dot lit"></div>
+            <div class="urgency-dot lit"></div><div class="urgency-dot lit"></div>
+            <div class="urgency-dot"></div><div class="urgency-dot"></div>
+            <div class="urgency-dot"></div><div class="urgency-dot"></div>
+          </div>
+        </div>
+        <div class="card-toggle">▼</div>
+      </div>
+      <div class="card-body">
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">What needs to be true — next step</span><span class="section-rule"></span></div>
+          <div class="wntbt-box">
+            <div class="wntbt-text">Syzygy Plasmonic announces a commercial H₂ supply contract exceeding 100 kg/day at a named industrial site — the first proof that photocatalytic H₂ can serve a real industrial customer at relevant scale</div>
+          </div>
+        </div>
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Evidence ladder</span><span class="section-rule"></span></div>
+          <div class="ladder">
+            <div class="ladder-step current">
+              <div class="step-num">STEP 1</div>
+              <div class="step-txt">Syzygy commercial contract &gt;100 kg/day announced</div>
+              <div class="step-date">~Q3 2026</div>
+              <div class="step-now-badge">NOW</div>
+            </div>
+            <div class="ladder-step future">
+              <div class="step-num">STEP 2</div>
+              <div class="step-txt">EU low-carbon H₂ act includes photoreforming pathway</div>
+              <div class="step-date">~Q4 2026</div>
+            </div>
+            <div class="ladder-step future">
+              <div class="step-num">STEP 3</div>
+              <div class="step-txt">Internal feasibility study at 2 Shell refinery sites</div>
+              <div class="step-date">~Q2 2027</div>
+            </div>
+            <div class="ladder-step future">
+              <div class="step-num">STEP 4</div>
+              <div class="step-txt">Equity or offtake deal executed with H₂ producer</div>
+              <div class="step-date">~Q4 2027</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Decision logic</span><span class="section-rule"></span></div>
+          <div class="two-col">
+            <div class="dl-cell if-true">
+              <div class="dl-lbl">If confirmed →</div>
+              <div class="dl-val">Take equity stake or offtake position in Syzygy Plasmonic; commission internal feasibility for fence-line deployment at two Shell refinery sites</div>
+            </div>
+            <div class="dl-cell if-false">
+              <div class="dl-lbl">If refuted →</div>
+              <div class="dl-val">Do not pursue photocatalytic route. Concentrate distributed H₂ investment on conventional PEM electrolysis with declining cost curve</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Falsifiers</span><span class="section-rule"></span></div>
+          <ul class="falsifier-list">
+            <li class="falsifier-item">Photocatalyst quantum efficiency fails to exceed 10% at commercial scale by 2028</li>
+            <li class="falsifier-item">EU delegated act on low-carbon H₂ explicitly excludes photoreforming routes</li>
+            <li class="falsifier-item">Syzygy Plasmonic fails to demonstrate &gt;5,000 hour catalyst lifetime</li>
+            <li class="falsifier-item">LED cost reduction stalls above $0.15/klm making light-driven economics unworkable</li>
+          </ul>
+        </div>
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Signal weighting</span><span class="section-rule"></span></div>
+          <div class="weighting-box">Commercial H₂ supply contracts outweigh lab results 6:1. Actual delivered cost data outweighs modelled projections 4:1.</div>
+        </div>
+        <div class="card-footer">
+          <span class="footer-item">Related: <strong>SHELL_H3_004</strong></span>
+          <span class="footer-item">Shared dep: <strong>green_H2_cost_curve · EU_H2_regulation</strong></span>
+          <span class="footer-item">Updated: <strong>2026-03-27</strong></span>
+          <span class="footer-item owner">Owner: <strong>Chris Guerin</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── H3-004 ── -->
+    <div class="hyp-card" id="h3-004" data-prob="60" data-hz="30" data-domain="h2" data-search="biomass electrolysis waste hydrogen biogenic CO2 Ki Hydrogen supercritical Wild Hydrogen gate fee CDR">
+      <div class="card-header" onclick="toggle('h3-004')">
+        <div class="card-id-block">
+          <div class="card-id">SHELL_H3_004</div>
+          <div class="card-status-dot status-future" title="Window not yet open"></div>
+        </div>
+        <div class="card-main">
+          <div class="card-title">Electrolytic and thermochemical conversion of wet waste biomass into low-carbon H₂ becomes economically viable for Shell by 2028–2030 combining gate fees with molecule sales and biogenic CDR credits</div>
+          <div class="card-decision">Should Shell pilot a waste biomass H₂ facility combining supercritical water reforming or biomass electrolysis with biogenic CO₂ capture — at a site with access to agricultural or food processing waste?</div>
+          <div class="card-meta">
+            <span class="win-badge win-future">Window opens 2027</span>
+            <span class="meta-pill pill-hz">30 months</span>
+            <span class="meta-pill pill-layer">client_account</span>
+            <span class="meta-pill pill-type">EXPLORE</span>
+          </div>
+        </div>
+        <div class="card-prob-block">
+          <div class="prob-val">60%</div>
+          <div class="prob-lbl">probability</div>
+          <div class="conf-val">conf: 55%</div>
+          <div class="urgency-dots">
+            <div class="urgency-dot lit"></div><div class="urgency-dot lit"></div>
+            <div class="urgency-dot lit"></div><div class="urgency-dot lit"></div>
+            <div class="urgency-dot lit"></div><div class="urgency-dot lit"></div>
+            <div class="urgency-dot"></div><div class="urgency-dot"></div>
+            <div class="urgency-dot"></div><div class="urgency-dot"></div>
+          </div>
+        </div>
+        <div class="card-toggle">▼</div>
+      </div>
+      <div class="card-body">
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">What needs to be true — next step</span><span class="section-rule"></span></div>
+          <div class="wntbt-box">
+            <div class="wntbt-text">Wild Hydrogen or Ki Hydrogen announces a commercial commissioning milestone at &gt;1 tonne H₂/day — the first proof that wet waste can be processed at meaningful H₂ production scale</div>
+          </div>
+        </div>
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Evidence ladder</span><span class="section-rule"></span></div>
+          <div class="ladder">
+            <div class="ladder-step current">
+              <div class="step-num">STEP 1</div>
+              <div class="step-txt">Wild Hydrogen commercial commissioning &gt;1 tH₂/day</div>
+              <div class="step-date">~Q4 2026</div>
+              <div class="step-now-badge">NOW</div>
+            </div>
+            <div class="ladder-step future">
+              <div class="step-num">STEP 2</div>
+              <div class="step-txt">EU H₂ delegated act certifies biomass-derived H₂</div>
+              <div class="step-date">~Q2 2027</div>
+            </div>
+            <div class="ladder-step future">
+              <div class="step-num">STEP 3</div>
+              <div class="step-txt">Waste feedstock mapping study: 3 Shell sites</div>
+              <div class="step-date">~Q3 2027</div>
+            </div>
+            <div class="ladder-step future">
+              <div class="step-num">STEP 4</div>
+              <div class="step-txt">CDR credit category formalised for biogenic H₂</div>
+              <div class="step-date">~Q4 2027</div>
+            </div>
+            <div class="ladder-step future">
+              <div class="step-num">STEP 5</div>
+              <div class="step-txt">Pilot facility FID</div>
+              <div class="step-date">~Q2 2028</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Decision logic</span><span class="section-rule"></span></div>
+          <div class="two-col">
+            <div class="dl-cell if-true">
+              <div class="dl-lbl">If confirmed →</div>
+              <div class="dl-val">Commission waste feedstock mapping study across Shell's European and Asian asset geographies; identify 2–3 sites with co-located waste supply and H₂ offtake</div>
+            </div>
+            <div class="dl-cell if-false">
+              <div class="dl-lbl">If refuted →</div>
+              <div class="dl-val">Do not invest in waste biomass H₂. Monitor as supply chain sustainability initiative rather than a core energy business play</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Falsifiers</span><span class="section-rule"></span></div>
+          <ul class="falsifier-list">
+            <li class="falsifier-item">Ki Hydrogen pilot fails to demonstrate &gt;60% electricity reduction vs water electrolysis in real waste streams</li>
+            <li class="falsifier-item">EU renewable H₂ delegated act excludes biomass-derived routes from compliance</li>
+            <li class="falsifier-item">CDR credit market fails to establish biogenic H₂ with CO₂ capture as a recognised removal category</li>
+            <li class="falsifier-item">Waste biomass variability causes consistent process failures in scale-up</li>
+          </ul>
+        </div>
+        <div class="card-footer">
+          <span class="footer-item">Related: <strong>SHELL_H3_003 · SHELL_H3_007</strong></span>
+          <span class="footer-item">Shared dep: <strong>biogenic_CDR_credit_market · EU_H2_regulation</strong></span>
+          <span class="footer-item">Updated: <strong>2026-03-27</strong></span>
+          <span class="footer-item owner">Owner: <strong>Chris Guerin</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── H3-005 ── -->
+    <div class="hyp-card" id="h3-005" data-prob="65" data-hz="24" data-domain="turquoise" data-search="methane pyrolysis turquoise hydrogen carbon black graphite anode Graforce H-Quest plasma battery EV solid carbon">
+      <div class="card-header" onclick="toggle('h3-005')">
+        <div class="card-id-block">
+          <div class="card-id">SHELL_H3_005</div>
+          <div class="card-status-dot status-open"></div>
+        </div>
+        <div class="card-main">
+          <div class="card-title">Methane pyrolysis producing both low-carbon H₂ and premium solid carbon becomes a viable dual-commodity business for Shell by 2028 — with carbon revenues materially improving H₂ economics</div>
+          <div class="card-decision">Should Shell invest in non-thermal plasma methane pyrolysis capacity — producing turquoise H₂ and anode-grade or carbon black material — co-located with existing methane infrastructure?</div>
+          <div class="card-meta">
+            <span class="win-badge win-open">Window open</span>
+            <span class="meta-pill pill-hz">24 months</span>
+            <span class="meta-pill pill-layer">client_account</span>
+            <span class="meta-pill pill-type">INVEST</span>
+          </div>
+        </div>
+        <div class="card-prob-block">
+          <div class="prob-val">65%</div>
+          <div class="prob-lbl">probability</div>
+          <div class="conf-val">conf: 60%</div>
+          <div class="urgency-dots">
+            <div class="urgency-dot lit"></div><div class="urgency-dot lit"></div>
+            <div class="urgency-dot lit"></div><div class="urgency-dot lit"></div>
+            <div class="urgency-dot lit"></div><div class="urgency-dot lit"></div>
+            <div class="urgency-dot"></div><div class="urgency-dot"></div>
+            <div class="urgency-dot"></div><div class="urgency-dot"></div>
+          </div>
+        </div>
+        <div class="card-toggle">▼</div>
+      </div>
+      <div class="card-body">
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">What needs to be true — next step</span><span class="section-rule"></span></div>
+          <div class="wntbt-box">
+            <div class="wntbt-text">A battery manufacturer (CATL, Panasonic, LG Energy) signs a multi-year anode carbon supply agreement with a methane pyrolysis producer — confirming that plasma carbon meets specification and buyers exist at scale</div>
+          </div>
+        </div>
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Evidence ladder</span><span class="section-rule"></span></div>
+          <div class="ladder">
+            <div class="ladder-step current">
+              <div class="step-num">STEP 1</div>
+              <div class="step-txt">Graforce or H-Quest achieve continuous 1 MW plasma operation</div>
+              <div class="step-date">~Q2 2026</div>
+              <div class="step-now-badge">NOW</div>
+            </div>
+            <div class="ladder-step future">
+              <div class="step-num">STEP 2</div>
+              <div class="step-txt">Battery manufacturer signs anode carbon supply deal</div>
+              <div class="step-date">~Q4 2026</div>
+            </div>
+            <div class="ladder-step future">
+              <div class="step-num">STEP 3</div>
+              <div class="step-txt">Shell technical due diligence on plasma pyrolysis</div>
+              <div class="step-date">~Q1 2027</div>
+            </div>
+            <div class="ladder-step future">
+              <div class="step-num">STEP 4</div>
+              <div class="step-txt">IEA or EU taxonomy includes turquoise H₂ pathway</div>
+              <div class="step-date">~Q2 2027</div>
+            </div>
+            <div class="ladder-step future">
+              <div class="step-num">STEP 5</div>
+              <div class="step-txt">FID on pilot pyrolysis unit at Shell methane asset</div>
+              <div class="step-date">~Q4 2027</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Decision logic</span><span class="section-rule"></span></div>
+          <div class="two-col">
+            <div class="dl-cell if-true">
+              <div class="dl-lbl">If confirmed →</div>
+              <div class="dl-val">Commission technical due diligence on Graforce and H-Quest Vanguard processes; assess carbon product quality against battery anode specification requirements</div>
+            </div>
+            <div class="dl-cell if-false">
+              <div class="dl-lbl">If refuted →</div>
+              <div class="dl-val">Do not pursue turquoise H₂ as a priority. Focus H₂ investment on electrolysis and remain a methane supplier rather than processor</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Falsifiers</span><span class="section-rule"></span></div>
+          <ul class="falsifier-list">
+            <li class="falsifier-item">Battery manufacturers confirm plasma carbon black cannot meet anode specification at required purity</li>
+            <li class="falsifier-item">Non-thermal plasma electrode lifetime fails to reach 10,000 hours making operational economics unworkable</li>
+            <li class="falsifier-item">IEA and EU taxonomy formally exclude turquoise H₂ from low-carbon certification</li>
+            <li class="falsifier-item">Solid carbon commodity prices collapse below $500/t due to Chinese synthetic graphite oversupply</li>
+          </ul>
+        </div>
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Signal weighting</span><span class="section-rule"></span></div>
+          <div class="weighting-box">Battery anode supply contracts outweigh announcements 6:1. Actual plasma energy consumption data outweighs modelled projections 5:1. IEA/EU taxonomy confirmation outweighs draft frameworks 4:1.</div>
+        </div>
+        <div class="card-footer">
+          <span class="footer-item">Related: <strong>SHELL_H3_003</strong></span>
+          <span class="footer-item">Shared dep: <strong>turquoise_H2_certification · battery_supply_chain</strong></span>
+          <span class="footer-item">Updated: <strong>2026-03-27</strong></span>
+          <span class="footer-item owner">Owner: <strong>Chris Guerin</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── H3-006 ── -->
+    <div class="hyp-card" id="h3-006" data-prob="55" data-hz="36" data-domain="ammonia" data-search="ammonia electrochemical nitrogen N2 Jupiter Ionics NitroVolt Atomnia Haber-Bosch maritime Faradaic efficiency fertiliser">
+      <div class="card-header" onclick="toggle('h3-006')">
+        <div class="card-id-block">
+          <div class="card-id">SHELL_H3_006</div>
+          <div class="card-status-dot status-future"></div>
+        </div>
+        <div class="card-main">
+          <div class="card-title">Electrochemical N₂ reduction to ammonia bypassing Haber-Bosch becomes commercially viable by 2030 — enabling distributed production for maritime fuel and fertiliser without H₂ as an intermediate</div>
+          <div class="card-decision">Should Shell take a minority equity position in an electrochemical ammonia developer (Jupiter Ionics or NitroVolt) to secure option value on distributed ammonia production for maritime bunkering?</div>
+          <div class="card-meta">
+            <span class="win-badge win-future">Window opens 2027</span>
+            <span class="meta-pill pill-hz">36 months</span>
+            <span class="meta-pill pill-layer">client_account</span>
+            <span class="meta-pill pill-type">EXPLORE</span>
+          </div>
+        </div>
+        <div class="card-prob-block">
+          <div class="prob-val">55%</div>
+          <div class="prob-lbl">probability</div>
+          <div class="conf-val">conf: 50%</div>
+          <div class="urgency-dots">
+            <div class="urgency-dot lit"></div><div class="urgency-dot lit"></div>
+            <div class="urgency-dot lit"></div><div class="urgency-dot lit"></div>
+            <div class="urgency-dot lit"></div><div class="urgency-dot lit"></div>
+            <div class="urgency-dot"></div><div class="urgency-dot"></div>
+            <div class="urgency-dot"></div><div class="urgency-dot"></div>
+          </div>
+        </div>
+        <div class="card-toggle">▼</div>
+      </div>
+      <div class="card-body">
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">What needs to be true — next step</span><span class="section-rule"></span></div>
+          <div class="wntbt-box">
+            <div class="wntbt-text">Jupiter Ionics or NitroVolt demonstrates continuous kW-scale N₂ reduction with Faradaic efficiency exceeding 25% in peer-reviewed or independently verified results — the threshold at which commercial viability becomes a realistic conversation</div>
+          </div>
+        </div>
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Evidence ladder</span><span class="section-rule"></span></div>
+          <div class="ladder">
+            <div class="ladder-step current">
+              <div class="step-num">STEP 1</div>
+              <div class="step-txt">Jupiter Ionics or NitroVolt FE &gt;25% independently verified</div>
+              <div class="step-date">~Q2 2027</div>
+              <div class="step-now-badge">NOW</div>
+            </div>
+            <div class="ladder-step future">
+              <div class="step-num">STEP 2</div>
+              <div class="step-txt">IMO 2030 update formally endorses ammonia as zero-carbon fuel</div>
+              <div class="step-date">~Q4 2027</div>
+            </div>
+            <div class="ladder-step future">
+              <div class="step-num">STEP 3</div>
+              <div class="step-txt">Shell equity or option deal with electrochemical NH₃ developer</div>
+              <div class="step-date">~Q1 2028</div>
+            </div>
+            <div class="ladder-step future">
+              <div class="step-num">STEP 4</div>
+              <div class="step-txt">First commercial ammonia-fuelled vessel on major route</div>
+              <div class="step-date">~Q4 2028</div>
+            </div>
+            <div class="ladder-step future">
+              <div class="step-num">STEP 5</div>
+              <div class="step-txt">Technology scales to 100 kg NH₃/day continuous operation</div>
+              <div class="step-date">~Q1 2029</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Decision logic</span><span class="section-rule"></span></div>
+          <div class="two-col">
+            <div class="dl-cell if-true">
+              <div class="dl-lbl">If confirmed →</div>
+              <div class="dl-val">Monitor Jupiter Ionics and NitroVolt quarterly milestone publications; assess whether Faradaic efficiency trajectory warrants a seed or Series A equity conversation</div>
+            </div>
+            <div class="dl-cell if-false">
+              <div class="dl-lbl">If refuted →</div>
+              <div class="dl-val">Do not invest in electrochemical ammonia. Continue with conventional Haber-Bosch green ammonia (via electrolysis) as the primary maritime fuel pathway</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Falsifiers</span><span class="section-rule"></span></div>
+          <ul class="falsifier-list">
+            <li class="falsifier-item">Faradaic efficiency fails to exceed 20% in any independently verified test by 2028</li>
+            <li class="falsifier-item">IMO 2030 GHG strategy update excludes ammonia from zero-carbon pathway designation</li>
+            <li class="falsifier-item">Conventional green ammonia reaches &lt;$400/tonne making electrochemical route economically unnecessary</li>
+            <li class="falsifier-item">Critical mineral requirements (Ruthenium) create supply chain constraints that cannot be resolved at scale</li>
+          </ul>
+        </div>
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Signal weighting</span><span class="section-rule"></span></div>
+          <div class="weighting-box">Independently verified Faradaic efficiency data outweighs company claims 6:1. IMO legislative text outweighs draft guidance 4:1. Signed maritime fuel contracts outweigh intent letters 5:1.</div>
+        </div>
+        <div class="card-footer">
+          <span class="footer-item">Related: <strong>SHELL_H3_001</strong></span>
+          <span class="footer-item">Shared dep: <strong>IMO_ammonia_mandate · green_ammonia_cost_curve</strong></span>
+          <span class="footer-item">Updated: <strong>2026-03-27</strong></span>
+          <span class="footer-item owner">Owner: <strong>Chris Guerin</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── H3-007 ── -->
+    <div class="hyp-card" id="h3-007" data-prob="65" data-hz="24" data-domain="waste" data-search="waste SAF sustainable aviation fuel VFA anaerobic digestion supercritical water Wild Hydrogen ReFuelEU gate fee biogenic CDR circular">
+      <div class="card-header" onclick="toggle('h3-007')">
+        <div class="card-id-block">
+          <div class="card-id">SHELL_H3_007</div>
+          <div class="card-status-dot status-open"></div>
+        </div>
+        <div class="card-main">
+          <div class="card-title">A Shell-operated industrial waste refinery combining wet waste conversion to H₂, biomethane, and SAF precursors becomes economically viable by 2028 — combining gate fees with molecule sales and renewable fuel certificates</div>
+          <div class="card-decision">Should Shell develop an industrial waste refinery at a European logistics hub — aggregating wet organic waste and converting it to H₂, biomethane, and SAF precursors via supercritical water reforming and arrested anaerobic digestion?</div>
+          <div class="card-meta">
+            <span class="win-badge win-open">Window open</span>
+            <span class="meta-pill pill-hz">24 months</span>
+            <span class="meta-pill pill-layer">client_account</span>
+            <span class="meta-pill pill-type">INVEST</span>
+          </div>
+        </div>
+        <div class="card-prob-block">
+          <div class="prob-val">65%</div>
+          <div class="prob-lbl">probability</div>
+          <div class="conf-val">conf: 60%</div>
+          <div class="urgency-dots">
+            <div class="urgency-dot lit"></div><div class="urgency-dot lit"></div>
+            <div class="urgency-dot lit"></div><div class="urgency-dot lit"></div>
+            <div class="urgency-dot lit"></div><div class="urgency-dot lit"></div>
+            <div class="urgency-dot"></div><div class="urgency-dot"></div>
+            <div class="urgency-dot"></div><div class="urgency-dot"></div>
+          </div>
+        </div>
+        <div class="card-toggle">▼</div>
+      </div>
+      <div class="card-body">
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">What needs to be true — next step</span><span class="section-rule"></span></div>
+          <div class="wntbt-box">
+            <div class="wntbt-text">EU ReFuelEU 2025 compliance reporting is enforced and airlines publicly tender for advanced waste-derived SAF supply — creating a concrete demand signal that justifies the investment case</div>
+          </div>
+        </div>
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Evidence ladder</span><span class="section-rule"></span></div>
+          <div class="ladder">
+            <div class="ladder-step current">
+              <div class="step-num">STEP 1</div>
+              <div class="step-txt">EU ReFuelEU enforced — airlines tender waste-derived SAF</div>
+              <div class="step-date">~Q2 2026</div>
+              <div class="step-now-badge">NOW</div>
+            </div>
+            <div class="ladder-step future">
+              <div class="step-num">STEP 2</div>
+              <div class="step-txt">Gate fee and waste feedstock study: 3 Shell sites</div>
+              <div class="step-date">~Q3 2026</div>
+            </div>
+            <div class="ladder-step future">
+              <div class="step-num">STEP 3</div>
+              <div class="step-txt">Wild Hydrogen SCW technology commercial commissioning</div>
+              <div class="step-date">~Q4 2026</div>
+            </div>
+            <div class="ladder-step future">
+              <div class="step-num">STEP 4</div>
+              <div class="step-txt">NREL/Argonne AAD — VFA cost below $0.50/kg</div>
+              <div class="step-date">~Q1 2027</div>
+            </div>
+            <div class="ladder-step future">
+              <div class="step-num">STEP 5</div>
+              <div class="step-txt">FID on pilot waste refinery at European site</div>
+              <div class="step-date">~Q1 2028</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Decision logic</span><span class="section-rule"></span></div>
+          <div class="two-col">
+            <div class="dl-cell if-true">
+              <div class="dl-lbl">If confirmed →</div>
+              <div class="dl-val">Identify 2–3 European logistics sites with co-located waste supply corridors; commission gate fee and waste feedstock supply assessment; quantify SAF RfNBO premium available in current market</div>
+            </div>
+            <div class="dl-cell if-false">
+              <div class="dl-lbl">If refuted →</div>
+              <div class="dl-val">Do not develop waste refinery concept. Continue conventional SAF investment via HEFA and e-SAF routes without waste biomass integration</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Falsifiers</span><span class="section-rule"></span></div>
+          <ul class="falsifier-list">
+            <li class="falsifier-item">EU ReFuelEU enforcement is weak — airlines face minimal penalties making the SAF demand signal unreliable</li>
+            <li class="falsifier-item">Waste-derived SAF fails to receive ICAO CORSIA certification making it ineligible for compliance</li>
+            <li class="falsifier-item">VFA recovery cost remains above 40% of total production cost at pilot scale</li>
+            <li class="falsifier-item">Waste management regulations in target geographies prevent Shell from receiving gate fee income</li>
+          </ul>
+        </div>
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Signal weighting</span><span class="section-rule"></span></div>
+          <div class="weighting-box">Signed airline SAF offtake contracts outweigh intent letters 5:1. EU enforcement action outweighs compliance guidance 4:1. Actual VFA production cost data outweighs modelled projections 4:1.</div>
+        </div>
+        <div class="card-section">
+          <div class="section-head"><span class="section-label">Signal types to monitor</span><span class="section-rule"></span></div>
+          <div class="signals-grid">
+            <span class="signal-chip">regulatory_mandate</span>
+            <span class="signal-chip">commercial_contract</span>
+            <span class="signal-chip">cost_curve_data</span>
+            <span class="signal-chip">project_announcement</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="footer-item">Related: <strong>SHELL_H3_004</strong></span>
+          <span class="footer-item">Shared dep: <strong>EU_SAF_mandate · biogenic_CDR_credit_market</strong></span>
+          <span class="footer-item">Updated: <strong>2026-03-27</strong></span>
+          <span class="footer-item owner">Owner: <strong>Chris Guerin</strong></span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<script>
+// ── TOGGLE ──────────────────────────────────────
+function toggle(id) {
+  const card = document.getElementById(id);
+  card.classList.toggle('open');
+  updateNav(id, card.classList.contains('open'));
+}
+
+function openCard(id) {
+  const card = document.getElementById(id);
+  if (!card.classList.contains('open')) card.classList.add('open');
+  updateNav(id, true);
+  setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+}
+
+function updateNav(id, isOpen) {
+  const suffix = id.replace('h3-', '00');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    const href = n.getAttribute('href') || '';
+    n.classList.toggle('active', href === '#' + id && isOpen);
+  });
+}
+
+// ── SEARCH ──────────────────────────────────────
+const searchEl = document.getElementById('search');
+const sbCount  = document.getElementById('sb-count');
+const noRes    = document.getElementById('no-results');
+
+searchEl.addEventListener('input', function() {
+  applyFilters();
+});
+
+// ── DOMAIN FILTER ───────────────────────────────
+let activeFilter = 'all';
+document.querySelectorAll('.filter-chip').forEach(chip => {
+  chip.addEventListener('click', function() {
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    this.classList.add('active');
+    activeFilter = this.dataset.filter;
+    applyFilters();
+  });
+});
+
+function applyFilters() {
+  const q = searchEl.value.trim().toLowerCase();
+  const cards = document.querySelectorAll('.hyp-card');
+  let visible = 0;
+
+  cards.forEach(card => {
+    const searchData = (card.dataset.search + ' ' + card.textContent).toLowerCase();
+    const domain = card.dataset.domain;
+
+    const matchSearch = !q || searchData.includes(q);
+    const matchDomain = activeFilter === 'all' || domain === activeFilter;
+    const show = matchSearch && matchDomain;
+
+    card.classList.toggle('hidden', !show);
+    if (show) {
+      visible++;
+      if (q.length > 2) card.classList.add('open');
+    }
+  });
+
+  noRes.style.display = visible === 0 ? 'block' : 'none';
+  sbCount.textContent = (q || activeFilter !== 'all') ? `${visible} of 7 shown` : '';
+}
+
+// ── SORT ────────────────────────────────────────
+function sortCards(by) {
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.toggle('active', b.textContent.includes(by === 'prob' ? 'Probability' : by === 'hz' ? 'Horizon' : 'ID')));
+  const container = document.getElementById('cards-container');
+  const cards = [...container.querySelectorAll('.hyp-card')];
+
+  cards.sort((a, b) => {
+    if (by === 'prob') return parseInt(b.dataset.prob) - parseInt(a.dataset.prob);
+    if (by === 'hz')   return parseInt(a.dataset.hz)  - parseInt(b.dataset.hz);
+    if (by === 'id')   return a.id.localeCompare(b.id);
+  });
+
+  // Remove no-results first, re-append cards, then append no-results
+  const noResultsEl = document.getElementById('no-results');
+  cards.forEach(c => container.appendChild(c));
+  container.appendChild(noResultsEl);
+}
+
+// ── ACTIVE NAV ON SCROLL ────────────────────────
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting && e.intersectionRatio > 0.3) {
+      const id = e.target.id;
+      document.querySelectorAll('.nav-item').forEach(n => {
+        n.classList.toggle('active', n.getAttribute('href') === '#' + id);
+      });
+    }
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('.hyp-card').forEach(c => observer.observe(c));
+
+// Open first card by default
+document.getElementById('h3-001').classList.add('open');
+updateNav('h3-001', true);
+</script>
+</body>
+</html>

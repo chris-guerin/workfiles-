@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signal Engine — FutureBridge Advisory</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --black: #000000;
+    --white: #FFFFFF;
+    --grey: #4B4B55;
+    --red: #F84E5D;
+    --light-grey: #F2F2F2;
+    --mid-grey: #AAAAAA;
+    --border: rgba(255,255,255,0.1);
+    --border-dark: rgba(0,0,0,0.1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', 'Arial', sans-serif;
+    background: var(--black);
+    color: var(--white);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* TYPOGRAPHY */
+  .display {
+    font-size: clamp(52px, 8vw, 96px);
+    font-weight: 600;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+  }
+
+  .headline {
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .subhead {
+    font-size: clamp(16px, 2vw, 20px);
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  .body {
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.7;
+    max-width: 520px;
+  }
+
+  .label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--mid-grey);
+  }
+
+  .accent { color: var(--red); }
+
+  /* LAYOUT */
+  section { width: 100%; }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 48px;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 20px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,0,0,0.9);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    color: var(--white);
+    text-decoration: none;
+  }
+
+  .nav-logo span { color: var(--red); }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--mid-grey);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--white); }
+
+  /* HERO */
+  #hero {
+    min-height: 100vh;
+    background: var(--black);
+    display: flex;
+    align-items: flex-end;
+    padding-top: 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-grid {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 80px 80px;
+  }
+
+  .hero-inner {
+    padding: 80px 48px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-kicker {
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .device-small {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .device-small span {
+    display: block;
+    height: 3px;
+    background: var(--white);
+  }
+
+  .device-small span:nth-child(1) { width: 24px; }
+  .device-small span:nth-child(2) { width: 18px; }
+  .device-small span:nth-child(3) { width: 12px; }
+
+  .hero-title {
+    font-size: clamp(64px, 10vw, 120px);
+    font-weight: 600;
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    margin-bottom: 40px;
+  }
+
+  .hero-sub {
+    font-size: clamp(18px, 2.5vw, 24px);
+    font-weight: 300;
+    color: var(--mid-grey);
+    max-width: 600px;
+    line-height: 1.5;
+    margin-bottom: 64px;
+  }
+
+  .hero-meta {
+    display: flex;
+    gap: 48px;
+    border-top: 1px solid var(--border);
+    padding-top: 32px;
+  }
+
+  .hero-meta-item {}
+  .hero-meta-item .num {
+    font-size: 32px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    display: block;
+  }
+  .hero-meta-item .num span { color: var(--red); }
+
+  /* SECTION: PROBLEM */
+  #problem {
+    background: var(--white);
+    color: var(--black);
+    padding: 120px 0;
+  }
+
+  .problem-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .problem-left .label { color: var(--grey); margin-bottom: 24px; display: block; }
+
+  .problem-quote {
+    font-size: clamp(22px, 3vw, 32px);
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    border-left: 3px solid var(--black);
+    padding-left: 24px;
+    margin: 40px 0;
+  }
+
+  .problem-right {
+    padding-top: 8px;
+  }
+
+  .problem-right .body { color: #333; max-width: 480px; }
+
+  .gap-list {
+    margin-top: 32px;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .gap-list li {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    font-size: 15px;
+    font-weight: 300;
+    color: #333;
+    line-height: 1.5;
+  }
+
+  .gap-list li::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--red);
+    border-radius: 50%;
+    margin-top: 8px;
+    flex-shrink: 0;
+  }
+
+  /* SECTION: WHAT IT IS */
+  #what {
+    background: var(--grey);
+    padding: 120px 0;
+  }
+
+  .what-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    margin-bottom: 80px;
+    align-items: end;
+  }
+
+  .what-header .label { display: block; margin-bottom: 24px; }
+
+  .what-header .body { color: rgba(255,255,255,0.7); }
+
+  /* ARCHITECTURE DIAGRAM */
+  .arch-container {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 48px;
+    position: relative;
+  }
+
+  .arch-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 40px;
+  }
+
+  .arch-flow {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
+    align-items: center;
+  }
+
+  .arch-node {
+    text-align: center;
+    position: relative;
+  }
+
+  .arch-box {
+    background: var(--black);
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 20px 12px;
+    margin: 0 8px;
+    position: relative;
+  }
+
+  .arch-box.highlight {
+    border-color: var(--red);
+  }
+
+  .arch-box-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mid-grey);
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .arch-box-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--white);
+    display: block;
+    line-height: 1.3;
+  }
+
+  .arch-box.highlight .arch-box-name {
+    color: var(--red);
+  }
+
+  .arch-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.2);
+    font-size: 20px;
+    position: absolute;
+    right: -12px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+  }
+
+  .arch-sub {
+    margin-top: 40px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .arch-sub-item {
+    background: rgba(0,0,0,0.2);
+    padding: 16px;
+    border-left: 2px solid rgba(255,255,255,0.1);
+  }
+
+  .arch-sub-item .arch-box-label { color: rgba(255,255,255,0.3); }
+  .arch-sub-item .arch-box-name { font-size: 12px; }
+
+  /* SECTION: HYPOTHESIS REPO */
+  #hypothesis {
+    background: var(--black);
+    padding: 120px 0;
+  }
+
+  .hyp-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    margin-bottom: 80px;
+    align-items: end;
+  }
+
+  .hyp-header .label { display: block; margin-bottom: 24px; }
+  .hyp-header .body { color: rgba(255,255,255,0.6); }
+
+  .hyp-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: rgba(255,255,255,0.08);
+  }
+
+  .hyp-card {
+    background: var(--black);
+    padding: 32px;
+    transition: background 0.2s;
+  }
+
+  .hyp-card:hover { background: #0a0a0a; }
+
+  .hyp-card-count {
+    font-size: 48px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 8px;
+    color: var(--white);
+  }
+
+  .hyp-card-count span { color: var(--red); }
+
+  .hyp-card-sector {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  .hyp-card-desc {
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--mid-grey);
+    line-height: 1.5;
+  }
+
+  .hyp-schema {
+    margin-top: 64px;
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 40px;
+  }
+
+  .schema-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--mid-grey);
+    margin-bottom: 32px;
+  }
+
+  .schema-groups {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+
+  .schema-group {}
+
+  .schema-group-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--red);
+    margin-bottom: 12px;
+    font-family: 'DM Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .schema-cols {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .schema-cols li {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    padding: 3px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  /* SECTION: PIPELINE */
+  #pipeline {
+    background: var(--white);
+    color: var(--black);
+    padding: 120px 0;
+  }
+
+  .pipeline-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    margin-bottom: 80px;
+    align-items: end;
+  }
+
+  .pipeline-header .label { color: var(--grey); display: block; margin-bottom: 24px; }
+  .pipeline-header .body { color: #444; }
+
+  .pipeline-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid #e0e0e0;
+  }
+
+  .pipeline-step {
+    display: grid;
+    grid-template-columns: 64px 1fr 200px;
+    align-items: stretch;
+    border-bottom: 1px solid #e0e0e0;
+    transition: background 0.2s;
+  }
+
+  .pipeline-step:last-child { border-bottom: none; }
+  .pipeline-step:hover { background: #fafafa; }
+
+  .step-num {
+    background: var(--black);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .step-content {
+    padding: 24px 32px;
+    border-left: 1px solid #e0e0e0;
+    border-right: 1px solid #e0e0e0;
+  }
+
+  .step-name {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+
+  .step-desc {
+    font-size: 13px;
+    font-weight: 300;
+    color: #666;
+    line-height: 1.5;
+  }
+
+  .step-tag {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border: 1px solid #ddd;
+    color: #888;
+  }
+
+  .tag.auto { border-color: var(--red); color: var(--red); }
+
+  /* SECTION: OUTPUTS */
+  #outputs {
+    background: var(--black);
+    padding: 120px 0;
+  }
+
+  .outputs-header {
+    margin-bottom: 80px;
+  }
+
+  .outputs-header .label { display: block; margin-bottom: 24px; }
+
+  .outputs-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .output-card {
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 40px 32px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+
+  .output-card:hover { border-color: rgba(255,255,255,0.3); }
+
+  .output-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--red);
+    letter-spacing: 0.1em;
+    display: block;
+    margin-bottom: 20px;
+  }
+
+  .output-title {
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+
+  .output-desc {
+    font-size: 14px;
+    font-weight: 300;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.6;
+  }
+
+  .output-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 60px; height: 60px;
+    background: radial-gradient(circle at bottom right, rgba(248,78,93,0.08), transparent 70%);
+  }
+
+  /* SECTION: NUMBERS */
+  #numbers {
+    background: var(--grey);
+    padding: 80px 0;
+  }
+
+  .numbers-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1px;
+    background: rgba(255,255,255,0.1);
+  }
+
+  .number-cell {
+    background: var(--grey);
+    padding: 40px 32px;
+    text-align: center;
+  }
+
+  .number-big {
+    font-size: 44px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 8px;
+    color: var(--white);
+  }
+
+  .number-big span { color: var(--red); }
+
+  .number-label {
+    font-size: 12px;
+    font-weight: 300;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.4;
+  }
+
+  /* SECTION: STATUS */
+  #status {
+    background: var(--white);
+    color: var(--black);
+    padding: 120px 0;
+  }
+
+  .status-header {
+    margin-bottom: 64px;
+  }
+
+  .status-header .label { color: var(--grey); display: block; margin-bottom: 24px; }
+
+  .status-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 48px;
+  }
+
+  .status-lane {}
+
+  .status-lane-title {
+    font-size: 13px;
+    font-weight: 500;
+    border-bottom: 2px solid var(--black);
+    padding-bottom: 12px;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .status-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    background: var(--black);
+    color: var(--white);
+  }
+
+  .status-badge.active {
+    background: var(--red);
+    color: var(--white);
+  }
+
+  .status-items {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .status-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.4;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+
+  .dot-done { background: #22AE8A; }
+  .dot-active { background: var(--red); }
+  .dot-pending { background: #ccc; }
+
+  /* FOOTER */
+  footer {
+    background: var(--black);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding: 48px 0;
+  }
+
+  .footer-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-device {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .footer-device span {
+    display: block;
+    height: 2px;
+    background: var(--white);
+  }
+
+  .footer-device span:nth-child(1) { width: 32px; }
+  .footer-device span:nth-child(2) { width: 24px; }
+  .footer-device span:nth-child(3) { width: 16px; }
+
+  .footer-copy {
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--mid-grey);
+  }
+
+  .footer-copy strong { color: var(--white); font-weight: 500; }
+
+  /* ANIMATIONS */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .fade-up.delay-1 { transition-delay: 0.1s; }
+  .fade-up.delay-2 { transition-delay: 0.2s; }
+  .fade-up.delay-3 { transition-delay: 0.3s; }
+  .fade-up.delay-4 { transition-delay: 0.4s; }
+
+  /* COUNTER */
+  .counter { display: inline-block; }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .container { padding: 0 24px; }
+    nav { padding: 20px 24px; }
+    .nav-links { display: none; }
+    .hero-inner { padding: 60px 24px; }
+    .problem-grid, .what-header, .hyp-header, .pipeline-header { grid-template-columns: 1fr; gap: 40px; }
+    .arch-flow { grid-template-columns: 1fr; gap: 12px; }
+    .arch-arrow { display: none; }
+    .schema-groups { grid-template-columns: repeat(2, 1fr); }
+    .outputs-grid, .hyp-grid { grid-template-columns: 1fr; }
+    .numbers-row { grid-template-columns: repeat(3, 1fr); }
+    .status-grid { grid-template-columns: 1fr; }
+    .hero-meta { flex-wrap: wrap; gap: 24px; }
+    .pipeline-step { grid-template-columns: 48px 1fr; }
+    .step-tag { display: none; }
+  }
+
+  /* SECTION DIVIDER */
+  .section-rule {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    margin: 0;
+  }
+
+  /* INLINE CODE */
+  code {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    background: rgba(255,255,255,0.06);
+    padding: 2px 6px;
+    color: rgba(255,255,255,0.6);
+  }
+
+  code.dark {
+    background: rgba(0,0,0,0.06);
+    color: rgba(0,0,0,0.5);
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">Future<span>Bridge</span> Advisory</a>
+  <ul class="nav-links">
+    <li><a href="#problem">Problem</a></li>
+    <li><a href="#what">Architecture</a></li>
+    <li><a href="#hypothesis">Hypotheses</a></li>
+    <li><a href="#pipeline">Pipeline</a></li>
+    <li><a href="#outputs">Outputs</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+
+    <div class="hero-kicker fade-up">
+      <div class="device-small">
+        <span></span><span></span><span></span>
+      </div>
+      <span class="label">Internal — Signal Engine</span>
+    </div>
+
+    <h1 class="hero-title fade-up delay-1">
+      Signal<br>Engine<span class="accent">.</span>
+    </h1>
+
+    <p class="hero-sub fade-up delay-2">
+      An automated intelligence-to-action system. It monitors weak signals across six sectors, evaluates them against 118 structured hypotheses, and produces commercially loaded outreach — at scale, without manual intervention.
+    </p>
+
+    <div class="hero-meta fade-up delay-3">
+      <div class="hero-meta-item">
+        <span class="num"><span class="counter" data-target="118">0</span></span>
+        <span class="label">Hypotheses</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="num"><span class="counter" data-target="27473">0</span></span>
+        <span class="label">Contacts indexed</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="num"><span class="counter" data-target="6">0</span></span>
+        <span class="label">Sectors covered</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="num"><span class="counter" data-target="45">0</span></span>
+        <span class="label">Schema columns per hypothesis</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section id="problem">
+  <div class="container">
+    <div class="problem-grid">
+      <div class="problem-left fade-up">
+        <span class="label">01 — The problem</span>
+        <h2 class="headline">Intelligence without action is just noise.</h2>
+        <blockquote class="problem-quote">
+          FutureBridge tracks thousands of weak signals. None of that mattered if it didn't reach the right person, at the right moment, with the right commercial argument.
+        </blockquote>
+      </div>
+      <div class="problem-right fade-up delay-2">
+        <p class="body">The gap wasn't research quality. It was the distance between an analyst identifying a signal and a client decision-maker receiving something they'd actually act on. That distance was manual, slow, and inconsistent.</p>
+        <ul class="gap-list">
+          <li>Signal detection was decoupled from outreach. Analysts found things. No one systematically connected findings to contact-level action.</li>
+          <li>Outreach was generic. Emails that lead with firm credentials don't get replies. Emails that lead with a specific signal, its commercial consequence, and a pointed question do.</li>
+          <li>Scale was the constraint. Good, personalised, commercially grounded outreach takes time. Time is what we don't have at 173 contacts across 93 companies.</li>
+          <li>Hypotheses were implicit. Every analyst carries assumptions about where markets are going. None of them were structured, scored, or updated.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section id="what">
+  <div class="container">
+    <div class="what-header">
+      <div class="fade-up">
+        <span class="label">02 — Architecture</span>
+        <h2 class="headline" style="color:white;">Five components. One automated loop.</h2>
+      </div>
+      <div class="fade-up delay-2">
+        <p class="body">Signal Engine is not a single tool. It is a pipeline. Each component has one job. Together they take a raw market signal from detection to a HubSpot-ready, personalised email in under three seconds.</p>
+      </div>
+    </div>
+
+    <div class="arch-container fade-up">
+      <div class="arch-title">Data flow — signal to outreach</div>
+      <div class="arch-flow">
+
+        <div class="arch-node" style="position:relative;">
+          <div class="arch-box">
+            <span class="arch-box-label">Source</span>
+            <span class="arch-box-name">Market Signals</span>
+          </div>
+          <div class="arch-arrow" style="right:-20px;">→</div>
+        </div>
+
+        <div class="arch-node" style="position:relative;">
+          <div class="arch-box">
+            <span class="arch-box-label">Automation</span>
+            <span class="arch-box-name">n8n Workflows</span>
+          </div>
+          <div class="arch-arrow" style="right:-20px;">→</div>
+        </div>
+
+        <div class="arch-node" style="position:relative;">
+          <div class="arch-box highlight">
+            <span class="arch-box-label">Intelligence</span>
+            <span class="arch-box-name">Claude API Classification</span>
+          </div>
+          <div class="arch-arrow" style="right:-20px;">→</div>
+        </div>
+
+        <div class="arch-node" style="position:relative;">
+          <div class="arch-box">
+            <span class="arch-box-label">Repository</span>
+            <span class="arch-box-name">Hypothesis DB (Sheets)</span>
+          </div>
+          <div class="arch-arrow" style="right:-20px;">→</div>
+        </div>
+
+        <div class="arch-node">
+          <div class="arch-box">
+            <span class="arch-box-label">Activation</span>
+            <span class="arch-box-name">HubSpot CRM</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="arch-sub">
+        <div class="arch-sub-item">
+          <span class="arch-box-label">Contact database</span>
+          <span class="arch-box-name">27,473 contacts — Datasette on Render</span>
+        </div>
+        <div class="arch-sub-item">
+          <span class="arch-box-label">Infrastructure</span>
+          <span class="arch-box-name">n8n on Railway — WF-11, WF-12, WF-15</span>
+        </div>
+        <div class="arch-sub-item">
+          <span class="arch-box-label">Scheduling</span>
+          <span class="arch-box-name">WF-15 fires at 07:00 every weekday</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- HYPOTHESIS REPO -->
+<section id="hypothesis">
+  <div class="container">
+    <div class="hyp-header">
+      <div class="fade-up">
+        <span class="label">03 — Hypothesis repository</span>
+        <h2 class="headline">The structured intelligence layer.</h2>
+      </div>
+      <div class="fade-up delay-2">
+        <p class="body">Every hypothesis is a falsifiable business claim — not a technology description. Each one carries decision mechanics, market knowledge, technology assessment, regulatory context, geography, and explicit falsifiers. The system updates probability scores when signals land.</p>
+      </div>
+    </div>
+
+    <div class="hyp-grid fade-up">
+      <div class="hyp-card">
+        <div class="hyp-card-count"><span>16</span></div>
+        <div class="hyp-card-sector">Energy</div>
+        <div class="hyp-card-desc">Grid infrastructure, hydrogen, LNG, nuclear, demand flexibility, decarbonisation pathways.</div>
+      </div>
+      <div class="hyp-card">
+        <div class="hyp-card-count"><span>11</span></div>
+        <div class="hyp-card-sector">Mobility</div>
+        <div class="hyp-card-desc">EV platform consolidation, charging infrastructure, software-defined vehicles, fleet transitions.</div>
+      </div>
+      <div class="hyp-card">
+        <div class="hyp-card-count"><span>9</span></div>
+        <div class="hyp-card-sector">Supply Chain</div>
+        <div class="hyp-card-desc">Nearshoring, critical minerals, logistics automation, tier-2 supplier risk.</div>
+      </div>
+      <div class="hyp-card">
+        <div class="hyp-card-count"><span>8</span></div>
+        <div class="hyp-card-sector">Cross-sector</div>
+        <div class="hyp-card-desc">AI infrastructure demand, geopolitical supply disruption, industrial energy transition.</div>
+      </div>
+      <div class="hyp-card">
+        <div class="hyp-card-count"><span>48</span></div>
+        <div class="hyp-card-sector">Client accounts</div>
+        <div class="hyp-card-desc">Shell, BP, MOL, Halliburton, E.ON, EDF, Michelin, Mercedes-Benz, Porsche, CUPRA, Skoda, Audi, VW Group, Datwyler, WOCO, Infineon — 3 hypotheses per account.</div>
+      </div>
+      <div class="hyp-card">
+        <div class="hyp-card-count"><span>26</span></div>
+        <div class="hyp-card-sector">Personal + industry bets</div>
+        <div class="hyp-card-desc">14 industry-level structural bets. 12 personal conviction hypotheses about where the advisory market moves.</div>
+      </div>
+    </div>
+
+    <div class="hyp-schema fade-up">
+      <div class="schema-title">v6 schema — 45 columns across 11 groups</div>
+      <div class="schema-groups">
+        <div class="schema-group">
+          <div class="schema-group-name">Decision</div>
+          <ul class="schema-cols">
+            <li>probability</li>
+            <li>confidence_score</li>
+            <li>urgency_score</li>
+            <li>window_status</li>
+            <li>trigger / if_true / if_false</li>
+            <li>horizon_months</li>
+          </ul>
+        </div>
+        <div class="schema-group">
+          <div class="schema-group-name">Technology</div>
+          <ul class="schema-cols">
+            <li>tech_critical_pathways</li>
+            <li>tech_bottlenecks</li>
+            <li>tech_credible_actors</li>
+            <li>tech_trajectory_changers</li>
+            <li>tech_displacement_risks</li>
+          </ul>
+        </div>
+        <div class="schema-group">
+          <div class="schema-group-name">Market + Regulation</div>
+          <ul class="schema-cols">
+            <li>mkt_critical_conditions</li>
+            <li>mkt_economic_gap</li>
+            <li>mkt_who_commits</li>
+            <li>mkt_deal_structure</li>
+            <li>reg_load_bearing</li>
+            <li>reg_gaps_blockers</li>
+          </ul>
+        </div>
+        <div class="schema-group">
+          <div class="schema-group-name">Signal + Geography</div>
+          <ul class="schema-cols">
+            <li>signal_types</li>
+            <li>falsifiers</li>
+            <li>primary_sources</li>
+            <li>geo_leading</li>
+            <li>geo_excluded</li>
+            <li>related_hyp_ids</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PIPELINE -->
+<section id="pipeline">
+  <div class="container">
+    <div class="pipeline-header">
+      <div class="fade-up">
+        <span class="label">04 — The pipeline</span>
+        <h2 class="headline" style="color:var(--black);">Automated. Every weekday. 07:00.</h2>
+      </div>
+      <div class="fade-up delay-2">
+        <p class="body" style="color:#444;">WF-15 is the classification engine. It ingests new signals, evaluates them against the hypothesis repository using a structured reasoning chain, updates probability scores, and flags high-relevance hits for outreach. No analyst involvement required at the classification stage.</p>
+      </div>
+    </div>
+
+    <div class="pipeline-steps fade-up">
+
+      <div class="pipeline-step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <div class="step-name">Signal ingestion</div>
+          <div class="step-desc">New signals enter via webhook or manual trigger. Each carries source, date, sector tag, and raw text. n8n routes to WF-15.</div>
+        </div>
+        <div class="step-tag"><span class="tag auto">Automated</span></div>
+      </div>
+
+      <div class="pipeline-step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <div class="step-name">Hypothesis matching</div>
+          <div class="step-desc">Claude API loads the relevant hypotheses from the repository. Load-bearing check first — does this signal move a falsifier or trigger condition? Trigger proximity second.</div>
+        </div>
+        <div class="step-tag"><span class="tag auto">Automated</span></div>
+      </div>
+
+      <div class="pipeline-step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <div class="step-name">Probability update</div>
+          <div class="step-desc">Matched hypotheses receive a probability delta. Confidence and urgency scores update. Changes write back to the Google Sheets repository via Apps Script endpoint.</div>
+        </div>
+        <div class="step-tag"><span class="tag auto">Automated</span></div>
+      </div>
+
+      <div class="pipeline-step">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <div class="step-name">Contact resolution</div>
+          <div class="step-desc">High-relevance hits trigger a contact lookup against the Datasette database. Contacts are matched by company, sector, and seniority. Role-specific consequence framing is loaded.</div>
+        </div>
+        <div class="step-tag"><span class="tag auto">Automated</span></div>
+      </div>
+
+      <div class="pipeline-step">
+        <div class="step-num">05</div>
+        <div class="step-content">
+          <div class="step-name">Email generation</div>
+          <div class="step-desc">Four-beat outreach protocol: specific signal with real numbers → strategic posture of the recipient's company → business-level consequence for their role → pointed question + CTA. HubSpot <code class="dark">{{first_name}}</code> preserved throughout.</div>
+        </div>
+        <div class="step-tag"><span class="tag auto">Automated</span></div>
+      </div>
+
+      <div class="pipeline-step">
+        <div class="step-num">06</div>
+        <div class="step-content">
+          <div class="step-name">HubSpot push</div>
+          <div class="step-desc">Generated emails push to HubSpot CRM via WF-12 API. Contacts tagged, sequence enrolled. Analyst reviews before send — this is the only manual gate.</div>
+        </div>
+        <div class="step-tag"><span class="tag">Review</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- OUTPUTS -->
+<section id="outputs">
+  <div class="container">
+    <div class="outputs-header fade-up">
+      <span class="label">05 — What it produces</span>
+      <h2 class="headline" style="margin-top:24px;">Six types of output. One consistent standard.</h2>
+    </div>
+
+    <div class="outputs-grid">
+
+      <div class="output-card fade-up">
+        <span class="output-number">OUT — 01</span>
+        <div class="output-title">Personalised outreach emails</div>
+        <div class="output-desc">Role-specific, signal-led, commercially grounded. No generic intros. No firm credentials in the body copy. The firm name never appears. Written to prompt a reply from a decision-maker who gets a hundred emails a week.</div>
+      </div>
+
+      <div class="output-card fade-up delay-1">
+        <span class="output-number">OUT — 02</span>
+        <div class="output-title">Meeting intelligence briefs</div>
+        <div class="output-desc">Auto-generated pre-meeting briefs covering the contact's recent activity, strategic focus, and commercial pressure points. Questions are structured so each answer maps to a specific FutureBridge sale.</div>
+      </div>
+
+      <div class="output-card fade-up delay-2">
+        <span class="output-number">OUT — 03</span>
+        <div class="output-title">Client intelligence dashboards</div>
+        <div class="output-desc">16 accounts covered. Dark editorial format, hosted on GitHub Pages. Each brief includes a live AI Refresh Button that calls the Anthropic API to update weak signals in real time, plus a multi-turn Ask AI panel.</div>
+      </div>
+
+      <div class="output-card fade-up delay-3">
+        <span class="output-number">OUT — 04</span>
+        <div class="output-title">Hypothesis probability updates</div>
+        <div class="output-desc">Every signal that passes classification writes a delta back to the repository. Over time, the probability scores become a live, evidence-based view of where each market is heading — not a static analyst opinion.</div>
+      </div>
+
+      <div class="output-card fade-up delay-1">
+        <span class="output-number">OUT — 05</span>
+        <div class="output-title">Campaign wave packages</div>
+        <div class="output-desc">Segmented outreach campaigns with sector-specific email variants. Energy, PE, Mobility. Each campaign wave carries a consistent signal thesis, differentiated by recipient persona: C-Suite, R&D, Strategy, HR.</div>
+      </div>
+
+      <div class="output-card fade-up delay-2">
+        <span class="output-number">OUT — 06</span>
+        <div class="output-title">Geopolitical impact intelligence</div>
+        <div class="output-desc">Real-time conflict monitoring mapped to FutureBridge's six sectors. A 2×2 commercial priority matrix distinguishes clients under stress from those with competitive advantage from geopolitical disruption.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- NUMBERS -->
+<section id="numbers">
+  <div class="numbers-row">
+    <div class="number-cell fade-up">
+      <div class="number-big"><span class="counter" data-target="173">0</span></div>
+      <div class="number-label">Energy contacts in current campaign</div>
+    </div>
+    <div class="number-cell fade-up delay-1">
+      <div class="number-big"><span class="counter" data-target="93">0</span></div>
+      <div class="number-label">Companies targeted in energy wave</div>
+    </div>
+    <div class="number-cell fade-up delay-2">
+      <div class="number-big"><span class="counter" data-target="16">0</span></div>
+      <div class="number-label">Client intelligence briefs live</div>
+    </div>
+    <div class="number-cell fade-up delay-3">
+      <div class="number-big"><span class="counter" data-target="4">0</span></div>
+      <div class="number-label">System layers in the pipeline</div>
+    </div>
+    <div class="number-cell fade-up delay-4">
+      <div class="number-big"><span class="counter" data-target="3">0</span><span style="color:var(--red)">s</span></div>
+      <div class="number-label">Signal to outreach email generation time</div>
+    </div>
+  </div>
+</section>
+
+<!-- BUILD STATUS -->
+<section id="status">
+  <div class="container">
+    <div class="status-header fade-up">
+      <span class="label">06 — Build status</span>
+      <h2 class="headline" style="margin-top:24px; max-width: 600px;">Where we are. What comes next.</h2>
+    </div>
+
+    <div class="status-grid">
+      <div class="status-lane fade-up">
+        <div class="status-lane-title">
+          Completed
+          <span class="status-badge">Live</span>
+        </div>
+        <ul class="status-items">
+          <li class="status-item"><span class="status-dot dot-done"></span>v6 hypothesis repository — 118 hypotheses, 45-column schema, all knowledge blocks populated</li>
+          <li class="status-item"><span class="status-dot dot-done"></span>Datasette contact database — 27,473 contacts on Render</li>
+          <li class="status-item"><span class="status-dot dot-done"></span>n8n automation on Railway — WF-11, WF-12, WF-15 operational</li>
+          <li class="status-item"><span class="status-dot dot-done"></span>HubSpot integration via n8n middleware</li>
+          <li class="status-item"><span class="status-dot dot-done"></span>16 client intelligence briefs — Shell, BP, Halliburton, MOL, E.ON, EDF, VW Group, Mercedes-Benz, Porsche, CUPRA, Skoda, Audi, Infineon, Datwyler, WOCO, Michelin</li>
+          <li class="status-item"><span class="status-dot dot-done"></span>Meeting prep tool — auto web search, contact intel extraction, brief generation</li>
+          <li class="status-item"><span class="status-dot dot-done"></span>Energy sector outreach campaign — 173 contacts, 93 companies</li>
+          <li class="status-item"><span class="status-dot dot-done"></span>PE outreach campaign — 990 firms, 32,771 contacts, 4-wave segmentation</li>
+        </ul>
+      </div>
+
+      <div class="status-lane fade-up delay-2">
+        <div class="status-lane-title">
+          In progress / next
+          <span class="status-badge active">Active</span>
+        </div>
+        <ul class="status-items">
+          <li class="status-item"><span class="status-dot dot-active"></span>Upload v6 populated CSV to Google Sheets repository</li>
+          <li class="status-item"><span class="status-dot dot-active"></span>WF-15 prompt rewrite — load-bearing check before trigger proximity in reasoning chain</li>
+          <li class="status-item"><span class="status-dot dot-pending"></span>Phase assessment — all 118 hypotheses currently defaulting to DIVERGENT; review required</li>
+          <li class="status-item"><span class="status-dot dot-pending"></span>n8n-to-Claude MCP integration — direct workflow triggering from conversation</li>
+          <li class="status-item"><span class="status-dot dot-pending"></span>Hypothesis pathway architecture — separate outcome hypothesis from pathway steps to handle missed decision gates correctly</li>
+          <li class="status-item"><span class="status-dot dot-pending"></span>Shell H3 hypotheses (SHELL_H3_001–007) — seven H3 business frames to enter as client account hypotheses</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-device">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="footer-copy">
+        <strong>FutureBridge Advisory</strong> — Signal Engine — Internal use only
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Intersection Observer for fade-up animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  // Counter animation
+  function animateCounter(el) {
+    const target = parseInt(el.dataset.target);
+    const duration = 1200;
+    const start = performance.now();
+    
+    function update(currentTime) {
+      const elapsed = currentTime - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = Math.round(eased * target);
+      
+      el.textContent = current.toLocaleString();
+      
+      if (progress < 1) requestAnimationFrame(update);
+    }
+    
+    requestAnimationFrame(update);
+  }
+
+  const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !entry.target.dataset.animated) {
+        entry.target.dataset.animated = 'true';
+        animateCounter(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll('.counter').forEach(el => counterObserver.observe(el));
+
+  // Smooth nav highlighting
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(section => {
+      if (window.scrollY >= section.offsetTop - 100) {
+        current = section.getAttribute('id');
+      }
+    });
+    navLinks.forEach(link => {
+      link.style.color = link.getAttribute('href') === '#' + current ? '#fff' : '';
+    });
+  });
+</script>
+
+</body>
+</html>

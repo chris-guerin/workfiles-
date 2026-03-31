@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signal Engine — Artifact Registry</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap');
+:root{--black:#000;--white:#fff;--grey:#4B4B55;--red:#F84E5D;--green:#22AE8A;--yellow:#FDCF41;--blue:#48B8E7;--purple:#9D7AD2;--s:#111114;--s2:#1a1a1f;--b:rgba(255,255,255,0.08);--bm:rgba(255,255,255,0.15);--mid:#aaa}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:'DM Sans',Arial,sans-serif;background:var(--black);color:var(--white);min-height:100vh;font-size:14px;-webkit-font-smoothing:antialiased}
+/* Layout */
+.app{display:flex;flex-direction:column;min-height:100vh}
+header{position:sticky;top:0;z-index:50;background:rgba(0,0,0,0.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--bm);padding:0 24px;height:52px;display:flex;align-items:center;gap:16px}
+.device{display:flex;flex-direction:column;gap:3px;flex-shrink:0}
+.device span{display:block;height:2.5px;background:var(--white)}
+.device span:nth-child(1){width:22px}.device span:nth-child(2){width:16px}.device span:nth-child(3){width:10px}
+.h-title{font-size:12px;font-weight:500;letter-spacing:.06em;flex:1}
+.h-title span{color:var(--red)}
+.tabs{display:flex;gap:0;margin-left:auto}
+.tab{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border:1px solid var(--bm);color:var(--mid);cursor:pointer;background:transparent;transition:all .15s}
+.tab:first-child{border-radius:3px 0 0 3px}
+.tab:last-child{border-radius:0 3px 3px 0;border-left:none}
+.tab.active{background:var(--white);color:var(--black);border-color:var(--white)}
+/* Status bar */
+.statusbar{display:flex;gap:0;border-bottom:1px solid var(--b);background:var(--s)}
+.sc{flex:1;padding:10px 20px;text-align:center;border-right:1px solid var(--b)}
+.sc:last-child{border-right:none}
+.sc-num{font-size:20px;font-weight:500;line-height:1;display:block}
+.sc-label{font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);margin-top:2px;display:block}
+/* Filters */
+.filters{padding:12px 24px;border-bottom:1px solid var(--b);display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:var(--s)}
+.flabel{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);margin-right:4px}
+.chip{font-size:10px;font-weight:500;letter-spacing:.05em;padding:3px 10px;border:1px solid var(--bm);border-radius:2px;color:var(--mid);cursor:pointer;background:transparent;transition:all .12s;white-space:nowrap}
+.chip:hover{color:var(--white);border-color:rgba(255,255,255,0.4)}
+.chip.active{color:var(--white);border-color:var(--white);background:rgba(255,255,255,0.08)}
+.sep{width:1px;height:20px;background:var(--b)}
+/* Table */
+.table-wrap{flex:1;overflow:auto}
+table{width:100%;border-collapse:collapse}
+thead th{position:sticky;top:0;background:var(--s2);padding:8px 16px;font-size:9px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--mid);text-align:left;border-bottom:1px solid var(--bm);white-space:nowrap;cursor:pointer;user-select:none}
+thead th:hover{color:var(--white)}
+tbody tr{border-bottom:1px solid var(--b);transition:background .12s;cursor:pointer}
+tbody tr:hover{background:rgba(255,255,255,0.03)}
+tbody tr.expanded{background:rgba(255,255,255,0.04)}
+tbody td{padding:10px 16px;vertical-align:top}
+.cell-name{font-size:13px;font-weight:500;color:var(--white);line-height:1.35}
+.cell-note{font-size:11px;color:var(--mid);margin-top:2px;line-height:1.4}
+/* Badges */
+.badge{display:inline-block;font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border-radius:2px;white-space:nowrap}
+.b-current{background:rgba(34,174,138,0.18);color:#22AE8A;border:1px solid rgba(34,174,138,0.3)}
+.b-active{background:rgba(72,184,231,0.18);color:#48B8E7;border:1px solid rgba(72,184,231,0.3)}
+.b-sync{background:rgba(248,78,93,0.18);color:#F84E5D;border:1px solid rgba(248,78,93,0.3)}
+.b-work{background:rgba(253,207,65,0.18);color:#FDCF41;border:1px solid rgba(253,207,65,0.3)}
+.b-pending{background:rgba(75,75,85,0.4);color:#aaa;border:1px solid rgba(255,255,255,0.1)}
+.er-trigger{background:rgba(248,78,93,0.12);color:#F84E5D;border:1px solid rgba(248,78,93,0.2)}
+.er-classify{background:rgba(157,122,210,0.15);color:#9D7AD2;border:1px solid rgba(157,122,210,0.25)}
+.er-generate{background:rgba(253,207,65,0.15);color:#FDCF41;border:1px solid rgba(253,207,65,0.25)}
+.er-deliver{background:rgba(34,174,138,0.15);color:#22AE8A;border:1px solid rgba(34,174,138,0.25)}
+.er-none{background:transparent;color:#555;border:1px solid rgba(255,255,255,0.06)}
+/* Expanded row */
+.expand-row{display:none;background:rgba(255,255,255,0.02)}
+.expand-row.open{display:table-row}
+.expand-cell{padding:12px 16px 16px 32px;border-bottom:1px solid var(--bm)}
+.expand-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px 24px}
+.eg-item{}
+.eg-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#555;display:block;margin-bottom:3px}
+.eg-val{font-size:12px;color:var(--mid);line-height:1.5}
+.eg-action{color:var(--white)}
+.expand-actions{display:flex;gap:8px;margin-top:12px}
+.btn{font-family:'DM Sans',Arial,sans-serif;font-size:11px;font-weight:500;letter-spacing:.06em;padding:5px 12px;border:1px solid var(--bm);background:transparent;color:var(--mid);cursor:pointer;border-radius:2px;transition:all .12s}
+.btn:hover{color:var(--white);border-color:rgba(255,255,255,0.4)}
+.btn-red{border-color:rgba(248,78,93,0.4);color:#F84E5D}
+.btn-red:hover{background:rgba(248,78,93,0.1)}
+/* Add / Edit form */
+.form-panel{border-top:1px solid var(--bm);background:var(--s2);padding:20px 24px;display:none}
+.form-panel.open{display:block}
+.form-title{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);margin-bottom:14px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:12px}
+.fg-wide{grid-column:span 2}
+.fg-full{grid-column:span 4}
+.field label{display:block;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#555;margin-bottom:4px}
+.field input,.field select,.field textarea{width:100%;background:var(--s);border:1px solid var(--bm);color:var(--white);font-family:'DM Sans',Arial,sans-serif;font-size:12px;padding:7px 10px;border-radius:2px;outline:none;transition:border-color .15s}
+.field input:focus,.field select,.field textarea:focus{border-color:rgba(255,255,255,0.4)}
+.field select{cursor:pointer}
+.field textarea{resize:vertical;min-height:52px}
+.field select option{background:#1a1a1f;color:var(--white)}
+.form-actions{display:flex;gap:8px}
+.btn-primary{background:var(--white);color:var(--black);border-color:var(--white)}
+.btn-primary:hover{background:#e0e0e0}
+/* Bottom bar */
+.bottombar{border-top:1px solid var(--b);padding:10px 24px;display:flex;align-items:center;gap:12px;background:var(--s)}
+.add-btn{font-size:11px;font-weight:500;letter-spacing:.06em;padding:6px 14px;border:1px solid var(--bm);background:transparent;color:var(--white);cursor:pointer;border-radius:2px;transition:all .15s;display:flex;align-items:center;gap:6px}
+.add-btn:hover{background:rgba(255,255,255,0.06)}
+.plus{font-size:16px;line-height:1;color:var(--red)}
+.export-btn{font-size:10px;color:var(--mid);background:transparent;border:none;cursor:pointer;margin-left:auto;letter-spacing:.04em}
+.export-btn:hover{color:var(--white)}
+/* Pipeline view */
+.pipeline-view{display:none;padding:24px;overflow:auto}
+.pipeline-view.active{display:block}
+.pipe-title{font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--mid);margin-bottom:20px}
+.pipe-section{margin-bottom:32px}
+.pipe-section-label{font-size:9px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:#444;border-bottom:1px solid var(--b);padding-bottom:6px;margin-bottom:12px}
+.pipe-flow{display:flex;align-items:center;gap:0;flex-wrap:wrap}
+.pipe-node{display:flex;flex-direction:column;align-items:center;position:relative}
+.pn-box{border:1px solid var(--bm);padding:10px 14px;min-width:140px;max-width:180px;text-align:center;position:relative;border-radius:2px;background:var(--s)}
+.pn-name{font-size:12px;font-weight:500;color:var(--white);line-height:1.3;margin-bottom:4px}
+.pn-role{display:block;margin-top:4px}
+.pn-note{font-size:10px;color:var(--mid);margin-top:2px;line-height:1.3}
+.pn-box.status-sync{border-color:rgba(248,78,93,0.5);background:rgba(248,78,93,0.05)}
+.pn-box.status-work{border-color:rgba(253,207,65,0.4);background:rgba(253,207,65,0.04)}
+.pn-box.status-active{border-color:rgba(72,184,231,0.4);background:rgba(72,184,231,0.03)}
+.pipe-arrow{display:flex;align-items:center;padding:0 6px;color:#333;font-size:18px;flex-shrink:0;margin-top:-16px}
+.pipe-feed{font-size:9px;color:#444;letter-spacing:.06em;text-transform:uppercase;margin-top:4px;text-align:center}
+/* Side feed into pipeline */
+.pipe-row{display:flex;gap:0;align-items:flex-start;margin-bottom:8px}
+.pipe-col-main{display:flex;flex-direction:column;align-items:center;gap:0;flex-shrink:0}
+.pipe-side{display:flex;align-items:center;gap:6px;margin-left:12px;margin-top:18px;opacity:.8}
+.pipe-side-line{width:24px;height:1px;background:var(--bm);flex-shrink:0}
+.pipe-side-node{border:1px dashed var(--bm);padding:6px 10px;font-size:11px;color:var(--mid);border-radius:2px;background:var(--s2);white-space:nowrap}
+.pipe-down{width:1px;height:16px;background:var(--bm);margin:0 auto}
+/* Registry view */
+.registry-view{display:flex;flex-direction:column;flex:1}
+.registry-view.hidden{display:none}
+.no-results{padding:40px;text-align:center;color:#444;font-size:13px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<header>
+  <div class="device"><span></span><span></span><span></span></div>
+  <div class="h-title">Signal Engine <span>/ Artifact Registry</span></div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('registry',this)">Registry</button>
+    <button class="tab" onclick="switchTab('pipeline',this)">Email pipeline</button>
+  </div>
+</header>
+
+<div class="statusbar" id="statusbar"></div>
+
+<!-- REGISTRY VIEW -->
+<div class="registry-view" id="registryView">
+  <div class="filters" id="filterbar"></div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th onclick="sortBy('name')">Artifact ↕</th>
+          <th onclick="sortBy('layer')">Layer ↕</th>
+          <th onclick="sortBy('status')">Status ↕</th>
+          <th onclick="sortBy('emailRole')">Email role ↕</th>
+          <th>Action needed</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="no-results hidden" id="noResults">No artifacts match the current filter.</div>
+  </div>
+
+  <div class="form-panel" id="formPanel">
+    <div class="form-title" id="formTitle">Add artifact</div>
+    <div class="form-grid">
+      <div class="field fg-wide"><label>Name</label><input id="f-name" type="text" placeholder="e.g. WF-15 Signal classifier"></div>
+      <div class="field"><label>Layer</label><select id="f-layer"><option>Intelligence</option><option>Automation</option><option>Protocol</option><option>Visualization</option><option>Outreach</option></select></div>
+      <div class="field"><label>Status</label><select id="f-status"><option value="current">Current</option><option value="active">Active</option><option value="out-of-sync">Out of sync</option><option value="needs-work">Needs work</option><option value="pending">Pending</option></select></div>
+      <div class="field fg-wide"><label>Note (one line)</label><input id="f-note" type="text" placeholder="Brief description"></div>
+      <div class="field fg-wide"><label>Email role</label><select id="f-emailRole"><option value="none">None</option><option value="trigger">Trigger</option><option value="classify">Classify</option><option value="generate">Generate</option><option value="deliver">Deliver</option></select></div>
+      <div class="field fg-full"><label>Source</label><input id="f-source" type="text" placeholder="Where this comes from"></div>
+      <div class="field fg-full"><label>Feeds into</label><input id="f-feeds" type="text" placeholder="What this outputs to"></div>
+      <div class="field fg-full"><label>Action needed</label><input id="f-action" type="text" placeholder="What needs to happen next"></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-primary" onclick="saveForm()">Save</button>
+      <button class="btn" onclick="closeForm()">Cancel</button>
+      <button class="btn btn-red" id="deleteBtn" onclick="deleteArtifact()" style="margin-left:auto;display:none">Delete</button>
+    </div>
+  </div>
+
+  <div class="bottombar">
+    <button class="add-btn" onclick="openAddForm()"><span class="plus">+</span> Add artifact</button>
+    <span style="font-size:11px;color:#333">Click any row to expand · Click again to collapse</span>
+    <button class="export-btn" onclick="exportJSON()">Export JSON ↗</button>
+  </div>
+</div>
+
+<!-- PIPELINE VIEW -->
+<div class="pipeline-view" id="pipelineView">
+  <div class="pipe-title">Email trigger chain — signal to send</div>
+  <div id="pipelineContent"></div>
+</div>
+
+</div>
+<script>
+const STORAGE_KEY = 'se_registry_v1';
+
+const DEFAULTS = [
+  {id:'hyp-repo',layer:'Intelligence',name:'Hypothesis repo (Google Sheets)',status:'active',note:'v6 · 118 hyp · 45 cols · upload in progress',source:'v6_populated.csv → Apps Script (importV6)',feeds:'WF-15, Heatmap, Client briefs',action:'Run importV6 Apps Script — file ready',emailRole:'classify'},
+  {id:'v6-csv',layer:'Intelligence',name:'v6 populated CSV',status:'current',note:'118 hyp · 45 cols · all knowledge blocks complete',source:'22 KB JSON files built in session',feeds:'Google Sheets',action:'None — done',emailRole:'none'},
+  {id:'shell-h3',layer:'Intelligence',name:'Shell H3 hypotheses',status:'pending',note:'7 H3 frames (SHELL_H3_001–007) not yet in repo',source:'Shell engagement (ongoing)',feeds:'Google Sheets',action:'Enter 7 frames as client account hypotheses',emailRole:'none'},
+  {id:'phase-assess',layer:'Intelligence',name:'Phase assessment (118 hyp)',status:'pending',note:'All currently defaulting to DIVERGENT',source:'Google Sheets',feeds:'WF-15 reasoning chain',action:'Review and assign phases across all 118',emailRole:'none'},
+  {id:'wf14',layer:'Automation',name:'WF-14 — Signal ingestion',status:'current',note:'Webhook — routes new signals into WF-15',source:'n8n on Railway (n8n-production-86279.up.railway.app)',feeds:'WF-15',action:'None',emailRole:'trigger'},
+  {id:'wf15',layer:'Automation',name:'WF-15 — Signal classifier',status:'needs-work',note:'7am weekday · classifies signals against hypothesis repo',source:'n8n on Railway',feeds:'Google Sheets (probability updates) + email generation',action:'Rewrite prompt: load-bearing check before trigger proximity',emailRole:'trigger'},
+  {id:'claude-classify',layer:'Automation',name:'Claude API — Classification',status:'current',note:'Called by WF-15 · matches signal to hypotheses · updates probabilities',source:'Anthropic API (claude-sonnet-4-6)',feeds:'Google Sheets via Apps Script',action:'None',emailRole:'classify'},
+  {id:'claude-generate',layer:'Automation',name:'Claude API — Email generation',status:'current',note:'Four-beat protocol · signal → email in ~3s',source:'Anthropic API (claude-sonnet-4-6)',feeds:'HubSpot via WF-12',action:'None',emailRole:'generate'},
+  {id:'datasette',layer:'Automation',name:'Datasette contact DB',status:'current',note:'27,473 contacts · futurbridge-signals.onrender.com',source:'Render-hosted SQLite',feeds:'WF-12 → HubSpot',action:'None',emailRole:'classify'},
+  {id:'wf12',layer:'Automation',name:'WF-12 — Contacts API',status:'current',note:'Resolves contacts · links Datasette to HubSpot',source:'n8n on Railway',feeds:'HubSpot CRM',action:'None',emailRole:'deliver'},
+  {id:'wf11',layer:'Automation',name:'WF-11 — Client state webhook',status:'current',note:'Operational',source:'n8n on Railway',feeds:'Internal state',action:'None',emailRole:'none'},
+  {id:'mcp-n8n',layer:'Automation',name:'n8n → Claude MCP integration',status:'pending',note:'Direct workflow trigger from conversation — not yet built',source:'n8n + Anthropic API',feeds:'Signal Engine pipeline',action:'Spec and build',emailRole:'none'},
+  {id:'apps-script',layer:'Automation',name:'Apps Script endpoints',status:'current',note:'Read/write endpoints for Google Sheets hypothesis repo',source:'Google Apps Script',feeds:'WF-15 (read) + Claude classify (write)',action:'None',emailRole:'classify'},
+  {id:'four-beat',layer:'Protocol',name:'Four-beat email protocol',status:'current',note:'Signal → company posture → role consequence → question → CTA',source:'Writing standard (internal)',feeds:'Claude API email generation prompt',action:'None',emailRole:'generate'},
+  {id:'pe-voice',layer:'Protocol',name:'PE email voice principles',status:'current',note:'Short sentences · plain English · peer register · no em-dashes',source:'Writing standard (internal)',feeds:'PE campaign email generation',action:'None',emailRole:'generate'},
+  {id:'heatmap',layer:'Visualization',name:'Hypothesis heatmap',status:'out-of-sync',note:'176 hyp / 10-per-account vs v6 · 3-per-account — schema mismatch',source:'Pre-v6 build',feeds:'Internal analysis',action:'Decide: rebuild RAW to v6 OR run as parallel intelligence layer',emailRole:'none'},
+  {id:'briefs',layer:'Visualization',name:'16 client intelligence briefs',status:'out-of-sync',note:'Built before v6 hypothesis reframe — hypothesis sections stale',source:'GitHub Pages (chris-guerin.github.io/workfiles-/)',feeds:'Client meetings',action:'Refresh hypothesis sections to match v6 framing',emailRole:'none'},
+  {id:'showcase',layer:'Visualization',name:'Signal Engine showcase',status:'current',note:'Senior leader comms · reflects v6 numbers correctly',source:'Built this session',feeds:'Internal comms',action:'None',emailRole:'none'},
+  {id:'meeting-prep',layer:'Visualization',name:'Meeting prep tool v7',status:'current',note:'Auto web search · contact intel extraction · brief generation',source:'meeting_prep_v7.html on GitHub Pages',feeds:'Client meetings',action:'None',emailRole:'none'},
+  {id:'geo-dash',layer:'Visualization',name:'Geopolitical dashboard',status:'needs-work',note:'Russia-Ukraine + US-Iran coverage · 2×2 client priority matrix',source:'Previous session',feeds:'Client comms',action:'Refresh conflict analysis if using for upcoming meetings',emailRole:'none'},
+  {id:'registry',layer:'Visualization',name:'This artifact registry',status:'current',note:'Single source of truth for all Signal Engine components',source:'Built this session',feeds:'Everything',action:'Keep updated as new artifacts are built',emailRole:'none'},
+  {id:'hubspot',layer:'Outreach',name:'HubSpot CRM',status:'active',note:'Energy campaign active · 173 contacts · 93 companies',source:'WF-12 + manual upload',feeds:'Email delivery to contacts',action:'Monitor response rates',emailRole:'deliver'},
+  {id:'energy-camp',layer:'Outreach',name:'Energy outreach campaign',status:'active',note:'173 contacts · 93 companies · current wave',source:'HubSpot + n8n email generation',feeds:'Pipeline meetings',action:'Monitor — in flight',emailRole:'deliver'},
+  {id:'pe-camp',layer:'Outreach',name:'PE outreach campaign',status:'current',note:'990 firms · 32,771 contacts · 4-wave segmentation · complete',source:'Tracxn dataset',feeds:'HubSpot',action:'None — completed',emailRole:'deliver'},
+];
+
+const STATUS_CONFIG = {
+  'current':{label:'Current',cls:'b-current'},
+  'active':{label:'Active',cls:'b-active'},
+  'out-of-sync':{label:'Out of sync',cls:'b-sync'},
+  'needs-work':{label:'Needs work',cls:'b-work'},
+  'pending':{label:'Pending',cls:'b-pending'},
+};
+const ROLE_CONFIG = {
+  'none':{label:'—',cls:'er-none'},
+  'trigger':{label:'Trigger',cls:'er-trigger'},
+  'classify':{label:'Classify',cls:'er-classify'},
+  'generate':{label:'Generate',cls:'er-generate'},
+  'deliver':{label:'Deliver',cls:'er-deliver'},
+};
+const LAYERS = ['Intelligence','Automation','Protocol','Visualization','Outreach'];
+
+let artifacts = [];
+let filterLayer = 'all';
+let filterStatus = 'all';
+let sortKey = 'layer';
+let sortDir = 1;
+let editingId = null;
+let expandedId = null;
+
+function load() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    artifacts = raw ? JSON.parse(raw) : JSON.parse(JSON.stringify(DEFAULTS));
+  } catch(e) {
+    artifacts = JSON.parse(JSON.stringify(DEFAULTS));
+  }
+}
+function save() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(artifacts)); } catch(e){}
+}
+function exportJSON() {
+  const text = JSON.stringify(artifacts, null, 2);
+  navigator.clipboard.writeText(text).then(() => alert('JSON copied to clipboard.')).catch(() => alert('Copy failed — open console.'));
+}
+
+function getFiltered() {
+  let list = [...artifacts];
+  if(filterLayer !== 'all') list = list.filter(a => a.layer === filterLayer);
+  if(filterStatus !== 'all') list = list.filter(a => a.status === filterStatus);
+  list.sort((a,b) => {
+    const av = (a[sortKey]||'').toLowerCase();
+    const bv = (b[sortKey]||'').toLowerCase();
+    return av < bv ? -sortDir : av > bv ? sortDir : 0;
+  });
+  return list;
+}
+
+function counts() {
+  const c = {current:0,active:0,'out-of-sync':0,'needs-work':0,pending:0};
+  artifacts.forEach(a => { if(c[a.status]!==undefined) c[a.status]++; });
+  return c;
+}
+
+function renderStatusBar() {
+  const c = counts();
+  const el = document.getElementById('statusbar');
+  el.innerHTML = [
+    ['out-of-sync','#F84E5D','Out of sync'],
+    ['needs-work','#FDCF41','Needs work'],
+    ['pending','#aaa','Pending'],
+    ['active','#48B8E7','Active'],
+    ['current','#22AE8A','Current'],
+  ].map(([k,col,label]) =>
+    `<div class="sc"><span class="sc-num" style="color:${col}">${c[k]}</span><span class="sc-label">${label}</span></div>`
+  ).join('');
+}
+
+function renderFilters() {
+  const el = document.getElementById('filterbar');
+  const layers = ['all',...LAYERS];
+  const statuses = [['all','All'],['current','Current'],['active','Active'],['out-of-sync','Out of sync'],['needs-work','Needs work'],['pending','Pending']];
+  el.innerHTML = `<span class="flabel">Layer</span>`
+    + layers.map(l => `<button class="chip${filterLayer===l?' active':''}" onclick="setLayerFilter('${l}',this)">${l==='all'?'All':l}</button>`).join('')
+    + `<div class="sep"></div><span class="flabel">Status</span>`
+    + statuses.map(([v,label]) => `<button class="chip${filterStatus===v?' active':''}" onclick="setStatusFilter('${v}',this)">${label}</button>`).join('');
+}
+
+function setLayerFilter(v) { filterLayer = v; renderAll(); }
+function setStatusFilter(v) { filterStatus = v; renderAll(); }
+
+function sortBy(key) {
+  if(sortKey === key) sortDir *= -1;
+  else { sortKey = key; sortDir = 1; }
+  renderTable();
+}
+
+function renderTable() {
+  const list = getFiltered();
+  const tbody = document.getElementById('tbody');
+  const noRes = document.getElementById('noResults');
+  if(!list.length) { tbody.innerHTML = ''; noRes.classList.remove('hidden'); return; }
+  noRes.classList.add('hidden');
+  tbody.innerHTML = list.map(a => {
+    const sc = STATUS_CONFIG[a.status] || STATUS_CONFIG['pending'];
+    const rc = ROLE_CONFIG[a.emailRole] || ROLE_CONFIG['none'];
+    const isExp = expandedId === a.id;
+    return `<tr onclick="toggleExpand('${a.id}')" class="${isExp?'expanded':''}">
+      <td><div class="cell-name">${a.name}</div><div class="cell-note">${a.note}</div></td>
+      <td style="white-space:nowrap"><span class="badge b-pending" style="opacity:.7">${a.layer}</span></td>
+      <td><span class="badge ${sc.cls}">${sc.label}</span></td>
+      <td><span class="badge ${rc.cls}">${rc.label}</span></td>
+      <td style="font-size:12px;color:${a.action==='None'||a.action==='None — done'?'#444':'var(--white)'};">${a.action}</td>
+    </tr>
+    <tr class="expand-row ${isExp?'open':''}">
+      <td class="expand-cell" colspan="5">
+        <div class="expand-grid">
+          <div class="eg-item"><span class="eg-label">Source</span><span class="eg-val">${a.source}</span></div>
+          <div class="eg-item"><span class="eg-label">Feeds into</span><span class="eg-val">${a.feeds}</span></div>
+          <div class="eg-item"><span class="eg-label">Action</span><span class="eg-val eg-action">${a.action}</span></div>
+        </div>
+        <div class="expand-actions">
+          <button class="btn" onclick="event.stopPropagation();openEditForm('${a.id}')">Edit</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function toggleExpand(id) {
+  expandedId = expandedId === id ? null : id;
+  renderTable();
+}
+
+function renderAll() {
+  renderStatusBar();
+  renderFilters();
+  renderTable();
+}
+
+// Form
+function openAddForm() {
+  editingId = null;
+  document.getElementById('formTitle').textContent = 'Add artifact';
+  document.getElementById('deleteBtn').style.display = 'none';
+  document.getElementById('f-name').value = '';
+  document.getElementById('f-layer').value = 'Intelligence';
+  document.getElementById('f-status').value = 'current';
+  document.getElementById('f-note').value = '';
+  document.getElementById('f-emailRole').value = 'none';
+  document.getElementById('f-source').value = '';
+  document.getElementById('f-feeds').value = '';
+  document.getElementById('f-action').value = '';
+  document.getElementById('formPanel').classList.add('open');
+  document.getElementById('f-name').focus();
+}
+
+function openEditForm(id) {
+  const a = artifacts.find(x => x.id === id);
+  if(!a) return;
+  editingId = id;
+  document.getElementById('formTitle').textContent = 'Edit artifact';
+  document.getElementById('deleteBtn').style.display = 'block';
+  document.getElementById('f-name').value = a.name;
+  document.getElementById('f-layer').value = a.layer;
+  document.getElementById('f-status').value = a.status;
+  document.getElementById('f-note').value = a.note;
+  document.getElementById('f-emailRole').value = a.emailRole;
+  document.getElementById('f-source').value = a.source;
+  document.getElementById('f-feeds').value = a.feeds;
+  document.getElementById('f-action').value = a.action;
+  document.getElementById('formPanel').classList.add('open');
+  document.getElementById('formPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function closeForm() {
+  document.getElementById('formPanel').classList.remove('open');
+  editingId = null;
+}
+
+function saveForm() {
+  const name = document.getElementById('f-name').value.trim();
+  if(!name) { document.getElementById('f-name').focus(); return; }
+  if(editingId) {
+    const idx = artifacts.findIndex(x => x.id === editingId);
+    if(idx > -1) {
+      artifacts[idx] = {...artifacts[idx],
+        name, layer:document.getElementById('f-layer').value,
+        status:document.getElementById('f-status').value,
+        note:document.getElementById('f-note').value.trim(),
+        emailRole:document.getElementById('f-emailRole').value,
+        source:document.getElementById('f-source').value.trim(),
+        feeds:document.getElementById('f-feeds').value.trim(),
+        action:document.getElementById('f-action').value.trim(),
+      };
+    }
+  } else {
+    artifacts.push({
+      id:'art-'+Date.now(),
+      name, layer:document.getElementById('f-layer').value,
+      status:document.getElementById('f-status').value,
+      note:document.getElementById('f-note').value.trim(),
+      emailRole:document.getElementById('f-emailRole').value,
+      source:document.getElementById('f-source').value.trim(),
+      feeds:document.getElementById('f-feeds').value.trim(),
+      action:document.getElementById('f-action').value.trim(),
+    });
+  }
+  save();
+  closeForm();
+  renderAll();
+  renderPipeline();
+}
+
+function deleteArtifact() {
+  if(!editingId) return;
+  if(!confirm('Delete this artifact?')) return;
+  artifacts = artifacts.filter(x => x.id !== editingId);
+  save();
+  closeForm();
+  renderAll();
+  renderPipeline();
+}
+
+// Tab switching
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('registryView').classList.toggle('hidden', tab !== 'registry');
+  document.getElementById('pipelineView').classList.toggle('active', tab === 'pipeline');
+  if(tab === 'pipeline') renderPipeline();
+}
+
+// Pipeline view
+const PIPELINE_CHAIN = [
+  {label:'Market signal detected', note:'News · regulatory · earnings · patent · deal', role:'external', side:null},
+  {label:'WF-14 — Signal ingestion', note:'Webhook · routes signal into classifier', role:'trigger', artifactId:'wf14', side:null},
+  {label:'WF-15 — Signal classifier', note:'Fires 07:00 weekday · calls Claude API', role:'trigger', artifactId:'wf15', side:{label:'Hypothesis repo',note:'v6 · 118 hyp',id:'hyp-repo'}},
+  {label:'Claude API — Classify', note:'Load-bearing check → trigger proximity', role:'classify', artifactId:'claude-classify', side:{label:'Apps Script endpoints',note:'Read/write to Sheets',id:'apps-script'}},
+  {label:'Datasette — Contact lookup', note:'27,473 contacts · match by company + seniority', role:'classify', artifactId:'datasette', side:{label:'WF-12 — Contacts API',note:'Routes to HubSpot',id:'wf12'}},
+  {label:'Claude API — Generate email', note:'~3 seconds · four-beat protocol applied here', role:'generate', artifactId:'claude-generate', side:{label:'Four-beat protocol',note:'Writing standard',id:'four-beat'}},
+  {label:'HubSpot CRM', note:'Email queued · contact tagged · sequence enrolled', role:'deliver', artifactId:'hubspot', side:null},
+  {label:'Analyst review', note:'Only manual gate in the pipeline', role:'review', side:null},
+  {label:'Send', note:'Email delivered to decision-maker', role:'external', side:null},
+];
+
+function renderPipeline() {
+  const el = document.getElementById('pipelineContent');
+  const getStatus = (id) => id ? (artifacts.find(a => a.id === id)||{}).status || '' : '';
+
+  let html = `<div class="pipe-section">
+  <div class="pipe-section-label">Automated path · WF-15 · 07:00 weekday</div>`;
+
+  PIPELINE_CHAIN.forEach((step, i) => {
+    const st = getStatus(step.artifactId);
+    const stClass = st === 'out-of-sync' ? 'status-sync' : st === 'needs-work' ? 'status-work' : st === 'active' ? 'status-active' : '';
+    const rc = ROLE_CONFIG[step.role] || ROLE_CONFIG['none'];
+    const roleLabel = step.role === 'external' || step.role === 'review' ? '' :
+      `<span class="pn-role"><span class="badge ${rc.cls}" style="font-size:8px">${rc.label}</span></span>`;
+    const stBadge = st ? `<span class="badge ${(STATUS_CONFIG[st]||{}).cls||''}" style="font-size:8px;margin-top:2px">${(STATUS_CONFIG[st]||{}).label||st}</span>` : '';
+
+    html += `<div class="pipe-row">
+      <div class="pipe-col-main">
+        <div class="pn-box ${stClass}">
+          <div class="pn-name">${step.label}</div>
+          <div class="pn-note">${step.note}</div>
+          ${roleLabel}
+          ${stBadge}
+        </div>
+        ${i < PIPELINE_CHAIN.length - 1 ? '<div class="pipe-down"></div>' : ''}
+      </div>`;
+
+    if(step.side) {
+      const sst = getStatus(step.side.id);
+      const sstClass = sst === 'out-of-sync' ? 'status-sync' : sst === 'needs-work' ? 'status-work' : '';
+      const sstBadge = sst ? `<span class="badge ${(STATUS_CONFIG[sst]||{}).cls||''}" style="font-size:8px;display:block;margin-top:4px">${(STATUS_CONFIG[sst]||{}).label||sst}</span>` : '';
+      html += `<div class="pipe-side">
+        <div class="pipe-side-line"></div>
+        <div class="pipe-side-node ${sstClass}">
+          <div style="font-size:11px;font-weight:500;color:var(--white)">${step.side.label}</div>
+          <div style="font-size:10px;color:var(--mid);margin-top:2px">${step.side.note}</div>
+          ${sstBadge}
+        </div>
+      </div>`;
+    }
+    html += `</div>`;
+  });
+
+  html += `</div>`;
+
+  // Manual campaign path
+  html += `<div class="pipe-section">
+  <div class="pipe-section-label">Manual / campaign path · energy · PE · client targeting</div>
+  <div class="pipe-flow" style="flex-direction:row;align-items:center;gap:0;flex-wrap:nowrap;overflow-x:auto;padding-bottom:8px">`;
+
+  const manualSteps = [
+    {label:'Contact list',note:'173 energy / 32,771 PE',role:'external'},
+    {label:'→',arrow:true},
+    {label:'Claude API',note:'Four-beat · batch generation',role:'generate',artifactId:'claude-generate'},
+    {label:'→',arrow:true},
+    {label:'HubSpot',note:'Review + sequence',role:'deliver',artifactId:'hubspot'},
+    {label:'→',arrow:true},
+    {label:'YAMM / Outlook',note:'Mail merge delivery',role:'external'},
+  ];
+  manualSteps.forEach(s => {
+    if(s.arrow) { html += `<div style="color:#333;font-size:18px;padding:0 6px;flex-shrink:0">→</div>`; return; }
+    const st = getStatus(s.artifactId);
+    const stClass = st === 'out-of-sync' ? 'status-sync' : '';
+    const rc = ROLE_CONFIG[s.role] || ROLE_CONFIG['none'];
+    const roleLabel = s.role === 'external' ? '' : `<span class="pn-role"><span class="badge ${rc.cls}" style="font-size:8px">${rc.label}</span></span>`;
+    html += `<div class="pn-box ${stClass}" style="min-width:120px;flex-shrink:0">
+      <div class="pn-name" style="font-size:11px">${s.label}</div>
+      <div class="pn-note" style="font-size:10px">${s.note}</div>
+      ${roleLabel}
+    </div>`;
+  });
+  html += `</div></div>`;
+
+  // Legend
+  html += `<div style="margin-top:8px;display:flex;gap:16px;flex-wrap:wrap">
+    ${Object.entries(ROLE_CONFIG).filter(([k])=>k!=='none').map(([k,v])=>`<div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mid)"><span class="badge ${v.cls}" style="font-size:8px">${v.label}</span> ${k==='trigger'?'Initiates email process':k==='classify'?'Enriches signal / contact data':k==='generate'?'Writes the email':k==='deliver'?'Manages delivery':''}</div>`).join('')}
+  </div>`;
+
+  el.innerHTML = html;
+}
+
+// Init
+load();
+renderAll();
+</script>
+</body>
+</html>

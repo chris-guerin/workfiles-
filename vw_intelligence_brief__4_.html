@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Volkswagen AG (VW Core Brand) Intelligence Brief — FutureBridge Advisory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=IBM+Plex+Mono:wght@300;400;500;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #060a0f; --surface: #0b1219; --panel: #0f1922; --panel2: #131f2b;
+  --border: #1c2e3e; --border2: #243444;
+  --gold: #d4a230; --gold2: #f0c060; --cyan: #2dd4bf; --red: #f05252;
+  --green: #22c55e; --amber: #f59e0b; --blue: #38bdf8;
+  --text: #e8eef5; --text-mid: #8fa3b5; --text-dim: #4a6278;
+  --accent: #f59e0b;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+  --font-sans: 'IBM Plex Sans', sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--text);font-family:var(--font-sans);font-size:14px;line-height:1.6}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:9999}
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(6,10,15,0.95);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);display:flex;align-items:center;padding:0 32px;height:52px;gap:24px}
+.nav-brand{font-family:var(--font-mono);font-size:0.65rem;font-weight:700;color:var(--gold);letter-spacing:0.2em;text-transform:uppercase;border-right:1px solid var(--border);padding-right:24px;white-space:nowrap}
+.nav-links{display:flex;gap:4px;flex:1;overflow-x:auto;scrollbar-width:none}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-link{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);text-decoration:none;padding:6px 10px;white-space:nowrap;transition:color 0.15s;border:1px solid transparent}
+.nav-link:hover{color:var(--gold);border-color:var(--border)}
+.nav-badge{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;color:var(--red);border:1px solid var(--red);padding:3px 8px;text-transform:uppercase;animation:blink 2s ease-in-out infinite;white-space:nowrap}
+.posture-badge{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;color:var(--accent);border:1px solid var(--accent);padding:3px 8px;text-transform:uppercase;white-space:nowrap}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.5}}
+.page{max-width:1200px;margin:0 auto;padding:0 32px 80px}
+.hero{padding:110px 0 60px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.hero::before{content:'VW';position:absolute;right:-30px;top:50%;transform:translateY(-50%);font-family:var(--font-serif);font-size:18rem;font-weight:900;color:rgba(212,162,48,0.04);line-height:1;pointer-events:none;letter-spacing:-0.05em}
+.hero-kicker{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.hero-kicker::before{content:'';width:32px;height:1px;background:var(--gold)}
+.hero-title{font-family:var(--font-serif);font-size:3.5rem;font-weight:900;line-height:1.05;color:var(--text);margin-bottom:16px;max-width:700px}
+.hero-title em{font-style:normal;color:var(--gold)}
+.hero-subtitle{font-family:var(--font-sans);font-size:1rem;color:var(--text-mid);max-width:580px;margin-bottom:36px;font-weight:300;line-height:1.7}
+.hero-meta{display:flex;gap:32px;flex-wrap:wrap}
+.meta-item{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase}
+.meta-label{color:var(--text-dim);margin-bottom:4px}
+.meta-value{color:var(--text);font-weight:700;font-size:0.72rem}
+.section{padding:56px 0 0}
+.section-head{display:flex;align-items:center;gap:16px;margin-bottom:32px}
+.section-num{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.2em;color:var(--text-dim);text-transform:uppercase;background:var(--panel);border:1px solid var(--border);padding:4px 8px}
+.section-title{font-family:var(--font-serif);font-size:1.8rem;font-weight:700;color:var(--text)}
+.section-rule{flex:1;height:1px;background:var(--border)}
+.snapshot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:24px}
+.snap-cell{background:var(--panel);padding:20px;}
+.snap-val{font-family:var(--font-mono);font-size:1.6rem;font-weight:700;color:var(--text);margin-bottom:4px}
+.snap-val.green{color:var(--green)}
+.snap-val.amber{color:var(--amber)}
+.snap-val.cyan{color:var(--cyan)}
+.snap-val.red{color:var(--red)}
+.snap-val.blue{color:var(--blue)}
+.snap-lbl{font-family:var(--font-sans);font-size:0.75rem;color:var(--text-mid);margin-bottom:2px}
+.snap-sub{font-family:var(--font-mono);font-size:0.58rem;color:var(--text-dim)}
+.info-box{background:var(--panel);border-left:3px solid var(--gold);padding:20px 24px;font-size:0.88rem;color:var(--text-mid);line-height:1.7;margin-bottom:24px}
+.callout{background:var(--panel2);border:1px solid var(--border2);border-left:3px solid var(--cyan);padding:20px 24px;font-size:0.88rem;color:var(--text);line-height:1.7;margin-bottom:24px}
+.strategy-box{background:var(--panel);border:1px solid var(--border);padding:24px;margin-bottom:24px}
+.strategy-two-col{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:24px}
+.strategy-col-head{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.strategy-col-head::after{content:'';flex:1;height:1px;background:var(--border)}
+.bullet-list{list-style:none;padding:0}
+.bullet-list li{font-size:0.85rem;color:var(--text-mid);padding:5px 0 5px 16px;position:relative;line-height:1.5;border-bottom:1px solid rgba(28,46,62,0.5)}
+.bullet-list li::before{content:'▸';position:absolute;left:0;color:var(--gold);font-size:0.7rem;top:7px}
+.bullet-list li strong{color:var(--text)}
+.peer-table{width:100%;border-collapse:collapse;font-size:0.78rem;margin-bottom:24px}
+.peer-table th{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);background:var(--panel)}
+.peer-table td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);vertical-align:middle}
+.peer-table .highlight-row td{background:var(--panel2);color:var(--text)}
+.co-name{font-weight:600;color:var(--text);font-size:0.82rem}
+.ticker{font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim)}
+.badge{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.06em;text-transform:uppercase;padding:2px 7px;border-radius:2px;display:inline-block}
+.badge-green{background:rgba(34,197,94,0.15);color:var(--green)}
+.badge-amber{background:rgba(245,158,11,0.15);color:var(--amber)}
+.badge-red{background:rgba(240,82,82,0.15);color:var(--red)}
+.badge-blue{background:rgba(56,189,248,0.15);color:var(--blue)}
+.badge-cyan{background:rgba(45,212,191,0.15);color:var(--cyan)}
+.badge-gold{background:rgba(212,162,48,0.15);color:var(--gold)}
+.initiatives-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:24px}
+.init-card{background:var(--panel);border:1px solid var(--border);padding:20px}
+.init-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:12px}
+.init-name{font-family:var(--font-sans);font-weight:600;font-size:0.88rem;color:var(--text)}
+.init-desc{font-size:0.8rem;color:var(--text-mid);line-height:1.55;margin-bottom:14px}
+.init-progress{}
+.progress-label{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);margin-bottom:4px}
+.progress-bar{height:3px;background:var(--border);}
+.progress-fill{height:100%;background:var(--gold);transition:width 0.3s}
+.progress-fill.green{background:var(--green)}
+.progress-fill.amber{background:var(--amber)}
+.progress-fill.red{background:var(--red)}
+.progress-fill.blue{background:var(--blue)}
+.progress-fill.cyan{background:var(--cyan)}
+.outlook-grid{display:grid;grid-template-columns:1fr 320px;gap:24px}
+.scenario-table{width:100%;border-collapse:collapse;font-size:0.78rem;margin-bottom:16px}
+.scenario-table th{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);background:var(--panel)}
+.scenario-table td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text-mid)}
+.verdict-box{background:var(--panel);border:1px solid var(--border);padding:24px;display:flex;flex-direction:column;gap:16px}
+.verdict-item-head{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px}
+.verdict-score{font-family:var(--font-serif);font-size:1.3rem;font-weight:700;margin-bottom:4px}
+.verdict-note{font-size:0.75rem;color:var(--text-dim);line-height:1.5}
+.signals-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:24px}
+.signal-card{background:var(--panel);border:1px solid var(--border);padding:20px;transition:border-color 0.2s}
+.signal-card:hover{border-color:var(--border2)}
+.signal-num{font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);margin-bottom:6px}
+.signal-name{font-family:var(--font-serif);font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px}
+.signal-trl{font-family:var(--font-mono);font-size:0.58rem;color:var(--gold);margin-bottom:10px}
+.signal-desc{font-size:0.8rem;color:var(--text-mid);line-height:1.55;margin-bottom:12px}
+.signal-why{font-family:var(--font-mono);font-size:0.6rem;color:var(--text-dim)}
+.play-section table{width:100%;border-collapse:collapse}
+.play-section td{padding:12px 16px;border-bottom:1px solid var(--border);font-size:0.82rem;vertical-align:top}
+.play-label{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);white-space:nowrap;width:200px;background:var(--panel)}
+@media(max-width:768px){
+  .snapshot-grid{grid-template-columns:repeat(2,1fr)}
+  .strategy-two-col,.initiatives-grid,.signals-grid,.outlook-grid{grid-template-columns:1fr}
+  .hero-title{font-size:2.2rem}
+  .page{padding:0 16px 60px}
+}
+
+
+/* ── AI SEARCH PANEL ─────────────────────────────────── */
+.search-btn{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;background:transparent;color:var(--gold);border:1px solid var(--gold);padding:4px 12px;cursor:pointer;transition:all 0.15s;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.search-btn:hover{background:rgba(212,162,48,0.12)}
+.search-panel{position:fixed;top:0;right:-520px;width:500px;height:100vh;background:var(--surface);border-left:1px solid var(--border);z-index:1500;display:flex;flex-direction:column;transition:right 0.3s cubic-bezier(.4,0,.2,1);box-shadow:-8px 0 40px rgba(0,0,0,0.5)}
+.search-panel.open{right:0}
+.search-header{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.search-header-left{display:flex;flex-direction:column;gap:4px}
+.search-title{font-family:var(--font-serif);font-size:1.05rem;font-weight:700;color:var(--text)}
+.search-subtitle{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold)}
+.search-close{background:transparent;border:1px solid var(--border);color:var(--text-mid);padding:5px 10px;cursor:pointer;font-family:var(--font-mono);font-size:0.65rem;transition:all 0.15s}
+.search-close:hover{border-color:var(--red);color:var(--red)}
+.search-messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px;scroll-behavior:smooth}
+.search-messages::-webkit-scrollbar{width:4px}
+.search-messages::-webkit-scrollbar-track{background:var(--panel)}
+.search-messages::-webkit-scrollbar-thumb{background:var(--border2)}
+.msg{display:flex;flex-direction:column;gap:6px;max-width:100%}
+.msg-user{align-items:flex-end}
+.msg-ai{align-items:flex-start}
+.msg-bubble{padding:12px 14px;font-size:0.82rem;line-height:1.6;max-width:90%}
+.msg-user .msg-bubble{background:rgba(212,162,48,0.12);border:1px solid rgba(212,162,48,0.25);color:var(--text);border-radius:2px 2px 0 2px;font-family:var(--font-sans)}
+.msg-ai .msg-bubble{background:var(--panel);border:1px solid var(--border);color:var(--text-mid);border-radius:2px 2px 2px 0}
+.msg-ai .msg-bubble strong{color:var(--text)}
+.msg-ai .msg-bubble em{color:var(--cyan);font-style:normal}
+.msg-label{font-family:var(--font-mono);font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim)}
+.msg-sources{font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);padding:6px 14px;border-left:2px solid var(--border);margin-top:2px}
+.msg-sources a{color:var(--cyan);text-decoration:none}
+.msg-sources a:hover{text-decoration:underline}
+.msg-thinking{display:flex;align-items:center;gap:8px;padding:10px 0}
+.thinking-dots span{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--text-dim);animation:dot-pulse 1.2s ease-in-out infinite}
+.thinking-dots span:nth-child(2){animation-delay:0.2s}
+.thinking-dots span:nth-child(3){animation-delay:0.4s}
+@keyframes dot-pulse{0%,80%,100%{transform:scale(0.6);opacity:0.4}40%{transform:scale(1);opacity:1}}
+.search-suggestions{padding:0 20px 16px;display:flex;flex-direction:column;gap:6px}
+.search-suggestions-label{font-family:var(--font-mono);font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:2px}
+.suggestion-chip{background:var(--panel);border:1px solid var(--border);padding:8px 12px;font-size:0.78rem;color:var(--text-mid);cursor:pointer;transition:all 0.15s;text-align:left;font-family:var(--font-sans)}
+.suggestion-chip:hover{border-color:var(--gold);color:var(--text);background:rgba(212,162,48,0.06)}
+.search-input-area{padding:16px 20px;border-top:1px solid var(--border);flex-shrink:0}
+.search-input-row{display:flex;gap:8px}
+.search-input{flex:1;background:var(--panel);border:1px solid var(--border);color:var(--text);font-family:var(--font-sans);font-size:0.82rem;padding:10px 12px;outline:none;resize:none;height:44px;line-height:1.4;transition:border-color 0.15s}
+.search-input:focus{border-color:var(--gold)}
+.search-submit{background:var(--gold);border:none;color:var(--ink);padding:0 16px;cursor:pointer;font-family:var(--font-mono);font-size:0.7rem;font-weight:700;letter-spacing:0.08em;transition:opacity 0.15s;flex-shrink:0}
+.search-submit:hover{opacity:0.85}
+.search-submit:disabled{opacity:0.4;cursor:not-allowed}
+.search-clear{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);background:transparent;border:none;cursor:pointer;padding:6px 0;margin-top:6px;display:block}
+.search-clear:hover{color:var(--text)}
+.search-overlay-bg{position:fixed;inset:0;background:rgba(6,10,15,0.4);z-index:1499;display:none;backdrop-filter:blur(2px)}
+.search-overlay-bg.open{display:block}
+.search-no-key{padding:32px 20px;text-align:center;color:var(--text-dim);font-size:0.82rem;line-height:1.7}
+.search-no-key strong{color:var(--gold);display:block;font-family:var(--font-serif);font-size:1rem;margin-bottom:8px}
+.refresh-btn{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;background:transparent;color:var(--cyan);border:1px solid var(--cyan);padding:4px 12px;cursor:pointer;transition:all 0.15s;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.refresh-btn:hover{background:rgba(45,212,191,0.1)}
+.refresh-btn:disabled{opacity:0.4;cursor:not-allowed}
+.refresh-btn .spin{display:inline-block;animation:spin 1s linear infinite}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.refresh-stamp{font-family:var(--font-mono);font-size:0.52rem;color:var(--text-dim);white-space:nowrap}
+.api-panel{position:fixed;top:52px;right:0;background:var(--surface);border:1px solid var(--border);border-top:none;padding:16px 20px;z-index:999;display:none;min-width:340px;box-shadow:0 8px 32px rgba(0,0,0,0.4)}
+.api-panel.open{display:block}
+.api-panel label{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);display:block;margin-bottom:6px}
+.api-panel input{width:100%;background:var(--panel);border:1px solid var(--border);color:var(--text);font-family:var(--font-mono);font-size:0.72rem;padding:8px 10px;outline:none}
+.api-panel input:focus{border-color:var(--cyan)}
+.api-panel .api-actions{display:flex;gap:8px;margin-top:10px}
+.api-panel button{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.08em;text-transform:uppercase;padding:6px 14px;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--text-mid)}
+.api-panel .btn-save{border-color:var(--cyan);color:var(--cyan)}
+.refresh-overlay{position:fixed;inset:0;background:rgba(6,10,15,0.85);z-index:2000;display:none;align-items:center;justify-content:center;flex-direction:column;gap:20px}
+.refresh-overlay.open{display:flex}
+.refresh-overlay .ro-title{font-family:var(--font-serif);font-size:1.4rem;color:var(--text)}
+.refresh-overlay .ro-status{font-family:var(--font-mono);font-size:0.65rem;color:var(--cyan);letter-spacing:0.1em}
+.refresh-overlay .ro-bar{width:320px;height:2px;background:var(--border);margin-top:4px}
+.refresh-overlay .ro-fill{height:100%;background:var(--cyan);transition:width 0.4s ease;width:0%}
+.refresh-toast{position:fixed;bottom:24px;right:24px;background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--cyan);padding:12px 20px;font-family:var(--font-mono);font-size:0.65rem;color:var(--text);z-index:3000;display:none;max-width:360px;line-height:1.5}
+.refresh-toast.open{display:block}
+
+</style>
+<style>
+/* ══ CLIENT BRAND OVERRIDE ══════════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,300&family=Source+Code+Pro:wght@300;400;600;700&display=swap');
+:root {
+  --ink:       #000A1E;
+  --surface:   #00112A;
+  --panel:     #001838;
+  --panel2:    #001F46;
+  --border:    #002D66;
+  --border2:   #003A80;
+  --gold:      #0085C3;
+  --gold2:     #00A8F0;
+  --cyan:      #6CC4F0;
+  --accent:    #0085C3;
+  --text:      #D8EAFF;
+  --text-mid:  #5080B0;
+  --text-dim:  #1A3D6A;
+  --font-serif: 'Source Sans 3', sans-serif;
+  --font-mono:  'Source Code Pro', monospace;
+  --font-sans:  'Source Sans 3', sans-serif;
+}
+body { background: var(--ink); color: var(--text); font-family: var(--font-sans); }
+.hero::before { color: rgba(0,133,195,0.06); }
+/* Fix progress bar fill colour globally */
+.progress-fill { background: var(--gold); }
+/* Nav active state */
+.nav-link:hover { color: var(--gold); border-color: var(--border); }
+.nav-badge { color: var(--cyan); border-color: var(--cyan); }
+/* Hyp section picks up overrides automatically via CSS vars */
+</style>
+</head>
+<body>
+
+  <!-- Signal refresh banner — Q1 2026 -->
+  <div style="background:#0a1520;border-bottom:1px solid #1c2e3e;padding:8px 24px;display:flex;align-items:center;gap:12px">
+    <span style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.12em;font-weight:700;color:#22AE8A">● SIGNAL REFRESH</span>
+    <span style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278">Q1 2026 · Probability updates applied · Sources: IEA Hydrogen Review 2025, BP Strategy Reset Feb 2025, CCSA Delivery Plan Dec 2025, IEA WEO 2025</span>
+    <span style="margin-left:auto;font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278">March 2026</span>
+  </div>
+
+
+<nav class="nav">
+  <div class="nav-brand">FutureBridge // VW Brief</div>
+  <div class="nav-links">
+    <a href="#overview" class="nav-link">Overview</a>
+    <a href="#strategy" class="nav-link">Strategy</a>
+    <a href="#peers" class="nav-link">Peers</a>
+    <a href="#initiatives" class="nav-link">Initiatives</a>
+    <a href="#outlook" class="nav-link">Outlook</a>
+    <a href="#signals" class="nav-link">Signals</a>
+    <a href="#playbook" class="nav-link">Playbook</a>
+    <a href="#hypotheses" class="nav-link">Hypotheses</a>
+  </div>
+  <span class="posture-badge" id="postureBadge">RESTRUCTURE</span>
+  <span class="refresh-stamp" id="refreshStamp"></span>
+  <button class="refresh-btn" id="refreshBtn" onclick="refreshIntelligence()">⟳ Refresh Intelligence</button>
+  <button class="refresh-btn" id="keyBtn" onclick="openApiPanel()" style="border-color:var(--gold);color:var(--gold)">⚙ API Key</button>
+  <button class="search-btn" onclick="openSearch()">🔍 Ask AI</button>
+  <div class="nav-badge">Confidential</div>
+</nav>
+
+<div class="page">
+
+  <section class="hero" id="top">
+    <div class="hero-kicker">Intelligence Brief · Automotive — Volume</div>
+    <h1 class="hero-title">Volkswagen AG (VW Core Brand)<br><em>Strategic Intelligence</em></h1>
+    <p class="hero-subtitle">Intelligence briefing on VW brand's brutal cost restructuring, EV repositioning, and FutureBridge technology engagement window.</p>
+    <div class="hero-meta">
+      <div class="meta-item"><div class="meta-label">Sector</div><div class="meta-value">Volume Passenger Cars · EV Transition · Cost Restructuring</div></div>
+      <div class="meta-item"><div class="meta-label">Date</div><div class="meta-value">March 2026</div></div>
+      <div class="meta-item"><div class="meta-label">Posture</div><div class="meta-value" style="color:#f59e0b">RESTRUCTURE</div></div>
+      <div class="meta-item"><div class="meta-label">Prepared by</div><div class="meta-value">FutureBridge Advisory</div></div>
+    </div>
+  </section>
+
+  <section class="section" id="overview">
+    <div class="section-head">
+      <span class="section-num">01</span>
+      <h2 class="section-title">Company Snapshot</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="snapshot-grid">
+      <div class="snap-cell">
+        <div class="snap-val amber">~4M</div>
+        <div class="snap-lbl">VW Brand Units 2024E</div>
+        <div class="snap-sub">Still Europe's #1 volume brand</div>
+      </div>
+      <div class="snap-cell">
+        <div class="snap-val red">€5.7B</div>
+        <div class="snap-lbl">Cost-Cut Target 2025-2026</div>
+        <div class="snap-sub">35,000 job cuts proposed in Germany</div>
+      </div>
+      <div class="snap-cell">
+        <div class="snap-val amber">22%</div>
+        <div class="snap-lbl">EV Share Target 2030</div>
+        <div class="snap-sub">Significantly reduced from earlier ambitions</div>
+      </div>
+      <div class="snap-cell">
+        <div class="snap-val cyan">ID.7 / ID.3 / ID.4</div>
+        <div class="snap-lbl">Core EV Lineup</div>
+        <div class="snap-sub">Competing vs Tesla, BYD, Chinese OEMs</div>
+      </div>
+      <div class="snap-cell">
+        <div class="snap-val blue">TRINITY</div>
+        <div class="snap-lbl">Next-Gen EV Platform</div>
+        <div class="snap-sub">Wolfsburg Gigafactory; delayed to 2030</div>
+      </div>
+      <div class="snap-cell">
+        <div class="snap-val red">#3</div>
+        <div class="snap-lbl">China Market Share Loss</div>
+        <div class="snap-sub">Down significantly vs peak; BYD competition brutal</div>
+      </div>
+      <div class="snap-cell">
+        <div class="snap-val">€35B</div>
+        <div class="snap-lbl">EV Investment 2024-2028</div>
+        <div class="snap-sub">Group-wide; VW brand is largest recipient</div>
+      </div>
+      <div class="snap-cell">
+        <div class="snap-val red">COST/UNIT</div>
+        <div class="snap-lbl">Primary KPI 2024-2025</div>
+        <div class="snap-sub">Manufacturing cost reduction is the survival metric</div>
+      </div>
+    </div>
+    <div class="info-box">The VW core brand is the epicentre of the Volkswagen Group's existential crisis. Having committed to an aggressive EV transition that has not generated expected volumes, while losing market share in China to BYD and local EV brands, and facing structurally uncompetitive German manufacturing costs, VW brand CEO Thomas Schäfer announced factory closures and 35,000 job cuts in 2024 — unprecedented for post-war German industry. The brand is in a <strong>survival restructuring</strong> while simultaneously trying to execute an EV ramp.</div>
+  </section>
+
+  <section class="section" id="strategy">
+    <div class="section-head">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Strategy & Intelligence</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="callout"><strong>Strategic Assessment:</strong> VW brand's challenge is fundamentally about cost structure and speed. FutureBridge's value is in <strong>technology intelligence on Chinese EV manufacturing processes, battery technology cost trajectories, and software-defined vehicle architectures</strong> — the three areas where VW is most exposed relative to BYD and Tesla.</div>
+    <div class="strategy-box">
+      <div class="strategy-two-col">
+        <div>
+          <div class="strategy-col-head">Cost Restructuring — The Burning Platform</div>
+          <ul class="bullet-list"><li>German plant closures: first in VW's history — Emden and/or Osnabrück under review</li>
+<li>€5.7B annual cost savings target: labour, manufacturing overhead, complexity reduction</li>
+<li>Platform consolidation: reducing from 40+ platforms across group to fewer shared architectures</li>
+<li>Supplier renegotiations: demanding 10%+ cost reductions from tier 1 and 2 suppliers</li>
+<li>Software: VW.OS development costs being restructured; CARIAD (software arm) being refocused</li></ul>
+        </div>
+        <div>
+          <div class="strategy-col-head">EV Repositioning</div>
+          <ul class="bullet-list"><li>ID. family: ID.3, ID.4, ID.5, ID.7 — all on MEB platform; strong product but insufficient volumes</li>
+<li>SSP (Scalable Systems Platform): next-generation EV architecture; delayed but strategic</li>
+<li>Battery: joint venture with PowerCo (VW Group battery subsidiary) for cell production</li>
+<li>China: launching local joint venture EVs with SAIC; competing on cost vs BYD</li>
+<li>Software-defined vehicle: targeting OTA revenue, in-vehicle services, Level 3 autonomy by 2025</li></ul>
+        </div>
+      </div>
+    </div>
+    <div class="strategy-two-col">
+      <div>
+        <div class="strategy-col-head">China Is the Existential Variable</div>
+        <ul class="bullet-list"><li>VW built its global success on China — 40% of group profit historically came from China JVs</li>
+<li>BYD and Chinese NEV brands have captured the EV segment VW expected to dominate</li>
+<li>VW's China response: local EV models with SAIC at BYD price points — but speed is the question</li>
+<li>If China recovers, VW's restructuring is manageable. If China deteriorates further, it's existential.</li>
+<li>FutureBridge intelligence on Chinese EV technology roadmaps is directly applicable to VW's China strategy team</li></ul>
+      </div>
+      <div>
+        <div class="strategy-col-head">FutureBridge Angle — Technology Intelligence for Survival</div>
+        <ul class="bullet-list"><li>VW Group Innovation: actively scanning battery chemistry, solid-state, manufacturing automation</li>
+<li>The question isn't whether to electrify — it's HOW to do it faster and at lower cost than current trajectory</li>
+<li>Chinese manufacturing process intelligence is a sensitive but critical need</li>
+<li>Software-defined vehicle intelligence: how Tesla and Chinese OEMs are monetising vehicle software</li>
+<li>FutureBridge can position as the 'competitive intelligence' layer for VW's technology strategy</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="peers">
+    <div class="section-head">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Peer Landscape</h2>
+      <div class="section-rule"></div>
+    </div>
+    <table class="peer-table">
+      <thead>
+        <tr>
+          <th>Company</th><th>Strategy</th><th>LC/Tech Invest</th>
+          <th>Renewables/EV</th><th>CCS/H₂</th><th>Returns</th>
+          <th>Dividend</th><th>Risk Profile</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="highlight-row">
+          <td><div class="co-name">VW Brand</div><div class="ticker">VOW3</div></td>
+          <td>Volume EV; brutal restructuring; China pressure</td>
+          <td>€35B group EV</td>
+          <td>Heavy</td>
+          <td>N/A</td>
+          <td>Variable</td>
+          <td>Dividend cut</td>
+          <td><span class="badge badge-amber">Restructuring</span></td>
+        </tr>
+        <tr>
+          <td><div class="co-name">Toyota</div><div class="ticker">7203</div></td>
+          <td>Hybrid dominant; cautious EV; quality leader</td>
+          <td>Mixed</td>
+          <td>Mixed</td>
+          <td>N/A</td>
+          <td>Very High</td>
+          <td>Consistent</td>
+          <td><span class="badge badge-amber">Premium</span></td>
+        </tr>
+        <tr>
+          <td><div class="co-name">BYD</div><div class="ticker">002594</div></td>
+          <td>Chinese EV leader; vertically integrated; lowest cost</td>
+          <td>Massive</td>
+          <td>Pure EV</td>
+          <td>N/A</td>
+          <td>Rapidly growing</td>
+          <td>Growing</td>
+          <td><span class="badge badge-amber">Disruptor</span></td>
+        </tr>
+        <tr>
+          <td><div class="co-name">Stellantis</div><div class="ticker">STLA</div></td>
+          <td>Multi-brand; restructuring; cost focus</td>
+          <td>Moderate</td>
+          <td>Yes</td>
+          <td>N/A</td>
+          <td>High</td>
+          <td>Variable</td>
+          <td><span class="badge badge-amber">Restructuring</span></td>
+        </tr>
+        <tr>
+          <td><div class="co-name">Hyundai/Kia</div><div class="ticker">005380</div></td>
+          <td>Agile EV response; E-GMP platform excellent</td>
+          <td>High</td>
+          <td>Yes</td>
+          <td>N/A</td>
+          <td>High</td>
+          <td>Consistent</td>
+          <td><span class="badge badge-amber">Value-to-premium</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section" id="initiatives">
+    <div class="section-head">
+      <span class="section-num">04</span>
+      <h2 class="section-title">Key Initiatives & Progress</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="initiatives-grid">
+      <div class="init-card">
+        <div class="init-head">
+          <div class="init-name">ID.7 — Flagship EV Sedan</div>
+          <span class="badge badge-green">LAUNCHED</span>
+        </div>
+        <div class="init-desc">VW's most premium MEB-platform vehicle. Competing with Tesla Model S and BMW i5. Positive initial reviews. Key question: can it drive brand perception uplift needed for premium pricing?</div>
+        <div class="init-progress">
+          <div class="progress-label"><span>Progress</span><span>70%</span></div>
+          <div class="progress-bar"><div class="progress-fill green" style="width:70%"></div></div>
+        </div>
+      </div>
+      <div class="init-card">
+        <div class="init-head">
+          <div class="init-name">Trinity / SSP Platform</div>
+          <span class="badge badge-red">DELAYED</span>
+        </div>
+        <div class="init-desc">Next-generation software-defined EV platform. Originally 2025; now 2030. Wolfsburg Gigafactory delayed. The SSP delay is the single biggest strategic risk to VW's long-term EV cost competitiveness.</div>
+        <div class="init-progress">
+          <div class="progress-label"><span>Progress</span><span>20%</span></div>
+          <div class="progress-bar"><div class="progress-fill red" style="width:20%"></div></div>
+        </div>
+      </div>
+      <div class="init-card">
+        <div class="init-head">
+          <div class="init-name">PowerCo — Battery Cell JV</div>
+          <span class="badge badge-amber">BUILDING</span>
+        </div>
+        <div class="init-desc">Joint venture with partners for European battery cell production. Gigafactory Salzgitter (Germany). Targeting 40 GWh by 2030. Cost competitiveness vs LG, CATL, BYD is the key question.</div>
+        <div class="init-progress">
+          <div class="progress-label"><span>Progress</span><span>40%</span></div>
+          <div class="progress-bar"><div class="progress-fill amber" style="width:40%"></div></div>
+        </div>
+      </div>
+      <div class="init-card">
+        <div class="init-head">
+          <div class="init-name">CARIAD Software Restructuring</div>
+          <span class="badge badge-red">RESTRUCTURING</span>
+        </div>
+        <div class="init-desc">VW's software arm has been restructured multiple times. Now partnering with Rivian (software) and XPENG (China). External partnership model replacing full in-house development.</div>
+        <div class="init-progress">
+          <div class="progress-label"><span>Progress</span><span>35%</span></div>
+          <div class="progress-bar"><div class="progress-fill red" style="width:35%"></div></div>
+        </div>
+      </div>
+      <div class="init-card">
+        <div class="init-head">
+          <div class="init-name">China Local EV — SAIC JV</div>
+          <span class="badge badge-blue">DEVELOPING</span>
+        </div>
+        <div class="init-desc">Local EVs developed specifically for Chinese market at BYD-competitive price points. Critical for China recovery. Speed to market is the key variable.</div>
+        <div class="init-progress">
+          <div class="progress-label"><span>Progress</span><span>45%</span></div>
+          <div class="progress-bar"><div class="progress-fill blue" style="width:45%"></div></div>
+        </div>
+      </div>
+      <div class="init-card">
+        <div class="init-head">
+          <div class="init-name">German Factory Restructuring</div>
+          <span class="badge badge-red">ACTIVE</span>
+        </div>
+        <div class="init-desc">Most politically sensitive initiative in company history. IG Metall union negotiations ongoing. Closure timeline and workforce reduction path being negotiated.</div>
+        <div class="init-progress">
+          <div class="progress-label"><span>Progress</span><span>50%</span></div>
+          <div class="progress-bar"><div class="progress-fill red" style="width:50%"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="outlook">
+    <div class="section-head">
+      <span class="section-num">05</span>
+      <h2 class="section-title">5-Year Outlook</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="callout">VW brand's outlook is the most uncertain among European OEMs. The structural challenges (German costs, China competition, software lag) are real and deep. The restructuring is necessary but painful. Key variables: speed of China EV recovery, BYD European pricing strategy, and whether SSP can deliver cost-competitive EVs by 2030.</div>
+    <div class="outlook-grid">
+      <div>
+        <table class="scenario-table">
+          <thead>
+            <tr><th>Scenario</th><th>Key Variable</th><th>Earnings Est.</th><th>Valuation</th><th>5yr Return</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Bull Case</strong></td>
+              <td>China recovery + BYD EU tariffs</td>
+              <td>EBIT margin 4-5%</td>
+              <td>€130-160 stock</td>
+              <td>+30-50%</td>
+            </tr>
+            <tr>
+              <td><strong>Base Case</strong></td>
+              <td>Managed decline + EV ramp</td>
+              <td>EBIT margin 2-3%</td>
+              <td>€95-125 stock</td>
+              <td>+5-20%</td>
+            </tr>
+            <tr>
+              <td><strong>Bear Case</strong></td>
+              <td>China deterioration + EV miss</td>
+              <td>EBIT margin <1%</td>
+              <td>€60-90 stock</td>
+              <td>-20 to -5%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="verdict-box">
+        <div >
+          <div class="verdict-item-head">Strategy Durability</div>
+          <div class="verdict-score" style="color:var(--red)">Low-Medium (near term)</div>
+          <div class="verdict-note">Structural challenges are deep. Restructuring is necessary but success is not guaranteed.</div>
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:16px">
+          <div class="verdict-item-head">FutureBridge Opportunity</div>
+          <div class="verdict-score" style="color:var(--green)">HIGH — TECHNOLOGY INTELLIGENCE</div>
+          <div class="verdict-note">VW's technology teams are actively scanning competitors. Chinese EV manufacturing and battery cost intelligence are live needs.</div>
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:16px">
+          <div class="verdict-item-head">Posture Assessment</div>
+          <div class="verdict-score" style="color:var(--amber)">RESTRUCTURE</div>
+          <div class="verdict-note">Painful but necessary portfolio and cost restructuring underway.</div>
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:16px">
+          <div class="verdict-item-head">Primary Risk</div>
+          <div class="verdict-score" style="color:var(--red)">China Continued Deterioration</div>
+          <div class="verdict-note">If China JV profits continue to fall, the group's capital allocation for EV transition becomes untenable.</div>
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:16px">
+          <div class="verdict-item-head">Engagement Priority</div>
+          <div class="verdict-score" style="color:var(--gold)">⭐⭐⭐⭐</div>
+          <div class="verdict-note">Tier 1 account. VW Group innovation and strategy teams are active buyers. Time urgency is high.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="signals">
+    <div class="section-head">
+      <span class="section-num">06</span>
+      <h2 class="section-title">Weak Signals — FutureBridge Intelligence</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="signals-grid">
+        <div class="signal-card">
+          <div class="signal-num">S-01</div>
+          <div class="signal-name">Solid-State Battery Race</div>
+          <div class="signal-trl">Sector: Battery Technology · Signal Strength: 8/10</div>
+          <div class="signal-desc">Toyota, QuantumScape (VW-backed), Samsung SDI all targeting 2027-2028 solid-state commercialisation. VW's $300M QuantumScape bet is either a masterstroke or a distraction. FutureBridge's battery assessment is directly applicable.</div>
+          <div class="signal-why">Impact: <span class="badge badge-red">HIGH</span></div>
+        </div>
+        <div class="signal-card">
+          <div class="signal-num">S-02</div>
+          <div class="signal-name">Chinese Gigacasting Adoption</div>
+          <div class="signal-trl">Sector: Manufacturing · Signal Strength: 8/10</div>
+          <div class="signal-desc">BYD and NIO are using gigacasting to reduce body-in-white part counts by 70%. VW is evaluating adoption. Speed of implementation vs Chinese OEMs is a competitive survival question.</div>
+          <div class="signal-why">Impact: <span class="badge badge-red">HIGH</span></div>
+        </div>
+        <div class="signal-card">
+          <div class="signal-num">S-03</div>
+          <div class="signal-name">Software-Defined Vehicle Monetisation</div>
+          <div class="signal-trl">Sector: Digital/Software · Signal Strength: 7/10</div>
+          <div class="signal-desc">Tesla earns $1,000+ per car per year in software/services revenue. VW earns ~$50. Closing this gap is worth billions. Understanding Tesla and Chinese OEM software revenue models is critical.</div>
+          <div class="signal-why">Impact: <span class="badge badge-red">HIGH</span></div>
+        </div>
+        <div class="signal-card">
+          <div class="signal-num">S-04</div>
+          <div class="signal-name">BYD European Market Entry</div>
+          <div class="signal-trl">Sector: Competitive Intelligence · Signal Strength: 9/10</div>
+          <div class="signal-desc">BYD's EU tariff exposure is the key variable for VW's European market share defence. If tariffs are maintained, VW gets breathing room. If they fall, VW's volume segment is directly threatened.</div>
+          <div class="signal-why">Impact: <span class="badge badge-red">HIGH</span></div>
+        </div>
+    </div>
+  </section>
+
+  <section class="section play-section" id="playbook">
+    <div class="section-head">
+      <span class="section-num">07</span>
+      <h2 class="section-title">Meeting Playbook</h2>
+      <div class="section-rule"></div>
+    </div>
+    <table>
+          <tr>
+            <td class="play-label">Strategic alignment hook</td>
+            <td>VW brand is fighting for survival — be direct about the intelligence gap they face vs Chinese OEMs. FutureBridge's competitive technology intelligence is a decision support tool, not a nice-to-have.</td>
+          </tr>
+          <tr>
+            <td class="play-label">Primary pain point</td>
+            <td>VW's technology teams don't have reliable intelligence on the pace of Chinese EV cost reduction, solid-state battery timelines, or software monetisation models. These are the three questions that will determine if VW survives.</td>
+          </tr>
+          <tr>
+            <td class="play-label">Key question to ask</td>
+            <td>"How confident are your technology planning teams in the current assumptions about BYD and CATL's battery cost trajectory for 2027-2030?"</td>
+          </tr>
+          <tr>
+            <td class="play-label">Avoid</td>
+            <td>Don't frame this as 'EV transition intelligence' — VW knows it needs to electrify. Frame it as 'competitive survival intelligence' — how to do it fast enough and cheap enough.</td>
+          </tr>
+          <tr>
+            <td class="play-label">Best entry point</td>
+            <td>VW Group Innovation (Wolfsburg). Also: VW brand strategy and product planning. PowerCo battery team for cell technology intelligence.</td>
+          </tr>
+    </table>
+  </section>
+
+</div>
+
+<div class="api-panel" id="apiPanel">
+  <label>Anthropic API Key</label>
+  <input type="password" id="apiKeyInput" placeholder="sk-ant-..." />
+  <div style="font-family:var(--font-mono);font-size:0.52rem;color:var(--text-dim);margin-top:6px">Stored locally in your browser only. Never sent to any server except api.anthropic.com.</div>
+  <div class="api-actions">
+    <button onclick="closeApiPanel()">Cancel</button>
+    <button class="btn-save" onclick="saveApiKey()">Save Key</button>
+  </div>
+</div>
+
+<div class="refresh-overlay" id="refreshOverlay">
+  <div class="ro-title">Refreshing Intelligence</div>
+  <div class="ro-status" id="roStatus">Connecting to Anthropic...</div>
+  <div class="ro-bar"><div class="ro-fill" id="roFill"></div></div>
+</div>
+
+<div class="refresh-toast" id="refreshToast"></div>
+
+<script>
+const COMPANY_NAME = "Volkswagen AG (VW Core Brand)";
+const COMPANY_SECTOR = "Automotive — Volume";
+const COMPANY_ID = "vw";
+
+function getApiKey() { return localStorage.getItem('fb_api_key') || ''; }
+function saveApiKey() {
+  const k = document.getElementById('apiKeyInput').value.trim();
+  if (!k) { showToast('Please enter an API key'); return; }
+  localStorage.setItem('fb_api_key', k);
+  closeApiPanel();
+  showToast('API key saved ✓');
+}
+function openApiPanel() {
+  const panel = document.getElementById('apiPanel');
+  panel.classList.toggle('open');
+  const k = getApiKey();
+  if (k) document.getElementById('apiKeyInput').value = k;
+}
+function closeApiPanel() { document.getElementById('apiPanel').classList.remove('open'); }
+
+function showToast(msg, duration=3000) {
+  const t = document.getElementById('refreshToast');
+  t.textContent = msg;
+  t.classList.add('open');
+  setTimeout(() => t.classList.remove('open'), duration);
+}
+
+function setProgress(pct, status) {
+  document.getElementById('roFill').style.width = pct + '%';
+  document.getElementById('roStatus').textContent = status;
+}
+
+async function refreshIntelligence() {
+  const apiKey = getApiKey();
+  if (!apiKey) { openApiPanel(); showToast('Enter your API key first'); return; }
+
+  const btn = document.getElementById('refreshBtn');
+  const overlay = document.getElementById('refreshOverlay');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin">⟳</span> Refreshing...';
+  overlay.classList.add('open');
+  setProgress(10, 'Connecting to Anthropic API...');
+
+  const prompt = `You are a senior intelligence analyst at FutureBridge Advisory. 
+Search the web for the very latest news and developments about ${COMPANY_NAME} (${COMPANY_SECTOR}).
+Focus on: strategy announcements, financial results, technology investments, partnerships, executive changes, regulatory developments, and competitive moves from the past 90 days.
+
+Return ONLY a valid JSON object with this exact structure (no markdown, no preamble):
+{
+  "posture": "EXPAND" or "STEADY" or "RESTRUCTURE" or "CUT",
+  "posture_rationale": "One sentence explaining the posture",
+  "refreshed": "Q1 2026",
+  "signals": [
+    {
+      "name": "Signal title (5-8 words)",
+      "sector": "Technology area or theme",
+      "strength": 8,
+      "desc": "2-3 sentence description of the signal, what it means, and why it matters for ${COMPANY_NAME}. Include specific data points or announcements where possible.",
+      "impact": "HIGH" or "MEDIUM" or "LOW"
+    },
+    {
+      "name": "Signal title",
+      "sector": "Technology area",
+      "strength": 7,
+      "desc": "Description.",
+      "impact": "HIGH"
+    },
+    {
+      "name": "Signal title",
+      "sector": "Technology area",
+      "strength": 6,
+      "desc": "Description.",
+      "impact": "MEDIUM"
+    },
+    {
+      "name": "Signal title",
+      "sector": "Technology area",
+      "strength": 5,
+      "desc": "Description.",
+      "impact": "MEDIUM"
+    }
+  ],
+  "snapshot_updates": [
+    {"label": "metric label", "value": "new value", "color": "green"},
+    {"label": "metric label", "value": "new value", "color": "amber"}
+  ]
+}
+
+Return exactly 4 signals. Use current, specific, real intelligence. Do not fabricate. If you cannot find recent news, say so in the signal descriptions.`;
+
+  try {
+    setProgress(25, 'Searching web for latest intelligence...');
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-beta': 'interleaved-thinking-2025-05-14'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 2000,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    setProgress(60, 'Analysing intelligence...');
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.error?.message || 'API error ' + response.status);
+    }
+
+    const data = await response.json();
+    setProgress(80, 'Parsing results...');
+
+    // Extract text from response blocks
+    let rawText = '';
+    for (const block of data.content) {
+      if (block.type === 'text') rawText += block.text;
+    }
+
+    // Strip markdown fences if present
+    rawText = rawText.replace(/```json
+?/g, '').replace(/```
+?/g, '').trim();
+
+    // Find JSON object
+    const jsonStart = rawText.indexOf('{');
+    const jsonEnd = rawText.lastIndexOf('}') + 1;
+    if (jsonStart === -1) throw new Error('No JSON found in response');
+    const jsonStr = rawText.slice(jsonStart, jsonEnd);
+    const result = JSON.parse(jsonStr);
+
+    setProgress(95, 'Updating brief...');
+
+    // ── UPDATE SIGNALS SECTION ──
+    const badgeColors = { HIGH: 'badge-red', MEDIUM: 'badge-amber', LOW: 'badge-green' };
+    const signalsGrid = document.querySelector('.signals-grid');
+    if (signalsGrid && result.signals) {
+      signalsGrid.innerHTML = result.signals.map((s, i) => `
+        <div class="signal-card">
+          <div class="signal-num">S-${String(i+1).padStart(2,'0')} · LIVE REFRESH</div>
+          <div class="signal-name">${s.name}</div>
+          <div class="signal-trl">Sector: ${s.sector} · Signal Strength: ${s.strength}/10</div>
+          <div class="signal-desc">${s.desc}</div>
+          <div class="signal-why">Impact: <span class="badge ${badgeColors[s.impact] || 'badge-amber'}">${s.impact}</span></div>
+        </div>
+      `).join('');
+    }
+
+    // ── UPDATE POSTURE BADGE ──
+    if (result.posture) {
+      const postureEls = document.querySelectorAll('.posture-badge');
+      postureEls.forEach(el => el.textContent = result.posture);
+      const postureMetaVal = document.querySelector('.meta-value[data-field="posture"]');
+      if (postureMetaVal) postureMetaVal.textContent = result.posture;
+    }
+
+    // ── UPDATE STAMP ──
+    const stamp = document.getElementById('refreshStamp');
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'});
+    if (stamp) stamp.textContent = 'Refreshed ' + dateStr;
+
+    // ── UPDATE SECTION TITLE TO SHOW LIVE ──
+    const signalHead = document.querySelector('#signals .section-title');
+    if (signalHead) signalHead.textContent = 'Weak Signals — Live Intelligence';
+
+    setProgress(100, 'Complete');
+    setTimeout(() => {
+      overlay.classList.remove('open');
+      btn.disabled = false;
+      btn.innerHTML = '⟳ Refresh Intelligence';
+      showToast('Intelligence refreshed ✓ — ' + result.signals.length + ' signals updated · Posture: ' + (result.posture || 'unchanged'), 5000);
+    }, 600);
+
+  } catch(err) {
+    overlay.classList.remove('open');
+    btn.disabled = false;
+    btn.innerHTML = '⟳ Refresh Intelligence';
+    console.error('Refresh error:', err);
+    showToast('Error: ' + err.message + ' — Check API key and try again.', 6000);
+  }
+}
+
+// Close api panel on outside click
+document.addEventListener('click', (e) => {
+  const panel = document.getElementById('apiPanel');
+  if (panel.classList.contains('open') && !panel.contains(e.target) && e.target.id !== 'keyBtn') {
+    closeApiPanel();
+  }
+});
+
+// Check for saved key on load
+window.addEventListener('load', () => {
+  const k = getApiKey();
+  const stamp = document.getElementById('refreshStamp');
+  if (k && stamp) {
+    stamp.textContent = 'Key saved ✓';
+  }
+});
+</script>
+
+
+<!-- ── AI SEARCH PANEL ─────────────────────────────── -->
+<div class="search-overlay-bg" id="searchBg" onclick="closeSearch()"></div>
+
+<div class="search-panel" id="searchPanel">
+  <div class="search-header">
+    <div class="search-header-left">
+      <div class="search-title">Ask AI — Volkswagen AG (VW Core Brand)</div>
+      <div class="search-subtitle">⚡ Live Intelligence · Web Search Enabled</div>
+    </div>
+    <button class="search-close" onclick="closeSearch()">✕ Close</button>
+  </div>
+
+  <div class="search-messages" id="searchMessages">
+    <div class="search-no-key" id="searchWelcome">
+      <strong>AI Analyst Ready</strong>
+      Ask anything about Volkswagen AG (VW Core Brand) — strategy, financials, technology, competitors, or how FutureBridge can engage. Answers draw on live web search and deep company context.
+    </div>
+  </div>
+
+  <div class="search-suggestions" id="searchSuggestions">
+    <div class="search-suggestions-label">Suggested questions</div>
+    <button class="suggestion-chip" onclick="sendSuggestion(this)">What are Volkswagen AG (VW Core Brand)'s most urgent strategic priorities right now?</button>
+    <button class="suggestion-chip" onclick="sendSuggestion(this)">How should FutureBridge position for a first meeting with Volkswagen AG (VW Core Brand)?</button>
+    <button class="suggestion-chip" onclick="sendSuggestion(this)">What are the biggest technology risks facing Volkswagen AG (VW Core Brand) by 2030?</button>
+  </div>
+
+  <div class="search-input-area">
+    <div class="search-input-row">
+      <textarea class="search-input" id="searchInput" placeholder="Ask anything about Volkswagen AG (VW Core Brand)..." rows="1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitSearch()}}"
+        oninput="autoResizeInput(this)"></textarea>
+      <button class="search-submit" id="searchSubmit" onclick="submitSearch()">Ask →</button>
+    </div>
+    <button class="search-clear" onclick="clearSearch()">⟳ Clear conversation</button>
+  </div>
+</div>
+
+<script>
+// ── SEARCH STATE ─────────────────────────────────────────
+const SEARCH_COMPANY = "Volkswagen AG (VW Core Brand)";
+const SEARCH_SECTOR  = "Automotive — Volume";
+const SEARCH_POSTURE = "RESTRUCTURE";
+const SEARCH_CONTEXT = `You are a senior intelligence analyst at FutureBridge Advisory with deep expertise in ${SEARCH_SECTOR}. You are advising the team ahead of an engagement with ${SEARCH_COMPANY}.
+
+Company context:
+- Name: ${SEARCH_COMPANY}
+- Sector: ${SEARCH_SECTOR}
+- Current strategic posture: ${SEARCH_POSTURE}
+- FutureBridge is a technology intelligence and innovation advisory firm. Our value proposition is H3 horizon scanning (15-20 year emerging technology discovery), H2 strategy validation, competitive intelligence, and technology radar services.
+
+When answering questions:
+- Be specific, analytical, and direct — no filler or generic statements
+- Use actual data, figures, and named initiatives where possible
+- When discussing FutureBridge engagement strategy, think like a senior BD director
+- Format responses clearly using bold for key points
+- Keep answers focused and actionable — max 4-5 paragraphs
+- If asked about recent events, use web search to find current information
+- Always end with one pointed insight or recommended action`;
+
+let searchHistory = [];
+
+function openSearch() {
+  const panel = document.getElementById('searchPanel');
+  const bg    = document.getElementById('searchBg');
+  panel.classList.add('open');
+  bg.classList.add('open');
+  setTimeout(() => document.getElementById('searchInput').focus(), 320);
+}
+
+function closeSearch() {
+  document.getElementById('searchPanel').classList.remove('open');
+  document.getElementById('searchBg').classList.remove('open');
+}
+
+function autoResizeInput(el) {
+  el.style.height = '44px';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function sendSuggestion(btn) {
+  document.getElementById('searchInput').value = btn.textContent.trim();
+  document.getElementById('searchSuggestions').style.display = 'none';
+  submitSearch();
+}
+
+function clearSearch() {
+  searchHistory = [];
+  const msgs = document.getElementById('searchMessages');
+  msgs.innerHTML = `<div class="search-no-key" id="searchWelcome">
+    <strong>AI Analyst Ready</strong>
+    Ask anything about ${SEARCH_COMPANY} — strategy, financials, technology, competitors, or how FutureBridge can engage.
+  </div>`;
+  document.getElementById('searchSuggestions').style.display = 'flex';
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchInput').style.height = '44px';
+}
+
+function addMessage(role, text, sources) {
+  const msgs = document.getElementById('searchMessages');
+  // Remove welcome message
+  const welcome = document.getElementById('searchWelcome');
+  if (welcome) welcome.remove();
+
+  const div = document.createElement('div');
+  div.className = `msg msg-${role}`;
+
+  const label = document.createElement('div');
+  label.className = 'msg-label';
+  label.textContent = role === 'user' ? 'You' : 'AI Analyst';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+
+  if (role === 'ai') {
+    // Convert **bold** and line breaks
+    const formatted = text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/
+
+/g, '</p><p>')
+      .replace(/
+/g, '<br>');
+    bubble.innerHTML = '<p>' + formatted + '</p>';
+  } else {
+    bubble.textContent = text;
+  }
+
+  div.appendChild(label);
+  div.appendChild(bubble);
+
+  if (sources && sources.length > 0) {
+    const srcDiv = document.createElement('div');
+    srcDiv.className = 'msg-sources';
+    srcDiv.innerHTML = 'Sources: ' + sources.slice(0, 3).map((s, i) =>
+      `<a href="${s.url}" target="_blank" rel="noopener">${s.title || s.url}</a>`
+    ).join(' · ');
+    div.appendChild(srcDiv);
+  }
+
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function addThinking() {
+  const msgs = document.getElementById('searchMessages');
+  const div = document.createElement('div');
+  div.className = 'msg msg-ai';
+  div.id = 'thinkingMsg';
+  div.innerHTML = `
+    <div class="msg-label">AI Analyst</div>
+    <div class="msg-thinking">
+      <div class="thinking-dots"><span></span><span></span><span></span></div>
+      <span style="font-family:var(--font-mono);font-size:0.58rem;color:var(--text-dim)">Searching & analysing...</span>
+    </div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function removeThinking() {
+  const t = document.getElementById('thinkingMsg');
+  if (t) t.remove();
+}
+
+async function submitSearch() {
+  const input = document.getElementById('searchInput');
+  const btn   = document.getElementById('searchSubmit');
+  const question = input.value.trim();
+  if (!question) return;
+
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    openApiPanel();
+    showToast('Enter your API key to use AI Search');
+    return;
+  }
+
+  // Hide suggestions after first message
+  document.getElementById('searchSuggestions').style.display = 'none';
+
+  // Add user message
+  addMessage('user', question);
+  searchHistory.push({ role: 'user', content: question });
+
+  // Clear input
+  input.value = '';
+  input.style.height = '44px';
+  btn.disabled = true;
+
+  // Show thinking
+  addThinking();
+
+  try {
+    const messages = [
+      ...searchHistory.slice(0, -1), // history minus last user msg
+      {
+        role: 'user',
+        content: `${SEARCH_CONTEXT}
+
+---
+
+User question: ${question}
+
+Use web search to find current, specific information where relevant. Be analytical and FutureBridge-specific in your framing.`
+      }
+    ];
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1024,
+        system: SEARCH_CONTEXT,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: searchHistory
+      })
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.error?.message || 'API error ' + response.status);
+    }
+
+    const data = await response.json();
+    removeThinking();
+
+    // Extract text and sources
+    let answerText = '';
+    let sources = [];
+
+    for (const block of data.content) {
+      if (block.type === 'text') {
+        answerText += block.text;
+      }
+      if (block.type === 'tool_result' && Array.isArray(block.content)) {
+        for (const item of block.content) {
+          if (item.type === 'document' && item.document?.url) {
+            sources.push({ url: item.document.url, title: item.document.title || item.document.url });
+          }
+        }
+      }
+    }
+
+    if (!answerText) answerText = 'I found some information but could not format a clear answer. Please try rephrasing your question.';
+
+    // Add AI response to history
+    searchHistory.push({ role: 'assistant', content: answerText });
+
+    addMessage('ai', answerText, sources);
+
+  } catch(err) {
+    removeThinking();
+    addMessage('ai', '⚠ Error: ' + err.message + '
+
+Check your API key and try again.');
+    console.error('Search error:', err);
+  } finally {
+    btn.disabled = false;
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<!-- ══ HYPOTHESIS REGISTER v5 ══ -->
+<section id="hypotheses" class="section">
+<div class="page" style="max-width:1200px;margin:0 auto;padding:56px 32px 80px">
+
+  <div class="section-head">
+    <span class="section-num">HYP</span>
+    <h2 class="section-title">Hypothesis Register</h2>
+    <div class="section-rule"></div>
+  </div>
+
+  <div class="info-box" style="margin-bottom:32px">
+    Each card below is a populated instance of the intelligence framework shown above.
+    Sources on the left are raw and undifferentiated — a source becomes a signal only when it moves one of the four system drivers.
+    The hypothesis is the directional belief being tested. WNTBT conditions are the specific thresholds the drivers must reach.
+    Decisions on the right are specific to Volkswagen AG at each time gate.
+  </div>
+
+  <!-- Generic framework SVG — methodology explanation, shown once -->
+  <div style="margin-bottom:36px">
+    <div style="font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px">How the framework operates</div>
+    <svg width="100%" viewBox="0 0 680 240" xmlns="http://www.w3.org/2000/svg" style="display:block;max-width:960px;margin:0 auto 0">
+<defs>
+  <marker id="garr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#d4a230" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+<!-- Column labels -->
+<text x="57" y="14" text-anchor="middle" style="font-family:Courier New,monospace;font-size:7px;font-weight:700;fill:#4a6278;letter-spacing:.08em">SOURCES</text>
+<text x="210" y="14" text-anchor="middle" style="font-family:Courier New,monospace;font-size:7px;font-weight:700;fill:#4a6278;letter-spacing:.08em">SYSTEM DRIVERS</text>
+<text x="390" y="14" text-anchor="middle" style="font-family:Courier New,monospace;font-size:7px;font-weight:700;fill:#4a6278;letter-spacing:.08em">HYPOTHESIS</text>
+<text x="580" y="14" text-anchor="middle" style="font-family:Courier New,monospace;font-size:7px;font-weight:700;fill:#4a6278;letter-spacing:.08em">DECISIONS</text>
+<!-- Sources panel -->
+<rect x="10" y="24" width="94" height="196" rx="4" fill="#0f1922" stroke="#1c2e3e" stroke-width="0.75"/>
+<line x1="10" y1="50" x2="104" y2="50" stroke="#1c2e3e" stroke-width="0.5"/>
+<line x1="10" y1="98" x2="104" y2="98" stroke="#1c2e3e" stroke-width="0.4" opacity="0.5"/>
+<line x1="10" y1="132" x2="104" y2="132" stroke="#1c2e3e" stroke-width="0.4" opacity="0.5"/>
+<line x1="10" y1="173" x2="104" y2="173" stroke="#1c2e3e" stroke-width="0.4" opacity="0.5"/>
+<rect x="18" y="60" width="7" height="7" rx="1" fill="#d4a230"/><text x="32" y="64" dominant-baseline="central" style="font-family:Arial,sans-serif;font-size:9px;font-weight:600;fill:#e8eef5">News</text>
+<rect x="18" y="107" width="7" height="7" rx="1" fill="#9D7AD2"/><text x="32" y="111" dominant-baseline="central" style="font-family:Arial,sans-serif;font-size:9px;font-weight:600;fill:#e8eef5">Patents</text>
+<rect x="18" y="140" width="7" height="7" rx="1" fill="#f05252"/><text x="32" y="144" dominant-baseline="central" style="font-family:Arial,sans-serif;font-size:9px;font-weight:600;fill:#e8eef5">Regulations</text>
+<rect x="18" y="181" width="7" height="7" rx="1" fill="#22AE8A"/><text x="32" y="185" dominant-baseline="central" style="font-family:Arial,sans-serif;font-size:9px;font-weight:600;fill:#e8eef5">Market data</text>
+<text x="57" y="227" text-anchor="middle" style="font-family:Arial,sans-serif;font-size:7px;font-style:italic;fill:#4a6278">Raw and undifferentiated</text>
+<!-- Filter -->
+<line x1="116" y1="32" x2="116" y2="214" stroke="#243444" stroke-width="0.75" stroke-dasharray="3 3"/>
+<text x="116" y="22" text-anchor="middle" style="font-family:Courier New,monospace;font-size:6.5px;font-weight:700;fill:#4a6278;letter-spacing:.05em">FILTER</text>
+<text x="116" y="222" text-anchor="middle" style="font-family:Arial,sans-serif;font-size:6.5px;font-style:italic;fill:#4a6278">moves a driver?</text>
+<!-- Noise stubs -->
+<line x1="104" y1="111" x2="113" y2="111" stroke="#243444" stroke-width="0.5" opacity="0.25"/>
+<line x1="104" y1="185" x2="113" y2="185" stroke="#243444" stroke-width="0.5" opacity="0.25"/>
+<!-- Live signal arrows (generic) -->
+<line x1="104" y1="64" x2="128" y2="107" stroke="#d4a230" stroke-width="1.1" stroke-dasharray="4 2" marker-end="url(#garr)" opacity="0.9"/>
+<line x1="104" y1="144" x2="128" y2="152" stroke="#22AE8A" stroke-width="1.1" stroke-dasharray="4 2" marker-end="url(#garr)" opacity="0.9"/>
+<!-- System Drivers panel -->
+<rect x="128" y="24" width="140" height="196" rx="4" fill="#0f1922" stroke="#1c2e3e" stroke-width="0.75"/>
+<line x1="128" y1="50" x2="268" y2="50" stroke="#1c2e3e" stroke-width="0.5"/>
+<line x1="128" y1="99" x2="268" y2="99" stroke="#1c2e3e" stroke-width="0.4" opacity="0.5"/>
+<line x1="128" y1="138" x2="268" y2="138" stroke="#1c2e3e" stroke-width="0.4" opacity="0.5"/>
+<line x1="128" y1="178" x2="268" y2="178" stroke="#1c2e3e" stroke-width="0.4" opacity="0.5"/>
+<rect x="128" y="50" width="140" height="49" fill="rgba(212,162,48,0.1)"/>
+<rect x="128" y="138" width="140" height="40" fill="rgba(34,174,138,0.07)"/>
+<circle cx="138" cy="69" r="3.5" fill="#d4a230"/>
+<text x="148" y="65" dominant-baseline="central" style="font-family:Arial,sans-serif;font-size:9px;font-weight:700;fill:#d4a230">Economics</text>
+<text x="148" y="78" style="font-family:Arial,sans-serif;font-size:7.5px;fill:#8fa3b5">Cost, price parity, unit economics</text>
+<text x="148" y="90" style="font-family:Arial,sans-serif;font-size:7px;fill:#4a6278;font-style:italic">Is it affordable at scale?</text>
+<circle cx="138" cy="114" r="3.5" fill="#48B8E7" opacity="0.55"/>
+<text x="148" y="110" dominant-baseline="central" style="font-family:Arial,sans-serif;font-size:9px;font-weight:500;fill:#4a6278">Market</text>
+<text x="148" y="127" style="font-family:Arial,sans-serif;font-size:7.5px;fill:#4a6278">Demand, competition, capital flow</text>
+<circle cx="138" cy="153" r="3.5" fill="#22AE8A"/>
+<text x="148" y="149" dominant-baseline="central" style="font-family:Arial,sans-serif;font-size:9px;font-weight:700;fill:#22AE8A">Technology</text>
+<text x="148" y="162" style="font-family:Arial,sans-serif;font-size:7.5px;fill:#8fa3b5">Readiness, adoption, proof points</text>
+<circle cx="138" cy="193" r="3.5" fill="#9D7AD2" opacity="0.55"/>
+<text x="148" y="189" dominant-baseline="central" style="font-family:Arial,sans-serif;font-size:9px;font-weight:500;fill:#4a6278">Policy</text>
+<text x="148" y="202" style="font-family:Arial,sans-serif;font-size:7.5px;fill:#4a6278">Mandates, standards, incentives</text>
+<!-- SIGNAL badges -->
+<rect x="238" y="61" width="34" height="13" rx="6" fill="rgba(212,162,48,0.25)"/><text x="255" y="67" text-anchor="middle" dominant-baseline="central" style="font-family:Courier New,monospace;font-size:7px;font-weight:700;fill:#d4a230">SIGNAL</text>
+<rect x="238" y="145" width="34" height="13" rx="6" fill="rgba(34,174,138,0.22)"/><text x="255" y="151" text-anchor="middle" dominant-baseline="central" style="font-family:Courier New,monospace;font-size:7px;font-weight:700;fill:#22AE8A">SIGNAL</text>
+<!-- Inform connector -->
+<line x1="268" y1="122" x2="320" y2="122" stroke="#243444" stroke-width="1" marker-end="url(#garr)"/>
+<text x="294" y="113" text-anchor="middle" style="font-family:Courier New,monospace;font-size:7px;font-weight:700;fill:#4a6278;letter-spacing:.05em">INFORM</text>
+<!-- Triangle -->
+<polygon points="390,24 305,220 475,220" fill="#131f2b" stroke="#d4a230" stroke-width="1.5"/>
+<rect x="350" y="8" width="80" height="18" rx="9" fill="#d4a230"/>
+<text x="390" y="17" text-anchor="middle" dominant-baseline="central" style="font-family:Courier New,monospace;font-size:8px;font-weight:700;fill:#060a0f;letter-spacing:.07em">HYPOTHESIS</text>
+<line x1="390" y1="26" x2="390" y2="24" stroke="#d4a230" stroke-width="1.5"/>
+<text x="390" y="96" text-anchor="middle" style="font-family:Georgia,serif;font-size:12px;font-style:italic;fill:#e8eef5">Will our</text>
+<text x="390" y="120" text-anchor="middle" style="font-family:Georgia,serif;font-size:12px;font-style:italic;fill:#e8eef5">hypothesis</text>
+<text x="390" y="144" text-anchor="middle" style="font-family:Georgia,serif;font-size:12px;font-style:italic;fill:#e8eef5">be right?</text>
+<line x1="345" y1="170" x2="435" y2="170" stroke="#243444" stroke-width="0.5" opacity="0.4"/>
+<text x="390" y="188" text-anchor="middle" style="font-family:Courier New,monospace;font-size:7.5px;fill:#d4a230;opacity:0.7">Probability score</text>
+<text x="390" y="227" text-anchor="middle" style="font-family:Arial,sans-serif;font-size:7px;font-style:italic;fill:#4a6278">Updated as drivers move</text>
+<!-- Guide connector -->
+<line x1="475" y1="122" x2="498" y2="122" stroke="#243444" stroke-width="1" marker-end="url(#garr)"/>
+<text x="487" y="113" text-anchor="middle" style="font-family:Courier New,monospace;font-size:7px;font-weight:700;fill:#4a6278;letter-spacing:.05em">GUIDE</text>
+<!-- Decisions panel -->
+<rect x="500" y="24" width="170" height="196" rx="4" fill="#0f1922" stroke="#1c2e3e" stroke-width="0.75"/>
+<line x1="500" y1="50" x2="670" y2="50" stroke="#1c2e3e" stroke-width="0.5"/>
+<line x1="500" y1="107" x2="670" y2="107" stroke="#1c2e3e" stroke-width="0.4" opacity="0.5"/>
+<line x1="500" y1="163" x2="670" y2="163" stroke="#1c2e3e" stroke-width="0.4" opacity="0.5"/>
+<rect x="509" y="58" width="28" height="13" rx="6" fill="rgba(157,122,210,0.22)"/><text x="523" y="64" text-anchor="middle" dominant-baseline="central" style="font-family:Courier New,monospace;font-size:7.5px;font-weight:700;fill:#9D7AD2">6 M</text>
+<text x="544" y="62" dominant-baseline="central" style="font-family:Arial,sans-serif;font-size:9px;font-weight:700;fill:#e8eef5">6 Months</text>
+<text x="509" y="80" style="font-family:Arial,sans-serif;font-size:8px;fill:#8fa3b5">What do we need to see?</text>
+<text x="509" y="95" style="font-family:Arial,sans-serif;font-size:8px;fill:#8fa3b5">What will we do?</text>
+<rect x="509" y="115" width="28" height="13" rx="6" fill="rgba(34,174,138,0.2)"/><text x="523" y="121" text-anchor="middle" dominant-baseline="central" style="font-family:Courier New,monospace;font-size:7.5px;font-weight:700;fill:#22AE8A">12 M</text>
+<text x="544" y="119" dominant-baseline="central" style="font-family:Arial,sans-serif;font-size:9px;font-weight:700;fill:#e8eef5">12 Months</text>
+<text x="509" y="137" style="font-family:Arial,sans-serif;font-size:8px;fill:#8fa3b5">What do we need to see?</text>
+<text x="509" y="152" style="font-family:Arial,sans-serif;font-size:8px;fill:#8fa3b5">What will we do?</text>
+<rect x="509" y="171" width="28" height="13" rx="6" fill="rgba(212,162,48,0.2)"/><text x="523" y="177" text-anchor="middle" dominant-baseline="central" style="font-family:Courier New,monospace;font-size:7.5px;font-weight:700;fill:#d4a230">18 M</text>
+<text x="544" y="175" dominant-baseline="central" style="font-family:Arial,sans-serif;font-size:9px;font-weight:700;fill:#e8eef5">18 Months</text>
+<text x="509" y="193" style="font-family:Arial,sans-serif;font-size:8px;fill:#8fa3b5">What do we need to see?</text>
+<text x="509" y="208" style="font-family:Arial,sans-serif;font-size:8px;fill:#8fa3b5">What will we do?</text>
+<text x="585" y="227" text-anchor="middle" style="font-family:Arial,sans-serif;font-size:7px;font-style:italic;fill:#4a6278">Client-specific at every gate</text>
+</svg>
+  </div>
+
+  <!-- Summary strip -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:40px">
+    <div style="background:var(--panel);padding:16px">
+      <div style="font-family:var(--font-mono);font-size:1.4rem;font-weight:700;color:var(--text);margin-bottom:2px">3</div>
+      <div style="font-size:0.75rem;color:var(--text-mid)">Active hypotheses</div>
+      <div style="font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);margin-top:2px">March 2026</div>
+    </div>
+    <div style="background:var(--panel);padding:16px">
+      <div style="font-family:var(--font-mono);font-size:1.4rem;font-weight:700;color:var(--text);margin-bottom:2px">66%</div>
+      <div style="font-size:0.75rem;color:var(--text-mid)">Average probability</div>
+      <div style="font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);margin-top:2px">Across all active</div>
+    </div>
+    <div style="background:var(--panel);padding:16px">
+      <div style="font-family:var(--font-mono);font-size:1.4rem;font-weight:700;color:var(--gold);margin-bottom:2px">4</div>
+      <div style="font-size:0.75rem;color:var(--text-mid)">Signal drivers tracked</div>
+      <div style="font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);margin-top:2px">Economics · Market · Technology · Policy</div>
+    </div>
+  </div>
+
+  
+<div style="margin:0 0 44px 0;border:1px solid #243444;border-top:2px solid #d4a230">
+
+  <!-- Card header -->
+  <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#131f2b;border-bottom:1px solid #1c2e3e">
+    <span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.15em;color:#d4a230;font-weight:700">VW-01</span>
+    <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;border:1px solid #1c2e3e;padding:2px 8px">H1 · 1–2yr</span>
+    <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;margin-left:auto">Confidence: High</span>
+  </div>
+
+  <!-- Main 4-column grid matching the framework -->
+  <div style="display:grid;grid-template-columns:1fr 1.3fr 1.6fr 1.2fr;border-bottom:1px solid #1c2e3e">
+
+    <!-- Col 1: Sources -->
+    <div style="padding:14px 12px;border-right:1px solid #1c2e3e">
+      <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:10px">SOURCES</div>
+      <div style="font-family:Arial,sans-serif;font-size:0.75rem;color:#4a6278;margin-bottom:10px;font-style:italic">Raw and undifferentiated</div>
+      <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:6px"><span style="width:7px;height:7px;border-radius:1px;background:#d4a230;flex-shrink:0"></span><span style="font-family:Arial,sans-serif;font-size:0.78rem;color:#e8eef5">News</span></div>
+        <div style="display:flex;align-items:center;gap:6px"><span style="width:7px;height:7px;border-radius:1px;background:#9D7AD2;flex-shrink:0"></span><span style="font-family:Arial,sans-serif;font-size:0.78rem;color:#e8eef5">Patents</span></div>
+        <div style="display:flex;align-items:center;gap:6px"><span style="width:7px;height:7px;border-radius:1px;background:#f05252;flex-shrink:0"></span><span style="font-family:Arial,sans-serif;font-size:0.78rem;color:#e8eef5">Regulations</span></div>
+        <div style="display:flex;align-items:center;gap:6px"><span style="width:7px;height:7px;border-radius:1px;background:#22AE8A;flex-shrink:0"></span><span style="font-family:Arial,sans-serif;font-size:0.78rem;color:#e8eef5">Market data</span></div>
+      </div>
+      <div style="font-family:Courier New,monospace;font-size:0.5rem;letter-spacing:0.06em;color:#d4a230;margin-bottom:6px;border-top:1px solid #1c2e3e;padding-top:8px">LIVE NOW</div>
+      <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0;display:flex;align-items:center;gap:6px"><span style="color:#d4a230;font-size:9px">→</span>IG Metall public statements on VW negotiations</div><div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0;display:flex;align-items:center;gap:6px"><span style="color:#d4a230;font-size:9px">→</span>VW Supervisory Board meeting outcomes</div>
+    </div>
+
+    <!-- Col 2: System Drivers -->
+    <div style="border-right:1px solid #1c2e3e">
+      <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">SYSTEM DRIVERS</div>
+      <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:transparent;border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#d4a230;flex-shrink:0;margin-top:4px;opacity:0.35"></span><div style="flex:1;min-width:0"><div style="font-family:Arial,sans-serif;font-size:0.8rem;font-weight:400;color:#4a6278">Economics</div><div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;margin-top:1px">VW restructuring cost vs original plan target</div></div></div><div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(72,184,231,0.12);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#48B8E7;flex-shrink:0;margin-top:4px;opacity:1"></span><div style="flex:1;min-width:0"><div style="font-family:Arial,sans-serif;font-size:0.8rem;font-weight:700;color:#48B8E7">Market<span style="background:rgba(72,184,231,0.22);color:#48B8E7;font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#8fa3b5;margin-top:1px">IG Metall negotiating position and works council stance</div></div></div><div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:transparent;border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#22AE8A;flex-shrink:0;margin-top:4px;opacity:0.35"></span><div style="flex:1;min-width:0"><div style="font-family:Arial,sans-serif;font-size:0.8rem;font-weight:400;color:#4a6278">Technology</div><div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;margin-top:1px">German factory capacity utilisation and production efficiency</div></div></div><div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(157,122,210,0.12);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#9D7AD2;flex-shrink:0;margin-top:4px;opacity:1"></span><div style="flex:1;min-width:0"><div style="font-family:Arial,sans-serif;font-size:0.8rem;font-weight:700;color:#9D7AD2">Policy<span style="background:rgba(157,122,210,0.22);color:#9D7AD2;font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#8fa3b5;margin-top:1px">VW 2026 labour agreement terms and closure moratorium</div></div></div>
+    </div>
+
+    <!-- Col 3: Hypothesis -->
+    <div style="padding:16px;border-right:1px solid #1c2e3e;display:flex;flex-direction:column;justify-content:center">
+      <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:12px">HYPOTHESIS</div>
+      <div style="font-family:Georgia,Times New Roman,serif;font-size:1.05rem;font-style:italic;color:#e8eef5;line-height:1.55;margin-bottom:16px">VW's German factory closure programme will be substantially blocked by IG Metall and works council action, forcing VW to absorb €2–3B in additional restructuring costs</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:6px"><div style="flex:1;height:3px;background:#1c2e3e;border-radius:2px"><div style="width:72%;height:100%;background:#d4a230;border-radius:2px"></div></div><span style="font-family:Courier New,monospace;font-size:0.65rem;color:#d4a230;font-weight:700">72%</span></div>
+    </div>
+
+    <!-- Col 4: Decisions -->
+    <div>
+      <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">DECISIONS</div>
+      <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#9D7AD2;background:rgba(157,122,210,0.18);padding:2px 8px;border-radius:10px">6 M</span></div><div style="font-family:Arial,sans-serif;font-size:0.8rem;color:#8fa3b5;line-height:1.5">Track IG Metall negotiating position and German political dynamics.</div></div><div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#22AE8A;background:rgba(34,174,138,0.18);padding:2px 8px;border-radius:10px">12 M</span></div><div style="font-family:Arial,sans-serif;font-size:0.8rem;color:#8fa3b5;line-height:1.5">Map VW technology scouting capacity through 2027 — constrained by restructuring.</div></div><div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#d4a230;background:rgba(212,162,48,0.18);padding:2px 8px;border-radius:10px">18 M</span></div><div style="font-family:Arial,sans-serif;font-size:0.8rem;color:#8fa3b5;line-height:1.5">Identify technology partnership opportunities from R&D budget constraints.</div></div>
+    </div>
+  </div>
+
+  <!-- WNTBT panel — full width, gold top border -->
+  <div style="background:#0f1922">
+    <div style="display:flex;align-items:center;gap:16px;padding:12px 16px 8px;border-bottom:1px solid #1c2e3e">
+      <span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.1em;font-weight:700;color:#d4a230">WHAT NEEDS TO BE TRUE</span>
+      <span style="flex:1;height:1px;background:#1c2e3e"></span>
+      <span style="font-family:Arial,sans-serif;font-size:0.65rem;color:#4a6278">All conditions must hold for hypothesis to confirm</span>
+    </div>
+    <div style="padding:4px 16px 12px">
+      <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:#d4a230;font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-family:Arial,sans-serif;font-size:0.82rem;color:#e8eef5;line-height:1.55">IG Metall secures binding employment guarantee covering 90%+ of German headcount through end 2028</span></div><div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:#d4a230;font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-family:Arial,sans-serif;font-size:0.82rem;color:#e8eef5;line-height:1.55">VW 2026 labour agreement requires 24+ months additional consultation before any closure</span></div><div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:#d4a230;font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-family:Arial,sans-serif;font-size:0.82rem;color:#e8eef5;line-height:1.55">German federal or state government provides financial instrument in exchange for closure moratorium</span></div><div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:#d4a230;font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-family:Arial,sans-serif;font-size:0.82rem;color:#e8eef5;line-height:1.55">VW Supervisory Board votes to modify original restructuring plan by Q2 2026</span></div>
+    </div>
+    <!-- Action implication -->
+    <div style="padding:10px 16px 14px;border-top:1px solid #1c2e3e">
+      <div style="font-family:Courier New,monospace;font-size:0.5rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:5px">ENGAGEMENT IMPLICATION</div>
+      <div style="font-family:Arial,sans-serif;font-size:0.82rem;color:#8fa3b5;line-height:1.6;padding-left:12px;border-left:2px solid #d4a230">The restructuring timeline directly determines VW's technology procurement budget and scouting capacity through 2027.</div>
+    </div>
+  </div>
+
+</div>
+<div style="margin:0 0 44px 0;border:1px solid #243444;border-top:2px solid #d4a230">
+
+  <!-- Card header -->
+  <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#131f2b;border-bottom:1px solid #1c2e3e">
+    <span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.15em;color:#d4a230;font-weight:700">VW-02</span>
+    <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;border:1px solid #1c2e3e;padding:2px 8px">H2 · 3–5yr</span>
+    <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;margin-left:auto">Confidence: Medium</span>
+  </div>
+
+  <!-- Main 4-column grid matching the framework -->
+  <div style="display:grid;grid-template-columns:1fr 1.3fr 1.6fr 1.2fr;border-bottom:1px solid #1c2e3e">
+
+    <!-- Col 1: Sources -->
+    <div style="padding:14px 12px;border-right:1px solid #1c2e3e">
+      <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:10px">SOURCES</div>
+      <div style="font-family:Arial,sans-serif;font-size:0.75rem;color:#4a6278;margin-bottom:10px;font-style:italic">Raw and undifferentiated</div>
+      <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:6px"><span style="width:7px;height:7px;border-radius:1px;background:#d4a230;flex-shrink:0"></span><span style="font-family:Arial,sans-serif;font-size:0.78rem;color:#e8eef5">News</span></div>
+        <div style="display:flex;align-items:center;gap:6px"><span style="width:7px;height:7px;border-radius:1px;background:#9D7AD2;flex-shrink:0"></span><span style="font-family:Arial,sans-serif;font-size:0.78rem;color:#e8eef5">Patents</span></div>
+        <div style="display:flex;align-items:center;gap:6px"><span style="width:7px;height:7px;border-radius:1px;background:#f05252;flex-shrink:0"></span><span style="font-family:Arial,sans-serif;font-size:0.78rem;color:#e8eef5">Regulations</span></div>
+        <div style="display:flex;align-items:center;gap:6px"><span style="width:7px;height:7px;border-radius:1px;background:#22AE8A;flex-shrink:0"></span><span style="font-family:Arial,sans-serif;font-size:0.78rem;color:#e8eef5">Market data</span></div>
+      </div>
+      <div style="font-family:Courier New,monospace;font-size:0.5rem;letter-spacing:0.06em;color:#d4a230;margin-bottom:6px;border-top:1px solid #1c2e3e;padding-top:8px">LIVE NOW</div>
+      <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0;display:flex;align-items:center;gap:6px"><span style="color:#d4a230;font-size:9px">→</span>CARIAD management and reorganisation announcements</div><div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0;display:flex;align-items:center;gap:6px"><span style="color:#d4a230;font-size:9px">→</span>Automotive digital experience benchmark reviews</div>
+    </div>
+
+    <!-- Col 2: System Drivers -->
+    <div style="border-right:1px solid #1c2e3e">
+      <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">SYSTEM DRIVERS</div>
+      <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(212,162,48,0.12);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#d4a230;flex-shrink:0;margin-top:4px;opacity:1"></span><div style="flex:1;min-width:0"><div style="font-family:Arial,sans-serif;font-size:0.8rem;font-weight:700;color:#d4a230">Economics<span style="background:rgba(212,162,48,0.22);color:#d4a230;font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#8fa3b5;margin-top:1px">CARIAD software R&D cost vs platform revenue</div></div></div><div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(72,184,231,0.12);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#48B8E7;flex-shrink:0;margin-top:4px;opacity:1"></span><div style="flex:1;min-width:0"><div style="font-family:Arial,sans-serif;font-size:0.8rem;font-weight:700;color:#48B8E7">Market<span style="background:rgba(72,184,231,0.22);color:#48B8E7;font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#8fa3b5;margin-top:1px">VW ID. digital experience vs Tesla and Chinese OEM benchmarks</div></div></div><div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:transparent;border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#22AE8A;flex-shrink:0;margin-top:4px;opacity:0.35"></span><div style="flex:1;min-width:0"><div style="font-family:Arial,sans-serif;font-size:0.8rem;font-weight:400;color:#4a6278">Technology</div><div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;margin-top:1px">SSP zonal architecture and OTA software delivery</div></div></div><div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:transparent;border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#9D7AD2;flex-shrink:0;margin-top:4px;opacity:0.35"></span><div style="flex:1;min-width:0"><div style="font-family:Arial,sans-serif;font-size:0.8rem;font-weight:400;color:#4a6278">Policy</div><div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;margin-top:1px">EU connected vehicle cybersecurity and software regulations</div></div></div>
+    </div>
+
+    <!-- Col 3: Hypothesis -->
+    <div style="padding:16px;border-right:1px solid #1c2e3e;display:flex;flex-direction:column;justify-content:center">
+      <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:12px">HYPOTHESIS</div>
+      <div style="font-family:Georgia,Times New Roman,serif;font-size:1.05rem;font-style:italic;color:#e8eef5;line-height:1.55;margin-bottom:16px">VW's ID. platform will require a fundamental software and electrical architecture revision before 2028 — the current generation will not be competitive with next-generation Chinese or Tesla SDV platforms</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:6px"><div style="flex:1;height:3px;background:#1c2e3e;border-radius:2px"><div style="width:66%;height:100%;background:#d4a230;border-radius:2px"></div></div><span style="font-family:Courier New,monospace;font-size:0.65rem;color:#d4a230;font-weight:700">66%</span></div>
+    </div>
+
+    <!-- Col 4: Decisions -->
+    <div>
+      <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">DECISIONS</div>
+      <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#9D7AD2;background:rgba(157,122,210,0.18);padding:2px 8px;border-radius:10px">6 M</span></div><div style="font-family:Arial,sans-serif;font-size:0.8rem;color:#8fa3b5;line-height:1.5">Map SDV architecture and zonal E/E architecture transition technology.</div></div><div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#22AE8A;background:rgba(34,174,138,0.18);padding:2px 8px;border-radius:10px">12 M</span></div><div style="font-family:Arial,sans-serif;font-size:0.8rem;color:#8fa3b5;line-height:1.5">Deliver OTA software economics and CARIAD competitive intelligence to VW R&D.</div></div><div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#d4a230;background:rgba(212,162,48,0.18);padding:2px 8px;border-radius:10px">18 M</span></div><div style="font-family:Arial,sans-serif;font-size:0.8rem;color:#8fa3b5;line-height:1.5">Propose SDV technology monitoring programme — most urgently needed external intelligence.</div></div>
+    </div>
+  </div>
+
+  <!-- WNTBT panel — full width, gold top border -->
+  <div style="background:#0f1922">
+    <div style="display:flex;align-items:center;gap:16px;padding:12px 16px 8px;border-bottom:1px solid #1c2e3e">
+      <span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.1em;font-weight:700;color:#d4a230">WHAT NEEDS TO BE TRUE</span>
+      <span style="flex:1;height:1px;background:#1c2e3e"></span>
+      <span style="font-family:Arial,sans-serif;font-size:0.65rem;color:#4a6278">All conditions must hold for hypothesis to confirm</span>
+    </div>
+    <div style="padding:4px 16px 12px">
+      <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:#d4a230;font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-family:Arial,sans-serif;font-size:0.82rem;color:#e8eef5;line-height:1.55">VW announces revised SSP timeline showing 18+ month delay from original 2026 target</span></div><div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:#d4a230;font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-family:Arial,sans-serif;font-size:0.82rem;color:#e8eef5;line-height:1.55">At least two major software reviews show VW trailing Chinese and Tesla benchmarks by 20%+</span></div><div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:#d4a230;font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-family:Arial,sans-serif;font-size:0.82rem;color:#e8eef5;line-height:1.55">VW CARIAD undergoes a second major management reorganisation before end 2025</span></div><div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:#d4a230;font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-family:Arial,sans-serif;font-size:0.82rem;color:#e8eef5;line-height:1.55">Strategic software partner formally announced for next-gen VW SDV architecture</span></div>
+    </div>
+    <!-- Action implication -->
+    <div style="padding:10px 16px 14px;border-top:1px solid #1c2e3e">
+      <div style="font-family:Courier New,monospace;font-size:0.5rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:5px">ENGAGEMENT IMPLICATION</div>
+      <div style="font-family:Arial,sans-serif;font-size:0.82rem;color:#8fa3b5;line-height:1.6;padding-left:12px;border-left:2px solid #d4a230">SDV architecture, OTA software economics, and zonal E/E architecture transition are the technology intelligence categories VW's R&D scouting team is most urgently seeking.</div>
+    </div>
+  </div>
+
+</div>
+<div style="margin:0 0 44px 0;border:1px solid #243444;border-top:2px solid #d4a230">
+
+  <!-- Card header -->
+  <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#131f2b;border-bottom:1px solid #1c2e3e">
+    <span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.15em;color:#d4a230;font-weight:700">VW-03</span>
+    <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;border:1px solid #1c2e3e;padding:2px 8px">H2 · 3–6yr</span>
+    <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;margin-left:auto">Confidence: Medium</span>
+  </div>
+
+  <!-- Main 4-column grid matching the framework -->
+  <div style="display:grid;grid-template-columns:1fr 1.3fr 1.6fr 1.2fr;border-bottom:1px solid #1c2e3e">
+
+    <!-- Col 1: Sources -->
+    <div style="padding:14px 12px;border-right:1px solid #1c2e3e">
+      <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:10px">SOURCES</div>
+      <div style="font-family:Arial,sans-serif;font-size:0.75rem;color:#4a6278;margin-bottom:10px;font-style:italic">Raw and undifferentiated</div>
+      <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:6px"><span style="width:7px;height:7px;border-radius:1px;background:#d4a230;flex-shrink:0"></span><span style="font-family:Arial,sans-serif;font-size:0.78rem;color:#e8eef5">News</span></div>
+        <div style="display:flex;align-items:center;gap:6px"><span style="width:7px;height:7px;border-radius:1px;background:#9D7AD2;flex-shrink:0"></span><span style="font-family:Arial,sans-serif;font-size:0.78rem;color:#e8eef5">Patents</span></div>
+        <div style="display:flex;align-items:center;gap:6px"><span style="width:7px;height:7px;border-radius:1px;background:#f05252;flex-shrink:0"></span><span style="font-family:Arial,sans-serif;font-size:0.78rem;color:#e8eef5">Regulations</span></div>
+        <div style="display:flex;align-items:center;gap:6px"><span style="width:7px;height:7px;border-radius:1px;background:#22AE8A;flex-shrink:0"></span><span style="font-family:Arial,sans-serif;font-size:0.78rem;color:#e8eef5">Market data</span></div>
+      </div>
+      <div style="font-family:Courier New,monospace;font-size:0.5rem;letter-spacing:0.06em;color:#d4a230;margin-bottom:6px;border-top:1px solid #1c2e3e;padding-top:8px">LIVE NOW</div>
+      <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0;display:flex;align-items:center;gap:6px"><span style="color:#d4a230;font-size:9px">→</span>VW China monthly delivery data</div><div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0;display:flex;align-items:center;gap:6px"><span style="color:#d4a230;font-size:9px">→</span>BYD monthly China sales vs VW</div>
+    </div>
+
+    <!-- Col 2: System Drivers -->
+    <div style="border-right:1px solid #1c2e3e">
+      <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">SYSTEM DRIVERS</div>
+      <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:transparent;border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#d4a230;flex-shrink:0;margin-top:4px;opacity:0.35"></span><div style="flex:1;min-width:0"><div style="font-family:Arial,sans-serif;font-size:0.8rem;font-weight:400;color:#4a6278">Economics</div><div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;margin-top:1px">VW China average transaction price and JV profitability</div></div></div><div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(72,184,231,0.12);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#48B8E7;flex-shrink:0;margin-top:4px;opacity:1"></span><div style="flex:1;min-width:0"><div style="font-family:Arial,sans-serif;font-size:0.8rem;font-weight:700;color:#48B8E7">Market<span style="background:rgba(72,184,231,0.22);color:#48B8E7;font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#8fa3b5;margin-top:1px">BYD and local brand share of VW core China segments</div></div></div><div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:transparent;border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#22AE8A;flex-shrink:0;margin-top:4px;opacity:0.35"></span><div style="flex:1;min-width:0"><div style="font-family:Arial,sans-serif;font-size:0.8rem;font-weight:400;color:#4a6278">Technology</div><div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;margin-top:1px">China-only EV platform localisation pace and investment</div></div></div><div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:transparent;border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#9D7AD2;flex-shrink:0;margin-top:4px;opacity:0.35"></span><div style="flex:1;min-width:0"><div style="font-family:Arial,sans-serif;font-size:0.8rem;font-weight:400;color:#4a6278">Policy</div><div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;margin-top:1px">SAIC-VW and FAW-VW JV royalty renegotiation terms</div></div></div>
+    </div>
+
+    <!-- Col 3: Hypothesis -->
+    <div style="padding:16px;border-right:1px solid #1c2e3e;display:flex;flex-direction:column;justify-content:center">
+      <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:12px">HYPOTHESIS</div>
+      <div style="font-family:Georgia,Times New Roman,serif;font-size:1.05rem;font-style:italic;color:#e8eef5;line-height:1.55;margin-bottom:16px">VW's China market share will fall below 12% by 2027 as BYD, Li Auto, and Huawei-backed brands consolidate the mid-market</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:6px"><div style="flex:1;height:3px;background:#1c2e3e;border-radius:2px"><div style="width:61%;height:100%;background:#d4a230;border-radius:2px"></div></div><span style="font-family:Courier New,monospace;font-size:0.65rem;color:#d4a230;font-weight:700">61%</span></div>
+    </div>
+
+    <!-- Col 4: Decisions -->
+    <div>
+      <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">DECISIONS</div>
+      <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#9D7AD2;background:rgba(157,122,210,0.18);padding:2px 8px;border-radius:10px">6 M</span></div><div style="font-family:Arial,sans-serif;font-size:0.8rem;color:#8fa3b5;line-height:1.5">Map China consumer preferences, local technology, domestic brand competitive positioning.</div></div><div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#22AE8A;background:rgba(34,174,138,0.18);padding:2px 8px;border-radius:10px">12 M</span></div><div style="font-family:Arial,sans-serif;font-size:0.8rem;color:#8fa3b5;line-height:1.5">Deliver China localisation intelligence — most commercially sensitive gap in VW's portfolio.</div></div><div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#d4a230;background:rgba(212,162,48,0.18);padding:2px 8px;border-radius:10px">18 M</span></div><div style="font-family:Arial,sans-serif;font-size:0.8rem;color:#8fa3b5;line-height:1.5">Propose ongoing China market intelligence programme.</div></div>
+    </div>
+  </div>
+
+  <!-- WNTBT panel — full width, gold top border -->
+  <div style="background:#0f1922">
+    <div style="display:flex;align-items:center;gap:16px;padding:12px 16px 8px;border-bottom:1px solid #1c2e3e">
+      <span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.1em;font-weight:700;color:#d4a230">WHAT NEEDS TO BE TRUE</span>
+      <span style="flex:1;height:1px;background:#1c2e3e"></span>
+      <span style="font-family:Arial,sans-serif;font-size:0.65rem;color:#4a6278">All conditions must hold for hypothesis to confirm</span>
+    </div>
+    <div style="padding:4px 16px 12px">
+      <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:#d4a230;font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-family:Arial,sans-serif;font-size:0.82rem;color:#e8eef5;line-height:1.55">VW China deliveries fall below 2.5M units in 2025 from 3.2M in 2023</span></div><div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:#d4a230;font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-family:Arial,sans-serif;font-size:0.82rem;color:#e8eef5;line-height:1.55">BYD surpasses VW as China's number one passenger car brand by volume before end 2025</span></div><div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:#d4a230;font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-family:Arial,sans-serif;font-size:0.82rem;color:#e8eef5;line-height:1.55">VW China JV partners publicly seek to renegotiate technology royalty terms before 2026</span></div><div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:#d4a230;font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-family:Arial,sans-serif;font-size:0.82rem;color:#e8eef5;line-height:1.55">VW announces a dedicated China-only EV platform by end 2025 as a defensive measure</span></div>
+    </div>
+    <!-- Action implication -->
+    <div style="padding:10px 16px 14px;border-top:1px solid #1c2e3e">
+      <div style="font-family:Courier New,monospace;font-size:0.5rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:5px">ENGAGEMENT IMPLICATION</div>
+      <div style="font-family:Arial,sans-serif;font-size:0.82rem;color:#8fa3b5;line-height:1.6;padding-left:12px;border-left:2px solid #d4a230">China localisation intelligence is the most commercially sensitive gap in VW's current scouting portfolio.</div>
+    </div>
+  </div>
+
+</div>
+
+</div>
+</section>
+</body>
+</html>
