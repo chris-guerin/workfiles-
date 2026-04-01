@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signal Engine · Campaign Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#080b12;--surf:#0e1420;--surf2:#141a28;--border:#1e2a3a;--border2:#243040;
+  --accent:#00c9a7;--accent2:#0090ff;--accent3:#f59e0b;--accent4:#e040fb;
+  --red:#ff4d6d;--text:#e8eef8;--text2:#8a9bb8;--text3:#4a5a72;
+  --fh:'Syne',sans-serif;--fm:'DM Mono',monospace;--fb:'Inter',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:13px;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;gap:0;padding:0 20px;height:48px;background:var(--surf);border-bottom:1px solid var(--border);flex-shrink:0}
+.logo{font-family:var(--fh);font-size:15px;font-weight:800;letter-spacing:.05em;color:var(--accent);margin-right:24px;display:flex;align-items:center;gap:8px}
+.logo-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent)}
+.mod-badge{font-family:var(--fm);font-size:10px;color:var(--accent3);background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);border-radius:3px;padding:2px 7px;letter-spacing:.08em;text-transform:uppercase}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.ts{font-family:var(--fm);font-size:10px;color:var(--text3)}
+.key-wrap{display:flex;align-items:center;gap:8px;background:var(--surf2);border:1px solid var(--border);border-radius:5px;padding:4px 10px}
+.key-wrap:focus-within{border-color:var(--accent)}
+.key-input{background:transparent;border:none;outline:none;font-family:var(--fm);font-size:10px;color:var(--text2);width:200px}
+.key-input::placeholder{color:var(--text3)}
+.key-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.key-dot.unset{background:var(--text3)}.key-dot.set{background:var(--accent);box-shadow:0 0 6px var(--accent)}.key-dot.err{background:var(--red)}
+.key-saved{font-family:var(--fm);font-size:9px;color:var(--accent);opacity:0;transition:opacity .3s}
+.key-saved.show{opacity:1}
+
+/* MAIN 3-COL */
+.main{flex:1;display:grid;grid-template-columns:300px 1fr 340px;overflow:hidden}
+.panel{display:flex;flex-direction:column;overflow:hidden;border-right:1px solid var(--border)}
+.panel:last-child{border-right:none}
+.panel-hdr{padding:14px 16px 12px;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--surf)}
+.panel-title{font-family:var(--fh);font-size:13px;font-weight:700;margin-bottom:2px}
+.panel-sub{font-family:var(--fm);font-size:9px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase}
+.panel-body{flex:1;overflow-y:auto;padding:14px}
+
+/* CAMPAIGN CARDS */
+.cam-card{background:var(--surf);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:all .15s;position:relative}
+.cam-card:hover{border-color:var(--border2);background:var(--surf2)}
+.cam-card.active-sel{border-color:var(--accent);background:rgba(0,201,167,.04)}
+.cam-card.week1{border-left:3px solid var(--accent)}
+.cam-card.week2{border-left:3px solid var(--accent2)}
+.cam-card.week3{border-left:3px solid var(--accent3)}
+.cam-card.week4{border-left:3px solid var(--accent4)}
+.cam-card.complete{border-left:3px solid var(--text3);opacity:.5}
+
+.cam-hdr{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px}
+.cam-week-badge{font-family:var(--fm);font-size:9px;padding:2px 7px;border-radius:3px;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;flex-shrink:0}
+.wk1{background:rgba(0,201,167,.12);color:var(--accent);border:1px solid rgba(0,201,167,.3)}
+.wk2{background:rgba(0,144,255,.12);color:var(--accent2);border:1px solid rgba(0,144,255,.3)}
+.wk3{background:rgba(245,158,11,.12);color:var(--accent3);border:1px solid rgba(245,158,11,.3)}
+.wk4{background:rgba(224,64,251,.12);color:var(--accent4);border:1px solid rgba(224,64,251,.3)}
+
+.cam-headline{font-family:var(--fh);font-size:11px;font-weight:700;flex:1;line-height:1.4}
+.cam-meta{font-family:var(--fm);font-size:9px;color:var(--text3);margin-top:4px}
+.cam-recipients{font-family:var(--fm);font-size:9px;color:var(--text2);margin-top:4px}
+.cam-actions{display:flex;gap:5px;margin-top:8px}
+.cam-btn{font-family:var(--fm);font-size:8px;padding:3px 8px;border-radius:3px;cursor:pointer;border:1px solid var(--border);color:var(--text3);background:transparent;transition:all .15s;letter-spacing:.04em;text-transform:uppercase}
+.cam-btn:hover{color:var(--text2);border-color:var(--border2)}
+.cam-btn.primary{background:rgba(0,201,167,.1);color:var(--accent);border-color:rgba(0,201,167,.3)}
+.cam-btn.danger{background:rgba(255,77,109,.07);color:var(--red);border-color:rgba(255,77,109,.25)}
+
+.new-cam-btn{width:100%;padding:10px;font-family:var(--fh);font-size:12px;font-weight:700;letter-spacing:.04em;border:1px dashed var(--border2);border-radius:8px;cursor:pointer;background:transparent;color:var(--text3);transition:all .2s;margin-bottom:8px}
+.new-cam-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(0,201,167,.04)}
+
+.cam-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:50%;gap:10px;color:var(--text3)}
+
+/* SIGNAL INPUT for new campaign */
+.new-cam-form{background:var(--surf);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:10px}
+.field-label{font-family:var(--fm);font-size:9px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;margin-top:12px}
+.field-label:first-child{margin-top:0}
+textarea,input[type=text]{width:100%;background:var(--surf2);border:1px solid var(--border);border-radius:5px;padding:8px 10px;font-family:var(--fb);font-size:12px;color:var(--text);outline:none;transition:border-color .15s;resize:none}
+textarea:focus,input[type=text]:focus{border-color:var(--accent)}
+textarea::placeholder,input::placeholder{color:var(--text3)}
+.create-btn{width:100%;margin-top:10px;padding:9px;font-family:var(--fh);font-size:12px;font-weight:700;border:none;border-radius:6px;cursor:pointer;background:linear-gradient(135deg,var(--accent),#009a80);color:#080b12;transition:all .2s}
+.create-btn:hover{box-shadow:0 4px 16px rgba(0,201,167,.4);transform:translateY(-1px)}
+.create-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* CENTRE PANEL — CAMPAIGN BUILDER */
+.builder-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;color:var(--text3)}
+.builder-section{margin-bottom:20px}
+.sec-label{font-family:var(--fm);font-size:9px;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* Contact selection table */
+.contact-table{width:100%;border-collapse:collapse;font-size:11px}
+.contact-table th{font-family:var(--fm);font-size:8px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;text-align:left;padding:4px 8px 8px;border-bottom:1px solid var(--border)}
+.contact-table td{padding:6px 8px;border-bottom:1px solid rgba(30,42,58,.4);vertical-align:middle}
+.contact-table tr:hover td{background:var(--surf2)}
+.contact-table tr.excluded td{opacity:.35}
+.contact-check{width:14px;height:14px;cursor:pointer;accent-color:var(--accent)}
+.seniority-pip{font-family:var(--fm);font-size:8px;padding:1px 5px;border-radius:3px}
+.C-SUITE{background:rgba(255,77,109,.1);color:var(--red)}
+.VP,.SVP{background:rgba(245,158,11,.12);color:var(--accent3)}
+.DIRECTOR{background:rgba(0,144,255,.1);color:var(--accent2)}
+
+/* Persona group email editor */
+.persona-group{background:var(--surf);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:10px}
+.pg-hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.pg-badge{font-family:var(--fm);font-size:9px;padding:3px 8px;border-radius:4px;letter-spacing:.05em;text-transform:uppercase}
+.pg-count{font-family:var(--fm);font-size:9px;color:var(--text3)}
+.pg-subject{font-family:var(--fm);font-size:10px;color:var(--accent3);margin-bottom:6px;padding:6px 8px;background:var(--bg);border-radius:4px;border:1px solid var(--border)}
+.pg-body{font-size:11px;color:var(--text2);line-height:1.7;padding:8px 10px;background:var(--bg);border-radius:4px;border:1px solid var(--border);white-space:pre-wrap;min-height:80px}
+.pg-actions{display:flex;gap:6px;margin-top:8px}
+.pg-btn{font-family:var(--fm);font-size:9px;padding:5px 10px;border-radius:4px;cursor:pointer;border:1px solid var(--border);color:var(--text3);background:var(--surf2);transition:all .15s;letter-spacing:.04em;text-transform:uppercase}
+.pg-btn:hover{color:var(--text2);border-color:var(--border2)}
+.pg-btn.gen{background:rgba(224,64,251,.08);color:var(--accent4);border-color:rgba(224,64,251,.3)}
+.pg-btn.gen:hover{background:rgba(224,64,251,.15)}
+.pg-btn.edit{background:rgba(0,144,255,.08);color:var(--accent2);border-color:rgba(0,144,255,.3)}
+
+/* loading ring */
+.loading-ring{width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* CSV upload zone */
+.upload-zone{border:1px dashed var(--border2);border-radius:8px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:10px}
+.upload-zone:hover{border-color:var(--accent);background:rgba(0,201,167,.04)}
+.upload-zone.drag{border-color:var(--accent);background:rgba(0,201,167,.08)}
+.upload-zone-txt{font-family:var(--fm);font-size:10px;color:var(--text3);line-height:1.7}
+.upload-zone-txt span{color:var(--accent)}
+
+/* RIGHT PANEL — EXPORT */
+.today-stat{display:flex;gap:0;border-bottom:1px solid var(--border);flex-shrink:0}
+.ts-box{flex:1;padding:10px 12px;border-right:1px solid var(--border);text-align:center}
+.ts-box:last-child{border-right:none}
+.ts-val{font-family:var(--fh);font-size:18px;font-weight:800}
+.ts-label{font-family:var(--fm);font-size:8px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-top:2px}
+
+.export-item{background:var(--surf);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px}
+.ei-hdr{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.ei-week{font-family:var(--fm);font-size:9px;padding:2px 7px;border-radius:3px;letter-spacing:.05em;text-transform:uppercase}
+.ei-headline{font-size:11px;color:var(--text2);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ei-count{font-family:var(--fm);font-size:10px;color:var(--text3)}
+.ei-status{font-family:var(--fm);font-size:9px}
+.ei-ready{color:var(--accent)}
+.ei-pending{color:var(--accent3)}
+
+.export-all-btn{width:100%;padding:11px;font-family:var(--fh);font-size:13px;font-weight:700;letter-spacing:.04em;border:none;border-radius:8px;cursor:pointer;background:linear-gradient(135deg,var(--accent),#009a80);color:#080b12;transition:all .2s;margin-top:4px}
+.export-all-btn:hover{box-shadow:0 4px 20px rgba(0,201,167,.4);transform:translateY(-1px)}
+.export-all-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+.export-sql-btn{width:100%;padding:8px;font-family:var(--fm);font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;border-radius:6px;cursor:pointer;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);color:var(--accent3);margin-top:6px;transition:all .15s}
+.export-sql-btn:hover{background:rgba(245,158,11,.15)}
+
+/* engagement update */
+.eng-section{border-top:1px solid var(--border);padding-top:14px;margin-top:6px}
+.eng-title{font-family:var(--fm);font-size:9px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+.eng-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:11px}
+.eng-name{flex:1;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.eng-chip{font-family:var(--fm);font-size:8px;padding:2px 6px;border-radius:3px;cursor:pointer;border:1px solid var(--border);color:var(--text3);background:transparent;transition:all .1s}
+.eng-chip:hover{color:var(--text2)}
+.eng-chip.opened{background:rgba(0,201,167,.1);color:var(--accent);border-color:rgba(0,201,167,.3)}
+.eng-chip.replied{background:rgba(245,158,11,.12);color:var(--accent3);border-color:rgba(245,158,11,.3)}
+.eng-chip.meeting{background:rgba(224,64,251,.1);color:var(--accent4);border-color:rgba(224,64,251,.3)}
+
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo"><div class="logo-dot"></div>SIGNAL ENGINE</div>
+  <span class="mod-badge">Campaign Manager</span>
+  <div class="topbar-right">
+    <div class="key-wrap">
+      <svg width="11" height="11" viewBox="0 0 16 16" fill="var(--text3)"><path d="M0 8a4 4 0 0 1 7.465-2H14a.5.5 0 0 1 .354.146l1.5 1.5a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0L13 9.207l-.646.647a.5.5 0 0 1-.708 0L11 9.207l-.646.647A.5.5 0 0 1 8 10H7.465A4 4 0 0 1 0 8zm4-3a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg>
+      <input type="password" class="key-input" id="apiKeyInput" placeholder="sk-ant-api03-..." oninput="onKey(this.value)" autocomplete="off" spellcheck="false">
+      <div class="key-dot unset" id="keyDot"></div>
+      <span class="key-saved" id="keySaved">saved</span>
+    </div>
+    <span class="ts" id="ts"></span>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- PANEL 1: CAMPAIGN LIST -->
+  <div class="panel">
+    <div class="panel-hdr">
+      <div class="panel-title">Campaigns</div>
+      <div class="panel-sub">Active · Up to 4 concurrent</div>
+    </div>
+    <div class="panel-body" id="campaignList">
+      <div class="cam-empty">
+        <div style="font-size:28px;opacity:.3">◈</div>
+        <div style="font-family:var(--fm);font-size:10px;letter-spacing:.06em;text-align:center">No active campaigns.<br>Create one below.</div>
+      </div>
+    </div>
+    <!-- New campaign form at bottom -->
+    <div style="padding:12px;border-top:1px solid var(--border);background:var(--surf);flex-shrink:0">
+      <div id="newCamForm" style="display:none">
+        <div class="new-cam-form">
+          <div class="field-label">Signal Headline</div>
+          <input type="text" id="ncHeadline" placeholder="e.g. Toyota SSB pilot line confirmed operational">
+          <div class="field-label">Why It Matters</div>
+          <textarea id="ncSummary" rows="2" placeholder="1-2 sentences on strategic implication..."></textarea>
+          <div class="field-label">Initiative</div>
+          <select id="ncInitiative" style="width:100%;background:var(--surf2);border:1px solid var(--border);border-radius:5px;padding:7px 9px;font-family:var(--fb);font-size:12px;color:var(--text);outline:none">
+            <option value="">Select matching initiative...</option>
+          </select>
+          <button class="create-btn" onclick="createCampaign()">✦ Create Campaign</button>
+        </div>
+      </div>
+      <button class="new-cam-btn" id="newCamBtn" onclick="toggleNewCamForm()">+ New Campaign</button>
+    </div>
+  </div>
+
+  <!-- PANEL 2: CAMPAIGN BUILDER -->
+  <div class="panel">
+    <div class="panel-hdr">
+      <div class="panel-title" id="builderTitle">Campaign Builder</div>
+      <div class="panel-sub" id="builderSub">Select a campaign to build</div>
+    </div>
+    <div class="panel-body" id="builderPanel">
+      <div class="builder-empty">
+        <div style="font-size:32px;opacity:.25">⬡</div>
+        <div style="font-family:var(--fm);font-size:10px;letter-spacing:.06em;text-align:center;line-height:1.8">Select a campaign from the left<br>to build today's emails</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 3: EXPORT + ENGAGEMENT -->
+  <div class="panel" style="border-right:none">
+    <div class="panel-hdr">
+      <div class="panel-title">Today's Send</div>
+      <div class="panel-sub">Export · Track · Record</div>
+    </div>
+    <div class="today-stat" id="todayStats">
+      <div class="ts-box"><div class="ts-val" id="stat-campaigns">0</div><div class="ts-label">Campaigns</div></div>
+      <div class="ts-box"><div class="ts-val" id="stat-emails" style="color:var(--accent)">0</div><div class="ts-label">Emails</div></div>
+      <div class="ts-box"><div class="ts-val" id="stat-entities" style="color:var(--accent3)">0</div><div class="ts-label">Entities</div></div>
+    </div>
+    <div class="panel-body" id="exportPanel">
+      <div style="font-family:var(--fm);font-size:10px;color:var(--text3);text-align:center;padding:20px 0">Build campaigns to see export options</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+//  EMBEDDED DATA
+// ══════════════════════════════════════════════════════════════
+// ── N8N API CONFIGURATION ───────────────────────────────────────────────────
+const N8N_BASE = 'https://n8n-production-86279.up.railway.app';
+const CONTACTS_URL = N8N_BASE + '/webhook/contacts';
+const SEND_RECORD_URL = N8N_BASE + '/webhook/send-record';
+
+// ── CONTACTS API ─────────────────────────────────────────────────────────────
+// Contacts are now fetched live from Railway SQLite via n8n
+// No data embedded — 27k contacts served on demand
+async function fetchContacts(entityId, personaId, tier) {
+  const params = new URLSearchParams();
+  if (entityId)  params.set('entity_id',  entityId);
+  if (personaId) params.set('persona_id', personaId);
+  if (tier)      params.set('tier',       tier);
+  params.set('email_only', 'true');
+  params.set('limit', '500');
+  try {
+    const resp = await fetch(CONTACTS_URL + '?' + params.toString());
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    // Normalise field names to match existing code expectations
+    return (data.contacts || []).map(c => ({
+      id:      c.contact_id,
+      name:    c.name,
+      title:   c.title,
+      email:   c.email,
+      company: c.company,
+      eid:     c.entity_id,
+      pid:     c.persona_id,
+      tier:    c.tier,
+      sen:     c.seniority
+    }));
+  } catch(e) {
+    console.error('fetchContacts failed:', e);
+    flash('Could not load contacts from database. Check n8n is running.');
+    return [];
+  }
+}
+
+// ── SEND RECORD WRITER ───────────────────────────────────────────────────────
+async function writeSendRecords(records) {
+  try {
+    const resp = await fetch(SEND_RECORD_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ records })
+    });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    console.log('Send records written:', data.written);
+    return data.written || 0;
+  } catch(e) {
+    console.error('writeSendRecords failed:', e);
+    return 0;
+  }
+}
+const REF = {"I":[{"initiative_id":"INI_SHELL_001","entity_id":"SHELL","name":"CCS Industrialisation","objective":"Package CCS learnings as commercial service for industrial emitters via Northern Lights JV","priority":"critical","match_keywords":"[\"carbon capture\", \"CCS scale\", \"industrial decarbonisation\", \"CO2 storage\", \"CCS-as-a-service\", \"Northern Lights\", \"Quest\", \"CCUS\", \"sequestration\"]","anti_keywords":"[\"direct air capture\", \"nature-based\", \"voluntary offsets\"]","owner_personas":"[\"TECH_SCOUT\", \"STRATEGY_DIRECTOR\", \"SUSTAINABILITY\"]"},{"initiative_id":"INI_SHELL_002","entity_id":"SHELL","name":"Blue Hydrogen Industrial Scale","objective":"Retain blue H2 for hard-to-abate sectors; validate which H2 applications generate returns","priority":"active","match_keywords":"[\"blue hydrogen\", \"industrial hydrogen\", \"H2 offtake\", \"hydrogen cost\", \"electrolyser cost\", \"SMR CCS\", \"hydrogen production\"]","anti_keywords":"[\"hydrogen mobility\", \"fuel cell vehicle\", \"hydrogen fuelling station\"]","owner_personas":"[\"TECH_SCOUT\", \"STRATEGY_DIRECTOR\"]"},{"initiative_id":"INI_SHELL_003","entity_id":"SHELL","name":"SAF Position","objective":"Build SAF trading/blending position via airline offtake; target 10% aviation fuel as SAF by 2030","priority":"active","match_keywords":"[\"SAF\", \"sustainable aviation\", \"aviation fuel mandate\", \"SAF production cost\", \"ReFuelEU\", \"CORSIA\", \"book and claim\", \"HEFA\", \"Fischer-Tropsch jet\"]","anti_keywords":"[\"electric aircraft\", \"hydrogen aircraft\", \"battery aviation\"]","owner_personas":"[\"STRATEGY_DIRECTOR\", \"SUSTAINABILITY\", \"PROCUREMENT\"]"},{"initiative_id":"INI_SHELL_004","entity_id":"SHELL","name":"Chemicals Specialisation","objective":"Exit commodity cracker economics; pivot to performance chemicals","priority":"active","match_keywords":"[\"specialty chemicals\", \"performance chemicals\", \"cracker economics\", \"lubricant additives\", \"chemicals transition\", \"polymer recycling\", \"bio-based chemicals\"]","anti_keywords":"[\"commodity chemicals\", \"ethylene commodity\", \"polyethylene commodity\"]","owner_personas":"[\"TECH_SCOUT\", \"RD_LEAD\", \"PROCUREMENT\"]"},{"initiative_id":"INI_BP_001","entity_id":"BP","name":"Upstream Technology Triage","objective":"Identify which transition technologies are worth retaining vs divesting","priority":"critical","match_keywords":"[\"technology triage\", \"H2 Teesside\", \"blue hydrogen\", \"biogas\", \"RNG\", \"CCS\", \"carbon capture\", \"Archaea\", \"transition technology\"]","anti_keywords":"[\"offshore wind\", \"solar farm\", \"green hydrogen gigawatt\"]","owner_personas":"[\"STRATEGY_DIRECTOR\", \"TECH_SCOUT\", \"EXECUTIVE_STRATEGIC\"]"},{"initiative_id":"INI_BP_002","entity_id":"BP","name":"EV Charging Network Scale","objective":"Grow bp pulse to 100k+ charge points; defend retail energy position","priority":"active","match_keywords":"[\"EV charging\", \"bp pulse\", \"charge point\", \"fast charging\", \"depot charging\", \"fleet charging\", \"charging infrastructure\"]","anti_keywords":"[\"hydrogen vehicle charging\"]","owner_personas":"[\"STRATEGY_DIRECTOR\", \"PROCUREMENT\"]"},{"initiative_id":"INI_BP_003","entity_id":"BP","name":"Blue H2 Teesside Validation","objective":"Validate H2Teesside as anchor industrial hydrogen project","priority":"active","match_keywords":"[\"blue hydrogen\", \"H2Teesside\", \"industrial hydrogen\", \"hydrogen offtake\", \"SMR\", \"carbon capture hydrogen\", \"H2 economics\"]","anti_keywords":"[\"green hydrogen\", \"electrolyser\", \"offshore wind hydrogen\"]","owner_personas":"[\"TECH_SCOUT\", \"STRATEGY_DIRECTOR\", \"SUSTAINABILITY\"]"},{"initiative_id":"INI_VW_001","entity_id":"VW_GROUP","name":"Cost Structure Reset","objective":"Reduce manufacturing cost per vehicle to compete with BYD and Tesla","priority":"critical","match_keywords":"[\"manufacturing cost\", \"cost per vehicle\", \"gigacasting\", \"cell-to-pack\", \"LFP cost\", \"Chinese EV manufacturing\", \"cost competitiveness\"]","anti_keywords":"[\"premium features\", \"luxury positioning\"]","owner_personas":"[\"STRATEGY_DIRECTOR\", \"EXECUTIVE_STRATEGIC\", \"PROCUREMENT\"]"},{"initiative_id":"INI_VW_002","entity_id":"VW_GROUP","name":"Software Platform Consolidation","objective":"Resolve CARIAD crisis; deliver VW.OS across group brands","priority":"critical","match_keywords":"[\"SDV\", \"software-defined vehicle\", \"CARIAD\", \"VW.OS\", \"OTA update\", \"vehicle software\", \"automotive software platform\", \"Android Automotive\"]","anti_keywords":"[\"hardware-only\", \"legacy ECU\"]","owner_personas":"[\"TECH_SCOUT\", \"STRATEGY_DIRECTOR\", \"RD_LEAD\"]"},{"initiative_id":"INI_VW_003","entity_id":"VW_GROUP","name":"China Volume Defence","objective":"Arrest market share loss in China against BYD and local EV brands","priority":"critical","match_keywords":"[\"China EV\", \"SAIC JV\", \"local EV\", \"BYD competition\", \"Chinese OEM\", \"China market share\", \"affordable EV China\"]","anti_keywords":"[\"export to China\", \"premium only China\"]","owner_personas":"[\"STRATEGY_DIRECTOR\", \"EXECUTIVE_STRATEGIC\"]"},{"initiative_id":"INI_AUDI_001","entity_id":"AUDI","name":"PPE Platform Volume Ramp","objective":"Scale A6 e-tron and Q6 e-tron on PPE platform","priority":"critical","match_keywords":"[\"PPE platform\", \"e-tron\", \"A6 e-tron\", \"Q6 e-tron\", \"800V\", \"premium EV\", \"ultra-fast charging\"]","anti_keywords":"[\"ICE only\", \"diesel only\"]","owner_personas":"[\"TECH_SCOUT\", \"STRATEGY_DIRECTOR\"]"},{"initiative_id":"INI_AUDI_002","entity_id":"AUDI","name":"Premium EV Differentiation vs Chinese","objective":"Defend premium pricing against NIO Li Auto ZEEKR entering European market","priority":"active","match_keywords":"[\"premium EV differentiation\", \"Chinese premium EV\", \"NIO\", \"Li Auto\", \"ZEEKR\", \"luxury EV\", \"in-car experience\"]","anti_keywords":"[\"volume EV\", \"commodity feature\"]","owner_personas":"[\"STRATEGY_DIRECTOR\", \"TECH_SCOUT\", \"RD_LEAD\"]"},{"initiative_id":"INI_MBZ_001","entity_id":"MERCEDES","name":"MB.OS Software Platform","objective":"Deliver MB.OS as in-house automotive OS; establish OTA revenue stream","priority":"critical","match_keywords":"[\"MB.OS\", \"software-defined\", \"OTA update\", \"in-car software\", \"vehicle OS\", \"automotive operating system\", \"HyperScreen\", \"MBUX\", \"Level 3\"]","anti_keywords":"[\"third-party OS dependency\", \"no OTA\"]","owner_personas":"[\"TECH_SCOUT\", \"STRATEGY_DIRECTOR\", \"RD_LEAD\"]"},{"initiative_id":"INI_MBZ_002","entity_id":"MERCEDES","name":"Luxury EV Pricing Defence","objective":"Maintain price premium for EQS EQE against Chinese luxury EVs","priority":"critical","match_keywords":"[\"luxury EV\", \"EQS\", \"EQE\", \"ultra-luxury\", \"Maybach EV\", \"AMG electric\", \"premium pricing\", \"luxury differentiation\"]","anti_keywords":"[\"volume EV\", \"affordable EV\", \"mass market\"]","owner_personas":"[\"EXECUTIVE_STRATEGIC\", \"STRATEGY_DIRECTOR\"]"},{"initiative_id":"INI_EDF_001","entity_id":"EDF","name":"Nuclear Renaissance Leadership","objective":"Position EDF as global leader in nuclear build; win EPR2 orders","priority":"critical","match_keywords":"[\"nuclear\", \"EPR2\", \"EPR\", \"small modular reactor\", \"SMR\", \"nuclear new build\", \"reactor\", \"Framatome\", \"advanced nuclear\", \"NUWARD\"]","anti_keywords":"[\"offshore wind\", \"solar PV\", \"gas power\"]","owner_personas":"[\"STRATEGY_DIRECTOR\", \"TECH_SCOUT\", \"EXECUTIVE_STRATEGIC\"]"},{"initiative_id":"INI_EDF_002","entity_id":"EDF","name":"Nuclear-Hydrogen Integration","objective":"Explore coupling nuclear heat to electrolysis for clean hydrogen","priority":"active","match_keywords":"[\"nuclear hydrogen\", \"electrolysis\", \"nuclear heat\", \"pink hydrogen\", \"high temperature electrolysis\", \"industrial hydrogen nuclear\"]","anti_keywords":"[\"fossil hydrogen\", \"natural gas hydrogen\"]","owner_personas":"[\"TECH_SCOUT\", \"RD_LEAD\", \"SUSTAINABILITY\"]"},{"initiative_id":"INI_EON_001","entity_id":"EON","name":"Grid Digitalisation & Flexibility","objective":"Deploy smart grid technology to manage EV and heat pump load growth","priority":"active","match_keywords":"[\"smart grid\", \"grid digitalisation\", \"demand flexibility\", \"EV grid integration\", \"vehicle-to-grid\", \"V2G\", \"demand response\", \"grid battery storage\", \"BESS grid\"]","anti_keywords":"[\"fossil grid\", \"unmanaged load\"]","owner_personas":"[\"TECH_SCOUT\", \"STRATEGY_DIRECTOR\", \"RD_LEAD\"]"},{"initiative_id":"INI_EON_002","entity_id":"EON","name":"Customer Energy Management","objective":"Bundle home solar heat pump EV charging into integrated solution","priority":"active","match_keywords":"[\"home energy management\", \"heat pump\", \"solar home\", \"EV charging home\", \"customer energy solution\", \"prosumer\", \"home battery\", \"energy as a service\"]","anti_keywords":"[\"commodity supply only\", \"metering only\"]","owner_personas":"[\"STRATEGY_DIRECTOR\", \"PROCUREMENT\"]"},{"initiative_id":"INI_HAL_001","entity_id":"HALLIBURTON","name":"Autonomous Drilling & Completion","objective":"Deploy LOGIX autonomous drilling and ZEUS e-frac at scale","priority":"critical","match_keywords":"[\"autonomous drilling\", \"LOGIX\", \"e-frac\", \"electric frac\", \"ZEUS\", \"completion technology\", \"AI drilling\", \"digital oilfield\", \"automated completion\"]","anti_keywords":"[\"conventional drilling only\", \"manual completion\"]","owner_personas":"[\"TECH_SCOUT\", \"RD_LEAD\", \"STRATEGY_DIRECTOR\"]"},{"initiative_id":"INI_HAL_002","entity_id":"HALLIBURTON","name":"International Growth \u2014 Middle East & LatAm","objective":"Capture NOC upstream investment in Saudi Arabia UAE Iraq and Brazil","priority":"active","match_keywords":"[\"Saudi Arabia\", \"Middle East upstream\", \"NOC\", \"Aramco\", \"ADNOC\", \"Iraq upstream\", \"Brazil deepwater\", \"Petrobras\", \"international oilfield\"]","anti_keywords":"[\"North America only\", \"shale only\"]","owner_personas":"[\"EXECUTIVE_STRATEGIC\", \"STRATEGY_DIRECTOR\"]"},{"initiative_id":"INI_IFX_001","entity_id":"INFINEON","name":"SiC 200mm Fab Cost Leadership","objective":"Ramp Dresden 200mm SiC fab to halve production cost; defend 60% share","priority":"critical","match_keywords":"[\"silicon carbide\", \"SiC\", \"SiC MOSFET\", \"CoolSiC\", \"200mm SiC\", \"EV inverter\", \"power semiconductor\", \"800V EV\", \"traction inverter\"]","anti_keywords":"[\"silicon only IGBT\", \"legacy power semiconductor\"]","owner_personas":"[\"TECH_SCOUT\", \"RD_LEAD\", \"STRATEGY_DIRECTOR\"]"},{"initiative_id":"INI_IFX_002","entity_id":"INFINEON","name":"GaN Automotive Scale-Up","objective":"Scale GaN from consumer to automotive 48V before Chinese GaN entry","priority":"active","match_keywords":"[\"GaN\", \"gallium nitride\", \"CoolGaN\", \"48V\", \"mild hybrid\", \"automotive GaN\", \"power electronics\", \"on-board charger\", \"wide bandgap\"]","anti_keywords":"[\"silicon only\", \"SiC only\"]","owner_personas":"[\"TECH_SCOUT\", \"RD_LEAD\"]"},{"initiative_id":"INI_IFX_003","entity_id":"INFINEON","name":"Post-SiC Technology Watch","objective":"Monitor Gallium Oxide technologies that could disrupt SiC post-2030","priority":"active","match_keywords":"[\"gallium oxide\", \"Ga2O3\", \"ultra-wide bandgap\", \"next gen semiconductor\", \"power device 2030\", \"beyond SiC\"]","anti_keywords":"[\"legacy silicon\", \"current generation only\"]","owner_personas":"[\"TECH_SCOUT\", \"RD_LEAD\"]"},{"initiative_id":"INI_ML_001","entity_id":"MICHELIN","name":"EV Tire Technology Leadership","objective":"Maintain premium position in EV-specific tires","priority":"critical","match_keywords":"[\"EV tire\", \"electric vehicle tire\", \"low rolling resistance\", \"EV range\", \"tire range\", \"load rating EV\", \"acoustic tire\", \"foam tire\"]","anti_keywords":"[\"ICE only tire\", \"commodity tire\", \"budget tire\"]","owner_personas":"[\"TECH_SCOUT\", \"RD_LEAD\", \"PROCUREMENT\"]"},{"initiative_id":"INI_ML_002","entity_id":"MICHELIN","name":"Sustainable Materials 80% Target","objective":"Reach 80% bio-sourced recycled inputs by 2030","priority":"active","match_keywords":"[\"sustainable materials\", \"bio-sourced\", \"recycled rubber\", \"renewable materials\", \"circular tire\", \"bio-based elastomer\", \"green materials\"]","anti_keywords":"[\"virgin fossil rubber\", \"conventional petroleum materials\"]","owner_personas":"[\"SUSTAINABILITY\", \"RD_LEAD\", \"TECH_SCOUT\"]"},{"initiative_id":"INI_ML_003","entity_id":"MICHELIN","name":"UPTIS Airless Tire Commercialisation","objective":"Bring UPTIS puncture-proof airless tire to commercial scale 2025","priority":"active","match_keywords":"[\"airless tire\", \"UPTIS\", \"puncture-proof\", \"non-pneumatic tire\", \"composite wheel\", \"airless\", \"run-flat\", \"smart tire\"]","anti_keywords":"[\"conventional pneumatic\", \"budget segment\"]","owner_personas":"[\"TECH_SCOUT\", \"STRATEGY_DIRECTOR\"]"},{"initiative_id":"INI_MOL_001","entity_id":"MOL","name":"Chemicals Transition Bio & Circular","objective":"Develop circular plastics and bio-based polymer pathways","priority":"critical","match_keywords":"[\"circular plastics\", \"bio-based polymer\", \"bio-PP\", \"pyrolysis\", \"chemical recycling\", \"waste-to-chemical\", \"sustainable polymer\", \"recycled feedstock\"]","anti_keywords":"[\"commodity virgin plastic\", \"fossil feedstock only\"]","owner_personas":"[\"TECH_SCOUT\", \"RD_LEAD\", \"STRATEGY_DIRECTOR\"]"},{"initiative_id":"INI_MOL_002","entity_id":"MOL","name":"CEE EV Charging Network","objective":"Build 2000+ charge points across CEE filling station network","priority":"active","match_keywords":"[\"EV charging CEE\", \"charge point\", \"filling station EV\", \"fast charging network\", \"CEE electric vehicle\", \"Eastern Europe EV\"]","anti_keywords":"[\"ICE only station\", \"no charging\"]","owner_personas":"[\"STRATEGY_DIRECTOR\", \"PROCUREMENT\"]"},{"initiative_id":"INI_CUPRA_001","entity_id":"SEAT_CUPRA","name":"CUPRA Brand EV Volume","objective":"Scale CUPRA to 300k+ units via Tavascan and Born","priority":"critical","match_keywords":"[\"CUPRA\", \"Tavascan\", \"Born EV\", \"CUPRA electric\", \"lifestyle EV\", \"youth EV\", \"affordable premium EV\", \"European EV brand\"]","anti_keywords":"[\"budget EV\", \"commodity EV\"]","owner_personas":"[\"STRATEGY_DIRECTOR\", \"TECH_SCOUT\"]"},{"initiative_id":"INI_CUPRA_002","entity_id":"SEAT_CUPRA","name":"Spain EV Manufacturing Hub","objective":"Position Martorell as VW Group's Southern European EV hub","priority":"active","match_keywords":"[\"Martorell\", \"Spain EV manufacturing\", \"VW Group hub\", \"affordable EV production\", \"EV hub Europe\", \"low cost EV manufacturing\"]","anti_keywords":"[\"premium only\", \"German factory only\"]","owner_personas":"[\"EXECUTIVE_STRATEGIC\", \"STRATEGY_DIRECTOR\"]"},{"initiative_id":"INI_SKODA_001","entity_id":"SKODA","name":"India Volume Platform","objective":"Hit 1M units in India by 2030 via MQB-A0-IN","priority":"active","match_keywords":"[\"India EV\", \"Kushaq\", \"Slavia\", \"India automobile\", \"MQB India\", \"Indian market\", \"localisation India\", \"India manufacturing\"]","anti_keywords":"[\"Europe only\", \"premium import India\"]","owner_personas":"[\"STRATEGY_DIRECTOR\", \"EXECUTIVE_STRATEGIC\"]"},{"initiative_id":"INI_SKODA_002","entity_id":"SKODA","name":"Value EV Proposition","objective":"Deliver ENYAQ and Elroq at price points below VW ID equivalents","priority":"active","match_keywords":"[\"value EV\", \"affordable EV\", \"ENYAQ\", \"Elroq\", \"MEB EV\", \"budget electric\", \"\\u0160koda electric\", \"LFP affordable\", \"entry level EV\"]","anti_keywords":"[\"premium only\", \"luxury EV\"]","owner_personas":"[\"STRATEGY_DIRECTOR\", \"PROCUREMENT\"]"},{"initiative_id":"INI_DAE_001","entity_id":"DATWYLER","name":"EV Battery Sealing Growth","objective":"Grow EV battery sealing revenue to \u20ac400M+ via thermal management gaskets","priority":"critical","match_keywords":"[\"battery sealing\", \"EV gasket\", \"thermal management seal\", \"4680 cell seal\", \"battery enclosure\", \"elastomer EV\", \"thermal runaway seal\", \"coolant seal EV\"]","anti_keywords":"[\"pharma only\", \"ICE sealing\"]","owner_personas":"[\"TECH_SCOUT\", \"RD_LEAD\", \"PROCUREMENT\"]"},{"initiative_id":"INI_DAE_002","entity_id":"DATWYLER","name":"Next-Gen Elastomers for High-Temp EV","objective":"Develop elastomers for EV applications requiring 200C+","priority":"active","match_keywords":"[\"high temperature elastomer\", \"EPDM EV\", \"fluorosilicone\", \"FKM\", \"polymer EV material\", \"elastomer chemistry\", \"thermal resistant polymer\"]","anti_keywords":"[\"conventional rubber\", \"standard EPDM only\"]","owner_personas":"[\"RD_LEAD\", \"TECH_SCOUT\"]"},{"initiative_id":"INI_WOCO_001","entity_id":"WOCO","name":"EV Acoustic Solutions","objective":"Develop NVH solutions for EV-specific noise sources","priority":"critical","match_keywords":"[\"EV acoustics\", \"NVH EV\", \"noise vibration harshness\", \"gear whine\", \"motor noise\", \"EV cabin noise\", \"acoustic management EV\", \"road noise EV\"]","anti_keywords":"[\"ICE exhaust noise\", \"intake silencer\", \"conventional engine mount\"]","owner_personas":"[\"RD_LEAD\", \"TECH_SCOUT\", \"PROCUREMENT\"]"},{"initiative_id":"INI_WOCO_002","entity_id":"WOCO","name":"Battery Elastomers & Thermal Interface","objective":"Expand into battery enclosure sealing thermal interface materials","priority":"active","match_keywords":"[\"battery elastomer\", \"thermal interface material\", \"TIM\", \"battery pack seal\", \"thermal management material\", \"EV battery gasket\"]","anti_keywords":"[\"ICE only\", \"no thermal management\"]","owner_personas":"[\"TECH_SCOUT\", \"RD_LEAD\"]"}],"E":[{"entity_id":"AUDI","name":"Audi AG","entity_type":"OEM_PREMIUM","strategic_posture":"Premium EV repositioning via PPE platform; cost restructuring 18k jobs; defending against Chinese premium disruptors"},{"entity_id":"BP","name":"BP plc","entity_type":"ENERGY_MAJOR","strategic_posture":"Reset strategy under new CEO, reduced renewables ambition, back to oil & gas focus"},{"entity_id":"DATWYLER","name":"Datwyler Group","entity_type":"TIER1_SUPPLIER","strategic_posture":"World leader in pharma elastomers and EV battery sealing; dual markets: healthcare closures and automotive EV gaskets"},{"entity_id":"EDF","name":"EDF Group","entity_type":"ENERGY_MAJOR","strategic_posture":"Nuclear renaissance strategy; 6 new EPR2 reactors; SMR development; nuclear-hydrogen integration; renationalised 2023"},{"entity_id":"EON","name":"E.ON SE","entity_type":"ENERGY_MAJOR","strategic_posture":"Europe's largest energy network operator; regulated infrastructure growth; smart grid and EV charging integration"},{"entity_id":"INFINEON","name":"Infineon Technologies AG","entity_type":"TIER1_SUPPLIER","strategic_posture":"World leader automotive semiconductors; 60% SiC power module share; Dresden 200mm fab"},{"entity_id":"MERCEDES","name":"Mercedes-Benz Group","entity_type":"OEM_PREMIUM","strategic_posture":"Luxury-first, software-defined, retreated from EV-only 2030 target"},{"entity_id":"MICHELIN","name":"Michelin Group","entity_type":"TIER1_SUPPLIER","strategic_posture":"EV tire leader; sustainable materials 80% bio-sourced target; UPTIS airless tire; Symbio hydrogen JV"},{"entity_id":"MOL","name":"MOL Group","entity_type":"ENERGY_MAJOR","strategic_posture":"CEE integrated energy & chemicals; polyolefins leader; chemicals transition; existing FB client"},{"entity_id":"SEAT_CUPRA","name":"SEAT S.A. / CUPRA","entity_type":"OEM_VOLUME","strategic_posture":"CUPRA as fastest-growing EU lifestyle EV brand; SEAT as VW Group's Spanish EV manufacturing hub"},{"entity_id":"SHELL","name":"Shell plc","entity_type":"ENERGY_MAJOR","strategic_posture":"Integrated energy transition, SAF, hydrogen, CCS, retreating from some renewables"},{"entity_id":"SKODA","name":"\u0160koda Auto","entity_type":"OEM_VOLUME","strategic_posture":"VW Group value brand; ENYAQ EV success; India expansion via MQB-A0-IN platform"},{"entity_id":"VW_GROUP","name":"Volkswagen Group","entity_type":"OEM_VOLUME","strategic_posture":"Volume electrification leader, SSP platform delayed, CARIAD challenges"},{"entity_id":"WOCO","name":"WOCO Group","entity_type":"TIER1_SUPPLIER","strategic_posture":"Family-owned German tier 1; NVH/acoustic solutions evolving from ICE to EV era"}],"CS":[{"entity_id":"BMW","heat_score":4.0,"heat_direction":"rising","watch_level":"WATCH"},{"entity_id":"MERCEDES","heat_score":4.5,"heat_direction":"rising","watch_level":"WATCH"},{"entity_id":"VW_GROUP","heat_score":5.0,"heat_direction":"stable","watch_level":"ACTIVE"},{"entity_id":"JLR","heat_score":2.5,"heat_direction":"stable","watch_level":"MONITOR"},{"entity_id":"TESLA","heat_score":6.0,"heat_direction":"rising","watch_level":"ACTIVE"},{"entity_id":"BYD","heat_score":7.0,"heat_direction":"rising","watch_level":"HOT"},{"entity_id":"STELLANTIS","heat_score":3.5,"heat_direction":"falling","watch_level":"WATCH"},{"entity_id":"TOYOTA","heat_score":4.0,"heat_direction":"stable","watch_level":"WATCH"},{"entity_id":"HYUNDAI_KIA","heat_score":4.5,"heat_direction":"rising","watch_level":"WATCH"},{"entity_id":"DAIMLER_TRUCK","heat_score":3.5,"heat_direction":"rising","watch_level":"WATCH"},{"entity_id":"VOLVO_GROUP","heat_score":3.0,"heat_direction":"stable","watch_level":"WATCH"},{"entity_id":"TRATON","heat_score":2.5,"heat_direction":"stable","watch_level":"MONITOR"},{"entity_id":"PACCAR","heat_score":3.0,"heat_direction":"stable","watch_level":"WATCH"},{"entity_id":"TESLA_SEMI","heat_score":3.5,"heat_direction":"rising","watch_level":"WATCH"},{"entity_id":"BYD_COMMERCIAL","heat_score":3.0,"heat_direction":"rising","watch_level":"WATCH"},{"entity_id":"SHELL","heat_score":6.5,"heat_direction":"rising","watch_level":"ACTIVE"},{"entity_id":"BP","heat_score":4.0,"heat_direction":"falling","watch_level":"WATCH"},{"entity_id":"TOTALENERGIES","heat_score":4.5,"heat_direction":"stable","watch_level":"WATCH"},{"entity_id":"EXXONMOBIL","heat_score":5.5,"heat_direction":"rising","watch_level":"ACTIVE"},{"entity_id":"EQUINOR","heat_score":4.0,"heat_direction":"stable","watch_level":"WATCH"},{"entity_id":"BOSCH","heat_score":4.0,"heat_direction":"stable","watch_level":"WATCH"},{"entity_id":"CONTINENTAL","heat_score":3.0,"heat_direction":"falling","watch_level":"WATCH"},{"entity_id":"QUANTUMSCAPE","heat_score":5.0,"heat_direction":"stable","watch_level":"ACTIVE"},{"entity_id":"NORTHVOLT","heat_score":2.0,"heat_direction":"falling","watch_level":"MONITOR"},{"entity_id":"AURORA","heat_score":4.5,"heat_direction":"rising","watch_level":"WATCH"},{"entity_id":"AUDI","heat_score":3.5,"heat_direction":"falling","watch_level":"WATCH"},{"entity_id":"DATWYLER","heat_score":2.5,"heat_direction":"rising","watch_level":"MONITOR"},{"entity_id":"EDF","heat_score":3.0,"heat_direction":"rising","watch_level":"WATCH"},{"entity_id":"EON","heat_score":3.5,"heat_direction":"stable","watch_level":"WATCH"},{"entity_id":"HALLIBURTON","heat_score":3.0,"heat_direction":"stable","watch_level":"WATCH"},{"entity_id":"INFINEON","heat_score":5.0,"heat_direction":"rising","watch_level":"ACTIVE"},{"entity_id":"MICHELIN","heat_score":3.0,"heat_direction":"stable","watch_level":"WATCH"},{"entity_id":"MOL","heat_score":2.5,"heat_direction":"stable","watch_level":"MONITOR"},{"entity_id":"SEAT_CUPRA","heat_score":3.5,"heat_direction":"rising","watch_level":"WATCH"},{"entity_id":"SKODA","heat_score":2.5,"heat_direction":"stable","watch_level":"MONITOR"},{"entity_id":"WOCO","heat_score":2.0,"heat_direction":"rising","watch_level":"MONITOR"}],"B":[{"bet_id":"BET_001","title":"Chinese OEMs manufacture in Europe by 2028","current_step":2,"total_steps":5,"confidence":7},{"bet_id":"BET_002","title":"Solid-state batteries reach automotive production by 2027","current_step":1,"total_steps":4,"confidence":6},{"bet_id":"BET_003","title":"CCS becomes a commercial service product by 2027","current_step":2,"total_steps":5,"confidence":7},{"bet_id":"BET_004","title":"SAF mandate drives first wave of long-term offtake by 2026","current_step":2,"total_steps":5,"confidence":8},{"bet_id":"BET_005","title":"SDV OS consolidates to 3 platforms by 2028","current_step":2,"total_steps":5,"confidence":5},{"bet_id":"BET_006","title":"Green hydrogen reaches $3/kg in one geography by 2027","current_step":1,"total_steps":4,"confidence":5}],"P":[{"persona_id":"TECH_SCOUT","name":"Technology Scout","framing":"Lead with what is technically new. Explain the capability shift. Name key players.","lead_with":"Technical novelty, capability delta, who filed what, which startups are funded","avoid":"Revenue implications, regulatory compliance","email_length":"MEDIUM"},{"persona_id":"STRATEGY_DIRECTOR","name":"Strategy Director","framing":"Lead with strategic implication. What does this mean for position? Who wins, who loses?","lead_with":"Competitive consequence, market structure change, strategic optionality","avoid":"Technical detail, methodology, implementation specifics","email_length":"BRIEF"},{"persona_id":"SUSTAINABILITY","name":"Sustainability / ESG Lead","framing":"Lead with regulatory or commitment angle. Does this help or complicate targets?","lead_with":"Regulation, mandate, reporting requirement, carbon cost, transition pathway","avoid":"Technology details disconnected from reportable metrics","email_length":"MEDIUM"},{"persona_id":"PROCUREMENT","name":"Procurement / Supply Chain","framing":"Lead with supply chain consequence. Risk or opportunity in sourcing?","lead_with":"Cost trajectory, supply availability, new supplier options, trade risk","avoid":"Technology architecture, long-term strategic scenarios","email_length":"BRIEF"},{"persona_id":"RD_LEAD","name":"R&D / Engineering Lead","framing":"Lead with technical detail and what it enables. Explain mechanism.","lead_with":"Technical mechanism, performance data, development timeline, IP landscape","avoid":"Market sizing, regulatory compliance, executive-level strategy","email_length":"LONG"},{"persona_id":"EXECUTIVE_STRATEGIC","name":"C-Suite / Executive","framing":"One paragraph maximum before key point. What changed, why it matters, decision implied.","lead_with":"The single most important implication, the decision it forces","avoid":"Technical detail, background context, lengthy analysis","email_length":"BRIEF"}]};
+
+const INI_MAP  = Object.fromEntries(REF.I.map(i => [i.initiative_id, i]));
+const ENT_MAP  = Object.fromEntries(REF.E.map(e => [e.entity_id, e]));
+const CS_MAP   = Object.fromEntries(REF.CS.map(c => [c.entity_id, c]));
+const BET_MAP  = Object.fromEntries(REF.B.map(b => [b.bet_id, b]));
+const PER_MAP  = Object.fromEntries(REF.P.map(p => [p.persona_id, p]));
+
+// Contacts by entity — loaded on demand from n8n/Railway SQLite
+// Cache to avoid repeated API calls within a session
+const CONT_BY_ENT = {};
+async function loadEntityContacts(entityId) {
+  if (CONT_BY_ENT[entityId]) return CONT_BY_ENT[entityId]; // cached
+  const contacts = await fetchContacts(entityId);
+  CONT_BY_ENT[entityId] = contacts;
+  return contacts;
+}
+// ── CONTACT LOOKUP HELPER ───────────────────────────────────────────────────
+// Looks up a contact from the session cache (populated by loadEntityContacts)
+function findContact(idOrEmail) {
+  const all = Object.values(CONT_BY_ENT).flat();
+  if (!idOrEmail) return null;
+  return all.find(c => c.id === idOrEmail || c.email?.toLowerCase() === String(idOrEmail).toLowerCase()) || null;
+}
+
+
+// Initiatives by entity
+const INI_BY_ENT = {};
+REF.I.forEach(i => {
+  if (!INI_BY_ENT[i.entity_id]) INI_BY_ENT[i.entity_id] = [];
+  INI_BY_ENT[i.entity_id].push(i);
+});
+
+// ══════════════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════════════
+let apiKey = '';
+let selectedCampaignId = null;
+
+// Load campaigns from localStorage
+function loadCampaigns() {
+  try { return JSON.parse(localStorage.getItem('se_campaigns') || '[]'); } catch { return []; }
+}
+function saveCampaigns(cams) {
+  localStorage.setItem('se_campaigns', JSON.stringify(cams));
+}
+
+// Load send records from localStorage
+function loadSends() {
+  try { return JSON.parse(localStorage.getItem('se_sends') || '[]'); } catch { return []; }
+}
+function saveSends(sends) {
+  localStorage.setItem('se_sends', JSON.stringify(sends));
+}
+
+// Exclusion list — contact_ids sent in last 28 days
+function getExcluded() {
+  const sends = loadSends();
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - 28);
+  return new Set(sends.filter(s => new Date(s.sent_date) > cutoff).map(s => s.contact_id));
+}
+
+// ══════════════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════════════
+function updateTS() {
+  document.getElementById('ts').textContent =
+    new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) + ' · ' +
+    new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+}
+updateTS(); setInterval(updateTS, 30000);
+
+// Load saved API key
+(function() {
+  try {
+    const k = localStorage.getItem('se_api_key');
+    if (k) { apiKey = k; document.getElementById('apiKeyInput').value = k; updateKeyDot(k); }
+  } catch {}
+})();
+
+function onKey(val) {
+  apiKey = val.trim();
+  updateKeyDot(apiKey);
+  clearTimeout(window._kt);
+  window._kt = setTimeout(() => {
+    if (apiKey.startsWith('sk-ant-')) {
+      try { localStorage.setItem('se_api_key', apiKey); } catch {}
+      const el = document.getElementById('keySaved');
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 2000);
+    }
+  }, 1000);
+}
+function updateKeyDot(v) {
+  document.getElementById('keyDot').className = 'key-dot ' + (!v?'unset':v.startsWith('sk-ant-')?'set':'err');
+}
+
+// Populate initiative selector
+function populateIniSelect() {
+  const sel = document.getElementById('ncInitiative');
+  REF.I.forEach(ini => {
+    const ent = ENT_MAP[ini.entity_id];
+    const opt = document.createElement('option');
+    opt.value = ini.initiative_id;
+    opt.textContent = `${ent?.name||ini.entity_id} — ${ini.name}`;
+    sel.appendChild(opt);
+  });
+}
+populateIniSelect();
+
+// Initial render
+renderCampaignList();
+updateExportPanel();
+
+// ══════════════════════════════════════════════════════════════
+//  CAMPAIGN LIST
+// ══════════════════════════════════════════════════════════════
+const weekColors = ['','wk1','wk2','wk3','wk4'];
+const weekBorderColors = ['','var(--accent)','var(--accent2)','var(--accent3)','var(--accent4)'];
+
+function renderCampaignList() {
+  const cams = loadCampaigns();
+  const el = document.getElementById('campaignList');
+
+  if (!cams.length) {
+    el.innerHTML = `<div class="cam-empty">
+      <div style="font-size:28px;opacity:.3">◈</div>
+      <div style="font-family:var(--fm);font-size:10px;letter-spacing:.06em;text-align:center">No active campaigns.<br>Create one below.</div>
+    </div>`;
+    return;
+  }
+
+  el.innerHTML = cams.map(cam => {
+    const ini = INI_MAP[cam.initiative_id] || {};
+    const ent = ENT_MAP[ini.entity_id] || {};
+    const isSelected = cam.campaign_id === selectedCampaignId;
+    const wc = weekColors[cam.current_week] || 'wk1';
+    const sends = loadSends().filter(s => s.campaign_id === cam.campaign_id && s.week_number === cam.current_week - 1);
+    const readyCount = sends.length;
+
+    return `<div class="cam-card ${wc} ${cam.status === 'complete' ? 'complete' : ''} ${isSelected ? 'active-sel' : ''}"
+         onclick="selectCampaign('${cam.campaign_id}')">
+      <div class="cam-hdr">
+        <span class="cam-week-badge ${wc}">${cam.status === 'complete' ? 'DONE' : 'WK ' + cam.current_week + '/4'}</span>
+        <div class="cam-headline">${esc(cam.headline)}</div>
+      </div>
+      <div class="cam-meta">${esc(ent.name||'')} · ${esc(ini.name||'')} · Started ${cam.start_date}</div>
+      ${readyCount ? `<div class="cam-recipients">↳ Wk${cam.current_week-1}: ${readyCount} sent</div>` : ''}
+      <div class="cam-actions">
+        ${cam.status !== 'complete' ? `<div class="cam-btn primary" onclick="event.stopPropagation();selectCampaign('${cam.campaign_id}')">Build</div>` : ''}
+        <div class="cam-btn danger" onclick="event.stopPropagation();deleteCampaign('${cam.campaign_id}')">Remove</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function selectCampaign(id) {
+  selectedCampaignId = id;
+  renderCampaignList();
+  buildCampaign(id);
+}
+
+function deleteCampaign(id) {
+  if (!confirm('Remove this campaign?')) return;
+  const cams = loadCampaigns().filter(c => c.campaign_id !== id);
+  saveCampaigns(cams);
+  if (selectedCampaignId === id) {
+    selectedCampaignId = null;
+    document.getElementById('builderPanel').innerHTML = `<div class="builder-empty"><div style="font-size:32px;opacity:.25">⬡</div><div style="font-family:var(--fm);font-size:10px;letter-spacing:.06em;text-align:center;line-height:1.8">Select a campaign to build</div></div>`;
+  }
+  renderCampaignList();
+  updateExportPanel();
+}
+
+// ══════════════════════════════════════════════════════════════
+//  NEW CAMPAIGN
+// ══════════════════════════════════════════════════════════════
+let newCamFormOpen = false;
+function toggleNewCamForm() {
+  newCamFormOpen = !newCamFormOpen;
+  document.getElementById('newCamForm').style.display = newCamFormOpen ? 'block' : 'none';
+  document.getElementById('newCamBtn').textContent = newCamFormOpen ? '✕ Cancel' : '+ New Campaign';
+}
+
+function createCampaign() {
+  const headline = document.getElementById('ncHeadline').value.trim();
+  const summary  = document.getElementById('ncSummary').value.trim();
+  const iniId    = document.getElementById('ncInitiative').value;
+  if (!headline) { flash('Enter a signal headline'); return; }
+  if (!iniId)    { flash('Select an initiative'); return; }
+
+  const cams = loadCampaigns();
+  const active = cams.filter(c => c.status === 'active');
+  if (active.length >= 4) { flash('Max 4 active campaigns — complete one first'); return; }
+
+  const ini = INI_MAP[iniId];
+  const today = new Date().toISOString().slice(0,10);
+  const id = 'CAM_' + today.replace(/-/g,'') + '_' + String(cams.length+1).padStart(3,'0');
+
+  cams.unshift({
+    campaign_id: id,
+    initiative_id: iniId,
+    entity_id: ini.entity_id,
+    headline,
+    signal_summary: summary,
+    start_date: today,
+    current_week: 1,
+    status: 'active',
+    persona_emails: {},  // { persona_id: { subject, body } }
+    selected_contacts: [],
+  });
+
+  saveCampaigns(cams);
+  toggleNewCamForm();
+  document.getElementById('ncHeadline').value = '';
+  document.getElementById('ncSummary').value = '';
+  document.getElementById('ncInitiative').value = '';
+  selectCampaign(id);
+  renderCampaignList();
+  flash('Campaign created');
+}
+
+// ══════════════════════════════════════════════════════════════
+//  CAMPAIGN BUILDER
+// ══════════════════════════════════════════════════════════════
+async function buildCampaign(id) {
+  const cams = loadCampaigns();
+  const cam  = cams.find(c => c.campaign_id === id);
+  if (!cam) return;
+
+  const ini = INI_MAP[cam.initiative_id] || {};
+  const ent = ENT_MAP[ini.entity_id]    || {};
+
+  document.getElementById('builderTitle').textContent = cam.headline.slice(0,50) + (cam.headline.length>50?'…':'');
+  document.getElementById('builderSub').textContent = `${ent.name||''} · Week ${cam.current_week} of 4 · ${ini.name||''}`;
+
+  if (cam.current_week === 1) buildWeek1(cam, ini, ent);
+  else buildFollowUp(cam, ini, ent);
+}
+
+// ── WEEK 1: Contact selection ─────────────────────────────────
+async function buildWeek1(cam, ini, ent) {
+  const excluded = getExcluded();
+  const entityContacts = await loadEntityContacts(ini.entity_id);
+
+  // Sort: tier 1 first, then by seniority order
+  const senOrder = {'C-SUITE':0,'SVP':1,'VP':2,'DIRECTOR':3};
+  const sorted = [...entityContacts].sort((a,b) => {
+    if (a.tier !== b.tier) return a.tier - b.tier;
+    return (senOrder[a.sen]||9) - (senOrder[b.sen]||9);
+  });
+
+  const selected = new Set(cam.selected_contacts || []);
+
+  // Group selected by persona for email preview
+  const personaGroups = {};
+  sorted.forEach(c => {
+    if (!selected.has(c.id)) return;
+    if (!personaGroups[c.pid]) personaGroups[c.pid] = [];
+    personaGroups[c.pid].push(c);
+  });
+
+  let html = '';
+
+  // Contact selector
+  html += `<div class="builder-section">
+    <div class="sec-label">Contact Selection — ${esc(ent.name||'')} (${sorted.length} available)</div>
+    <div style="display:flex;gap:6px;margin-bottom:10px">
+      <div class="cam-btn" onclick="selectAllContacts('${cam.campaign_id}')">Select All</div>
+      <div class="cam-btn" onclick="selectNoneContacts('${cam.campaign_id}')">Clear</div>
+      <div class="cam-btn" onclick="selectTier1('${cam.campaign_id}')">Tier 1 Only</div>
+      <span style="font-family:var(--fm);font-size:9px;color:var(--accent);margin-left:auto;align-self:center">${selected.size} selected</span>
+    </div>
+    <table class="contact-table">
+      <thead><tr>
+        <th></th><th>Name</th><th>Title</th><th>Level</th><th>Persona</th>
+      </tr></thead>
+      <tbody>`;
+
+  sorted.forEach(c => {
+    const isExcluded = excluded.has(c.id);
+    const isSelected = selected.has(c.id);
+    html += `<tr class="${isExcluded?'excluded':''}" title="${isExcluded?'Currently in another campaign':''}">
+      <td><input type="checkbox" class="contact-check" ${isSelected?'checked':''} ${isExcluded?'disabled':''} 
+          onchange="toggleContact('${cam.campaign_id}','${c.id}',this.checked)"></td>
+      <td style="color:var(--text)">${esc(c.name)}</td>
+      <td style="color:var(--text2);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(c.title)}</td>
+      <td><span class="seniority-pip ${c.sen}">${c.sen}</span></td>
+      <td style="font-family:var(--fm);font-size:8px;color:var(--text3)">${c.pid.replace('_',' ')}</td>
+    </tr>`;
+  });
+
+  html += `</tbody></table></div>`;
+
+  // Persona email groups
+  if (selected.size > 0) {
+    html += `<div class="builder-section">
+      <div class="sec-label">Email Drafts by Persona</div>`;
+
+    const personaOrder = ['EXECUTIVE_STRATEGIC','STRATEGY_DIRECTOR','TECH_SCOUT','SUSTAINABILITY','PROCUREMENT','RD_LEAD'];
+    const presentPersonas = personaOrder.filter(pid => personaGroups[pid]?.length > 0);
+
+    presentPersonas.forEach(pid => {
+      const group = personaGroups[pid] || [];
+      const persona = PER_MAP[pid] || {};
+      const email = cam.persona_emails?.[pid] || {};
+      const personaColors = {
+        EXECUTIVE_STRATEGIC:'var(--red)',STRATEGY_DIRECTOR:'var(--accent2)',
+        TECH_SCOUT:'var(--accent)',SUSTAINABILITY:'var(--accent3)',
+        PROCUREMENT:'var(--accent4)',RD_LEAD:'#64b5f6'
+      };
+      const col = personaColors[pid] || 'var(--text3)';
+
+      html += `<div class="persona-group">
+        <div class="pg-hdr">
+          <span class="pg-badge" style="background:${col}18;color:${col};border:1px solid ${col}44">${esc(persona.name||pid)}</span>
+          <span class="pg-count">${group.length} contacts</span>
+          ${email.subject ? '<span style="font-family:var(--fm);font-size:9px;color:var(--accent)">✓ ready</span>' : ''}
+        </div>
+        ${email.subject ? `
+          <div class="pg-subject">Subject: ${esc(email.subject)}</div>
+          <div class="pg-body">${esc(email.body||'')}</div>
+        ` : `<div style="font-family:var(--fm);font-size:9px;color:var(--text3);padding:8px 0">Not yet generated</div>`}
+        <div class="pg-actions">
+          <div class="pg-btn gen" onclick="generateEmail('${cam.campaign_id}','${pid}')">✦ ${email.subject?'Regenerate':'Generate'}</div>
+          ${email.subject ? `<div class="pg-btn edit" onclick="editEmail('${cam.campaign_id}','${pid}')">Edit</div>` : ''}
+        </div>
+      </div>`;
+    });
+
+    html += `</div>`;
+
+    // Ready to export?
+    const allReady = presentPersonas.every(pid => cam.persona_emails?.[pid]?.subject);
+    if (allReady) {
+      html += `<button class="create-btn" onclick="markWeekReady('${cam.campaign_id}')">
+        ✓ Mark Week ${cam.current_week} Ready — Export to Queue
+      </button>`;
+    } else {
+      html += `<div style="font-family:var(--fm);font-size:9px;color:var(--text3);text-align:center;padding:10px">
+        Generate all persona emails to enable export
+      </div>`;
+    }
+  }
+
+  document.getElementById('builderPanel').innerHTML = html;
+}
+
+// ── WEEK 2-4: Follow-up from prior CSV ────────────────────────
+async function buildFollowUp(cam, ini, ent) {
+  const sends = loadSends();
+  const priorSends = sends.filter(s => s.campaign_id === cam.campaign_id && s.week_number === cam.current_week - 1);
+
+  let html = '';
+
+  if (!priorSends.length) {
+    // CSV upload fallback
+    html += `<div class="builder-section">
+      <div class="sec-label">Week ${cam.current_week-1} Recipients</div>
+      <div class="upload-zone" onclick="document.getElementById('csvUpload_${cam.campaign_id}').click()"
+           ondragover="event.preventDefault();this.classList.add('drag')"
+           ondragleave="this.classList.remove('drag')"
+           ondrop="handleCSVDrop(event,'${cam.campaign_id}')">
+        <input type="file" id="csvUpload_${cam.campaign_id}" accept=".csv" style="display:none"
+               onchange="handleCSVFile(this,'${cam.campaign_id}')">
+        <div class="upload-zone-txt">
+          Drop last week's YAMM CSV here<br>or <span>click to browse</span><br>
+          <span style="color:var(--text3)">(campaign_${cam.campaign_id}_week${cam.current_week-1}*.csv)</span>
+        </div>
+      </div>
+    </div>`;
+  } else {
+    // Prior sends loaded — show recipients and build follow-up
+    const byPersona = {};
+    priorSends.forEach(s => {
+      if (!byPersona[s.persona_id]) byPersona[s.persona_id] = [];
+      byPersona[s.persona_id].push(s);
+    });
+
+    html += `<div class="builder-section">
+      <div class="sec-label">Week ${cam.current_week} Follow-up Recipients (${priorSends.length} from Wk${cam.current_week-1})</div>
+      <div style="background:var(--surf2);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:10px;font-family:var(--fm);font-size:10px;color:var(--text2)">
+        Same ${priorSends.length} recipients as last week · Following up on: <span style="color:var(--accent)">${esc(cam.headline)}</span>
+      </div>
+    </div>
+    <div class="builder-section">
+      <div class="sec-label">Follow-up Emails by Persona</div>`;
+
+    Object.entries(byPersona).forEach(([pid, group]) => {
+      const persona = PER_MAP[pid] || {};
+      const email = cam.persona_emails?.[`wk${cam.current_week}_${pid}`] || {};
+      const personaColors = {
+        EXECUTIVE_STRATEGIC:'var(--red)',STRATEGY_DIRECTOR:'var(--accent2)',
+        TECH_SCOUT:'var(--accent)',SUSTAINABILITY:'var(--accent3)',
+        PROCUREMENT:'var(--accent4)',RD_LEAD:'#64b5f6'
+      };
+      const col = personaColors[pid] || 'var(--text3)';
+
+      html += `<div class="persona-group">
+        <div class="pg-hdr">
+          <span class="pg-badge" style="background:${col}18;color:${col};border:1px solid ${col}44">${esc(persona.name||pid)}</span>
+          <span class="pg-count">${group.length} contacts · Follow-up #${cam.current_week}</span>
+          ${email.subject ? '<span style="font-family:var(--fm);font-size:9px;color:var(--accent)">✓ ready</span>' : ''}
+        </div>
+        ${email.subject ? `
+          <div class="pg-subject">Subject: ${esc(email.subject)}</div>
+          <div class="pg-body">${esc(email.body||'')}</div>
+        ` : `<div style="font-family:var(--fm);font-size:9px;color:var(--text3);padding:8px 0">Not yet generated</div>`}
+        <div class="pg-actions">
+          <div class="pg-btn gen" onclick="generateFollowUp('${cam.campaign_id}','${pid}',${cam.current_week})">✦ ${email.subject?'Regenerate':'Generate Follow-up'}</div>
+          ${email.subject ? `<div class="pg-btn edit" onclick="editFollowUp('${cam.campaign_id}','${pid}',${cam.current_week})">Edit</div>` : ''}
+        </div>
+      </div>`;
+    });
+
+    html += `</div>`;
+
+    const allPersonas = Object.keys(byPersona);
+    const allReady = allPersonas.every(pid => cam.persona_emails?.[`wk${cam.current_week}_${pid}`]?.subject);
+    if (allReady) {
+      html += `<button class="create-btn" onclick="markWeekReady('${cam.campaign_id}')">
+        ✓ Mark Week ${cam.current_week} Ready — Export to Queue
+      </button>`;
+    }
+  }
+
+  document.getElementById('builderPanel').innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════════════
+//  CONTACT SELECTION
+// ══════════════════════════════════════════════════════════════
+function toggleContact(camId, contactId, checked) {
+  const cams = loadCampaigns();
+  const cam = cams.find(c => c.campaign_id === camId);
+  if (!cam) return;
+  if (!cam.selected_contacts) cam.selected_contacts = [];
+  if (checked) { if (!cam.selected_contacts.includes(contactId)) cam.selected_contacts.push(contactId); }
+  else { cam.selected_contacts = cam.selected_contacts.filter(id => id !== contactId); }
+  saveCampaigns(cams);
+  // Rebuild just the count and email sections without full rebuild
+  buildCampaign(camId);
+}
+
+function selectAllContacts(camId) {
+  const cams = loadCampaigns();
+  const cam = cams.find(c => c.campaign_id === camId);
+  if (!cam) return;
+  const ini = INI_MAP[cam.initiative_id];
+  const excluded = getExcluded();
+  const avail = (CONT_BY_ENT[ini.entity_id] || []).filter(c => !excluded.has(c.id));
+  cam.selected_contacts = avail.map(c => c.id);
+  saveCampaigns(cams);
+  buildCampaign(camId);
+}
+
+function selectNoneContacts(camId) {
+  const cams = loadCampaigns();
+  const cam = cams.find(c => c.campaign_id === camId);
+  if (!cam) return;
+  cam.selected_contacts = [];
+  saveCampaigns(cams);
+  buildCampaign(camId);
+}
+
+function selectTier1(camId) {
+  const cams = loadCampaigns();
+  const cam = cams.find(c => c.campaign_id === camId);
+  if (!cam) return;
+  const ini = INI_MAP[cam.initiative_id];
+  const excluded = getExcluded();
+  const t1 = (CONT_BY_ENT[ini.entity_id] || []).filter(c => c.tier === 1 && !excluded.has(c.id));
+  cam.selected_contacts = t1.map(c => c.id);
+  saveCampaigns(cams);
+  buildCampaign(camId);
+}
+
+// ══════════════════════════════════════════════════════════════
+//  EMAIL GENERATION
+// ══════════════════════════════════════════════════════════════
+async function generateEmail(camId, personaId) {
+  if (!apiKey) { flash('Enter API key in top bar'); return; }
+  const cams = loadCampaigns();
+  const cam = cams.find(c => c.campaign_id === camId);
+  if (!cam) return;
+
+  const ini  = INI_MAP[cam.initiative_id] || {};
+  const ent  = ENT_MAP[ini.entity_id]    || {};
+  const pers = PER_MAP[personaId]        || {};
+
+  // Show loading in the persona group
+  const pgEls = document.querySelectorAll('.persona-group');
+  pgEls.forEach(el => {
+    if (el.querySelector('.pg-badge')?.textContent?.includes(pers.name||personaId)) {
+      el.querySelector('.pg-actions').innerHTML = `<div style="display:flex;align-items:center;gap:8px;padding:4px 0"><div class="loading-ring"></div><span style="font-family:var(--fm);font-size:9px;color:var(--text3)">Generating...</span></div>`;
+    }
+  });
+
+  const prompt = `Write a Week 1 outreach email from FutureBridge Advisory.
+
+RECIPIENT CONTEXT
+Company: ${ent.name}
+Company strategic position: ${ent.strategic_posture||''}
+Active initiative: ${ini.name} — ${ini.objective||''}
+Initiative priority: ${ini.priority||'active'}
+Persona: ${pers.name}
+
+SIGNAL
+${cam.headline}
+${cam.signal_summary ? 'Context: ' + cam.signal_summary : ''}
+
+STRUCTURE — follow precisely:
+1. "Dear [First Name],"
+2. HOOK (1 sentence): Reference something specific about ${ent.name}'s strategic direction — show you've looked at their position. Use their initiative objective.
+3. BRIDGE: "Something crossed my desk today that I thought worth sharing —" then the signal fact. One sentence. Specific.
+4. PERSONALISATION (1-2 sentences): "I'm sending this to you because your focus on ${ini.name} suggests this lands directly in your world."
+5. DIFFERENTIATION: "I track these things — where I hope I'm different is taking the time to apply the news: reducing the noise-to-signal ratio and compressing signal-to-value time."
+6. CTA: "Let me know if it hits the spot."
+7. Sign off: "[Your name], FutureBridge Advisory"
+
+PERSONA RULES for ${pers.name}:
+Lead with: ${pers.lead_with||''}
+Avoid: ${pers.avoid||''}
+Length: maximum 150 words total.
+
+RULES: Never "I hope this finds you well". Never "game-changing". No TRL numbers or internal methodology. Hook must be specific to ${ent.name}.
+
+OUTPUT FORMAT — respond with exactly this JSON (no markdown):
+{"subject":"subject line here","body":"full email body here"}`;
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,messages:[{role:'user',content:prompt}]})
+    });
+    const data = await resp.json();
+    const raw  = data.content?.[0]?.text || '{}';
+    const result = JSON.parse(raw.replace(/```json|```/g,'').trim());
+
+    if (!cam.persona_emails) cam.persona_emails = {};
+    cam.persona_emails[personaId] = { subject: result.subject, body: result.body };
+    saveCampaigns(cams);
+    buildCampaign(camId);
+    updateExportPanel();
+  } catch(e) {
+    flash('Error: ' + e.message);
+    buildCampaign(camId);
+  }
+}
+
+async function generateFollowUp(camId, personaId, weekNum) {
+  if (!apiKey) { flash('Enter API key in top bar'); return; }
+  const cams = loadCampaigns();
+  const cam = cams.find(c => c.campaign_id === camId);
+  if (!cam) return;
+
+  const ini  = INI_MAP[cam.initiative_id] || {};
+  const ent  = ENT_MAP[ini.entity_id]    || {};
+  const pers = PER_MAP[personaId]        || {};
+  const prevEmail = cam.persona_emails?.[personaId] || {};
+
+  const weekFrames = {
+    2: 'Add one new piece of context or development related to the original signal. Reference what you shared last week briefly.',
+    3: 'Share a new angle or implication of the signal — something they may not have considered. Shorter than week 2.',
+    4: 'Final touch — brief, direct. Ask if the signal has landed or sparked any thinking. Softest close. Under 80 words.'
+  };
+
+  const prompt = `Write a Week ${weekNum} follow-up email from FutureBridge Advisory.
+
+This is email ${weekNum} in a sequence. The recipient already received our Week 1 email about:
+"${cam.headline}"
+
+RECIPIENT COMPANY: ${ent.name}
+INITIATIVE: ${ini.name}
+PERSONA: ${pers.name}
+
+WEEK ${weekNum} INSTRUCTION: ${weekFrames[weekNum]||'Brief follow-up.'}
+
+${prevEmail.subject ? `Previous subject was: "${prevEmail.subject}"` : ''}
+
+Keep it shorter than the previous email. Do NOT repeat the full signal explanation.
+Reference "[First Name]" as the salutation.
+Sign off: "[Your name], FutureBridge Advisory"
+
+OUTPUT FORMAT — respond with exactly this JSON (no markdown):
+{"subject":"Re: subject line here","body":"full email body here"}`;
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,messages:[{role:'user',content:prompt}]})
+    });
+    const data = await resp.json();
+    const raw  = data.content?.[0]?.text || '{}';
+    const result = JSON.parse(raw.replace(/```json|```/g,'').trim());
+
+    if (!cam.persona_emails) cam.persona_emails = {};
+    cam.persona_emails[`wk${weekNum}_${personaId}`] = { subject: result.subject, body: result.body };
+    saveCampaigns(cams);
+    buildCampaign(camId);
+    updateExportPanel();
+  } catch(e) {
+    flash('Error: ' + e.message);
+    buildCampaign(camId);
+  }
+}
+
+function editEmail(camId, personaId) {
+  const cams = loadCampaigns();
+  const cam = cams.find(c => c.campaign_id === camId);
+  if (!cam) return;
+  const email = cam.persona_emails?.[personaId];
+  if (!email) return;
+  const newSubject = prompt('Edit subject:', email.subject);
+  if (newSubject === null) return;
+  const newBody = prompt('Edit body:', email.body);
+  if (newBody === null) return;
+  cam.persona_emails[personaId] = { subject: newSubject, body: newBody };
+  saveCampaigns(cams);
+  buildCampaign(camId);
+}
+
+function editFollowUp(camId, personaId, weekNum) {
+  editEmail(camId, `wk${weekNum}_${personaId}`);
+}
+
+// ══════════════════════════════════════════════════════════════
+//  MARK READY & ADVANCE WEEK
+// ══════════════════════════════════════════════════════════════
+function markWeekReady(camId) {
+  const cams = loadCampaigns();
+  const cam  = cams.find(c => c.campaign_id === camId);
+  if (!cam) return;
+
+  const ini = INI_MAP[cam.initiative_id] || {};
+  const today = new Date().toISOString().slice(0,10);
+  const weekNum = cam.current_week;
+  const sends = loadSends();
+
+  // Get contacts for this week
+  let weekContacts = [];
+  if (weekNum === 1) {
+    const selected = new Set(cam.selected_contacts || []);
+    // Contacts already cached in CONT_BY_ENT from buildWeek1
+    const allCached = Object.values(CONT_BY_ENT).flat();
+    weekContacts = allCached.filter(c => selected.has(c.id));
+  } else {
+    const priorSends = sends.filter(s => s.campaign_id === camId && s.week_number === weekNum - 1);
+    weekContacts = priorSends.map(s => s.contact_id ? [findContact(s.contact_id)].filter(Boolean) : [])
+    .flat();
+  }
+
+  // Create send records
+  const yammBatch = `${camId}_week${weekNum}_${today}`;
+  weekContacts.forEach((c, idx) => {
+    const emailKey = weekNum === 1 ? c.pid : `wk${weekNum}_${c.pid}`;
+    const email = cam.persona_emails?.[emailKey] || {};
+    sends.push({
+      send_id: `SND_${today.replace(/-/g,'')}_${String(sends.length+idx+1).padStart(5,'0')}`,
+      campaign_id: camId,
+      contact_id: c.id,
+      entity_id: c.eid,
+      initiative_id: cam.initiative_id,
+      persona_id: c.pid,
+      week_number: weekNum,
+      sent_date: today,
+      email_subject: email.subject || '',
+      yamm_batch: yammBatch,
+      send_platform: 'YAMM',
+      opened: 0, replied: 0, outcome: 'pending'
+    });
+  });
+  saveSends(sends);
+
+  // Write send records to Railway database
+  const dbRecords = weekSends.map(s => ({
+    send_id:    s.send_id,
+    contact_id: s.contact_id,
+    entity_id:  cam.initiative_id ? (INI_MAP[cam.initiative_id]||{}).entity_id : null,
+    persona_id: s.persona_id,
+    wave:       'Wave_' + cam.current_week,
+    send_date:  s.sent_date,
+    subject:    s.subject,
+    email_body: s.body
+  }));
+  writeSendRecords(dbRecords).then(n => console.log('DB records written:', n));
+
+  // Advance week or complete
+  if (cam.current_week >= 4) { cam.status = 'complete'; }
+  else { cam.current_week += 1; }
+
+  saveCampaigns(cams);
+  renderCampaignList();
+  updateExportPanel();
+  flash(`Week ${weekNum} ready · ${weekContacts.length} emails queued`);
+  buildCampaign(camId);
+}
+
+// ══════════════════════════════════════════════════════════════
+//  CSV IMPORT (Week 2-4 fallback)
+// ══════════════════════════════════════════════════════════════
+function handleCSVFile(input, camId) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => processCSV(e.target.result, camId);
+  reader.readAsText(file);
+}
+
+function handleCSVDrop(event, camId) {
+  event.preventDefault();
+  event.currentTarget.classList.remove('drag');
+  const file = event.dataTransfer.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => processCSV(e.target.result, camId);
+  reader.readAsText(file);
+}
+
+function processCSV(csvText, camId) {
+  const cams = loadCampaigns();
+  const cam  = cams.find(c => c.campaign_id === camId);
+  if (!cam) return;
+
+  const lines = csvText.trim().split('\n');
+  const headers = lines[0].split(',').map(h => h.replace(/"/g,'').trim().toLowerCase());
+  const emailIdx = headers.findIndex(h => h.includes('email'));
+  if (emailIdx === -1) { flash('CSV must have an Email column'); return; }
+
+  const sends = loadSends();
+  const today = new Date().toISOString().slice(0,10);
+  const weekNum = cam.current_week - 1;
+  let added = 0;
+
+  for (let i = 1; i < lines.length; i++) {
+    const cols = lines[i].split(',').map(c => c.replace(/"/g,'').trim());
+    const email = cols[emailIdx];
+    if (!email) continue;
+    // Match to contact
+    const contact = findContact(email);
+    const cid = contact?.id || 'IMPORT_' + i;
+    sends.push({
+      send_id: `SND_IMP_${Date.now()}_${i}`,
+      campaign_id: camId,
+      contact_id: cid,
+      entity_id: contact?.eid || cam.entity_id || '',
+      initiative_id: cam.initiative_id,
+      persona_id: contact?.pid || 'STRATEGY_DIRECTOR',
+      week_number: weekNum,
+      sent_date: today,
+      email_subject: '',
+      yamm_batch: 'imported',
+      send_platform: 'YAMM',
+      opened: 0, replied: 0, outcome: 'pending'
+    });
+    added++;
+  }
+  saveSends(sends);
+  flash(`Imported ${added} recipients from CSV`);
+  buildCampaign(camId);
+}
+
+// ══════════════════════════════════════════════════════════════
+//  EXPORT PANEL
+// ══════════════════════════════════════════════════════════════
+function updateExportPanel() {
+  const cams  = loadCampaigns().filter(c => c.status === 'active');
+  const sends = loadSends();
+  const today = new Date().toISOString().slice(0,10);
+  const todaySends = sends.filter(s => s.sent_date === today);
+
+  document.getElementById('stat-campaigns').textContent = cams.length;
+  document.getElementById('stat-emails').textContent = todaySends.length;
+  document.getElementById('stat-entities').textContent = new Set(todaySends.map(s=>s.entity_id)).size;
+
+  if (!cams.length) {
+    document.getElementById('exportPanel').innerHTML = `<div style="font-family:var(--fm);font-size:10px;color:var(--text3);text-align:center;padding:20px 0">No active campaigns</div>`;
+    return;
+  }
+
+  // Show each campaign's export status
+  let html = '';
+
+  // Today's ready batches
+  const batches = [...new Set(sends.filter(s => s.sent_date === today).map(s => s.yamm_batch))];
+
+  if (batches.length) {
+    html += `<div style="margin-bottom:14px">`;
+    html += `<div style="font-family:var(--fm);font-size:9px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">Ready to Export</div>`;
+    batches.forEach(batch => {
+      const batchSends = sends.filter(s => s.yamm_batch === batch && s.sent_date === today);
+      const cam = cams.find(c => c.campaign_id === batchSends[0]?.campaign_id) ||
+                  loadCampaigns().find(c => c.campaign_id === batchSends[0]?.campaign_id);
+      const wk = batchSends[0]?.week_number || 1;
+      const wkClass = `wk${wk}`;
+      html += `<div class="export-item">
+        <div class="ei-hdr">
+          <span class="ei-week cam-week-badge ${wkClass}">WK ${wk}</span>
+          <span class="ei-headline">${esc(cam?.headline||batch)}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span class="ei-count">${batchSends.length} emails</span>
+          <span class="ei-status ei-ready">✓ ready</span>
+        </div>
+        <button class="cam-btn primary" style="width:100%;margin-top:8px;text-align:center" 
+                onclick="exportCSV('${batch}')">↓ Download CSV</button>
+      </div>`;
+    });
+    html += `</div>`;
+
+    if (batches.length > 1) {
+      html += `<button class="export-all-btn" onclick="exportAllCSVs()">↓ Export All ${batches.length} YAMM CSVs</button>`;
+    }
+    html += `<button class="export-sql-btn" onclick="exportSQL()">↓ Export SQL Record</button>`;
+  } else {
+    html += `<div style="font-family:var(--fm);font-size:10px;color:var(--text3);text-align:center;padding:14px 0">Mark campaigns ready to enable export</div>`;
+  }
+
+  // Engagement update section
+  const recentSends = sends.filter(s => {
+    const d = new Date(s.sent_date);
+    const cutoff = new Date(); cutoff.setDate(cutoff.getDate()-14);
+    return d > cutoff && s.outcome === 'pending';
+  });
+
+  if (recentSends.length) {
+    html += `<div class="eng-section">
+      <div class="eng-title">Engagement Update (${recentSends.length} pending)</div>`;
+    recentSends.slice(0,8).forEach(s => {
+      const c = findContact(s.contact_id);
+      html += `<div class="eng-row">
+        <span class="eng-name">${esc(c?.name||s.contact_id)}</span>
+        <span class="eng-chip ${s.opened?'opened':''}" onclick="markEngagement('${s.send_id}','opened')">Open</span>
+        <span class="eng-chip ${s.replied?'replied':''}" onclick="markEngagement('${s.send_id}','replied')">Reply</span>
+        <span class="eng-chip ${s.outcome==='meeting_booked'?'meeting':''}" onclick="markEngagement('${s.send_id}','meeting')">Mtg</span>
+      </div>`;
+    });
+    html += `</div>`;
+    if (recentSends.length > 8) html += `<div style="font-family:var(--fm);font-size:9px;color:var(--text3);text-align:center;margin-top:4px">+${recentSends.length-8} more pending</div>`;
+  }
+
+  document.getElementById('exportPanel').innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════════════
+//  ENGAGEMENT TRACKING
+// ══════════════════════════════════════════════════════════════
+function markEngagement(sendId, type) {
+  const sends = loadSends();
+  const s = sends.find(x => x.send_id === sendId);
+  if (!s) return;
+  if (type === 'opened') s.opened = s.opened ? 0 : 1;
+  if (type === 'replied') { s.replied = s.replied ? 0 : 1; if (s.replied) s.reply_date = new Date().toISOString().slice(0,10); }
+  if (type === 'meeting') { s.outcome = s.outcome === 'meeting_booked' ? 'pending' : 'meeting_booked'; }
+  saveSends(sends);
+  updateExportPanel();
+}
+
+// ══════════════════════════════════════════════════════════════
+//  EXPORT
+// ══════════════════════════════════════════════════════════════
+function exportCSV(batchName) {
+  const sends = loadSends().filter(s => s.yamm_batch === batchName);
+  if (!sends.length) { flash('No records for this batch'); return; }
+
+  const rows = [['First Name','Last Name','Email Address','Subject','Body']];
+  sends.forEach(s => {
+    const c = findContact(s.contact_id);
+    if (!c) return;
+    const nameParts = (c.name||'').split(' ');
+    const firstName = nameParts[0] || '';
+    const lastName  = nameParts.slice(1).join(' ') || '';
+    rows.push([firstName, lastName, c.email||'', s.email_subject, '']);
+  });
+
+  const csv = rows.map(r => r.map(cell => `"${String(cell).replace(/"/g,'""')}"`).join(',')).join('\n');
+  download(csv, `${batchName}.csv`, 'text/csv');
+}
+
+function exportAllCSVs() {
+  const sends = loadSends();
+  const today = new Date().toISOString().slice(0,10);
+  const batches = [...new Set(sends.filter(s => s.sent_date === today).map(s => s.yamm_batch))];
+  batches.forEach((b, i) => setTimeout(() => exportCSV(b), i * 300));
+}
+
+function exportSQL() {
+  const sends = loadSends();
+  const cams  = loadCampaigns();
+  const today = new Date().toISOString().slice(0,10);
+  const todaySends = sends.filter(s => s.sent_date === today);
+  if (!todaySends.length) { flash('No sends today to export'); return; }
+
+  let sql = `-- Signal Engine · Campaign Record Export\n-- ${today}\n\nBEGIN TRANSACTION;\n\n`;
+
+  // Insert campaigns (new ones today)
+  const newCamIds = [...new Set(todaySends.map(s => s.campaign_id))];
+  newCamIds.forEach(cid => {
+    const cam = cams.find(c => c.campaign_id === cid);
+    if (!cam) return;
+    sql += `INSERT OR IGNORE INTO campaigns (campaign_id,initiative_id,entity_id,headline,start_date,current_week,status) VALUES ('${cid}','${cam.initiative_id||''}','${cam.entity_id||''}','${esc_sql(cam.headline)}','${cam.start_date}',${cam.current_week},'${cam.status}');\n`;
+  });
+
+  sql += '\n';
+
+  // Insert sends
+  todaySends.forEach(s => {
+    sql += `INSERT OR IGNORE INTO campaign_sends (send_id,campaign_id,contact_id,entity_id,initiative_id,persona_id,week_number,sent_date,email_subject,yamm_batch,send_platform) VALUES ('${s.send_id}','${s.campaign_id}','${s.contact_id}','${s.entity_id}','${s.initiative_id}','${s.persona_id}',${s.week_number},'${s.sent_date}','${esc_sql(s.email_subject)}','${s.yamm_batch}','${s.send_platform}');\n`;
+  });
+
+  // Engagement updates if any
+  const updated = sends.filter(s => s.opened || s.replied || s.outcome !== 'pending');
+  if (updated.length) {
+    sql += '\n-- Engagement updates\n';
+    updated.forEach(s => {
+      sql += `UPDATE campaign_sends SET opened=${s.opened||0}, replied=${s.replied||0}, outcome='${s.outcome||'pending'}' WHERE send_id='${s.send_id}';\n`;
+    });
+  }
+
+  sql += '\nCOMMIT;\n';
+  download(sql, `campaign_record_${today}.sql`, 'text/plain');
+}
+
+function esc_sql(s) { return (s||'').replace(/'/g,"''"); }
+
+function download(content, filename, type) {
+  const blob = new Blob([content], {type});
+  const url  = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+// ══════════════════════════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════════════════════════
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function flash(msg) {
+  const el = document.createElement('div');
+  el.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--surf);border:1px solid var(--accent);color:var(--accent);font-family:var(--fm);font-size:10px;padding:8px 18px;border-radius:6px;z-index:999;letter-spacing:.06em;box-shadow:0 4px 20px rgba(0,0,0,.4)';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2500);
+}
+</script>
+</body>
+</html>
