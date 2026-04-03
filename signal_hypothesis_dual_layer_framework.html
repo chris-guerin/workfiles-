@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Signal Engine — Dual Hypothesis Architecture</title>
+  <style>
+    :root {
+      --black: #0a0a0a;
+      --white: #ffffff;
+      --bg: #f5f6f8;
+      --ink: #16181d;
+      --muted: #6d7480;
+      --rule: #e3e6eb;
+      --red: #f84e5d;
+      --green: #22ae8a;
+      --yellow: #f0c74a;
+      --blue: #4c7cf0;
+      --purple: #8c6dd7;
+      --shadow: 0 10px 28px rgba(0,0,0,0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.65;
+    }
+
+    .masthead {
+      background: linear-gradient(135deg, #0a0a0a 0%, #16181d 100%);
+      color: var(--white);
+      padding: 44px 54px 34px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .topline {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+      margin-bottom: 28px;
+    }
+
+    .mark {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding-top: 6px;
+      flex: 0 0 auto;
+    }
+
+    .mark span {
+      display: block;
+      height: 4px;
+      background: var(--white);
+      border-radius: 2px;
+    }
+
+    .mark span:nth-child(1) { width: 40px; }
+    .mark span:nth-child(2) { width: 26px; }
+    .mark span:nth-child(3) { width: 14px; }
+
+    .title-wrap {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .title-block h1 {
+      font-size: clamp(30px, 5vw, 52px);
+      line-height: 1.03;
+      letter-spacing: -0.03em;
+      margin-bottom: 10px;
+    }
+
+    .title-block p {
+      max-width: 880px;
+      color: rgba(255,255,255,0.68);
+      font-size: 16px;
+    }
+
+    .meta {
+      text-align: right;
+      font-size: 11px;
+      line-height: 1.8;
+      color: rgba(255,255,255,0.5);
+      white-space: nowrap;
+    }
+
+    .meta strong { color: rgba(255,255,255,0.9); }
+
+    .verdict {
+      margin-top: 22px;
+      padding: 18px 20px;
+      border-left: 3px solid var(--red);
+      background: rgba(255,255,255,0.04);
+      color: rgba(255,255,255,0.74);
+      max-width: 1100px;
+    }
+
+    .verdict strong { color: var(--white); }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(245,246,248,0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--rule);
+      padding: 12px 54px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: var(--muted);
+      background: var(--white);
+      border: 1px solid var(--rule);
+      padding: 6px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    nav a:hover { background: var(--black); color: var(--white); border-color: var(--black); }
+
+    .page {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 0 28px 90px;
+    }
+
+    .section {
+      margin-top: 48px;
+    }
+
+    .eyebrow {
+      color: var(--red);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      font-size: 30px;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 2px solid var(--black);
+    }
+
+    h3 {
+      font-size: 15px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #505763;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    p strong, li strong { color: var(--ink); }
+
+    .lead {
+      font-size: 16px;
+      max-width: 1000px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--white);
+      border: 1px solid var(--rule);
+      padding: 20px 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .card.dark {
+      background: var(--black);
+      color: var(--white);
+      border-color: rgba(255,255,255,0.08);
+    }
+
+    .card.dark p, .card.dark li { color: rgba(255,255,255,0.72); }
+    .card.dark strong { color: var(--white); }
+
+    .tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 8px;
+      margin-bottom: 12px;
+    }
+
+    .tag.signal { background: rgba(34,174,138,0.14); color: var(--green); }
+    .tag.consulting { background: rgba(76,124,240,0.14); color: var(--blue); }
+    .tag.note { background: rgba(248,78,93,0.14); color: var(--red); }
+    .tag.future { background: rgba(140,109,215,0.14); color: var(--purple); }
+
+    ul {
+      padding-left: 18px;
+      color: #505763;
+    }
+
+    li { margin-bottom: 8px; }
+
+    .flowboard {
+      background: var(--black);
+      padding: 26px 26px 28px;
+      box-shadow: var(--shadow);
+      overflow-x: auto;
+    }
+
+    .flow-title {
+      color: rgba(255,255,255,0.4);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      margin-bottom: 18px;
+    }
+
+    .flow-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .node {
+      padding: 8px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      border: 1px solid;
+      white-space: nowrap;
+    }
+
+    .n-input { color: var(--yellow); border-color: rgba(240,199,74,0.35); background: rgba(240,199,74,0.1); }
+    .n-signal { color: var(--green); border-color: rgba(34,174,138,0.35); background: rgba(34,174,138,0.12); }
+    .n-future { color: var(--purple); border-color: rgba(140,109,215,0.35); background: rgba(140,109,215,0.12); }
+    .n-consult { color: var(--blue); border-color: rgba(76,124,240,0.35); background: rgba(76,124,240,0.12); }
+    .n-action { color: #ff8c98; border-color: rgba(248,78,93,0.35); background: rgba(248,78,93,0.12); }
+    .n-noise { color: rgba(255,255,255,0.5); border-color: rgba(255,255,255,0.14); background: rgba(255,255,255,0.05); }
+
+    .arrow { color: rgba(255,255,255,0.32); font-size: 16px; }
+
+    .schematic {
+      background: var(--white);
+      border: 1px solid var(--rule);
+      box-shadow: var(--shadow);
+      padding: 28px;
+    }
+
+    .schematic-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.9fr 1.2fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .box {
+      border: 1px solid var(--rule);
+      padding: 18px;
+      background: #fcfcfd;
+      position: relative;
+    }
+
+    .box.signal { border-top: 4px solid var(--green); }
+    .box.future { border-top: 4px solid var(--purple); }
+    .box.consulting { border-top: 4px solid var(--blue); }
+
+    .box h3 { margin-bottom: 8px; }
+    .mini { font-size: 12px; color: var(--muted); }
+
+    .vs {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 18px;
+      align-items: stretch;
+      margin-top: 20px;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--white);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--rule);
+      overflow: hidden;
+    }
+
+    thead tr { background: var(--black); }
+    th {
+      text-align: left;
+      color: var(--white);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 12px 14px;
+    }
+
+    td {
+      padding: 12px 14px;
+      border-top: 1px solid var(--rule);
+      vertical-align: top;
+      font-size: 13px;
+      color: #4d5561;
+    }
+
+    td:first-child { color: var(--ink); font-weight: 700; }
+
+    .signal-stack {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .stack-item {
+      border-left: 3px solid var(--black);
+      background: var(--white);
+      border: 1px solid var(--rule);
+      box-shadow: var(--shadow);
+      padding: 14px 16px 14px 18px;
+    }
+
+    .stack-item.signal { border-left-color: var(--green); }
+    .stack-item.future { border-left-color: var(--purple); }
+    .stack-item.consult { border-left-color: var(--blue); }
+    .stack-item.red { border-left-color: var(--red); }
+
+    .stack-item h4 {
+      font-size: 13px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .example {
+      background: #fafbfc;
+      border: 1px solid var(--rule);
+      padding: 14px 16px;
+      font-family: "IBM Plex Mono", Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.7;
+      color: #27303a;
+      white-space: pre-wrap;
+      box-shadow: var(--shadow);
+    }
+
+    footer {
+      background: var(--black);
+      color: rgba(255,255,255,0.42);
+      margin-top: 60px;
+      padding: 28px 54px;
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: flex-end;
+    }
+
+    footer strong { color: rgba(255,255,255,0.86); }
+
+    @media (max-width: 980px) {
+      .title-wrap, .schematic-grid, .grid-2, .grid-3, .vs { grid-template-columns: 1fr; }
+      .meta { text-align: left; white-space: normal; }
+      .masthead, nav, footer { padding-left: 24px; padding-right: 24px; }
+      .page { padding-left: 16px; padding-right: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="masthead">
+    <div class="title-wrap">
+      <div class="mark"><span></span><span></span><span></span></div>
+      <div class="title-block">
+        <h1>Signal Engine — Dual Hypothesis Architecture</h1>
+        <p>This document separates <strong>signal hypotheses</strong> from <strong>consulting hypotheses</strong>. They may share a name and a forward-looking direction, but they do not carry the same depth, payload, or job. One exists to turn noise into signal and make future decisions visible. The other exists to support a project, a client decision, and a deeper consulting frame built from landscape, ecosystem, and programme-level detail.</p>
+      </div>
+      <div class="meta">
+        FutureBridge Advisory<br />
+        Chris Guerin<br />
+        <strong>For GitHub + Claude ingestion</strong>
+      </div>
+    </div>
+
+    <div class="verdict">
+      <strong>Core point.</strong> A signal engine does not need the full depth of a consulting hypothesis. It needs a lighter hypothesis object that is good enough to filter news, map driver movement, and make future decision windows visible. Projects then take the same forward-looking theme and deepen it into a consulting hypothesis through landscaping, ecosystem mapping, economics, capabilities, programme design, and decision support.
+    </div>
+  </header>
+
+  <nav>
+    <a href="#logic">Core logic</a>
+    <a href="#schematic">Schematic</a>
+    <a href="#difference">Two hypothesis layers</a>
+    <a href="#inputs">Inputs to hypotheses</a>
+    <a href="#project">Project deepening</a>
+    <a href="#claude">Claude ingestion note</a>
+  </nav>
+
+  <main class="page">
+    <section class="section" id="logic">
+      <div class="eyebrow">Section 01</div>
+      <h2>Core logic — what the system is actually doing</h2>
+      <p class="lead">The system is not just collecting news. It is turning high-volume external noise into structured signals, attaching those signals to lightweight future-facing hypotheses, and making movement in the future visible early enough to act on it. That is the daily intelligence layer. A project then takes a selected theme and deepens it into a consulting-grade hypothesis supported by wider evidence, market structure, ecosystem, economics, and execution logic.</p>
+
+      <div class="flowboard">
+        <div class="flow-title">Noise → signal → future visibility → consulting depth</div>
+        <div class="flow-row">
+          <div class="node n-input">News</div>
+          <div class="arrow">→</div>
+          <div class="node n-input">Patents</div>
+          <div class="arrow">→</div>
+          <div class="node n-input">Regulation</div>
+          <div class="arrow">→</div>
+          <div class="node n-input">Earnings / filings</div>
+          <div class="arrow">→</div>
+          <div class="node n-noise">High-volume noise</div>
+        </div>
+        <div class="flow-row">
+          <div class="node n-signal">Deduplicate</div>
+          <div class="arrow">→</div>
+          <div class="node n-signal">Pre-score</div>
+          <div class="arrow">→</div>
+          <div class="node n-signal">Classify signal-by-signal</div>
+          <div class="arrow">→</div>
+          <div class="node n-signal">Attach to signal hypotheses</div>
+        </div>
+        <div class="flow-row">
+          <div class="node n-future">Driver movement visible</div>
+          <div class="arrow">→</div>
+          <div class="node n-future">Probability shift</div>
+          <div class="arrow">→</div>
+          <div class="node n-future">Decision window visible</div>
+          <div class="arrow">→</div>
+          <div class="node n-future">Embryo hypotheses visible</div>
+        </div>
+        <div class="flow-row">
+          <div class="node n-consult">Landscape</div>
+          <div class="arrow">→</div>
+          <div class="node n-consult">Ecosystem map</div>
+          <div class="arrow">→</div>
+          <div class="node n-consult">Economics / viability</div>
+          <div class="arrow">→</div>
+          <div class="node n-consult">Project / programme hypotheses</div>
+          <div class="arrow">→</div>
+          <div class="node n-action">Client decisions</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="schematic">
+      <div class="eyebrow">Section 02</div>
+      <h2>Schematic — how the layers relate</h2>
+      <div class="schematic">
+        <div class="schematic-grid">
+          <div class="box signal">
+            <span class="tag signal">Input layer</span>
+            <h3>External inputs</h3>
+            <p><strong>Raw material:</strong> news, patents, papers, earnings, regulation, company announcements, market signals, funding, partnerships, technical milestones.</p>
+            <p><strong>Problem:</strong> high volume, duplication, weak context, too much noise, not decision-ready.</p>
+            <p><strong>Job:</strong> convert noise into structured signal objects.</p>
+          </div>
+
+          <div class="box future">
+            <span class="tag future">Signal hypothesis layer</span>
+            <h3>Lightweight future-facing hypotheses</h3>
+            <p><strong>Purpose:</strong> filter, classify, and interpret signals.</p>
+            <p><strong>Depth:</strong> light.</p>
+            <p><strong>Question:</strong> did the world move in a way that changes the likelihood, speed, or shape of this future?</p>
+          </div>
+
+          <div class="box consulting">
+            <span class="tag consulting">Consulting hypothesis layer</span>
+            <h3>Project-grade hypotheses</h3>
+            <p><strong>Purpose:</strong> support business decisions.</p>
+            <p><strong>Depth:</strong> heavy.</p>
+            <p><strong>Question:</strong> what does this mean for a client, a market, a strategy, a capability, an investment, or a programme?</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="difference">
+      <div class="eyebrow">Section 03</div>
+      <h2>Two hypothesis layers — same name, different payload</h2>
+      <div class="vs">
+        <div class="card">
+          <span class="tag signal">Signal hypothesis</span>
+          <h3>Used by the signal engine</h3>
+          <p><strong>Purpose:</strong> attach a signal to a future-facing frame.</p>
+          <ul>
+            <li>Light enough for daily automated use</li>
+            <li>Built around a small number of drivers</li>
+            <li>Good enough to detect threshold movement</li>
+            <li>Designed for ranking, filtering, and probability shifts</li>
+            <li>Does not need full market proof</li>
+          </ul>
+          <div class="example">Example signal hypothesis
+
+Sodium-ion batteries become viable in stationary storage before 2030.
+
+Key drivers:
+- cell cost moves below threshold
+- cycle life becomes acceptable
+- Chinese scale-up becomes real
+- LFP economics become less dominant</div>
+        </div>
+
+        <div class="divider">same forward direction<br />different depth</div>
+
+        <div class="card">
+          <span class="tag consulting">Consulting hypothesis</span>
+          <h3>Used by a project team</h3>
+          <p><strong>Purpose:</strong> frame an advisory case and support action.</p>
+          <ul>
+            <li>Built with much deeper evidence</li>
+            <li>Needs market landscape and ecosystem structure</li>
+            <li>Needs economics, capabilities, competitors, timelines</li>
+            <li>May include customer adoption and geography</li>
+            <li>Supports strategic choices, portfolio moves, and programme design</li>
+          </ul>
+          <div class="example">Example consulting hypothesis
+
+Sodium-ion batteries will capture a defined share of global stationary storage in cost-sensitive balancing and duration segments, with specific implications for chemistry strategy, supply chain positioning, and regional manufacturing footprint.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="inputs">
+      <div class="eyebrow">Section 04</div>
+      <h2>Inputs to hypotheses — what moves them</h2>
+      <p class="lead">A signal hypothesis should not try to carry the whole consulting case. It should hold enough structure to let incoming signals move the right driver. That means the hypothesis should be fed by clean external inputs and interpreted through a small number of meaningful drivers.</p>
+
+      <div class="grid-3">
+        <div class="stack-item signal">
+          <h4>Input types</h4>
+          <p>News, regulation, patents, funding, technical milestones, supply chain commitments, plant announcements, contracts, standards, policy changes, strategic moves.</p>
+        </div>
+        <div class="stack-item future">
+          <h4>Signal drivers</h4>
+          <p>Cost thresholds, performance thresholds, commercial commitments, ecosystem build-out, regulation, geography, critical actors, technical bottlenecks.</p>
+        </div>
+        <div class="stack-item consult">
+          <h4>Consulting deepeners</h4>
+          <p>Landscape size, competitor map, customer need, value chain, margin logic, capability gaps, partner set, adoption logic, investment windows.</p>
+        </div>
+      </div>
+
+      <table style="margin-top: 18px;">
+        <thead>
+          <tr>
+            <th>Input</th>
+            <th>What it means in the signal engine</th>
+            <th>What it becomes in a project</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>News event</td>
+            <td>A possible movement in one driver</td>
+            <td>Evidence point inside a wider trend and market story</td>
+          </tr>
+          <tr>
+            <td>Patent / paper</td>
+            <td>Possible technical feasibility movement</td>
+            <td>Technology landscape, IP position, capability depth</td>
+          </tr>
+          <tr>
+            <td>Regulation</td>
+            <td>Constraint or accelerator on hypothesis timing</td>
+            <td>Commercial viability, compliance logic, market opening</td>
+          </tr>
+          <tr>
+            <td>Plant / scale-up</td>
+            <td>Commercial seriousness and ecosystem proof</td>
+            <td>Supply chain map, actor positioning, who may win</td>
+          </tr>
+          <tr>
+            <td>Contract / offtake</td>
+            <td>Threshold event or de-risking move</td>
+            <td>Business case proof, adoption proof, customer readiness</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section" id="project">
+      <div class="eyebrow">Section 05</div>
+      <h2>Project deepening — where the consulting work gets much deeper</h2>
+      <p class="lead">Once a signal hypothesis starts to matter, the work changes. The question is no longer just “did the world move?” It becomes “what does this mean for a client, a market, a portfolio, a capability, or a programme?” That is where consulting depth comes in.</p>
+
+      <div class="grid-2">
+        <div class="card dark">
+          <span class="tag note">Daily intelligence layer</span>
+          <h3>What the signal engine is trying to achieve</h3>
+          <ul>
+            <li>Reduce noise to signal</li>
+            <li>Map signal to the right hypothesis</li>
+            <li>Track driver movement over time</li>
+            <li>Make future decision windows visible early</li>
+            <li>Flag where the existing hypothesis register is weak</li>
+          </ul>
+        </div>
+
+        <div class="card dark">
+          <span class="tag future">Project / consulting layer</span>
+          <h3>What the consulting project is trying to achieve</h3>
+          <ul>
+            <li>Build a defensible view of the market or opportunity</li>
+            <li>Landscape the players, technologies, geographies, and value chain</li>
+            <li>Map the ecosystem and dependencies</li>
+            <li>Build scenarios, economics, and decision logic</li>
+            <li>Translate external movement into a client action frame</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="signal-stack" style="margin-top: 18px;">
+        <div class="stack-item consult">
+          <h4>Landscape</h4>
+          <p>What exists, who is active, what technologies are credible, how the market is segmented, where the weak signals are clustering, and which areas are over- or under-served.</p>
+        </div>
+        <div class="stack-item consult">
+          <h4>Ecosystem</h4>
+          <p>Who enables the market, who de-risks it, which suppliers, partners, channels, regulators, investors, customers, and standards bodies matter, and where dependency sits.</p>
+        </div>
+        <div class="stack-item consult">
+          <h4>Economics and viability</h4>
+          <p>Cost curves, margin logic, incentives, capex, opex, threshold points, commercial structures, speed to viability, and what needs to be true for adoption or scale.</p>
+        </div>
+        <div class="stack-item consult">
+          <h4>Projects and programmes</h4>
+          <p>What should be trialled, what should be tracked, where capability needs to be built, which partnerships matter, and which investment or go-to-market decisions become visible.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="eyebrow">Section 06</div>
+      <h2>Working rule — what each layer should and should not do</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Layer</th>
+            <th>Should do</th>
+            <th>Should not do</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Signal hypothesis</td>
+            <td>Filter, classify, rank, detect movement, surface embryo hypotheses, make future decisions visible</td>
+            <td>Carry the full market model, project logic, or full business case</td>
+          </tr>
+          <tr>
+            <td>Consulting hypothesis</td>
+            <td>Frame the strategic case, support projects, integrate landscape and ecosystem depth, support choices</td>
+            <td>Be used as a daily filter object inside a lightweight signal loop</td>
+          </tr>
+          <tr>
+            <td>Signal archive</td>
+            <td>Store structured evidence and movement over time</td>
+            <td>Pretend that one daily winner is enough intelligence</td>
+          </tr>
+          <tr>
+            <td>Project work</td>
+            <td>Deepen the hypothesis and make it client-useful</td>
+            <td>Rebuild the detection engine every time a project starts</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section" id="claude">
+      <div class="eyebrow">Section 07</div>
+      <h2>Claude ingestion note — what this file is for</h2>
+      <div class="grid-2">
+        <div class="card">
+          <span class="tag note">Use this first</span>
+          <p><strong>Purpose:</strong> this file explains the conceptual distinction that Claude needs in order not to confuse lightweight signal hypotheses with consulting-grade hypotheses.</p>
+          <p><strong>Read this before:</strong> pipeline specifications, hypothesis builders, architecture files, daily intelligence pages, project briefs.</p>
+        </div>
+        <div class="card">
+          <span class="tag future">Instruction</span>
+          <p><strong>Claude should understand:</strong> a signal hypothesis is a light forward-looking filter object. A consulting hypothesis is a deeper project object. They may share a title or a future direction, but they differ in depth, purpose, evidence burden, and output.</p>
+        </div>
+      </div>
+
+      <div class="example" style="margin-top: 18px;">Suggested ingestion instruction for Claude
+
+Read this file first.
+Understand that signal hypotheses and consulting hypotheses may have the same title but not the same payload.
+Signal hypotheses exist to classify and interpret daily external signals.
+Consulting hypotheses exist to support deeper market, client, ecosystem, and programme work.
+Do not collapse the two layers into one object unless explicitly told to do so.</div>
+    </section>
+  </main>
+
+  <footer>
+    <div>
+      <strong>Signal Engine — Dual Hypothesis Architecture</strong><br />
+      Built for GitHub Pages and Claude ingestion<br />
+      Distinguishes noise-to-signal logic from project-depth consulting logic
+    </div>
+    <div>FutureBridge Advisory · Confidential working file</div>
+  </footer>
+</body>
+</html>
