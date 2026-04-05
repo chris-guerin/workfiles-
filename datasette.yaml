@@ -1,6 +1,7 @@
 databases:
   signal_engine_pe:
     allow_execute_sql: true
+
 permissions:
   insert-row:
     allow: true
@@ -11,7 +12,7 @@ permissions:
 
 plugins:
   datasette-auth-tokens:
-tokens:
-  - token: fb-signals-2026
-    actor:
-      id: signal-engine
+    tokens:
+      - token: fb-signals-2026
+        actor:
+          id: signal-engine
