@@ -1,13 +1,2 @@
-databases:
-  signal_engine_pe:
-    allow_execute_sql: true
-
-permissions:
-  insert-row:
-    id: "*"
-  update-row:
-    id: "*"
-  create-table:
-    id: "*"
-  alter-table:
-    id: "*"
+allow:
+  id: "*"
