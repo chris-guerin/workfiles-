@@ -2,6 +2,9 @@ databases:
   signal_engine_pe:
     allow_execute_sql: true
 
+allow:
+  allow: true
+
 permissions:
   insert-row:
     allow: true
@@ -9,14 +12,5 @@ permissions:
     allow: true
   create-table:
     allow: true
-
-plugins:
-  datasette-auth-tokens:
-    tokens:
-      - token: fb-signals-2026
-        actor:
-          id: signal-engine
-          _all:
-            insert-row: true
-            update-row: true
-            create-table: true
+  alter-table:
+    allow: true
