@@ -8,6 +8,9 @@ permissions:
     allow: true
   create-table:
     allow: true
+
+plugins:
+  datasette-auth-tokens:
 tokens:
   - token: fb-signals-2026
     actor:
