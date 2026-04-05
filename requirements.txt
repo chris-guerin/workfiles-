@@ -1,0 +1,2 @@
+datasette>=1.0
+datasette-auth-tokens
