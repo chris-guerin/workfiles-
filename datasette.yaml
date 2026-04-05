@@ -1,0 +1,14 @@
+databases:
+  signal_engine_pe:
+    allow_execute_sql: true
+permissions:
+  insert-row:
+    allow: true
+  update-row:
+    allow: true
+  create-table:
+    allow: true
+tokens:
+  - token: fb-signals-2026
+    actor:
+      id: signal-engine
