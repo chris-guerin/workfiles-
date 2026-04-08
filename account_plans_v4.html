@@ -256,9 +256,24 @@ section:last-child{border-bottom:none}
 .ck.d-li{background:#0077b5;border-color:#0077b5;color:#fff}
 .ck.d-em{background:var(--grey);border-color:var(--grey);color:#fff}
 .ck.d-ca{background:#3a9a6a;border-color:#3a9a6a;color:#fff}
+.ck.d-mt{background:#7b4caf;border-color:#7b4caf;color:#fff}
+.ck.d-pr{background:#c47d20;border-color:#c47d20;color:#fff}
 .prog-wrap{height:2px;background:var(--mid);margin-top:18px;border-radius:1px}
 .prog-fill{height:100%;background:var(--black);transition:width .3s;border-radius:1px}
 .prog-lbl{font-size:10px;color:var(--dim);margin-top:6px;font-family:var(--font-m)}
+
+/* ── PAIN POINTS ── */
+#pp-sec{background:var(--light)}
+.pp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.pp-card{background:#fff;border:1px solid var(--mid);border-radius:var(--r);padding:20px;transition:var(--ease);position:relative;overflow:hidden}
+.pp-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--red);opacity:.35}
+.pp-card:hover{background:#fafafa;border-color:#bbb}
+.pp-fn{font-size:9px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--red);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.pp-fn-ico{font-size:14px}
+.pp-items{list-style:none;display:flex;flex-direction:column;gap:7px}
+.pp-item{display:flex;align-items:flex-start;gap:7px;font-size:12px;color:#444;line-height:1.5}
+.pp-item::before{content:'—';color:var(--red);flex-shrink:0;font-size:11px;margin-top:2px}
+.pp-opp{margin-top:12px;padding-top:10px;border-top:1px solid var(--mid);font-size:10px;color:var(--c-tech);font-weight:700;letter-spacing:.06em}
 
 /* ── FOOTER ── */
 .brief-footer{border-top:1px solid var(--mid);padding:24px 40px;display:flex;justify-content:space-between;align-items:center;max-width:1100px;margin:0 auto}
@@ -355,11 +370,13 @@ function getContacts(id){
 
 function progress(id){
   const cs=getContacts(id);
-  const total=cs.length*3; let done=0;
+  const total=cs.length*5; let done=0;
   cs.forEach((_,i)=>{
     if(ckState[`${id}_${i}_li`])done++;
     if(ckState[`${id}_${i}_em`])done++;
     if(ckState[`${id}_${i}_ca`])done++;
+    if(ckState[`${id}_${i}_mt`])done++;
+    if(ckState[`${id}_${i}_pr`])done++;
   });
   return{done,total};
 }
@@ -421,6 +438,14 @@ The brief follows this chain: Business Performance → Strategy → Initiatives 
 Return ONLY valid JSON, no markdown, no extra text:
 
 {
+  "pain_points": [
+    {
+      "function": "Function name (e.g. R&D, Technology, Procurement, Operations, Strategy, Finance, Digital)",
+      "icon": "single emoji representing this function",
+      "pains": ["Specific pain point 1 — concrete, not generic", "Specific pain point 2", "Specific pain point 3"],
+      "fb_opportunity": "One sentence: where FutureBridge intelligence directly addresses this function's pain"
+    }
+  ],
   "hero_subtitle": "One sentence — the single most important commercial argument for why ${co.name} needs technology intelligence right now.",
   "performance": [
     {"id":"${co.id.toUpperCase()}-P1","title":"Pressure title (5-7 words)","description":"2-3 sentences. Specific business pressure or financial outcome. Named, evidenced.","leads_to":"Strategy pillar this drives"}
@@ -448,6 +473,7 @@ Return ONLY valid JSON, no markdown, no extra text:
 }
 
 Requirements — these are hard counts, not suggestions:
+- pain_points: exactly 6 business functions, each with exactly 3 pain points
 - performance: exactly 4 items
 - strategy: exactly 4 items  
 - initiatives: 2-3 groups, each with 2-3 items
@@ -494,15 +520,16 @@ function renderBrief(co,plan,contacts){
   const pf=plan.performance||[];const st=plan.strategy||[];
   const ini=plan.initiatives||[];const tech=plan.technologies||[];
   const ws=plan.weak_signals||[];const adj=plan.adjacency||[];
-  const tk=plan.takeaways||[];
+  const tk=plan.takeaways||[];const pp=plan.pain_points||[];
 
   // chain
   const chainHTML=`<div class="chain">
     <a href="#perf-sec" class="cnode cp" style="text-decoration:none"><div class="cnode-num">01</div><div class="cnode-ico">◈</div><div class="cnode-title">Performance</div><div class="cnode-desc">Business pressures</div></a>
     <a href="#strat-sec" class="cnode cs" style="text-decoration:none"><div class="cnode-num">02</div><div class="cnode-ico">◇</div><div class="cnode-title">Strategy</div><div class="cnode-desc">Strategic responses</div></a>
-    <a href="#init-sec" class="cnode ci" style="text-decoration:none"><div class="cnode-num">03</div><div class="cnode-ico">▦</div><div class="cnode-title">Initiatives</div><div class="cnode-desc">Funded programmes</div></a>
-    <a href="#tech-sec" class="cnode ct" style="text-decoration:none"><div class="cnode-num">04</div><div class="cnode-ico">⬡</div><div class="cnode-title">Technologies</div><div class="cnode-desc">Key tech areas</div></a>
-    <a href="#sig-sec" class="cnode cw" style="text-decoration:none"><div class="cnode-num">05</div><div class="cnode-ico">⚡</div><div class="cnode-title">Weak Signals</div><div class="cnode-desc">Early TRL indicators</div></a>
+    <a href="#pp-sec" class="cnode" style="text-decoration:none;border-right:1px solid var(--mid)"><div class="cnode-num">03</div><div class="cnode-ico" style="background:var(--red-pale);color:var(--red)">⚑</div><div class="cnode-title" style="color:var(--red)">Pain Points</div><div class="cnode-desc">By function</div></a>
+    <a href="#init-sec" class="cnode ci" style="text-decoration:none"><div class="cnode-num">04</div><div class="cnode-ico">▦</div><div class="cnode-title">Initiatives</div><div class="cnode-desc">Funded programmes</div></a>
+    <a href="#tech-sec" class="cnode ct" style="text-decoration:none"><div class="cnode-num">05</div><div class="cnode-ico">⬡</div><div class="cnode-title">Technologies</div><div class="cnode-desc">Key tech areas</div></a>
+    <a href="#sig-sec" class="cnode cw" style="text-decoration:none"><div class="cnode-num">06</div><div class="cnode-ico">⚡</div><div class="cnode-title">Weak Signals</div><div class="cnode-desc">Early TRL indicators</div></a>
   </div>`;
 
   // counter strip
@@ -601,6 +628,14 @@ function renderBrief(co,plan,contacts){
     </div>`;
   }).join('');
 
+  // pain points
+  const ppHTML=pp.map((fn,i)=>`
+    <div class="pp-card anim d${(i%5)+1}">
+      <div class="pp-fn"><span class="pp-fn-ico">${fn.icon||'⚑'}</span>${fn.function}</div>
+      <ul class="pp-items">${(fn.pains||[]).map(p=>`<li class="pp-item">${p}</li>`).join('')}</ul>
+      ${fn.fb_opportunity?`<div class="pp-opp">↗ FB opportunity: ${fn.fb_opportunity}</div>`:''}
+    </div>`).join('');
+
   // contacts
   const ctHTML=renderContacts(co,contacts);
   const ctMsg=contacts.length===0
@@ -614,6 +649,7 @@ function renderBrief(co,plan,contacts){
         <div class="nav-chain">
           <a href="#perf-sec" class="nn np">Performance</a><span class="nav-arr">→</span>
           <a href="#strat-sec" class="nn ns">Strategy</a><span class="nav-arr">→</span>
+          <a href="#pp-sec" class="nn nw">Pain Points</a><span class="nav-arr">→</span>
           <a href="#init-sec" class="nn ni">Initiatives</a><span class="nav-arr">→</span>
           <a href="#tech-sec" class="nn nt">Technologies</a><span class="nav-arr">→</span>
           <a href="#sig-sec" class="nn nw">Signals</a><span class="nav-arr">·</span>
@@ -662,7 +698,7 @@ function renderBrief(co,plan,contacts){
     <section id="strat-sec">
       <div class="container">
         <div class="sh">
-          <div class="sh-num">02 / 07</div>
+          <div class="sh-num">02 / 08</div>
           <div class="sh-text">
             <span class="stag stag-s">Strategic Response</span>
             <h2 class="lg">How ${co.name} is responding</h2>
@@ -673,11 +709,26 @@ function renderBrief(co,plan,contacts){
       </div>
     </section>
 
+    <!-- PAIN POINTS -->
+    <section id="pp-sec">
+      <div class="container">
+        <div class="sh">
+          <div class="sh-num">03 / 08</div>
+          <div class="sh-text">
+            <span class="stag stag-w">Pain Points by Function</span>
+            <h2 class="lg">Where the pressure lands inside the business</h2>
+            <p>Business pressures translate differently across functions. These are the specific problems each team is trying to solve — and where FutureBridge intelligence is directly applicable.</p>
+          </div>
+        </div>
+        <div class="pp-grid">${ppHTML}</div>
+      </div>
+    </section>
+
     <!-- INITIATIVES -->
     <section id="init-sec">
       <div class="container">
         <div class="sh">
-          <div class="sh-num">03 / 07</div>
+          <div class="sh-num">04 / 08</div>
           <div class="sh-text">
             <span class="stag stag-i">Strategic Initiatives</span>
             <h2 class="lg">The programmes that matter</h2>
@@ -692,7 +743,7 @@ function renderBrief(co,plan,contacts){
     <section id="tech-sec">
       <div class="container">
         <div class="sh">
-          <div class="sh-num">04 / 07</div>
+          <div class="sh-num">05 / 08</div>
           <div class="sh-text">
             <span class="stag stag-t">Key Technologies</span>
             <h2 class="lg">The technology watchlist</h2>
@@ -707,7 +758,7 @@ function renderBrief(co,plan,contacts){
     <section id="sig-sec">
       <div class="container">
         <div class="sh">
-          <div class="sh-num">05 / 07</div>
+          <div class="sh-num">06 / 08</div>
           <div class="sh-text">
             <span class="stag stag-w">Weak Signals</span>
             <h2 class="lg">Early indicators — TRL 1 to 4</h2>
@@ -729,7 +780,7 @@ function renderBrief(co,plan,contacts){
     <section id="adj-sec">
       <div class="container">
         <div class="sh">
-          <div class="sh-num">06 / 07</div>
+          <div class="sh-num">07 / 08</div>
           <div class="sh-text">
             <span class="stag stag-t">Cross-industry Adjacency</span>
             <h2 class="lg">Solutions from outside the sector</h2>
@@ -749,7 +800,7 @@ function renderBrief(co,plan,contacts){
     <section id="tk-sec">
       <div class="container">
         <div class="sh">
-          <div class="sh-num">07 / 07</div>
+          <div class="sh-num">08 / 08</div>
           <div class="sh-text">
             <span class="stag stag-p">Executive Takeaways</span>
             <h2 class="lg">Conclusions from the chain</h2>
@@ -768,7 +819,7 @@ function renderBrief(co,plan,contacts){
           <div class="sh-text">
             <span class="stag stag-p">Contact Tracker</span>
             <h2 class="lg">Key contacts &amp; outreach progression</h2>
-            <p>Sourced from the FutureBridge contacts master CSV. Click to mark LinkedIn connected, emailed, or called. Progress is saved locally.</p>
+            <p>Sourced from the FutureBridge contacts master CSV. Track LinkedIn connection, email, call, meeting held, and proposition developed. Progress is saved locally in your browser.</p>
           </div>
         </div>
         ${ctMsg}
@@ -780,6 +831,8 @@ function renderBrief(co,plan,contacts){
               <option value="li">Not yet connected</option>
               <option value="em">Not yet emailed</option>
               <option value="ca">Not yet called</option>
+              <option value="mt">No meeting yet</option>
+              <option value="pr">No proposition yet</option>
               <option value="CXO">CXO level</option>
               <option value="Senior Management">Senior Management</option>
               <option value="Mid-Management">Mid-Management</option>
@@ -791,7 +844,7 @@ function renderBrief(co,plan,contacts){
         </div>
         <div id="ct-tbl">${ctHTML}</div>
         <div class="prog-wrap"><div class="prog-fill" id="pf" style="width:${pct}%"></div></div>
-        <div class="prog-lbl" id="pl">${done} of ${total} outreach actions complete (${pct}%)</div>
+        <div class="prog-lbl" id="pl">${done} of ${total} engagement actions complete — LinkedIn · Email · Call · Meeting · Proposition (${pct}%)</div>
       </div>
     </section>
 
@@ -841,9 +894,11 @@ function renderContacts(co,contacts,search,flt){
     <th>Level</th>
     <th>Email</th>
     <th>Rel</th>
-    <th style="width:70px;text-align:center">LinkedIn</th>
-    <th style="width:70px;text-align:center">Emailed</th>
-    <th style="width:70px;text-align:center">Called</th>
+    <th style="width:64px;text-align:center">LinkedIn</th>
+    <th style="width:64px;text-align:center">Emailed</th>
+    <th style="width:64px;text-align:center">Called</th>
+    <th style="width:64px;text-align:center">Meeting</th>
+    <th style="width:64px;text-align:center">Proposal</th>
   </tr>`;
 
   const trs=rows.map(c=>{
@@ -851,6 +906,8 @@ function renderContacts(co,contacts,search,flt){
     const li=ckState[`${co.id}_${oi}_li`]||false;
     const em=ckState[`${co.id}_${oi}_em`]||false;
     const ca=ckState[`${co.id}_${oi}_ca`]||false;
+    const mt=ckState[`${co.id}_${oi}_mt`]||false;
+    const pr=ckState[`${co.id}_${oi}_pr`]||false;
     const rel=c.rel||'';
     const lvl=(c.level||'').replace('-Management','').replace('Business ','Biz ');
     const email=c.email||'';
@@ -864,6 +921,8 @@ function renderContacts(co,contacts,search,flt){
       <td style="text-align:center"><button class="ck ${li?'d-li':''}" onclick="toggle('${co.id}',${oi},'li')" title="${li?'Connected':'Mark LinkedIn connected'}">${li?'✓':''}</button></td>
       <td style="text-align:center"><button class="ck ${em?'d-em':''}" onclick="toggle('${co.id}',${oi},'em')" title="${em?'Emailed':'Mark emailed'}">${em?'✓':''}</button></td>
       <td style="text-align:center"><button class="ck ${ca?'d-ca':''}" onclick="toggle('${co.id}',${oi},'ca')" title="${ca?'Called/Met':'Mark called or met'}">${ca?'✓':''}</button></td>
+      <td style="text-align:center"><button class="ck ${mt?'d-mt':''}" onclick="toggle('${co.id}',${oi},'mt')" title="${mt?'Meeting held':'Mark meeting held'}">${mt?'✓':''}</button></td>
+      <td style="text-align:center"><button class="ck ${pr?'d-pr':''}" onclick="toggle('${co.id}',${oi},'pr')" title="${pr?'Proposition developed':'Mark proposition developed'}">${pr?'✓':''}</button></td>
     </tr>`;
   }).join('');
 
