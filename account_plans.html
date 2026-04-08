@@ -275,6 +275,107 @@ section:last-child{border-bottom:none}
 .pp-item::before{content:'—';color:var(--red);flex-shrink:0;font-size:11px;margin-top:2px}
 .pp-opp{margin-top:12px;padding-top:10px;border-top:1px solid var(--mid);font-size:10px;color:var(--c-tech);font-weight:700;letter-spacing:.06em}
 
+/* ── MEETINGS ── */
+#mtg-sec{background:var(--light)}
+.mtg-tabs{display:flex;border-bottom:1px solid var(--mid);margin-bottom:28px}
+.mtg-tab{padding:10px 18px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border:none;background:none;color:var(--dim);border-bottom:2px solid transparent;margin-bottom:-1px;transition:var(--ease)}
+.mtg-tab:hover{color:var(--black)}
+.mtg-tab.active{color:var(--black);border-bottom-color:var(--red)}
+.mtg-pane{display:none}.mtg-pane.active{display:block}
+
+/* form */
+.mf-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px}
+.mf-grid.two{grid-template-columns:1fr 1fr}
+.mf-full{grid-column:1/-1}
+.mfg{display:flex;flex-direction:column;gap:5px}
+.mfg label{font-size:8px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.mfg input,.mfg select,.mfg textarea{border:1px solid var(--mid);padding:8px 10px;font-size:12px;outline:none;border-radius:2px;background:#fff;color:var(--black);font-family:var(--font-b);transition:var(--ease)}
+.mfg input:focus,.mfg select:focus,.mfg textarea:focus{border-color:var(--black)}
+.mfg textarea{resize:vertical;min-height:160px;font-size:11px;line-height:1.6;font-family:var(--font-m)}
+.mtg-submit-row{display:flex;align-items:center;gap:14px;padding-top:4px}
+.mtg-submit-btn{background:var(--black);color:#fff;border:none;padding:10px 22px;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:var(--ease)}
+.mtg-submit-btn:hover{background:#222}
+.mtg-submit-btn:disabled{opacity:.4;pointer-events:none}
+.mtg-status{font-size:11px;color:var(--dim);font-family:var(--font-m)}
+.wc{font-size:9px;color:var(--dimmer);margin-top:3px;font-family:var(--font-m)}
+
+/* analysis cards */
+.ma-wrap{margin-top:24px;border-top:2px solid var(--black);padding-top:24px}
+.ma-hdr{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.ma-title{font-size:15px;font-family:var(--font-d)}
+.ma-badge{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 8px;border-radius:2px}
+.ma-badge.positive{background:rgba(58,154,106,.12);color:#3a9a6a}
+.ma-badge.neutral{background:rgba(0,0,0,.07);color:#555}
+.ma-badge.negative{background:var(--red-pale);color:var(--red)}
+.ma-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.ma-card{background:#fff;border:1px solid var(--mid);border-radius:var(--r);padding:16px}
+.ma-card.full{grid-column:1/-1}
+.ma-card.tint{background:var(--red-pale);border-color:var(--red-mid)}
+.ma-lbl{font-size:8px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;margin-bottom:8px}
+.ma-lbl.r{color:var(--red)}.ma-lbl.b{color:var(--c-tech)}.ma-lbl.g{color:#3a9a6a}.ma-lbl.p{color:#7b4caf}.ma-lbl.a{color:#c47d20}.ma-lbl.d{color:var(--dim)}
+.ma-items{list-style:none;display:flex;flex-direction:column;gap:6px}
+.ma-item{display:flex;align-items:flex-start;gap:6px;font-size:12px;color:#333;line-height:1.5}
+.ma-item::before{content:'—';color:var(--red);flex-shrink:0;font-size:10px;margin-top:2px}
+.ma-text{font-size:13px;color:#333;line-height:1.65}
+
+/* longitudinal */
+.longi-box{background:var(--black);color:#fff;border-radius:var(--r);padding:24px;margin-top:20px}
+.longi-hdr{font-size:13px;font-family:var(--font-d);color:#fff;margin-bottom:3px}
+.longi-sub{font-size:9px;color:#444;font-family:var(--font-m);margin-bottom:20px}
+.longi-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.lc{background:#111;border:1px solid #222;border-radius:var(--r);padding:14px}
+.lc.full{grid-column:1/-1}
+.ll{font-size:8px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;margin-bottom:9px}
+.ll.r{color:var(--red)}.ll.b{color:#4a9bdf}.ll.g{color:#3a9a6a}.ll.a{color:#c47d20}.ll.w{color:#fff}
+.l-items{list-style:none;display:flex;flex-direction:column;gap:6px}
+.l-item{display:flex;align-items:flex-start;gap:6px;font-size:11px;color:#aaa;line-height:1.5}
+.l-item::before{content:'→';color:#333;flex-shrink:0;font-size:10px;margin-top:2px}
+.l-text{font-size:12px;color:#ccc;line-height:1.6}
+.traj-row{display:flex;align-items:center;gap:8px;margin-top:4px}
+.traj-bar{flex:1;height:3px;background:#222;border-radius:2px;overflow:hidden}
+.traj-fill{height:100%;border-radius:2px;transition:width .5s ease}
+.traj-lbl{font-size:10px;white-space:nowrap;font-weight:700}
+
+/* meeting history cards */
+.mc-list{display:flex;flex-direction:column;gap:10px}
+.mc{background:#fff;border:1px solid var(--mid);border-radius:var(--r);overflow:hidden}
+.mc:hover{border-color:#bbb}
+.mc-head{display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer;border-bottom:1px solid transparent;transition:var(--ease)}
+.mc-head:hover{background:var(--light)}
+.mc-head.open{border-bottom-color:var(--mid)}
+.mc-date{font-size:10px;font-family:var(--font-m);color:var(--dim);white-space:nowrap;min-width:76px}
+.mc-who{font-weight:700;font-size:12px;color:var(--black)}
+.mc-role{font-size:10px;color:var(--dim);margin-top:1px}
+.mc-type{font-size:8px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:2px 6px;border-radius:2px;white-space:nowrap}
+.t-intro{background:rgba(42,122,191,.1);color:var(--c-tech)}
+.t-discovery{background:rgba(42,138,122,.1);color:#3a8a6a}
+.t-proposal{background:rgba(196,125,32,.1);color:#c47d20}
+.t-review{background:rgba(123,76,175,.1);color:#7b4caf}
+.t-qbr{background:rgba(0,0,0,.06);color:#555}
+.t-followup{background:var(--red-pale);color:var(--red)}
+.mc-sent{font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:2px;margin-left:auto}
+.s-positive{background:rgba(58,154,106,.1);color:#3a9a6a}
+.s-neutral{background:rgba(0,0,0,.05);color:#666}
+.s-negative{background:var(--red-pale);color:var(--red)}
+.mc-arr{font-size:9px;color:var(--dimmer);transition:transform .18s;margin-left:6px}
+.mc-arr.open{transform:rotate(90deg)}
+.mc-body{display:none;padding:16px;font-size:12px;color:#444;line-height:1.6}
+.mc-body.open{display:block}
+.mc-summary{font-size:13px;color:#333;line-height:1.65;margin-bottom:12px}
+.mc-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+.mc-tag{font-size:8px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:2px 6px;background:var(--light);border:1px solid var(--mid);border-radius:2px;color:#666}
+
+.mtg-stats{display:flex;gap:0;border:1px solid var(--mid);border-radius:var(--r);overflow:hidden;margin-bottom:20px}
+.mtg-stat{flex:1;padding:12px 14px;border-right:1px solid var(--mid);text-align:center}
+.mtg-stat:last-child{border-right:none}
+.mtg-stat-n{font-size:20px;font-family:var(--font-m);font-weight:bold;color:var(--black)}
+.mtg-stat-l{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-top:2px}
+
+.longi-run-btn{background:var(--black);color:#fff;border:none;padding:8px 16px;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;border-radius:2px;margin-bottom:20px;transition:var(--ease)}
+.longi-run-btn:hover{background:#222}
+.longi-run-btn:disabled{opacity:.4;pointer-events:none}
+.empty-mtg{padding:32px;text-align:center;color:var(--dim);font-size:13px;border:1px solid var(--mid);border-radius:var(--r);background:var(--light)}
+
 /* ── FOOTER ── */
 .brief-footer{border-top:1px solid var(--mid);padding:24px 40px;display:flex;justify-content:space-between;align-items:center;max-width:1100px;margin:0 auto}
 .bf-brand{font-family:var(--font-d);font-size:12px;color:var(--dim)}
@@ -306,6 +407,8 @@ section:last-child{border-bottom:none}
   <div class="api-wrap">
     <div class="api-lbl">Anthropic API key</div>
     <input class="api-input" type="password" id="apiKey" placeholder="sk-ant-..." oninput="saveKey()">
+    <div class="api-lbl" style="margin-top:8px">Apps Script URL (meetings)</div>
+    <input class="api-input" type="text" id="scriptUrl" placeholder="https://script.google.com/..." oninput="saveKey()">
   </div>
   <div id="sb-list"></div>
 </div>
@@ -360,7 +463,6 @@ function saveState(){
   localStorage.setItem('fb_v3_plans',JSON.stringify(planCache));
   localStorage.setItem('fb_v3_ck',   JSON.stringify(ckState));
 }
-function saveKey(){localStorage.setItem('fb_v3_key',document.getElementById('apiKey').value)}
 function getKey(){return document.getElementById('apiKey').value||localStorage.getItem('fb_v3_key')||''}
 
 function getContacts(id){
@@ -653,7 +755,8 @@ function renderBrief(co,plan,contacts){
           <a href="#init-sec" class="nn ni">Initiatives</a><span class="nav-arr">→</span>
           <a href="#tech-sec" class="nn nt">Technologies</a><span class="nav-arr">→</span>
           <a href="#sig-sec" class="nn nw">Signals</a><span class="nav-arr">·</span>
-          <a href="#ct-sec" class="nn nc">Contacts (${contacts.length})</a>
+          <a href="#ct-sec" class="nn nc">Contacts (${contacts.length})</a><span class="nav-arr">·</span>
+          <a href="#mtg-sec" class="nn" style="color:#7b4caf">Meetings</a>
         </div>
       </div>
     </nav>
@@ -848,6 +951,95 @@ function renderBrief(co,plan,contacts){
       </div>
     </section>
 
+    <!-- MEETINGS -->
+    <section id="mtg-sec">
+      <div class="container">
+        <div class="sh">
+          <div class="sh-num">✦</div>
+          <div class="sh-text">
+            <span class="stag" style="background:rgba(123,76,175,.1);color:#7b4caf">Meeting Intelligence</span>
+            <h2 class="lg">Meeting log &amp; pattern analysis</h2>
+            <p>Log meetings and Fathom transcripts. Claude analyses each one and automatically runs longitudinal pattern analysis across all meetings with this account.</p>
+          </div>
+        </div>
+
+        <div class="mtg-tabs">
+          <button class="mtg-tab active" onclick="mtgTab('log','${co.id}',this)">Log meeting</button>
+          <button class="mtg-tab" onclick="mtgTab('history','${co.id}',this)">History</button>
+          <button class="mtg-tab" onclick="mtgTab('patterns','${co.id}',this)">Pattern analysis</button>
+        </div>
+
+        <!-- LOG -->
+        <div id="mtg-log-${co.id}" class="mtg-pane active">
+          <div class="mf-grid">
+            <div class="mfg">
+              <label>Contact name</label>
+              <input type="text" id="mf-contact-${co.id}" placeholder="e.g. Richard Griffith">
+            </div>
+            <div class="mfg">
+              <label>Contact title</label>
+              <input type="text" id="mf-ctitle-${co.id}" placeholder="e.g. CIO">
+            </div>
+            <div class="mfg">
+              <label>Meeting date</label>
+              <input type="date" id="mf-date-${co.id}" value="${new Date().toISOString().split('T')[0]}">
+            </div>
+          </div>
+          <div class="mf-grid two" style="margin-bottom:16px">
+            <div class="mfg">
+              <label>Meeting type</label>
+              <select id="mf-type-${co.id}">
+                <option value="intro">Introductory</option>
+                <option value="discovery">Discovery</option>
+                <option value="proposal">Proposal</option>
+                <option value="review">Review / check-in</option>
+                <option value="qbr">QBR</option>
+                <option value="followup">Follow-up</option>
+              </select>
+            </div>
+            <div class="mfg">
+              <label>FutureBridge rep</label>
+              <input type="text" id="mf-rep-${co.id}" placeholder="e.g. Chris Guerin">
+            </div>
+          </div>
+          <div class="mfg mf-full" style="margin-bottom:14px">
+            <label>Objectives &amp; pre-meeting context</label>
+            <textarea id="mf-objectives-${co.id}" rows="3" placeholder="What were you trying to achieve? Any pre-meeting context from the account brief…"></textarea>
+          </div>
+          <div class="mfg mf-full">
+            <label>Fathom transcript / meeting notes</label>
+            <textarea id="mf-transcript-${co.id}" rows="12" placeholder="Paste your Fathom transcript here, or type meeting notes directly.
+
+The AI will extract: key themes, commitments (both sides), signals confirmed from this account brief, FutureBridge opportunities, objections, and next actions.
+
+It will also automatically compare this meeting against all previous ones for ${co.name} and update the longitudinal pattern analysis." oninput="updateWC('${co.id}')"></textarea>
+            <div class="wc" id="mf-wc-${co.id}">0 words</div>
+          </div>
+          <div class="mtg-submit-row" style="margin-top:14px">
+            <button class="mtg-submit-btn" id="mf-btn-${co.id}" onclick="submitMtg('${co.id}','${co.name}')">↑ Analyse &amp; save</button>
+            <span class="mtg-status" id="mf-status-${co.id}"></span>
+          </div>
+          <div id="mf-analysis-${co.id}"></div>
+        </div>
+
+        <!-- HISTORY -->
+        <div id="mtg-history-${co.id}" class="mtg-pane">
+          <div id="mf-hist-out-${co.id}">
+            <div class="empty-mtg">Loading meeting history…</div>
+          </div>
+        </div>
+
+        <!-- PATTERNS -->
+        <div id="mtg-patterns-${co.id}" class="mtg-pane">
+          <button class="longi-run-btn" id="longi-btn-${co.id}" onclick="runLongi('${co.id}','${co.name}')">⚡ Run full pattern analysis</button>
+          <div id="mf-longi-out-${co.id}">
+            <div class="empty-mtg">Click above to generate a full longitudinal pattern analysis across all meetings with ${co.name}.</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
     <!-- FOOTER -->
     <div class="brief-footer">
       <div class="bf-brand">FutureBridge <span>Advisory</span> · ${co.name} Account Plan</div>
@@ -967,10 +1159,340 @@ async function regenPlan(){
   renderBrief(co,plan,contacts);renderSB();
 }
 
+// ── MEETING INTELLIGENCE ──────────────────────────────────────────────
+function saveKey(){
+  localStorage.setItem('fb_v3_key', document.getElementById('apiKey').value);
+  const su=document.getElementById('scriptUrl');
+  if(su) localStorage.setItem('fb_v3_script', su.value);
+}
+function getScriptUrl(){ return (document.getElementById('scriptUrl')||{}).value || localStorage.getItem('fb_v3_script') || ''; }
+
+function mtgTab(tab, coId, el){
+  const panes=['log','history','patterns'];
+  panes.forEach(p=>{
+    const el2=document.getElementById(`mtg-${p}-${coId}`);
+    if(el2) el2.classList.toggle('active', p===tab);
+  });
+  el.closest('.mtg-tabs').querySelectorAll('.mtg-tab').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  if(tab==='history') loadMtgHistory(coId);
+}
+
+function updateWC(coId){
+  const ta=document.getElementById(`mf-transcript-${coId}`);
+  const wc=document.getElementById(`mf-wc-${coId}`);
+  if(!ta||!wc) return;
+  const words=ta.value.trim()?ta.value.trim().split(/\s+/).length:0;
+  wc.textContent=words.toLocaleString()+' words';
+}
+
+async function submitMtg(coId, coName){
+  const contact = document.getElementById(`mf-contact-${coId}`)?.value?.trim()||'';
+  const ctitle  = document.getElementById(`mf-ctitle-${coId}`)?.value?.trim()||'';
+  const date    = document.getElementById(`mf-date-${coId}`)?.value||'';
+  const mtype   = document.getElementById(`mf-type-${coId}`)?.value||'intro';
+  const rep     = document.getElementById(`mf-rep-${coId}`)?.value?.trim()||'';
+  const objectives = document.getElementById(`mf-objectives-${coId}`)?.value?.trim()||'';
+  const transcript = document.getElementById(`mf-transcript-${coId}`)?.value?.trim()||'';
+
+  if(!contact){ showToast('Enter the contact name'); return; }
+  if(!transcript){ showToast('Paste a transcript or notes'); return; }
+  if(!getKey()){ showToast('Add your Anthropic API key in the sidebar'); return; }
+
+  const btn=document.getElementById(`mf-btn-${coId}`);
+  const status=document.getElementById(`mf-status-${coId}`);
+  btn.disabled=true; status.textContent='Loading account history…';
+
+  const prev = await fetchMtgs(coName);
+  status.textContent='Analysing with Claude…';
+
+  const analysis = await analyseMtg(coName, contact, ctitle, date, mtype, objectives, transcript, prev);
+
+  status.textContent='Saving to Sheets…';
+  await saveMtg({ meeting_id:'MTG-'+Date.now(), date, company:coName, contact, contact_title:ctitle,
+    meeting_type:mtype, rep_name:rep, objectives, transcript,
+    ai_summary: analysis.summary||'', themes: JSON.stringify(analysis.themes||[]),
+    commitments: JSON.stringify(analysis.commitments||[]),
+    signals_confirmed: JSON.stringify(analysis.signals_confirmed||[]),
+    fb_opportunities: JSON.stringify(analysis.fb_opportunities||[]),
+    sentiment: analysis.sentiment||'neutral',
+    longitudinal: JSON.stringify(analysis.longitudinal||{}),
+    created_at: new Date().toISOString()
+  });
+
+  btn.disabled=false; status.textContent='';
+  if(analysis.error){ showToast('Analysis failed: '+analysis.error, true); return; }
+  showToast('Meeting saved and analysed ✓');
+  renderMtgAnalysis(analysis, prev.length+1, coId);
+}
+
+async function analyseMtg(coName, contact, ctitle, date, mtype, objectives, transcript, prev){
+  const key=getKey();
+  if(!key) return{error:'No API key'};
+
+  const prevText = prev.length
+    ? prev.map((m,i)=>`Meeting ${i+1} (${m.date}, ${m.meeting_type||''}, ${m.contact||''}): ${m.ai_summary||m.transcript?.substring(0,300)||''}`).join('\n\n')
+    : 'No previous meetings logged for this account.';
+
+  const prompt=`You are a senior FutureBridge analyst. Analyse this meeting for ${coName}.
+
+CONTACT: ${contact}${ctitle?' ('+ctitle+')':''}  DATE: ${date}  TYPE: ${mtype}
+OBJECTIVES: ${objectives||'Not specified'}
+TRANSCRIPT/NOTES: ${transcript}
+
+PREVIOUS MEETINGS WITH ${coName} (${prev.length} total):
+${prevText}
+
+Return ONLY valid JSON:
+{
+  "summary": "3-4 sentences. What happened, what was decided, what matters commercially.",
+  "sentiment": "positive|neutral|negative",
+  "sentiment_reason": "One sentence.",
+  "themes": ["theme 1","theme 2","theme 3","theme 4"],
+  "commitments": [{"who":"FutureBridge|${coName}","what":"Specific commitment","deadline":"by [date] or not specified"}],
+  "signals_confirmed": [{"signal":"What was confirmed","significance":"Why it matters"}],
+  "fb_opportunities": [{"opportunity":"Specific FutureBridge product or engagement type","evidence":"What was said"}],
+  "objections": ["Resistance or blockers raised"],
+  "next_actions": ["Next action 1","Next action 2"],
+  "longitudinal": {
+    "meeting_count": ${prev.length+1},
+    "relationship_trajectory": "improving|stable|declining|too_early",
+    "trajectory_score": 0.6,
+    "recurring_themes": ["Theme recurring across meetings"],
+    "pattern_observations": ["Pattern observable across meetings"],
+    "fb_readiness": "low|medium|high",
+    "fb_readiness_reason": "One sentence on where the account is commercially.",
+    "recommended_next_move": "Specific, concrete recommendation for next engagement."
+  }
+}
+Write like a senior analyst debriefing a partner. Be commercially direct.`;
+
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2500,messages:[{role:'user',content:prompt}]})
+    });
+    if(!r.ok){const e=await r.json().catch(()=>({}));return{error:`API ${r.status}: ${e.error?.message||r.statusText}`};}
+    const d=await r.json();
+    const txt=d.content.map(b=>b.text||'').join('');
+    return JSON.parse(txt.replace(/```json|```/g,'').trim());
+  }catch(e){return{error:e.message};}
+}
+
+function renderMtgAnalysis(a, n, coId){
+  const el=document.getElementById(`mf-analysis-${coId}`);
+  if(!el) return;
+  const sentCls={positive:'positive',neutral:'neutral',negative:'negative'}[a.sentiment]||'neutral';
+  const sentLbl={positive:'Positive',neutral:'Neutral',negative:'Needs attention'}[a.sentiment]||'—';
+  const L=a.longitudinal||{};
+  const trajPct=Math.round((L.trajectory_score||0.5)*100);
+  const trajCol=trajPct>=65?'#3a9a6a':trajPct>=40?'#c47d20':'#F84E5D';
+  const rdCol={high:'#3a9a6a',medium:'#c47d20',low:'#F84E5D'}[L.fb_readiness]||'#888';
+
+  const commitHTML=(a.commitments||[]).map(c=>`<li class="ma-item"><strong>${c.who}:</strong> ${c.what}${c.deadline&&c.deadline!=='not specified'?' <span style="color:var(--dim);font-size:10px">'+c.deadline+'</span>':''}</li>`).join('')||'<li class="ma-item" style="color:#aaa">None explicit</li>';
+  const sigHTML=(a.signals_confirmed||[]).map(s=>`<li class="ma-item"><strong>${s.signal}</strong> — ${s.significance}</li>`).join('')||'<li class="ma-item" style="color:#aaa">None confirmed</li>';
+  const fbHTML=(a.fb_opportunities||[]).map(o=>`<li class="ma-item"><strong>${o.opportunity}</strong> — ${o.evidence}</li>`).join('')||'<li class="ma-item" style="color:#aaa">None identified</li>';
+  const objHTML=(a.objections||[]).map(o=>`<li class="ma-item">${o}</li>`).join('')||'<li class="ma-item" style="color:#aaa">None flagged</li>';
+  const nextHTML=(a.next_actions||[]).map(n=>`<li class="ma-item">${n}</li>`).join('')||'<li class="ma-item" style="color:#aaa">None</li>';
+  const recurHTML=(L.recurring_themes||[]).map(t=>`<li class="l-item">${t}</li>`).join('')||'<li class="l-item" style="color:#444">First meeting — patterns emerge over time</li>';
+  const patHTML=(L.pattern_observations||[]).map(p=>`<li class="l-item">${p}</li>`).join('')||'<li class="l-item" style="color:#444">Log more meetings for pattern analysis</li>';
+
+  el.innerHTML=`<div class="ma-wrap">
+    <div class="ma-hdr">
+      <h3 class="ma-title">Meeting analysis — ${n} meeting${n===1?'':'s'} with this account</h3>
+      <span class="ma-badge ${sentCls}">${sentLbl}</span>
+    </div>
+    <div class="ma-grid">
+      <div class="ma-card full"><div class="ma-lbl d">Summary</div><p class="ma-text w">${a.summary||''}</p><div style="font-size:11px;color:var(--dim);margin-top:6px;font-style:italic">${a.sentiment_reason||''}</div></div>
+      <div class="ma-card"><div class="ma-lbl d">Themes</div><ul class="ma-items">${(a.themes||[]).map(t=>`<li class="ma-item">${t}</li>`).join('')}</ul></div>
+      <div class="ma-card"><div class="ma-lbl d">Objections &amp; blockers</div><ul class="ma-items">${objHTML}</ul></div>
+      <div class="ma-card"><div class="ma-lbl r">Commitments</div><ul class="ma-items">${commitHTML}</ul></div>
+      <div class="ma-card"><div class="ma-lbl b">Signals confirmed</div><ul class="ma-items">${sigHTML}</ul></div>
+      <div class="ma-card"><div class="ma-lbl g">FB opportunities</div><ul class="ma-items">${fbHTML}</ul></div>
+      <div class="ma-card"><div class="ma-lbl" style="color:#7b4caf">Next actions</div><ul class="ma-items">${nextHTML}</ul></div>
+    </div>
+    <div class="longi-box">
+      <div class="longi-hdr">Longitudinal pattern · ${n} meeting${n===1?'':'s'}</div>
+      <div class="longi-sub">Updated automatically on every submission</div>
+      <div class="longi-grid">
+        <div class="lc"><div class="ll b">Relationship trajectory</div>
+          <div class="traj-row"><div class="traj-bar"><div class="traj-fill" style="width:${trajPct}%;background:${trajCol}"></div></div>
+          <div class="traj-lbl" style="color:${trajCol}">${(L.relationship_trajectory||'').replace('_',' ')} · ${trajPct}%</div></div>
+        </div>
+        <div class="lc"><div class="ll g">FB readiness</div>
+          <div style="font-size:18px;font-weight:bold;color:${rdCol};font-family:var(--font-m);margin-bottom:4px">${(L.fb_readiness||'—').toUpperCase()}</div>
+          <div style="font-size:11px;color:#aaa">${L.fb_readiness_reason||''}</div>
+        </div>
+        <div class="lc"><div class="ll r">Recurring themes</div><ul class="l-items">${recurHTML}</ul></div>
+        <div class="lc"><div class="ll a">Patterns</div><ul class="l-items">${patHTML}</ul></div>
+        <div class="lc full"><div class="ll w">Recommended next move</div><div class="l-text">${L.recommended_next_move||'Log more meetings to generate recommendations.'}</div></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+async function loadMtgHistory(coId){
+  const co=COS.find(c=>c.id===coId);
+  const el=document.getElementById(`mf-hist-out-${coId}`);
+  if(!el) return;
+  el.innerHTML='<div class="empty-mtg">Loading…</div>';
+  const meetings=await fetchMtgs(co.name);
+  if(!meetings.length){ el.innerHTML=`<div class="empty-mtg">No meetings logged yet for ${co.name}. Use the Log Meeting tab.</div>`; return; }
+
+  const byS=meetings.reduce((a,m)=>{ a[m.sentiment||'unknown']=(a[m.sentiment||'unknown']||0)+1; return a; },{});
+  const statsHTML=`<div class="mtg-stats">
+    <div class="mtg-stat"><div class="mtg-stat-n">${meetings.length}</div><div class="mtg-stat-l">Total</div></div>
+    <div class="mtg-stat"><div class="mtg-stat-n" style="color:#3a9a6a">${byS.positive||0}</div><div class="mtg-stat-l">Positive</div></div>
+    <div class="mtg-stat"><div class="mtg-stat-n" style="color:#888">${byS.neutral||0}</div><div class="mtg-stat-l">Neutral</div></div>
+    <div class="mtg-stat"><div class="mtg-stat-n" style="color:var(--red)">${byS.negative||0}</div><div class="mtg-stat-l">Needs attention</div></div>
+  </div>`;
+
+  const sorted=[...meetings].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const cardsHTML=sorted.map(m=>{
+    const themes=tryParseMtg(m.themes,[]);
+    const fbs=tryParseMtg(m.fb_opportunities,[]);
+    const sc={positive:'s-positive',neutral:'s-neutral',negative:'s-negative'}[m.sentiment]||'s-neutral';
+    const sl={positive:'Positive',neutral:'Neutral',negative:'Needs attention'}[m.sentiment]||'—';
+    const tc='t-'+(m.meeting_type||'intro');
+    const tl={intro:'Intro',discovery:'Discovery',proposal:'Proposal',review:'Review',qbr:'QBR',followup:'Follow-up'}[m.meeting_type]||m.meeting_type||'—';
+    const tagsHTML=themes.slice(0,4).map(t=>`<span class="mc-tag">${t}</span>`).join('');
+    const fbHTML=fbs.slice(0,2).map(o=>`<li class="ma-item" style="font-size:11px">${typeof o==='object'?o.opportunity:o}</li>`).join('');
+    return`<div class="mc">
+      <div class="mc-head" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open');this.querySelector('.mc-arr').classList.toggle('open')">
+        <div class="mc-date">${m.date||'—'}</div>
+        <div><div class="mc-who">${m.contact||'—'}</div><div class="mc-role">${m.contact_title||''}</div></div>
+        <span class="mc-type ${tc}">${tl}</span>
+        <span class="mc-sent ${sc}" style="margin-left:auto">${sl}</span>
+        <span class="mc-arr">▶</span>
+      </div>
+      <div class="mc-body">
+        <p class="mc-summary">${m.ai_summary||'No summary.'}</p>
+        <div class="mc-tags">${tagsHTML}</div>
+        ${fbHTML?`<div style="font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:5px">FB Opportunities</div><ul class="ma-items">${fbHTML}</ul>`:''}
+      </div>
+    </div>`;
+  }).join('');
+
+  el.innerHTML=statsHTML+'<div class="mc-list">'+cardsHTML+'</div>';
+}
+
+async function runLongi(coId, coName){
+  const btn=document.getElementById(`longi-btn-${coId}`);
+  const el=document.getElementById(`mf-longi-out-${coId}`);
+  btn.disabled=true; btn.textContent='Running…';
+  el.innerHTML='<div class="empty-mtg">Generating full pattern analysis…</div>';
+  const meetings=await fetchMtgs(coName);
+  if(!meetings.length){ el.innerHTML='<div class="empty-mtg">No meetings logged yet.</div>'; btn.disabled=false; btn.textContent='⚡ Run full pattern analysis'; return; }
+
+  const key=getKey();
+  if(!key){ el.innerHTML='<div class="empty-mtg">No API key configured.</div>'; btn.disabled=false; btn.textContent='⚡ Run full pattern analysis'; return; }
+
+  const summaries=meetings.map((m,i)=>`Meeting ${i+1} (${m.date}, ${m.meeting_type}, ${m.contact}): ${m.ai_summary||m.transcript?.substring(0,350)||'No summary'}`).join('\n\n');
+
+  const prompt=`You are a senior FutureBridge analyst. Analyse the complete meeting history for ${coName} and produce a deep longitudinal intelligence report.
+
+MEETING HISTORY (${meetings.length} meetings):
+${summaries}
+
+Return ONLY valid JSON:
+{
+  "executive_summary": "3-4 sentences. Overall relationship state and single most important insight.",
+  "relationship_health": "strong|developing|stalled|at_risk",
+  "health_score": 0.7,
+  "recurring_themes": [{"theme":"Name","frequency":2,"trajectory":"growing|stable|declining","significance":"Why this matters"}],
+  "key_signals": ["Signal confirmed across meetings that aligns with account brief intelligence"],
+  "commitment_analysis": "2 sentences on whether commitments on both sides have been followed through.",
+  "fb_readiness": "low|medium|high",
+  "fb_readiness_evidence": ["Evidence point 1","Evidence point 2"],
+  "biggest_opportunity": "Single most commercially significant opportunity visible from the pattern.",
+  "biggest_risk": "Single most significant risk to the relationship or deal.",
+  "recommended_strategy": "2-3 sentences. Concrete 90-day strategy for this account."
+}`;
+
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,messages:[{role:'user',content:prompt}]})
+    });
+    const d=await r.json();
+    const L=JSON.parse(d.content.map(b=>b.text||'').join('').replace(/```json|```/g,'').trim());
+    const hcol={strong:'#3a9a6a',developing:'#c47d20',stalled:'#888',at_risk:'#F84E5D'}[L.relationship_health]||'#888';
+    const rcol={high:'#3a9a6a',medium:'#c47d20',low:'#F84E5D'}[L.fb_readiness]||'#888';
+    const hpct=Math.round((L.health_score||0.5)*100);
+    const themesHTML=(L.recurring_themes||[]).map(t=>`
+      <div style="padding:10px;background:#1a1a1a;border-radius:2px;margin-bottom:6px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+          <span style="font-size:11px;font-weight:700;color:#fff">${t.theme}</span>
+          <span style="font-size:9px;font-family:var(--font-m);color:#444">×${t.frequency}</span>
+          <span style="font-size:9px;color:${t.trajectory==='growing'?'#3a9a6a':t.trajectory==='declining'?'#F84E5D':'#888'};font-weight:700;margin-left:auto">${t.trajectory}</span>
+        </div>
+        <div style="font-size:11px;color:#777">${t.significance}</div>
+      </div>`).join('');
+
+    el.innerHTML=`<div class="longi-box">
+      <div class="longi-hdr">Full pattern analysis — ${coName} · ${meetings.length} meetings</div>
+      <div class="longi-sub">Generated ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</div>
+      <div class="longi-grid">
+        <div class="lc"><div class="ll b">Relationship health</div>
+          <div class="traj-row"><div class="traj-bar"><div class="traj-fill" style="width:${hpct}%;background:${hcol}"></div></div>
+          <div class="traj-lbl" style="color:${hcol}">${(L.relationship_health||'').replace('_',' ')} · ${hpct}%</div></div>
+        </div>
+        <div class="lc"><div class="ll g">FB readiness</div>
+          <div style="font-size:18px;font-weight:bold;color:${rcol};font-family:var(--font-m);margin-bottom:4px">${(L.fb_readiness||'—').toUpperCase()}</div>
+          <ul class="l-items">${(L.fb_readiness_evidence||[]).map(e=>`<li class="l-item">${e}</li>`).join('')}</ul>
+        </div>
+        <div class="lc full"><div class="ll w">Executive summary</div><div class="l-text">${L.executive_summary||''}</div></div>
+        <div class="lc full"><div class="ll r">Recurring themes</div>${themesHTML||'<div style="color:#444;font-size:12px">Insufficient data</div>'}</div>
+        <div class="lc"><div class="ll a">Biggest opportunity</div><div class="l-text">${L.biggest_opportunity||'—'}</div></div>
+        <div class="lc"><div class="ll r">Biggest risk</div><div class="l-text">${L.biggest_risk||'—'}</div></div>
+        <div class="lc full"><div class="ll w">Recommended 90-day strategy</div><div class="l-text">${L.recommended_strategy||'—'}</div></div>
+      </div>
+    </div>`;
+  }catch(e){
+    el.innerHTML=`<div class="empty-mtg" style="color:var(--red)">Failed: ${e.message}</div>`;
+  }
+  btn.disabled=false; btn.textContent='⚡ Run full pattern analysis';
+}
+
+async function fetchMtgs(coName){
+  const url=getScriptUrl();
+  if(!url) return [];
+  try{
+    const r=await fetch(`${url}?action=getMeetings&company=${encodeURIComponent(coName)}`);
+    if(!r.ok) return [];
+    const d=await r.json();
+    return d.meetings||[];
+  }catch(e){ return []; }
+}
+
+async function saveMtg(data){
+  const url=getScriptUrl();
+  if(!url){ showToast('No Apps Script URL — meeting not saved to Sheets',true); return false; }
+  try{
+    await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'saveMeeting',data})});
+    return true;
+  }catch(e){ showToast('Sheets save failed: '+e.message,true); return false; }
+}
+
+function tryParseMtg(str,fb){ if(Array.isArray(str))return str; try{return JSON.parse(str);}catch(e){return fb;} }
+
+function showToast(msg,err){
+  let t=document.getElementById('__toast__');
+  if(!t){ t=document.createElement('div'); t.id='__toast__'; t.style.cssText='position:fixed;bottom:20px;right:20px;background:#000;color:#fff;padding:10px 18px;font-size:12px;font-weight:700;border-radius:3px;z-index:9999;opacity:0;transform:translateY(6px);transition:all .22s;pointer-events:none'; document.body.appendChild(t); }
+  t.textContent=msg;
+  t.style.background=err?'#F84E5D':'#000';
+  t.style.opacity='1'; t.style.transform='translateY(0)';
+  setTimeout(()=>{ t.style.opacity='0'; t.style.transform='translateY(6px)'; },3000);
+}
+
 // ── INIT ──────────────────────────────────────────────────────────────
 loadState();
 const sk=localStorage.getItem('fb_v3_key')||'';
 document.getElementById('apiKey').value=sk;
+const su=document.getElementById('scriptUrl');
+if(su) su.value=localStorage.getItem('fb_v3_script')||'';
 renderSB();
 </script>
 </body>

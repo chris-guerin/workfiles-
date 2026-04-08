@@ -3,305 +3,62 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FutureBridge — Signal Engine</title>
+<title>FutureBridge Advisory — Signal Engine Platform</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&display=swap');
-
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --black: #000000;
-  --white: #FFFFFF;
-  --grey: #4B4B55;
-  --red: #F84E5D;
-  --border: rgba(255,255,255,0.08);
-  --border-med: rgba(255,255,255,0.15);
+  --black: #000000; --white: #ffffff; --grey: #4B4B55; --red: #F84E5D;
+  --border: #1a1a1a; --surface: #111;
 }
+body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: var(--black); color: var(--white); min-height: 100vh; -webkit-font-smoothing: antialiased; }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  font-family: 'DM Sans', Arial, sans-serif;
-  background: var(--black);
-  color: var(--white);
-  min-height: 100vh;
-}
-
-/* GRAPHIC DEVICE */
-.gd {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  flex-shrink: 0;
-}
-.gd span {
-  display: block;
-  background: var(--white);
-  height: 3px;
-}
-.gd span:nth-child(1) { width: 28px; }
-.gd span:nth-child(2) { width: 20px; }
-.gd span:nth-child(3) { width: 12px; }
-
-/* HEADER */
-header {
-  border-bottom: 1px solid var(--border-med);
-  padding: 0 48px;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  background: var(--black);
-  z-index: 10;
-}
-
+header { border-bottom: 1px solid var(--border); padding: 16px 48px; display: flex; align-items: center; justify-content: space-between; }
 .header-left { display: flex; align-items: center; gap: 16px; }
-
-.wordmark {
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  color: var(--white);
-  text-transform: uppercase;
-}
-
+.gd { display: flex; flex-direction: column; gap: 4px; }
+.gd span { display: block; background: var(--white); height: 4px; border-radius: 1px; }
+.gd span:nth-child(1){width:32px} .gd span:nth-child(2){width:22px} .gd span:nth-child(3){width:14px}
+.wordmark { font-size: 13px; font-weight: 700; letter-spacing: .04em; }
 .wordmark span { color: var(--red); }
 
-/* HERO */
-.hero {
-  padding: 80px 48px 64px;
-  border-bottom: 1px solid var(--border);
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 48px;
-  align-items: end;
-}
+.hero { padding: 72px 48px 48px; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: end; border-bottom: 1px solid var(--border); }
+.hero-label { font-size: 10px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--red); margin-bottom: 16px; }
+.hero h1 { font-size: clamp(2.4rem,4vw,3.8rem); font-weight: 700; line-height: 1.1; letter-spacing: -.02em; }
+.hero h1 em { font-style: italic; color: #aaa; }
+.hero-desc { font-size: 15px; color: #888; line-height: 1.7; padding-top: 8px; }
 
-.hero-label {
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--grey);
-  margin-bottom: 16px;
-}
+.nav-tabs { display: flex; border-bottom: 1px solid var(--border); padding: 0 48px; }
+.nav-tab { padding: 14px 20px; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; border: none; background: none; color: #444; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all .15s; }
+.nav-tab:hover { color: #888; }
+.nav-tab.active { color: var(--white); border-bottom-color: var(--red); }
 
-.hero h1 {
-  font-size: clamp(32px, 4vw, 52px);
-  font-weight: 700;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-}
-
-.hero h1 em {
-  font-style: normal;
-  color: var(--red);
-}
-
-.hero-desc {
-  font-size: 15px;
-  color: rgba(255,255,255,0.55);
-  line-height: 1.6;
-  max-width: 480px;
-  align-self: end;
-  padding-bottom: 4px;
-}
-
-/* NAV TABS */
-.nav-tabs {
-  display: flex;
-  gap: 0;
-  border-bottom: 1px solid var(--border);
-  padding: 0 48px;
-}
-
-.nav-tab {
-  padding: 16px 24px;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.4);
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s;
-  background: none;
-  border-top: none;
-  border-left: none;
-  border-right: none;
-}
-
-.nav-tab:hover { color: var(--white); }
-.nav-tab.active {
-  color: var(--white);
-  border-bottom-color: var(--red);
-}
-
-/* SECTIONS */
-.section {
-  display: none;
-  padding: 48px;
-}
+.section { display: none; padding: 40px 48px 80px; }
 .section.active { display: block; }
+.section-title { font-size: 10px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #444; margin-bottom: 28px; }
 
-.section-title {
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--grey);
-  margin-bottom: 32px;
-}
+.tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+.tool-card { background: var(--black); padding: 36px; position: relative; overflow: hidden; text-decoration: none; color: var(--white); transition: background .15s; display: block; min-height: 200px; }
+.tool-card:hover { background: var(--surface); }
+.tool-tag { font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--black); background: var(--white); padding: 3px 8px; margin-bottom: 20px; display: inline-block; }
+.tool-tag.live { background: #22AE8A; color: var(--white); }
+.tool-tag.new  { background: var(--red); color: var(--white); }
+.tool-card h3 { font-size: 20px; font-weight: 700; margin-bottom: 12px; line-height: 1.2; }
+.tool-card p  { font-size: 13px; color: rgba(255,255,255,.45); line-height: 1.6; max-width: 320px; }
+.tool-card-arrow { position: absolute; bottom: 36px; right: 36px; color: #444; font-size: 20px; transition: transform .2s, color .2s; }
+.tool-card:hover .tool-card-arrow { transform: translate(2px,-2px); color: var(--red); }
 
-/* GRID */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1px;
-  background: var(--border);
-}
-
-.card {
-  background: var(--black);
-  padding: 28px;
-  text-decoration: none;
-  color: inherit;
-  display: block;
-  transition: background 0.2s;
-  position: relative;
-}
-
-.card:hover { background: rgba(255,255,255,0.04); }
-
-.card-sector {
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--grey);
-  margin-bottom: 12px;
-}
-
-.card h3 {
-  font-size: 16px;
-  font-weight: 500;
-  margin-bottom: 8px;
-  line-height: 1.3;
-}
-
-.card p {
-  font-size: 13px;
-  color: rgba(255,255,255,0.45);
-  line-height: 1.5;
-}
-
-.card-arrow {
-  position: absolute;
-  top: 28px;
-  right: 28px;
-  color: var(--grey);
-  font-size: 18px;
-  transition: transform 0.2s, color 0.2s;
-}
-
-.card:hover .card-arrow {
-  transform: translate(2px, -2px);
-  color: var(--red);
-}
-
-/* TOOL CARDS — larger */
-.tool-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 1px;
-  background: var(--border);
-}
-
-.tool-card {
-  background: var(--black);
-  padding: 36px;
-  text-decoration: none;
-  color: inherit;
-  display: block;
-  transition: background 0.2s;
-  position: relative;
-}
-
-.tool-card:hover { background: rgba(255,255,255,0.04); }
-
-.tool-tag {
-  display: inline-block;
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--black);
-  background: var(--white);
-  padding: 3px 8px;
-  margin-bottom: 20px;
-}
-
-.tool-card h3 {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 12px;
-  line-height: 1.2;
-}
-
-.tool-card p {
-  font-size: 13px;
-  color: rgba(255,255,255,0.45);
-  line-height: 1.6;
-  max-width: 320px;
-}
-
-.tool-card-arrow {
-  position: absolute;
-  bottom: 36px;
-  right: 36px;
-  color: var(--grey);
-  font-size: 20px;
-  transition: transform 0.2s, color 0.2s;
-}
-
-.tool-card:hover .tool-card-arrow {
-  transform: translate(2px, -2px);
-  color: var(--red);
-}
-
-/* STATUS BAR */
-footer {
-  border-top: 1px solid var(--border);
-  padding: 16px 48px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 11px;
-  color: var(--grey);
-}
-
-.status-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #22AE8A;
-  display: inline-block;
-  margin-right: 6px;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
+footer { border-top: 1px solid var(--border); padding: 16px 48px; display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: #444; }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: #22AE8A; display: inline-block; margin-right: 6px; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 </style>
 </head>
 <body>
 
 <header>
   <div class="header-left">
-    <div class="gd">
-      <span></span><span></span><span></span>
-    </div>
+    <div class="gd"><span></span><span></span><span></span></div>
     <div class="wordmark">Future<span>Bridge</span> Advisory</div>
   </div>
-  <div style="font-size:11px;color:var(--grey);letter-spacing:0.06em;">Signal Engine Platform</div>
+  <div style="font-size:11px;color:#444;letter-spacing:.06em">Signal Engine Platform</div>
 </header>
 
 <div class="hero">
@@ -310,15 +67,15 @@ footer {
     <h1>Signal.<br>Hypothesis.<br><em>Action.</em></h1>
   </div>
   <div class="hero-desc">
-    Weak signal detection, hypothesis tracking, and AI-powered client intelligence — built for FutureBridge Advisory's six sector coverage. Every tool on this platform reads live data.
+    Weak signal detection, hypothesis tracking, and AI-powered client intelligence — built for FutureBridge Advisory's energy and mobility coverage. Every tool reads live data.
   </div>
 </div>
 
 <div class="nav-tabs">
-  <button class="nav-tab active" onclick="showSection('tools')">Tools</button>
-  <button class="nav-tab" onclick="showSection('energy')">Energy</button>
-  <button class="nav-tab" onclick="showSection('mobility')">Mobility</button>
-  <button class="nav-tab" onclick="showSection('client')">Client Work</button>
+  <button class="nav-tab active" onclick="showSection('tools',this)">Tools</button>
+  <button class="nav-tab" onclick="showSection('energy',this)">Energy</button>
+  <button class="nav-tab" onclick="showSection('mobility',this)">Mobility</button>
+  <button class="nav-tab" onclick="showSection('client',this)">Client Work</button>
 </div>
 
 <!-- TOOLS -->
@@ -326,188 +83,146 @@ footer {
   <div class="section-title">Platform tools</div>
   <div class="tool-grid">
 
+    <a href="account_plans_v3.html" class="tool-card">
+      <div class="tool-tag new">New</div>
+      <h3>Account Plans</h3>
+      <p>Intelligence briefs for 11 energy accounts — BP, ExxonMobil, Eni, ConocoPhillips, SLB and more. Full chain from business pressure to weak signals, plus contact tracker from the master CSV.</p>
+      <div class="tool-card-arrow">↗</div>
+    </a>
+
     <a href="hypothesis_heatmap_updated.html" class="tool-card">
-      <div class="tool-tag">Live</div>
+      <div class="tool-tag live">Live</div>
       <h3>Hypothesis Heatmap</h3>
       <p>118 hypotheses across four layers. Probability scores updated by WF-15 signal classification pipeline. Filterable by sector, horizon, and status.</p>
       <div class="tool-card-arrow">↗</div>
     </a>
 
     <a href="signal_engine_registry.html" class="tool-card">
-      <div class="tool-tag">Live</div>
+      <div class="tool-tag live">Live</div>
       <h3>Signal Engine Registry</h3>
-      <p>Entity, strategy, and technology relationship map. 94 entities, 195 strategies, 55 technologies. The intelligence graph behind every brief.</p>
-      <div class="tool-card-arrow">↗</div>
-    </a>
-
-    <a href="signal_engine_showcase%20(1).html" class="tool-card">
-      <div class="tool-tag">Tool</div>
-      <h3>Signal Engine Showcase</h3>
-      <p>Full signal classification and email generation pipeline. Demonstrate the end-to-end flow from weak signal detection to YAMM-ready outreach.</p>
-      <div class="tool-card-arrow">↗</div>
-    </a>
-
-    <a href="shell_h3_hypothesis_repo.html" class="tool-card">
-      <div class="tool-tag">Client</div>
-      <h3>Shell H3 Hypothesis Repo</h3>
-      <p>Seven Horizon-3 business frames for Shell. SHELL_H3_001 through 007. Evidence classification using the three-tier Evidence / Hypothesis / Forecast system.</p>
-      <div class="tool-card-arrow">↗</div>
-    </a>
-
-    <a href="signal_ingestor_v5.html" class="tool-card">
-      <div class="tool-tag">Tool</div>
-      <h3>Signal Ingestor</h3>
-      <p>Manual signal ingestion and classification tool. Tag, score, and route signals to the hypothesis repository and contact outreach pipeline.</p>
+      <p>Entity, strategy, and technology relationship map. 94 entities, 195 strategies, 55 technologies. Reads live from Datasette.</p>
       <div class="tool-card-arrow">↗</div>
     </a>
 
     <a href="campaign_manager_v2.html" class="tool-card">
-      <div class="tool-tag">Live</div>
+      <div class="tool-tag">Platform</div>
       <h3>Campaign Manager</h3>
-      <p>4-week outreach cadence. Signal-to-campaign pipeline, persona-matched email generation, contact rotation tracking, and YAMM CSV export.</p>
+      <p>YAMM outreach campaign builder. Reads from Campaigns tab in Google Sheets. Persona-differentiated email generation for executive, strategy, and technology contacts.</p>
       <div class="tool-card-arrow">↗</div>
     </a>
 
-    <a href="signal_engine_campaign.html" class="tool-card">
-      <div class="tool-tag">Docs</div>
-      <h3>Pipeline Specification</h3>
-      <p>Full technical specification for the Signal Engine classification pipeline. Every stage, prompt, schema, and decision rule. The execution document behind the campaign manager.</p>
-      <div class="tool-card-arrow">↗</div>
-    </a>
-
-    <a href="insight_forecast.html" class="tool-card">
+    <a href="meeting_prep_v8.html" class="tool-card">
       <div class="tool-tag">Tool</div>
-      <h3>Insight Forecast</h3>
-      <p>Forward-looking technology and market forecasting. TRL trajectory modelling and time-to-market scoring across FutureBridge coverage sectors.</p>
+      <h3>Meeting Prep</h3>
+      <p>Pre-meeting intelligence briefs generated via Anthropic API. Contact research, market context, and talking points. DB and manual mode.</p>
+      <div class="tool-card-arrow">↗</div>
+    </a>
+
+    <a href="hypothesis_builder.html" class="tool-card">
+      <div class="tool-tag">Platform</div>
+      <h3>Hypothesis Builder</h3>
+      <p>Five-step customer-facing hypothesis builder. Writes directly to the Hypothesis Repository via Apps Script v2.</p>
+      <div class="tool-card-arrow">↗</div>
+    </a>
+
+    <a href="meeting_intelligence.html" class="tool-card">
+      <div class="tool-tag new">New</div>
+      <h3>Meeting Intelligence</h3>
+      <p>Log meetings and Fathom transcripts per account. Auto-analyses each meeting and runs longitudinal pattern analysis across all meetings — themes, commitments, relationship trajectory, and FutureBridge readiness.</p>
       <div class="tool-card-arrow">↗</div>
     </a>
 
   </div>
 </div>
 
-<!-- ENERGY BRIEFS -->
+<!-- ENERGY -->
 <div id="energy" class="section">
-  <div class="section-title">Energy sector — client intelligence briefs</div>
-  <div class="grid">
+  <div class="section-title">Energy intelligence</div>
+  <div class="tool-grid">
 
-    <a href="shell_intelligence_brief__4_.html" class="card">
-      <div class="card-sector">Energy — Oil Major</div>
-      <h3>Shell</h3>
-      <p>Integrated energy transition. H3 business frame analysis, Horizon-3 opportunity scoring.</p>
-      <div class="card-arrow">↗</div>
+    <a href="bp_intelligence_brief_3_.html" class="tool-card">
+      <div class="tool-tag">Brief</div>
+      <h3>BP Intelligence Brief</h3>
+      <p>Strategic intelligence brief covering BP's technology investments, transition reset, and upstream reinvestment priorities.</p>
+      <div class="tool-card-arrow">↗</div>
     </a>
 
-    <a href="bp_intelligence_brief__3_.html" class="card">
-      <div class="card-sector">Energy — Oil Major</div>
-      <h3>BP</h3>
-      <p>Portfolio restructuring, low-carbon transition signals, capital allocation shifts.</p>
-      <div class="card-arrow">↗</div>
+    <a href="shell_intelligence_brief.html" class="tool-card">
+      <div class="tool-tag">Brief</div>
+      <h3>Shell Intelligence Brief</h3>
+      <p>Shell H3 engagement context, technology portfolio, and innovation priorities across upstream, LNG, and low-carbon.</p>
+      <div class="tool-card-arrow">↗</div>
     </a>
 
-    <a href="halliburton_intelligence_brief__4_%20(1).html" class="card">
-      <div class="card-sector">Energy — Oilfield Services</div>
-      <h3>Halliburton</h3>
-      <p>Digital oilfield, automation, and energy transition service diversification.</p>
-      <div class="card-arrow">↗</div>
+    <a href="chevron-intelligence-brief__1_.html" class="tool-card">
+      <div class="tool-tag">Brief</div>
+      <h3>Chevron Intelligence Brief</h3>
+      <p>Business pressure chain from performance to technology watchlist. Permian operations, CCS, and New Energies programme.</p>
+      <div class="tool-card-arrow">↗</div>
     </a>
 
-    <a href="edf_intelligence_brief__4_.html" class="card">
-      <div class="card-sector">Energy — Utility</div>
-      <h3>EDF</h3>
-      <p>Nuclear renaissance, grid-scale storage, hydrogen positioning.</p>
-      <div class="card-arrow">↗</div>
+    <a href="edf_intelligence_brief_4_.html" class="tool-card">
+      <div class="tool-tag">Brief</div>
+      <h3>EDF Intelligence Brief</h3>
+      <p>Nuclear new build, grid services, and electrification technology priorities across the EDF group.</p>
+      <div class="tool-card-arrow">↗</div>
     </a>
 
-    <a href="eon_intelligence_brief__4_.html" class="card">
-      <div class="card-sector">Energy — Utility</div>
-      <h3>E.ON</h3>
-      <p>Smart grid, demand response, distributed energy resources strategy.</p>
-      <div class="card-arrow">↗</div>
+    <a href="eon_intelligence_brief_4_.html" class="tool-card">
+      <div class="tool-tag">Brief</div>
+      <h3>E.ON Intelligence Brief</h3>
+      <p>Grid digitalisation, smart metering, and energy services technology priorities for E.ON Networks and Retail.</p>
+      <div class="tool-card-arrow">↗</div>
     </a>
 
-    <a href="mol_intelligence_brief__4_.html" class="card">
-      <div class="card-sector">Energy — Refining</div>
-      <h3>MOL Group</h3>
-      <p>Central European energy transition, petrochemical diversification, SAF positioning.</p>
-      <div class="card-arrow">↗</div>
+    <a href="mol_intelligence_brief.html" class="tool-card">
+      <div class="tool-tag">Brief</div>
+      <h3>MOL Group Intelligence Brief</h3>
+      <p>CEE refining, chemicals, and mobility services. Technology priorities across MOL's transition and downstream strategy.</p>
+      <div class="tool-card-arrow">↗</div>
     </a>
 
   </div>
 </div>
 
-<!-- MOBILITY BRIEFS -->
+<!-- MOBILITY -->
 <div id="mobility" class="section">
-  <div class="section-title">Mobility sector — client intelligence briefs</div>
-  <div class="grid">
+  <div class="section-title">Mobility intelligence</div>
+  <div class="tool-grid">
 
-    <a href="vw_intelligence_brief__4_.html" class="card">
-      <div class="card-sector">Mobility — OEM Volume</div>
-      <h3>Volkswagen Group</h3>
-      <p>SSP platform, PowerCo battery division, software-defined vehicle transition.</p>
-      <div class="card-arrow">↗</div>
+    <a href="daimler_intelligence_brief_4_.html" class="tool-card">
+      <div class="tool-tag">Brief</div>
+      <h3>Daimler Intelligence Brief</h3>
+      <p>Mercedes-Benz and Daimler Truck technology priorities — electrification, software-defined vehicle, and autonomous systems.</p>
+      <div class="tool-card-arrow">↗</div>
     </a>
 
-    <a href="audi_intelligence_brief__3_.html" class="card">
-      <div class="card-sector">Mobility — OEM Premium</div>
-      <h3>Audi</h3>
-      <p>PPE platform rollout, premium EV positioning, autonomous driving roadmap.</p>
-      <div class="card-arrow">↗</div>
+    <a href="audi_intelligence_brief_3_.html" class="tool-card">
+      <div class="tool-tag">Brief</div>
+      <h3>Audi Intelligence Brief</h3>
+      <p>Audi Sport, PPE platform, and premium EV technology strategy. R&D priorities and supplier intelligence.</p>
+      <div class="tool-card-arrow">↗</div>
     </a>
 
-    <a href="porsche_intelligence_brief__4_.html" class="card">
-      <div class="card-sector">Mobility — OEM Premium</div>
-      <h3>Porsche AG</h3>
-      <p>eFuels investment, Rimac partnership, electrification strategy tension.</p>
-      <div class="card-arrow">↗</div>
+    <a href="volkswagen_intelligence_brief.html" class="tool-card">
+      <div class="tool-tag">Brief</div>
+      <h3>VW Group Intelligence Brief</h3>
+      <p>Group-level technology strategy across VW, Audi, Porsche, SEAT, and Skoda. Battery, software, and platform priorities.</p>
+      <div class="tool-card-arrow">↗</div>
     </a>
 
-    <a href="skoda_intelligence_brief__3_.html" class="card">
-      <div class="card-sector">Mobility — OEM Volume</div>
-      <h3>Škoda</h3>
-      <p>Affordable EV positioning, Eastern European market strategy, MEB platform.</p>
-      <div class="card-arrow">↗</div>
+    <a href="michelin_intelligence_brief.html" class="tool-card">
+      <div class="tool-tag">Brief</div>
+      <h3>Michelin Intelligence Brief</h3>
+      <p>Tyre technology, sustainable materials, and mobility services strategy for Michelin Group.</p>
+      <div class="tool-card-arrow">↗</div>
     </a>
 
-    <a href="seat_cupra_intelligence_brief__4_.html" class="card">
-      <div class="card-sector">Mobility — OEM Volume</div>
-      <h3>SEAT / CUPRA</h3>
-      <p>CUPRA brand growth, Spanish gigafactory, performance EV segment.</p>
-      <div class="card-arrow">↗</div>
-    </a>
-
-    <a href="daimler_intelligence_brief__4_.html" class="card">
-      <div class="card-sector">Mobility — Truck OEM</div>
-      <h3>Daimler Truck</h3>
-      <p>BEV + FCEV dual track, eActros 600 production, Cellcentric fuel cell JV.</p>
-      <div class="card-arrow">↗</div>
-    </a>
-
-    <a href="michelin_intelligence_brief__4_.html" class="card">
-      <div class="card-sector">Mobility — Tier 1</div>
-      <h3>Michelin</h3>
-      <p>EV-specific tire technology, connected tire intelligence, sustainable materials.</p>
-      <div class="card-arrow">↗</div>
-    </a>
-
-    <a href="datwyler_intelligence_brief__4_.html" class="card">
-      <div class="card-sector">Mobility — Tier 1</div>
-      <h3>Datwyler</h3>
-      <p>EV battery sealing, healthcare polymer leadership, sustainable elastomers.</p>
-      <div class="card-arrow">↗</div>
-    </a>
-
-    <a href="infineon_intelligence_brief__4_.html" class="card">
-      <div class="card-sector">Mobility — Semiconductor</div>
-      <h3>Infineon Technologies</h3>
-      <p>SiC power leadership, Kulim fab expansion, automotive MCU growth.</p>
-      <div class="card-arrow">↗</div>
-    </a>
-
-    <a href="woco_intelligence_brief.html" class="card">
-      <div class="card-sector">Mobility — Tier 1</div>
-      <h3>WOCO</h3>
-      <p>Acoustic management, EV NVH engineering, lightweight systems.</p>
-      <div class="card-arrow">↗</div>
+    <a href="infineon_intelligence_brief.html" class="tool-card">
+      <div class="tool-tag">Brief</div>
+      <h3>Infineon Intelligence Brief</h3>
+      <p>Power semiconductors, automotive security, and IoT technology priorities. EV and industrial power strategy.</p>
+      <div class="tool-card-arrow">↗</div>
     </a>
 
   </div>
@@ -515,27 +230,27 @@ footer {
 
 <!-- CLIENT WORK -->
 <div id="client" class="section">
-  <div class="section-title">Client engagement tools</div>
+  <div class="section-title">Client deliverables</div>
   <div class="tool-grid">
 
-    <a href="shell_h3_hypothesis_repo.html" class="tool-card">
-      <div class="tool-tag">Shell — Active</div>
-      <h3>Shell H3 Business Frames</h3>
-      <p>Seven Horizon-3 opportunity frames. Evidence / Hypothesis / Forecast classification. Live hypothesis repository integration.</p>
-      <div class="tool-card-arrow">↗</div>
-    </a>
-
-    <a href="shell_intelligence_brief__4_.html" class="tool-card">
-      <div class="tool-tag">Shell — Active</div>
-      <h3>Shell Intelligence Brief</h3>
-      <p>Live client intelligence brief with AI Refresh capability. Weak signal feed, strategic posture analysis, and Ask AI panel.</p>
+    <a href="shell_h3_scope_widget.html" class="tool-card">
+      <div class="tool-tag">Shell H3</div>
+      <h3>Shell H3 Scope Mapping</h3>
+      <p>Interactive scope mapping widget for the £330k Shell H3 engagement. Built in Shell brand colours.</p>
       <div class="tool-card-arrow">↗</div>
     </a>
 
     <a href="hypothesis_heatmap_updated.html" class="tool-card">
       <div class="tool-tag">Platform</div>
-      <h3>Hypothesis Heatmap</h3>
-      <p>Cross-client hypothesis probability tracker. Updated automatically by WF-15 signal classification pipeline. Filter by client, sector, or horizon.</p>
+      <h3>Hypothesis Repository</h3>
+      <p>118 hypotheses across personal, industry, sector, and client account layers. Probability tracking and monthly audit tool.</p>
+      <div class="tool-card-arrow">↗</div>
+    </a>
+
+    <a href="signal_engine_v15_daily_brief.html" class="tool-card">
+      <div class="tool-tag live">Live</div>
+      <h3>Signal Engine Daily Brief</h3>
+      <p>WF-15 pipeline output. Weak signal feed, strategic posture analysis, and AI panel. Runs daily at 6am.</p>
       <div class="tool-card-arrow">↗</div>
     </a>
 
@@ -548,13 +263,12 @@ footer {
 </footer>
 
 <script>
-function showSection(id) {
+function showSection(id, el) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  event.target.classList.add('active');
+  el.classList.add('active');
 }
 </script>
-
 </body>
 </html>
