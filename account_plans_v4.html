@@ -1085,8 +1085,9 @@ function renderContacts(co,contacts,search,flt){
     <th>Title</th>
     <th>Level</th>
     <th>Email</th>
+    <th style="width:72px">LinkedIn</th>
     <th>Rel</th>
-    <th style="width:64px;text-align:center">LinkedIn</th>
+    <th style="width:64px;text-align:center">Connected</th>
     <th style="width:64px;text-align:center">Emailed</th>
     <th style="width:64px;text-align:center">Called</th>
     <th style="width:64px;text-align:center">Meeting</th>
@@ -1103,12 +1104,14 @@ function renderContacts(co,contacts,search,flt){
     const rel=c.rel||'';
     const lvl=(c.level||'').replace('-Management','').replace('Business ','Biz ');
     const email=c.email||'';
+    const liSearch=`https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(c.name+' '+co.name)}`;
     return`<tr>
       <td style="color:var(--dim);font-size:10px">${oi+1}</td>
       <td><div class="c-name">${c.name}</div></td>
       <td><div class="c-role">${c.title}</div></td>
       <td><span class="c-lvl">${lvl}</span></td>
       <td><div class="c-email">${email}</div></td>
+      <td><a href="${liSearch}" target="_blank" style="font-size:10px;color:#0077b5;font-weight:700;letter-spacing:.04em;white-space:nowrap;text-decoration:none" title="Search ${c.name} on LinkedIn">↗ LinkedIn</a></td>
       <td><span class="c-rel ${rel.toLowerCase()}">${rel}</span></td>
       <td style="text-align:center"><button class="ck ${li?'d-li':''}" onclick="toggle('${co.id}',${oi},'li')" title="${li?'Connected':'Mark LinkedIn connected'}">${li?'✓':''}</button></td>
       <td style="text-align:center"><button class="ck ${em?'d-em':''}" onclick="toggle('${co.id}',${oi},'em')" title="${em?'Emailed':'Mark emailed'}">${em?'✓':''}</button></td>
