@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Account Plans — FutureBridge Advisory</title>
+<style>
+/* ═══════════════════════════════════════════════════
+   FUTURBRIDGE ACCOUNT PLANS
+   White main content · Black sidebar · Red #F84E5D accent
+═══════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+:root{
+  --black:#000;--white:#fff;--grey:#4B4B55;--red:#F84E5D;
+  --red-pale:rgba(248,78,93,.07);--red-mid:rgba(248,78,93,.2);
+  --light:#f5f5f5;--mid:#ddd;--dim:#888;--dimmer:#bbb;
+  --c-perf:#000;--c-strat:#4B4B55;--c-init:#777;--c-tech:#2a7abf;--c-weak:#F84E5D;
+  --font-d:Georgia,'Times New Roman',serif;
+  --font-b:'Helvetica Neue',Helvetica,Arial,sans-serif;
+  --font-m:'Courier New',Courier,monospace;
+  --ease:all .2s cubic-bezier(.4,0,.2,1);
+  --gap:72px;--r:3px;
+}
+body{font-family:var(--font-b);background:#000;color:#000;font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--font-d);font-weight:normal}
+p{color:#444;max-width:68ch}
+p.wide{max-width:100%}
+strong{color:#000;font-weight:600}
+a{text-decoration:none}
+
+/* ── SHELL ── */
+.shell{display:flex;height:100vh;overflow:hidden}
+
+/* ── SIDEBAR ── */
+.sb{width:220px;flex-shrink:0;background:#080808;border-right:1px solid #1a1a1a;overflow-y:auto;display:flex;flex-direction:column}
+.sb-hdr{padding:16px 14px 10px;border-bottom:1px solid #1a1a1a;flex-shrink:0}
+.sb-gd{display:flex;flex-direction:column;gap:3px;margin-bottom:9px}
+.sb-gd span{background:#fff;display:block;height:3px;border-radius:1px}
+.sb-gd span:nth-child(1){width:28px}.sb-gd span:nth-child(2){width:19px}.sb-gd span:nth-child(3){width:12px}
+.sb-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff}
+.sb-sub{font-size:9px;color:#444;font-family:var(--font-m);margin-top:2px}
+.api-wrap{padding:10px 12px;border-bottom:1px solid #1a1a1a;flex-shrink:0}
+.api-lbl{font-size:8px;color:#444;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin-bottom:3px}
+.api-input{width:100%;background:#0f0f0f;border:1px solid #222;color:#666;font-size:10px;padding:5px 8px;font-family:var(--font-m);outline:none;border-radius:2px}
+.api-input:focus{border-color:var(--red);color:#fff}
+.sg-lbl{font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:#333;padding:10px 12px 3px;font-weight:700}
+.si{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;cursor:pointer;border-left:2px solid transparent;transition:var(--ease)}
+.si:hover{background:rgba(255,255,255,.03)}
+.si.active{background:rgba(255,255,255,.05);border-left-color:var(--red)}
+.si-name{font-size:12px;font-weight:700;color:#666}
+.si.active .si-name{color:#fff}
+.si-owner{font-size:9px;color:#333;margin-top:1px}
+.sdot{width:5px;height:5px;border-radius:50%;background:#1a1a1a;flex-shrink:0}
+.sdot.part{background:#444}.sdot.full{background:#4a9}
+
+/* ── CONTENT ── */
+.content-wrap{flex:1;overflow-y:auto;background:#fff}
+
+/* ── STICKY NAV ── */
+.brief-nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.97);backdrop-filter:blur(8px);border-bottom:1px solid var(--mid);padding:0 40px}
+.brief-nav-inner{display:flex;align-items:center;justify-content:space-between;height:48px;max-width:1100px;margin:0 auto}
+.brief-brand{font-family:var(--font-d);font-size:12px;color:var(--dim)}
+.brief-brand span{color:var(--red)}
+.nav-chain{display:flex;align-items:center}
+.nn{padding:4px 8px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:var(--ease);color:var(--dim)}
+.nn:hover{background:var(--red-pale)}
+.nn.np{color:var(--c-perf)}.nn.ns{color:var(--c-strat)}.nn.ni{color:var(--c-init)}.nn.nt{color:var(--c-tech)}.nn.nw{color:var(--c-weak)}.nn.nc{color:var(--dim)}
+.nav-arr{color:var(--dimmer);padding:0 2px;font-size:10px}
+
+/* ── STATE ── */
+.state-box{display:flex;flex-direction:column;align-items:center;justify-content:center;height:80vh;gap:14px;color:var(--dim)}
+.spin{width:26px;height:26px;border:2px solid var(--mid);border-top-color:var(--black);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.state-msg{font-size:13px}.state-sub{font-size:10px;color:var(--dimmer);font-family:var(--font-m)}
+
+/* ── HERO ── */
+#hero{padding:80px 0 48px;border-bottom:3px solid var(--black)}
+.hero-eye{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.hero-eye-line{width:24px;height:1px;background:var(--red)}
+.lbl-r{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--red)}
+.xl{font-size:clamp(2.2rem,4vw,3.6rem);letter-spacing:-.02em;line-height:1.1;color:var(--black)}
+.hero-sub{font-size:15px;color:#555;margin:16px 0 32px;max-width:54ch;line-height:1.65}
+.hero-meta{display:flex;gap:32px;padding-top:18px;border-top:1px solid var(--mid);flex-wrap:wrap}
+.hm-lbl{font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.hm-val{font-size:13px;color:var(--black);margin-top:2px}
+.regen-btn{background:var(--black);color:#fff;border:none;padding:8px 16px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.06em;border-radius:2px;margin-left:auto;display:inline-flex;align-items:center;gap:6px}
+.regen-btn:hover{background:#333}
+.regen-btn:disabled{opacity:.4;pointer-events:none}
+
+/* ── CHAIN ── */
+.chain{display:flex;align-items:stretch;margin:36px 0 0;border:1px solid var(--mid);border-radius:var(--r);overflow:hidden}
+.cnode{flex:1;min-width:130px;display:flex;flex-direction:column;align-items:center;text-align:center;padding:20px 10px 16px;background:#fafafa;border-right:1px solid var(--mid);transition:var(--ease);position:relative;cursor:default}
+.cnode:last-child{border-right:none}
+.cnode:hover{background:var(--light)}
+.cnode:not(:last-child)::after{content:'→';position:absolute;right:-10px;top:50%;transform:translateY(-50%);color:var(--dimmer);font-size:13px;z-index:2}
+.cnode-num{font-family:var(--font-m);font-size:9px;color:var(--dim);margin-bottom:7px;letter-spacing:.1em}
+.cnode-ico{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:9px;font-size:14px}
+.cnode-title{font-family:var(--font-d);font-size:12px;margin-bottom:3px}
+.cnode-desc{font-size:9px;color:var(--dim);line-height:1.4;max-width:11ch}
+.cp .cnode-ico{background:rgba(0,0,0,.06);color:var(--c-perf)}.cp .cnode-title{color:var(--c-perf)}
+.cs .cnode-ico{background:rgba(75,75,85,.07);color:var(--c-strat)}.cs .cnode-title{color:var(--c-strat)}
+.ci .cnode-ico{background:rgba(119,119,119,.07);color:var(--c-init)}.ci .cnode-title{color:var(--c-init)}
+.ct .cnode-ico{background:rgba(42,122,191,.07);color:var(--c-tech)}.ct .cnode-title{color:var(--c-tech)}
+.cw .cnode-ico{background:var(--red-pale);color:var(--c-weak)}.cw .cnode-title{color:var(--c-weak)}
+
+/* ── COUNT STRIP ── */
+.count-strip{display:flex;align-items:center;justify-content:center;gap:0;padding:14px 0;background:var(--light);border-bottom:1px solid var(--mid);overflow-x:auto}
+.cs-node{display:flex;flex-direction:column;align-items:center;gap:2px;padding:0 24px;white-space:nowrap}
+.cs-node .csl{font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.cs-node .csn{font-family:var(--font-m);font-size:20px;font-weight:bold}
+.cs-arr{color:var(--dimmer);font-size:16px;padding:0 4px}
+.cs-p .csl,.cs-p .csn{color:var(--c-perf)}.cs-s .csl,.cs-s .csn{color:var(--c-strat)}
+.cs-i .csl,.cs-i .csn{color:var(--c-init)}.cs-t .csl,.cs-t .csn{color:var(--c-tech)}.cs-w .csl,.cs-w .csn{color:var(--c-weak)}
+
+/* ── SECTION HEADERS ── */
+section{padding:var(--gap) 0;border-bottom:1px solid var(--mid)}
+section:last-child{border-bottom:none}
+.sh{display:flex;align-items:flex-start;gap:24px;margin-bottom:40px}
+.sh-num{font-family:var(--font-m);font-size:10px;color:var(--dim);letter-spacing:.1em;padding-top:5px;white-space:nowrap}
+.sh-text h2{margin-bottom:8px;color:var(--black)}
+.sh-text p{font-size:14px;max-width:60ch}
+.stag{display:inline-block;padding:3px 8px;border-radius:2px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px}
+.stag-p{background:rgba(0,0,0,.06);color:var(--c-perf)}
+.stag-s{background:rgba(75,75,85,.07);color:var(--c-strat)}
+.stag-i{background:rgba(119,119,119,.07);color:var(--c-init)}
+.stag-t{background:rgba(42,122,191,.07);color:var(--c-tech)}
+.stag-w{background:var(--red-pale);color:var(--c-weak)}
+.lg{font-size:clamp(1.4rem,2.5vw,2.1rem);letter-spacing:-.012em;line-height:1.2}
+
+/* ── PERFORMANCE ── */
+.perf-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.perf-card{background:#fff;border:1px solid var(--mid);border-radius:var(--r);padding:20px;transition:var(--ease);position:relative;overflow:hidden}
+.perf-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c-perf);opacity:.4}
+.perf-card:hover{background:var(--light);border-color:#bbb}
+.perf-id{font-family:var(--font-m);font-size:9px;color:var(--dim);letter-spacing:.08em;margin-bottom:7px}
+.perf-card h3{font-family:var(--font-b);font-size:13px;font-weight:700;color:var(--black);margin-bottom:6px}
+.perf-card p{font-size:12px;color:#555;max-width:100%;margin-bottom:10px;line-height:1.55}
+.lt{display:flex;align-items:center;gap:4px;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding-top:10px;border-top:1px solid var(--mid)}
+.lt-s{color:var(--c-strat)}.lt-i{color:var(--c-init)}.lt-t{color:var(--c-tech)}.lt-w{color:var(--c-weak)}
+
+/* ── STRATEGY ── */
+#strat-sec{background:var(--light)}
+.strat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.strat-card{background:#fff;border:1px solid var(--mid);border-radius:var(--r);padding:22px 18px;transition:var(--ease);position:relative;overflow:hidden}
+.strat-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c-strat);opacity:.5}
+.strat-card:hover{background:#fafafa;border-color:#bbb}
+.strat-because{font-size:10px;color:var(--dim);font-style:italic;margin-bottom:7px;line-height:1.5}
+.strat-card h3{font-family:var(--font-b);font-size:14px;font-weight:700;color:var(--c-strat);margin-bottom:6px}
+.strat-card p{font-size:12px;color:#555;max-width:100%;margin-bottom:10px;line-height:1.6}
+.driver-row{display:flex;flex-wrap:wrap;gap:4px;padding-top:10px;border-top:1px solid var(--mid);margin-bottom:8px}
+.driver{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 6px;background:rgba(75,75,85,.06);border:1px solid var(--mid);border-radius:2px;color:var(--grey)}
+
+/* ── INITIATIVES ── */
+.ig-hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.ig-tag{font-size:9px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--c-strat);padding:2px 8px;background:rgba(75,75,85,.07);border:1px solid rgba(75,75,85,.2);border-radius:2px;white-space:nowrap}
+.ig-line{flex:1;height:1px;background:var(--mid)}
+.init-groups{display:flex;flex-direction:column;gap:24px}
+.init-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.init-card{background:#fff;border:1px solid var(--mid);border-radius:var(--r);padding:16px;transition:var(--ease);position:relative;overflow:hidden}
+.init-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c-init);opacity:.5}
+.init-card:hover{background:var(--light);border-color:#bbb}
+.init-card h4{font-family:var(--font-b);font-size:12px;font-weight:700;color:var(--c-init);margin-bottom:5px}
+.init-card p{font-size:11px;color:#555;max-width:100%;margin-bottom:10px;line-height:1.55}
+
+/* ── HYPOTHESIS BLOCK ── */
+.hyp-block{background:var(--red-pale);border-left:3px solid var(--red);padding:9px 11px;margin-bottom:10px;border-radius:0 2px 2px 0}
+.hyp-lbl{font-size:7.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin-bottom:4px}
+.hyp-text{font-size:11px;color:#333;line-height:1.6;font-style:italic}
+.hyp-wntbt{margin-top:6px;padding-top:6px;border-top:1px solid var(--red-mid);display:flex;flex-direction:column;gap:3px}
+.hyp-wntbt-item{font-size:10px;color:#555;line-height:1.5;display:flex;gap:5px;align-items:flex-start}
+.hyp-wntbt-item::before{content:'if';font-size:8px;font-weight:700;letter-spacing:.06em;color:var(--red);flex-shrink:0;margin-top:2px;text-transform:uppercase}
+.init-tl{display:flex;align-items:center;gap:4px;font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--c-tech);padding-top:8px;border-top:1px solid var(--mid)}
+
+/* ── FB CAPABILITY ON INIT CARDS ── */
+.fb-entry{margin-top:10px;padding:10px 12px;background:var(--red-pale);border-left:3px solid var(--red);border-radius:0 2px 2px 0}
+.fb-entry-lbl{font-size:7.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin-bottom:5px}
+.fb-cap-name{font-size:11px;font-weight:700;color:var(--red);margin-bottom:2px}
+.fb-cap-tier{font-size:8px;color:var(--dim);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px}
+.fb-cap-deliverable{font-size:10.5px;color:#444;line-height:1.55;margin-bottom:4px;border-top:1px solid var(--red-mid);padding-top:5px}
+.fb-cap-value{font-size:10.5px;color:var(--black);line-height:1.55;font-weight:600}
+
+/* ── FB ENTRY POINTS SECTION ── */
+#fb-sec{background:var(--light)}
+#fb-sec .sh-text h2{color:var(--black)}
+#fb-sec .sh-text p{color:#555}
+#fb-sec .sh-num{color:var(--dim)}
+#fb-sec .stag{background:rgba(248,78,93,.08);color:var(--red);border:1px solid rgba(248,78,93,.3)}
+.fb-map-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.fb-map-card{background:#fff;border:1px solid var(--mid);border-radius:var(--r);padding:18px 16px;position:relative;overflow:hidden;transition:var(--ease)}
+.fb-map-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--red)}
+.fb-map-card:hover{background:#fafafa;border-color:#bbb}
+.fb-mc-init{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:5px;font-family:var(--font-m)}
+.fb-mc-title{font-size:12px;font-weight:700;color:var(--red);margin-bottom:3px}
+.fb-mc-tier{font-size:8px;color:var(--dim);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;padding-bottom:7px;border-bottom:1px solid var(--mid)}
+.fb-mc-dlv{font-size:11px;color:#444;line-height:1.55;margin-bottom:6px}
+.fb-mc-val{font-size:11px;color:var(--black);line-height:1.55;font-weight:600}
+.fb-mc-val::before{content:'↗ ';color:var(--red);font-style:normal;font-weight:700}
+.fb-empty{padding:40px;text-align:center;color:var(--dim);font-size:12px;border:1px solid var(--mid);border-radius:var(--r);background:#fff}
+
+/* ── TECHNOLOGIES ── */
+#tech-sec{background:var(--light)}
+.tech-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.tech-card{background:#fff;border:1px solid var(--mid);border-radius:var(--r);padding:18px 16px;transition:var(--ease);position:relative;overflow:hidden}
+.tech-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c-tech);opacity:.4}
+.tech-card:hover{background:#fafafa;border-color:#bbb}
+.tech-ico{font-size:18px;margin-bottom:7px}
+.tech-card h4{font-family:var(--font-b);font-size:12px;font-weight:700;color:var(--c-tech);margin-bottom:5px}
+.tech-card p{font-size:11px;color:#555;max-width:100%;line-height:1.5;margin-bottom:10px}
+.mat-row{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.mat-lbl{font-size:8px;color:var(--dim);letter-spacing:.07em;text-transform:uppercase;white-space:nowrap}
+.mat-bar{flex:1;height:2px;background:var(--mid);border-radius:2px;overflow:hidden}
+.mat-fill{height:100%;background:var(--c-tech);opacity:.6;border-radius:2px}
+.tech-tags{display:flex;flex-wrap:wrap;gap:3px;padding-top:7px;border-top:1px solid var(--mid)}
+.tech-itag{font-size:8px;color:var(--c-init);background:rgba(119,119,119,.07);border:1px solid rgba(119,119,119,.18);padding:1px 5px;border-radius:1px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+.tech-lt{margin-top:6px;display:flex;align-items:center;gap:4px;font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--c-weak)}
+
+/* ── WEAK SIGNALS ── */
+.sig-intro{background:var(--red-pale);border:1px solid var(--red-mid);border-radius:var(--r);padding:16px 20px;margin-bottom:28px;display:flex;align-items:flex-start;gap:12px}
+.sig-intro-ico{font-size:20px;flex-shrink:0}
+.sig-intro p{font-size:13px;color:#555;max-width:100%;line-height:1.65}
+.sig-intro strong{color:var(--red)}
+.sig-table{width:100%;border-collapse:collapse;font-size:12px}
+.sig-table thead tr{border-bottom:1px solid #bbb}
+.sig-table thead th{text-align:left;padding:8px 12px;font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.sig-table tbody tr{border-bottom:1px solid var(--mid);transition:var(--ease);cursor:default}
+.sig-table tbody tr:hover{background:var(--light)}
+.sig-table tbody td{padding:12px 12px;vertical-align:top;color:#555}
+.sig-name{font-weight:700;color:var(--c-weak);font-size:12px}
+.stype{display:inline-block;font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 6px;border-radius:2px;margin-top:3px}
+.stype-startup{background:rgba(90,180,140,.1);color:#3a9a6a}
+.stype-patent{background:rgba(60,120,200,.1);color:#3a70c0}
+.stype-pilot{background:rgba(180,130,40,.1);color:#a07020}
+.stype-academic{background:rgba(160,80,160,.1);color:#a040a0}
+.stype-regulatory{background:var(--red-pale);color:var(--red)}
+.stype-xsector{background:rgba(20,160,180,.1);color:#0080a0}
+.heat{display:flex;gap:3px;align-items:center;margin-top:3px}
+.hd{width:6px;height:6px;border-radius:50%;background:var(--mid)}
+.hd.on{background:var(--c-weak)}
+
+/* ── ADJACENCY ── */
+#adj-sec{background:var(--light)}
+.adj-wrap{overflow-x:auto}
+.adj-table{width:100%;border-collapse:collapse;font-size:12px;min-width:780px}
+.adj-table thead tr{border-bottom:1px solid #bbb}
+.adj-table thead th{text-align:left;padding:8px 14px;font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.adj-table tbody tr{border-bottom:1px solid var(--mid);transition:var(--ease)}
+.adj-table tbody tr:hover{background:#fff}
+.adj-table tbody td{padding:13px 14px;vertical-align:top;color:#555;font-size:12px}
+.adj-prob{font-weight:700;color:var(--black);font-size:12px}
+.adj-sector{display:inline-block;padding:2px 7px;border-radius:2px;font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;background:rgba(20,160,180,.08);color:#0080a0;border:1px solid rgba(20,160,180,.2)}
+.r-now{color:#3a9a6a;font-size:11px;font-weight:700}
+.r-mid{color:#a07020;font-size:11px;font-weight:700}
+.r-long{color:var(--red);font-size:11px;font-weight:700}
+
+/* ── TAKEAWAYS ── */
+.tk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:10px}
+.tk-card{background:#fff;border:1px solid var(--mid);border-radius:var(--r);padding:24px 20px;transition:var(--ease)}
+.tk-card:hover{background:var(--light);border-color:#bbb}
+.tk-card.hl{background:var(--red-pale);border-color:var(--red-mid)}
+.tk-num{font-family:var(--font-m);font-size:24px;color:var(--dim);opacity:.4;line-height:1;margin-bottom:12px;display:block}
+.tk-card.hl .tk-num{color:var(--red);opacity:1}
+.tk-card h3{font-family:var(--font-d);font-size:16px;color:var(--black);margin-bottom:7px;line-height:1.3}
+.tk-card.hl h3{color:var(--red)}
+.tk-card p{font-size:12px;max-width:100%;line-height:1.65}
+
+/* ── CONTACTS ── */
+.ct-hdr-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.ct-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ct-search{border:1px solid var(--mid);padding:6px 10px;font-size:12px;outline:none;border-radius:2px;width:200px;background:#fff}
+.ct-search:focus{border-color:var(--black)}
+.ct-filter{border:1px solid var(--mid);padding:6px 8px;font-size:11px;background:#fff;outline:none;border-radius:2px;cursor:pointer}
+.ct-stat{font-size:10px;color:var(--dim);font-family:var(--font-m)}
+.ct-msg{padding:14px 16px;background:var(--red-pale);border:1px solid var(--red-mid);color:var(--red);font-size:12px;border-radius:var(--r);margin-bottom:14px}
+.ct-table{width:100%;border-collapse:collapse;font-size:12px}
+.ct-table thead tr{border-bottom:1px solid #bbb}
+.ct-table th{text-align:left;padding:7px 10px;font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);background:#fafafa}
+.ct-table tbody tr{border-bottom:1px solid var(--mid);transition:var(--ease)}
+.ct-table tbody tr:hover{background:var(--light)}
+.ct-table td{padding:9px 10px;vertical-align:middle;color:#555}
+.c-name{font-weight:700;color:var(--black);font-size:12px}
+.c-role{font-size:10px;color:var(--dim);margin-top:1px}
+.c-email{font-size:10px;color:var(--dim);font-family:var(--font-m)}
+.c-rel{font-size:9px;padding:1px 6px;border-radius:2px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.c-rel.warm{background:rgba(74,154,100,.1);color:#3a8a60;border:1px solid rgba(74,154,100,.2)}
+.c-rel.cold{background:var(--red-pale);color:var(--red);border:1px solid var(--red-mid)}
+.c-lvl{font-size:9px;color:var(--dim)}
+.ck{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border:1.5px solid var(--mid);background:transparent;cursor:pointer;border-radius:2px;transition:var(--ease);font-size:11px;color:var(--dim)}
+.ck:hover{border-color:var(--black)}
+.ck.d-li{background:#0077b5;border-color:#0077b5;color:#fff}
+.ck.d-em{background:var(--grey);border-color:var(--grey);color:#fff}
+.ck.d-ca{background:#3a9a6a;border-color:#3a9a6a;color:#fff}
+.ck.d-mt{background:#7b4caf;border-color:#7b4caf;color:#fff}
+.ck.d-pr{background:#c47d20;border-color:#c47d20;color:#fff}
+.prog-wrap{height:2px;background:var(--mid);margin-top:18px;border-radius:1px}
+.prog-fill{height:100%;background:var(--black);transition:width .3s;border-radius:1px}
+.prog-lbl{font-size:10px;color:var(--dim);margin-top:6px;font-family:var(--font-m)}
+
+/* ── PAIN POINTS ── */
+#pp-sec{background:var(--light)}
+.pp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.pp-card{background:#fff;border:1px solid var(--mid);border-radius:var(--r);padding:20px;transition:var(--ease);position:relative;overflow:hidden}
+.pp-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--red);opacity:.35}
+.pp-card:hover{background:#fafafa;border-color:#bbb}
+.pp-fn{font-size:9px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--red);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.pp-fn-ico{font-size:14px}
+.pp-items{list-style:none;display:flex;flex-direction:column;gap:7px}
+.pp-item{display:flex;align-items:flex-start;gap:7px;font-size:12px;color:#444;line-height:1.5}
+.pp-item::before{content:'—';color:var(--red);flex-shrink:0;font-size:11px;margin-top:2px}
+.pp-opp{margin-top:12px;padding-top:10px;border-top:1px solid var(--mid);font-size:10px;color:var(--c-tech);font-weight:700;letter-spacing:.06em}
+
+/* ── MEETINGS ── */
+#mtg-sec{background:var(--light)}
+.mtg-tabs{display:flex;border-bottom:1px solid var(--mid);margin-bottom:28px}
+.mtg-tab{padding:10px 18px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border:none;background:none;color:var(--dim);border-bottom:2px solid transparent;margin-bottom:-1px;transition:var(--ease)}
+.mtg-tab:hover{color:var(--black)}
+.mtg-tab.active{color:var(--black);border-bottom-color:var(--red)}
+.mtg-pane{display:none}.mtg-pane.active{display:block}
+
+/* form */
+.mf-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px}
+.mf-grid.two{grid-template-columns:1fr 1fr}
+.mf-full{grid-column:1/-1}
+.mfg{display:flex;flex-direction:column;gap:5px}
+.mfg label{font-size:8px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.mfg input,.mfg select,.mfg textarea{border:1px solid var(--mid);padding:8px 10px;font-size:12px;outline:none;border-radius:2px;background:#fff;color:var(--black);font-family:var(--font-b);transition:var(--ease)}
+.mfg input:focus,.mfg select:focus,.mfg textarea:focus{border-color:var(--black)}
+.mfg textarea{resize:vertical;min-height:160px;font-size:11px;line-height:1.6;font-family:var(--font-m)}
+.mtg-submit-row{display:flex;align-items:center;gap:14px;padding-top:4px}
+.mtg-submit-btn{background:var(--black);color:#fff;border:none;padding:10px 22px;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:var(--ease)}
+.mtg-submit-btn:hover{background:#222}
+.mtg-submit-btn:disabled{opacity:.4;pointer-events:none}
+.mtg-status{font-size:11px;color:var(--dim);font-family:var(--font-m)}
+.wc{font-size:9px;color:var(--dimmer);margin-top:3px;font-family:var(--font-m)}
+
+/* analysis cards */
+.ma-wrap{margin-top:24px;border-top:2px solid var(--black);padding-top:24px}
+.ma-hdr{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.ma-title{font-size:15px;font-family:var(--font-d)}
+.ma-badge{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 8px;border-radius:2px}
+.ma-badge.positive{background:rgba(58,154,106,.12);color:#3a9a6a}
+.ma-badge.neutral{background:rgba(0,0,0,.07);color:#555}
+.ma-badge.negative{background:var(--red-pale);color:var(--red)}
+.ma-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.ma-card{background:#fff;border:1px solid var(--mid);border-radius:var(--r);padding:16px}
+.ma-card.full{grid-column:1/-1}
+.ma-card.tint{background:var(--red-pale);border-color:var(--red-mid)}
+.ma-lbl{font-size:8px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;margin-bottom:8px}
+.ma-lbl.r{color:var(--red)}.ma-lbl.b{color:var(--c-tech)}.ma-lbl.g{color:#3a9a6a}.ma-lbl.p{color:#7b4caf}.ma-lbl.a{color:#c47d20}.ma-lbl.d{color:var(--dim)}
+.ma-items{list-style:none;display:flex;flex-direction:column;gap:6px}
+.ma-item{display:flex;align-items:flex-start;gap:6px;font-size:12px;color:#333;line-height:1.5}
+.ma-item::before{content:'—';color:var(--red);flex-shrink:0;font-size:10px;margin-top:2px}
+.ma-text{font-size:13px;color:#333;line-height:1.65}
+
+/* longitudinal */
+.longi-box{background:var(--black);color:#fff;border-radius:var(--r);padding:24px;margin-top:20px}
+.longi-hdr{font-size:13px;font-family:var(--font-d);color:#fff;margin-bottom:3px}
+.longi-sub{font-size:9px;color:#444;font-family:var(--font-m);margin-bottom:20px}
+.longi-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.lc{background:#111;border:1px solid #222;border-radius:var(--r);padding:14px}
+.lc.full{grid-column:1/-1}
+.ll{font-size:8px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;margin-bottom:9px}
+.ll.r{color:var(--red)}.ll.b{color:#4a9bdf}.ll.g{color:#3a9a6a}.ll.a{color:#c47d20}.ll.w{color:#fff}
+.l-items{list-style:none;display:flex;flex-direction:column;gap:6px}
+.l-item{display:flex;align-items:flex-start;gap:6px;font-size:11px;color:#aaa;line-height:1.5}
+.l-item::before{content:'→';color:#333;flex-shrink:0;font-size:10px;margin-top:2px}
+.l-text{font-size:12px;color:#ccc;line-height:1.6}
+.traj-row{display:flex;align-items:center;gap:8px;margin-top:4px}
+.traj-bar{flex:1;height:3px;background:#222;border-radius:2px;overflow:hidden}
+.traj-fill{height:100%;border-radius:2px;transition:width .5s ease}
+.traj-lbl{font-size:10px;white-space:nowrap;font-weight:700}
+
+/* meeting history cards */
+.mc-list{display:flex;flex-direction:column;gap:10px}
+.mc{background:#fff;border:1px solid var(--mid);border-radius:var(--r);overflow:hidden}
+.mc:hover{border-color:#bbb}
+.mc-head{display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer;border-bottom:1px solid transparent;transition:var(--ease)}
+.mc-head:hover{background:var(--light)}
+.mc-head.open{border-bottom-color:var(--mid)}
+.mc-date{font-size:10px;font-family:var(--font-m);color:var(--dim);white-space:nowrap;min-width:76px}
+.mc-who{font-weight:700;font-size:12px;color:var(--black)}
+.mc-role{font-size:10px;color:var(--dim);margin-top:1px}
+.mc-type{font-size:8px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:2px 6px;border-radius:2px;white-space:nowrap}
+.t-intro{background:rgba(42,122,191,.1);color:var(--c-tech)}
+.t-discovery{background:rgba(42,138,122,.1);color:#3a8a6a}
+.t-proposal{background:rgba(196,125,32,.1);color:#c47d20}
+.t-review{background:rgba(123,76,175,.1);color:#7b4caf}
+.t-qbr{background:rgba(0,0,0,.06);color:#555}
+.t-followup{background:var(--red-pale);color:var(--red)}
+.mc-sent{font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:2px;margin-left:auto}
+.s-positive{background:rgba(58,154,106,.1);color:#3a9a6a}
+.s-neutral{background:rgba(0,0,0,.05);color:#666}
+.s-negative{background:var(--red-pale);color:var(--red)}
+.mc-arr{font-size:9px;color:var(--dimmer);transition:transform .18s;margin-left:6px}
+.mc-arr.open{transform:rotate(90deg)}
+.mc-body{display:none;padding:16px;font-size:12px;color:#444;line-height:1.6}
+.mc-body.open{display:block}
+.mc-summary{font-size:13px;color:#333;line-height:1.65;margin-bottom:12px}
+.mc-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+.mc-tag{font-size:8px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:2px 6px;background:var(--light);border:1px solid var(--mid);border-radius:2px;color:#666}
+
+.mtg-stats{display:flex;gap:0;border:1px solid var(--mid);border-radius:var(--r);overflow:hidden;margin-bottom:20px}
+.mtg-stat{flex:1;padding:12px 14px;border-right:1px solid var(--mid);text-align:center}
+.mtg-stat:last-child{border-right:none}
+.mtg-stat-n{font-size:20px;font-family:var(--font-m);font-weight:bold;color:var(--black)}
+.mtg-stat-l{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-top:2px}
+
+.longi-run-btn{background:var(--black);color:#fff;border:none;padding:8px 16px;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;border-radius:2px;margin-bottom:20px;transition:var(--ease)}
+.longi-run-btn:hover{background:#222}
+.longi-run-btn:disabled{opacity:.4;pointer-events:none}
+.empty-mtg{padding:32px;text-align:center;color:var(--dim);font-size:13px;border:1px solid var(--mid);border-radius:var(--r);background:var(--light)}
+
+/* ── FOOTER ── */
+.brief-footer{border-top:1px solid var(--mid);padding:24px 40px;display:flex;justify-content:space-between;align-items:center;max-width:1100px;margin:0 auto}
+.bf-brand{font-family:var(--font-d);font-size:12px;color:var(--dim)}
+.bf-brand span{color:var(--red)}
+.bf-note{font-size:10px;color:var(--dimmer)}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.anim{opacity:0}.anim.vis{animation:fadeUp .45s ease forwards}
+.d1{animation-delay:.04s}.d2{animation-delay:.1s}.d3{animation-delay:.16s}.d4{animation-delay:.22s}.d5{animation-delay:.28s}
+
+.container{max-width:1100px;margin:0 auto;padding:0 40px}
+
+@media(max-width:1060px){.tech-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:860px){.perf-grid{grid-template-columns:1fr 1fr}.strat-grid{grid-template-columns:1fr}.init-row{grid-template-columns:1fr 1fr}.tech-grid{grid-template-columns:1fr 1fr}.tk-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.perf-grid,.init-row,.tech-grid,.tk-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- SIDEBAR -->
+<div class="sb">
+  <div class="sb-hdr">
+    <div class="sb-gd"><span></span><span></span><span></span></div>
+    <div class="sb-title">Account Plans</div>
+    <div class="sb-sub">FutureBridge Advisory</div>
+  </div>
+  <div class="api-wrap">
+    <div class="api-lbl">Anthropic API key</div>
+    <input class="api-input" type="password" id="apiKey" placeholder="sk-ant-..." oninput="saveKey()">
+    <div class="api-lbl" style="margin-top:8px">Apps Script URL (meetings)</div>
+    <input class="api-input" type="text" id="scriptUrl" placeholder="https://script.google.com/..." oninput="saveKey()">
+    <div style="margin-top:10px;display:flex;gap:6px">
+      <button onclick="clearAllCache()" style="flex:1;background:#1a1a1a;border:1px solid #2a2a2a;color:#555;font-size:8px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:5px 0;cursor:pointer;border-radius:2px;transition:all .15s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#555'">↺ Clear all caches</button>
+    </div>
+    <div style="font-size:8px;color:#2a2a2a;margin-top:4px;line-height:1.4">v6 — includes hypotheses, WNTBT conditions, and FB capability mapping. Clear cache to regenerate plans with the new fields.</div>
+  </div>
+  <div id="sb-list"></div>
+</div>
+
+<!-- CONTENT -->
+<div class="content-wrap" id="cwrap">
+  <div class="state-box">
+    <div style="font-size:28px;color:#ccc">→</div>
+    <div class="state-msg">Select a company to generate its account plan.</div>
+    <div class="state-sub">API key required · content generated on demand · cached locally</div>
+  </div>
+</div>
+
+</div><!-- .shell -->
+
+<script>
+// ── EMBEDDED CONTACT DATA ─────────────────────────────────────────────
+const CSV_CONTACTS = {"BP":[{"name":"Richard Griffith","title":"CIO at BP","level":"CXO","email":"richard.griffith@bp.com","rel":"Warm","yamm":""},{"name":"Andy Holmes","title":"COO BP Fuels Asia Pacific & President BP Australia & NZ","level":"CXO","email":"andy.holmes@bp.com","rel":"Warm","yamm":""},{"name":"David Windle","title":"COO Air BP","level":"CXO","email":"david.windle@bp.com","rel":"Warm","yamm":""},{"name":"Jon Platt","title":"CEO Air BP","level":"CXO","email":"jon.platt@bp.com","rel":"Warm","yamm":""},{"name":"Thorbjorn Larsson","title":"CEO Air BP Norway AS","level":"CXO","email":"thorbjorn.larsson@bp.com","rel":"Warm","yamm":""},{"name":"Simon Cattle","title":"President Oil & LNG Integrated Supply & Trading","level":"CXO","email":"simon.cattle@bp.com","rel":"Warm","yamm":""},{"name":"Richard Duncan","title":"Chief Commercial Officer LNG Trading","level":"CXO","email":"richard.duncan@bp.com","rel":"Warm","yamm":""},{"name":"David Rae","title":"CIO Global Oil Trading","level":"CXO","email":"david.rae@bp.com","rel":"Warm","yamm":""},{"name":"Frederic Baudry","title":"CEO Global Acetyls BU","level":"CXO","email":"frederic.baudry@bp.com","rel":"Warm","yamm":""},{"name":"Hendrik Muilerman","title":"CEO Branch Netherlands","level":"CXO","email":"hendrik.muilerman@bp.com","rel":"Warm","yamm":""},{"name":"Wolfgang Langhoff","title":"CEO & Board Member BP Europa SE","level":"CXO","email":"wolfgang.langhoff@bp.com","rel":"Warm","yamm":""},{"name":"Andy Hopwood","title":"EVP & COO Strategy and Regions Upstream","level":"CXO","email":"andy.hopwood@bp.com","rel":"Warm","yamm":""},{"name":"Bernard Looney","title":"CEO Upstream Segment (E&P)","level":"CXO","email":"bernard.looney@bp.com","rel":"Warm","yamm":""},{"name":"Lamar McKay","title":"Deputy Group CEO Upstream","level":"CXO","email":"lamar.mckay@bp.com","rel":"Warm","yamm":""},{"name":"John Carey","title":"President West Coast Products LLC","level":"CXO","email":"john.carey@bp.com","rel":"Warm","yamm":""},{"name":"Nick Wayth","title":"Chief Development Officer Alternative Energy","level":"CXO","email":"nick.wayth@bp.com","rel":"Warm","yamm":""},{"name":"Mario Lindenhayn","title":"Global Head Biofuels & Country Head Brazil","level":"CXO","email":"mario.lindenhayn@bp.com","rel":"Warm","yamm":""},{"name":"Constantin Cronenberg","title":"CEO Head of Country & Fuels Ops Switzerland BP Europa SE","level":"CXO","email":"constantin.cronenberg@ch.bp.com","rel":"Warm","yamm":""},{"name":"Doug Sparkman","title":"COO BP Fuels North America","level":"CXO","email":"doug.sparkman@bp.com","rel":"Warm","yamm":""},{"name":"Rita Griffin","title":"COO Petrochemicals","level":"CXO","email":"rita.griffin@bp.com","rel":"Warm","yamm":""},{"name":"Aaron Nitzkin","title":"Founder & CEO OCR Solar & Roofing","level":"CXO","email":"","rel":"Warm","yamm":""},{"name":"Cheryl McKinney","title":"President Toledo Refinery Holding Company","level":"CXO","email":"cheryl.mckinney@bp.com","rel":"Warm","yamm":""},{"name":"David Shimbo","title":"Director Chief Technology Office","level":"CXO","email":"david.shimbo@bp.com","rel":"Warm","yamm":""},{"name":"Carol Howle","title":"CEO BP Shipping","level":"CXO","email":"carol.howle@bp.com","rel":"Warm","yamm":""}],"Shell":[{"name":"Alexis Griffin","title":"Decarbonisation Technology Director","level":"Mid-Management","email":"alexis.griffin@shell.com","rel":"Warm","yamm":""},{"name":"Andrea Stodieck","title":"Global Category Manager Packaging","level":"Mid-Management","email":"andrea.stodieck@shell.com","rel":"Warm","yamm":""},{"name":"Ankan Mitra","title":"Senior Analyst Frontline Insights Technology & Innovation","level":"Mid-Management","email":"ankan.mitra@shell.com","rel":"Warm","yamm":""},{"name":"Catherine Smura","title":"Game Changer Team","level":"Mid-Management","email":"catherine.smura@shell.com","rel":"Warm","yamm":""},{"name":"Devin Shaw","title":"Commercial Director CCS & CCUS","level":"Mid-Management","email":"devin.shaw@shell.com","rel":"Warm","yamm":""},{"name":"Edith Bardin","title":"Global Insights Manager Fuels Fleet Solutions Future Trends","level":"Mid-Management","email":"edith.bardin@shell.com","rel":"Warm","yamm":""},{"name":"Emanuele Vinciguerra","title":"Head Global Enterprise Accounts Portfolio Strategy Low Carbon Solutions","level":"Mid-Management","email":"emanuele.vinciguerra@shell.com","rel":"Warm","yamm":""},{"name":"Erik Banning","title":"Manager Emerging Digital Technology","level":"Mid-Management","email":"erik.j.banning@shell.com","rel":"Warm","yamm":""},{"name":"Janani Kannan","title":"Advisor Game Changer Team","level":"Mid-Management","email":"janani.kannan@shell.com","rel":"Warm","yamm":""},{"name":"Julie Bautista","title":"Corporate Development M&A Strategy","level":"Mid-Management","email":"julie.bautista@shell.com","rel":"Warm","yamm":""},{"name":"Julien Saillard","title":"Senior Strategy Advisor Projects & Technology","level":"Mid-Management","email":"julien.j.saillard@shell.com","rel":"Warm","yamm":""},{"name":"Katrin Mummert","title":"Head of Global Marketing Passenger Car Key Accounts","level":"Mid-Management","email":"katrin.schatz@shell.com","rel":"Warm","yamm":""},{"name":"Kiri Kikis","title":"Global Commercial Business Advisor","level":"Mid-Management","email":"k.kikis@shell.com","rel":"Warm","yamm":""},{"name":"L\u00e1szl\u00f3 Domokos","title":"Global Account Manager Shell Catalysts & Technologies","level":"Mid-Management","email":"laszlo.domokos@shell.com","rel":"Warm","yamm":""},{"name":"Lisanne Geerlings","title":"Carbon Opportunities Analyst","level":"Mid-Management","email":"lisanne.geerlings@shell.com","rel":"Warm","yamm":""},{"name":"Malcolm Ross","title":"Senior Research Scientist","level":"Mid-Management","email":"malcolm.ross@shell.com","rel":"Warm","yamm":""},{"name":"Marja Zonnevylle","title":"General Manager Technology Portfolio","level":"Senior Management","email":"marja.zonnevylle@shell.com","rel":"Warm","yamm":""},{"name":"Marjorie Hong","title":"Global Business Director Environmental Catalysts & Systems","level":"Mid-Management","email":"marjorie.hong@shell.com","rel":"Warm","yamm":""},{"name":"Martin Lloyd","title":"Sales Lead MachineMax and Digital Services","level":"Senior Management","email":"martin.lloyd@shell.com","rel":"Warm","yamm":""},{"name":"Megan Pino","title":"Shell Rotella Brand Manager","level":"Mid-Management","email":"megan.pino@shell.com","rel":"Warm","yamm":""},{"name":"Nick Van Keulen","title":"GM Supply Chain Futures","level":"Senior Management","email":"nick.vankeulen@shell.com","rel":"Warm","yamm":""},{"name":"Niels Broens","title":"RDS Portfolio Manager","level":"Mid-Management","email":"niels.broens@shell.com","rel":"Warm","yamm":""},{"name":"Paul Emmanuel Just","title":"Shell Cansolv R&D","level":"Mid-Management","email":"Paul-Emmanuel.Just@shell.com","rel":"Warm","yamm":""},{"name":"Phill Villagomez","title":"Electric Mobility BD Manager","level":"Mid-Management","email":"phill.villagomez@shell.com","rel":"Warm","yamm":""},{"name":"Pragyesh Ojha","title":"Supply Chain Lead Gas Processing Materials & Construction Technology","level":"Mid-Management","email":"pragyesh.ojha@shell.com","rel":"Warm","yamm":""},{"name":"Ronald Wolf","title":"Senior Principal Scientist New Energy CO2 and LNG Technologies","level":"Mid-Management","email":"r.wolf@shell.com","rel":"Warm","yamm":""},{"name":"Sebastiaan Thierry","title":"Supply Chain Lead CO2 and LNG Technologies","level":"Mid-Management","email":"sebastiaan.thierry@shell.com","rel":"Warm","yamm":""},{"name":"Siddharth Singh","title":"Team Lead Insights","level":"Mid-Management","email":"Siddharth.S.Singh2@shell.com","rel":"Warm","yamm":""},{"name":"Sriram Musunuri","title":"General Manager Construction & Road Asia and Middle East","level":"Senior Management","email":"sriram.musunuri@shell.com","rel":"Warm","yamm":""},{"name":"Stuart Blyde","title":"Lead Connected Car & Innovations","level":"Mid-Management","email":"stuart.blyde@shell.com","rel":"Warm","yamm":""},{"name":"Thomas Wellen","title":"Connected Business Lead Digital","level":"Mid-Management","email":"thomas.t.wellen@shell.com","rel":"Warm","yamm":""},{"name":"Tony Guerrie","title":"Contracting and Procurement Category Manager","level":"Mid-Management","email":"Tony.Guerrie@shell.com","rel":"Warm","yamm":""},{"name":"Tripurari Prasad","title":"Senior Manager Market Intelligence","level":"Mid-Management","email":"tripurari.prasad@shell.com","rel":"Warm","yamm":""},{"name":"Tyler Van Leeuwen","title":"Group Carbon Opportunities Manager","level":"Mid-Management","email":"tyler.vanleeuwen@shell.com","rel":"Warm","yamm":""},{"name":"Vivek Makhija","title":"Global Lead Low Emission Energy","level":"Senior Management","email":"vivek.makhija@shell.com","rel":"Warm","yamm":""},{"name":"Zoltan Fuzes","title":"Global Fuels Portfolio Planning Manager","level":"Mid-Management","email":"zoltan.fuzes@shell.com","rel":"Warm","yamm":""},{"name":"Dirk Smit","title":"Technology Manager Services Development & Deployment Shell Global Solutions","level":"Senior Management","email":"dirk.smit@shell.com","rel":"Warm","yamm":""},{"name":"Robert Mainwaring","title":"Innovation Manager","level":"Mid-Management","email":"robert.mainwaring@shell.com","rel":"Warm","yamm":""},{"name":"Sarah Matthews","title":"Research Manager Shell-Imperial College UTC","level":"Mid-Management","email":"sarah.matthews@shell.com","rel":"Warm","yamm":""},{"name":"Paul Hampson","title":"Base Chemical Strategy Manager","level":"Mid-Management","email":"Paul.R.Hampson@shell.com","rel":"Warm","yamm":""},{"name":"Ed Holgate","title":"Principal Shell Gamechanger / Innovation Partnership Manager","level":"Other","email":"ed.holgate@shell.com","rel":"Warm","yamm":""},{"name":"Maurice Benning","title":"Category Manager R&D & Innovation","level":"Mid-Management","email":"maurice.benning@shell.com","rel":"Warm","yamm":""},{"name":"Frans Van den Berg","title":"Program Manager Collaborative Work Environments","level":"Mid-Management","email":"frans.vandenberg@shell.com","rel":"Warm","yamm":""},{"name":"Subhrajit Dey","title":"Manager CI & Performance Excellence Integrated Gas & LNG Operations","level":"Mid-Management","email":"subhrajit.dey@shell.com","rel":"Warm","yamm":""},{"name":"Giancarlo Ciola","title":"R&D Partnerships & Innovation Manager","level":"Mid-Management","email":"","rel":"Warm","yamm":""},{"name":"Mike Reid","title":"Strategic Business Insight & Innovation Consultant E&P","level":"Mid-Management","email":"","rel":"Warm","yamm":""},{"name":"Boris Schubert","title":"GM Solar and Storage","level":"Senior Management","email":"boris.schubert@shell.com","rel":"Warm","yamm":""},{"name":"Mark Raynes","title":"Technology Manager Services Development & Deployment Shell Global Solutions","level":"Mid-Management","email":"mark.raynes@shell.com","rel":"Warm","yamm":""},{"name":"Wim Genuit","title":"Senior Scientist Shell Global Solutions","level":"Mid-Management","email":"wim.genuit@shell.com","rel":"Warm","yamm":""},{"name":"Adam Williams","title":"Business Development Solar & Storage","level":"Mid-Management","email":"adam.m.williams@shell.com","rel":"Warm","yamm":""}],"Chevron":[{"name":"Gautam Phanse","title":"Technology Manager","level":"Mid-Management","email":"gautam.phanse@chevron.com","rel":"Warm","yamm":""},{"name":"Lynn Rouse","title":"Technology Strategy Manager","level":"Mid-Management","email":"Lynn.Rouse@chevron.com","rel":"Warm","yamm":""},{"name":"Maricel Marquez Cabarcas","title":"Chevron New Energies Technology Advisor","level":"Senior Management","email":"maricel@chevron.com","rel":"Warm","yamm":""},{"name":"Mihir Patel","title":"Strategy & Business Performance Emerging Products","level":"Mid-Management","email":"mihir.patel@chevron.com","rel":"Warm","yamm":""},{"name":"Niaz Faruqui","title":"Investment Principal Future Energy","level":"Senior Management","email":"niaz.faruqui@chevron.com","rel":"Warm","yamm":""},{"name":"Brian Chase","title":"General Manager Markets and Customers CCUS","level":"Mid-Management","email":"Brian.Chase@chevron.com","rel":"Warm","yamm":""},{"name":"Akshay Sahni","title":"General Manager Strategy and Planning","level":"Senior Management","email":"Akshay.Sahni@chevron.com","rel":"Warm","yamm":""},{"name":"Syed M Taha Hussain","title":"Venture Executive Chevron Technology Ventures","level":"Mid-Management","email":"syed.hussain@chevron.com","rel":"Warm","yamm":""},{"name":"Greg Winslow","title":"Laboratory R&D Manager","level":"Mid-Management","email":"gwinslow@chevron.com","rel":"Warm","yamm":""}],"ExxonMobil":[{"name":"Jared Post","title":"Digital Transformation Business Lead","level":"Senior Management","email":"jared.post@exxonmobil.com","rel":"Warm","yamm":""},{"name":"David Fiscus","title":"Staff Chemist","level":"Mid-Management","email":"david.m.fiscus@exxonmobil.com","rel":"Warm","yamm":""},{"name":"Eric Fedak","title":"Tire and Automotive Innovation Market Developer","level":"Mid-Management","email":"eric.k.fedak@exxonmobil.com","rel":"Warm","yamm":""},{"name":"Fernando Stump","title":"Team Lead Mechanics","level":"Mid-Management","email":"fernando.v.stump@exxonmobil.com","rel":"Warm","yamm":""},{"name":"Hemant Paradkar","title":"Marketing Advisor New Product Platforms","level":"Senior Management","email":"hemant.paradkar@exxonmobil.com","rel":"Warm","yamm":""},{"name":"Jeevan Abichandani","title":"Senior Scientist Executive","level":"Mid-Management","email":"Jeevan.Abichandani@exxonmobil.com","rel":"Warm","yamm":""},{"name":"Jennifer A Carvajal","title":"Sr Market Development & Innovation Advisor","level":"Senior Management","email":"jennifer.carvajaldiaz@exxonmobil.com","rel":"Warm","yamm":""},{"name":"Michael Fanset","title":"Global Business Manager Linear Alpha Olefins","level":"Senior Management","email":"michael.d.fanset1@exxonmobil.com","rel":"Warm","yamm":""},{"name":"Mohan Kalyanaramam","title":"Technology Acquisition Advisor","level":"Senior Management","email":"Mohan.Kalyanaramam@exxonmobil.com","rel":"Warm","yamm":""},{"name":"Prashant Bhadane","title":"Product Development Engineer","level":"Mid-Management","email":"prashant.bhadane@exxonmobil.com","rel":"Warm","yamm":""},{"name":"Sam Tallury","title":"Americas Technology Supervisor Polypropylene Vistamaxx Adhesives","level":"Senior Management","email":"sam.tallury@exxonmobil.com","rel":"Warm","yamm":""},{"name":"Scott Israelson","title":"Global Marketing Curriculum & Competency Development Manager","level":"Senior Management","email":"scott.israelson@exxonmobil.com","rel":"Warm","yamm":""},{"name":"Chukwuemeka Odebeatu","title":"Senior Geoscientist","level":"Senior Management","email":"chukwuemeka.odebeatu@exxonmobil.com","rel":"Warm","yamm":""},{"name":"Joseph D Dischinger","title":"Disruptive Technology Advisor","level":"Senior Management","email":"joe.d.dischinger@exxonmobil.com","rel":"Warm","yamm":""},{"name":"Cindy (Jing) Song","title":"Head of Brand Experience Development North AP","level":"Senior Management","email":"jing.song@exxonmobil.com","rel":"Warm","yamm":""},{"name":"Ciro Collaro","title":"Digital App and Customer Experience Advisor","level":"Mid-Management","email":"ciro.collaro@exxonmobil.com","rel":"Warm","yamm":""},{"name":"Simone De Vita","title":"Polypropylene & Polymer Modifiers Technologist","level":"Mid-Management","email":"simone.devita@exxonmobil.com","rel":"Warm","yamm":""},{"name":"Prasanna Joshi","title":"Director Corporate Strategic Research","level":"Senior Management","email":"prasanna.v.joshi@exxonmobil.com","rel":"Warm","yamm":""},{"name":"Joana Diekmann","title":"Technologist","level":"Mid-Management","email":"joanakatharina.diekmann@exxonmobil.com","rel":"Warm","yamm":""},{"name":"Julian Hallai","title":"Senior Research Engineer","level":"Mid-Management","email":"julian.hallai@exxonmobil.com","rel":"Warm","yamm":""},{"name":"Yogesh Joshi","title":"Marketing Manager ExxonMobil Asia Pacific","level":"Mid-Management","email":"","rel":"Warm","yamm":""},{"name":"Bernd Buraczewski","title":"Auto OEM Market Development Manager Santoprene","level":"Mid-Management","email":"","rel":"Warm","yamm":""},{"name":"Eleonora De Florio","title":"EAME Fuel Sustainability Advisor","level":"Mid-Management","email":"Eleonora.D.Florio@exxonmobil.com","rel":"Warm","yamm":""},{"name":"George Racine","title":"Sustainability Issue Manager","level":"Mid-Management","email":"george.a.racine@exxonmobil.com","rel":"Warm","yamm":""},{"name":"Ihno Ihnen","title":"Key Account Manager Automotive","level":"Mid-Management","email":"ihno.ihnen@exxonmobil.com","rel":"Warm","yamm":""},{"name":"Rebecca Gander","title":"Business Development Manager","level":"Mid-Management","email":"rebecca.gander@exxonmobil.com","rel":"Warm","yamm":""},{"name":"Andrea Jacobsen","title":"Strategic Global Alliance Manager","level":"Mid-Management","email":"andrea.jacobsen@exxonmobil.com","rel":"Warm","yamm":""},{"name":"Arancha Guisuraga","title":"Butyl Polymers EMEAF Product Manager","level":"Mid-Management","email":"aranzazu.guisuraga@exxonmobil.com","rel":"Warm","yamm":""}],"Halliburton":[{"name":"Michael Fripp","title":"Chief Research Scientist","level":"Senior Management","email":"michael.fripp@halliburton.com","rel":"Cold","yamm":""},{"name":"Stephen Ingram","title":"VP Technology Solutions & Innovation North America","level":"Senior Management","email":"stephen.ingram@halliburton.com","rel":"Cold","yamm":""},{"name":"Don Smith","title":"Principal Technologist","level":"Senior Management","email":"don.smith@halliburton.com","rel":"Cold","yamm":""},{"name":"Eric Frantz","title":"Principal Scientist","level":"Senior Management","email":"eric.frantz@halliburton.com","rel":"Cold","yamm":""},{"name":"Kay Galindo","title":"Principal Scientist Chemist","level":"Senior Management","email":"kay.galindo@halliburton.com","rel":"Cold","yamm":""},{"name":"Kurt Lindstrom","title":"Principal Scientist","level":"Senior Management","email":"kurt.lindstrom@halliburton.com","rel":"Cold","yamm":""},{"name":"Paul Jones","title":"Principal Scientist","level":"Senior Management","email":"Paul.Jones@halliburton.com","rel":"Cold","yamm":""},{"name":"Qiang Lan","title":"Principal Scientist","level":"Senior Management","email":"qiang.lan@halliburton.com","rel":"Cold","yamm":""},{"name":"Srinivasan Jagannathan","title":"Principal Scientist","level":"Senior Management","email":"srinivasan.jagannathan@halliburton.com","rel":"Cold","yamm":""},{"name":"Zhenyu Xue","title":"Principal Research Scientist","level":"Senior Management","email":"zhenyu.xue@halliburton.com","rel":"Cold","yamm":""},{"name":"Aaron Fisher","title":"Principal Engineer / Project Engineer","level":"Senior Management","email":"aaronfisher505@yahoo.com","rel":"Cold","yamm":""},{"name":"Ahmed Fouda","title":"Principal Scientist Electromagnetics","level":"Senior Management","email":"ahmed.fouda@halliburton.com","rel":"Cold","yamm":""},{"name":"Curtis Jacks","title":"Technology Chief Sperry Drilling","level":"Senior Management","email":"curtis.jacks@halliburton.com","rel":"Cold","yamm":""},{"name":"Daniel Stark","title":"Principal Scientist Physics","level":"Senior Management","email":"daniel.stark@halliburton.com","rel":"Cold","yamm":""},{"name":"Joe Zuiker","title":"Senior Director of Technology Sperry Drilling","level":"Senior Management","email":"joseph.zuiker@halliburton.com","rel":"Cold","yamm":""},{"name":"Reza Khalaj Amineh","title":"Principal Scientist Electromagnetics","level":"Senior Management","email":"reza.amineh@halliburton.com","rel":"Cold","yamm":""},{"name":"Richard Patterson","title":"Technology Director Sperry Drilling","level":"Senior Management","email":"richard.patterson@halliburton.com","rel":"Cold","yamm":""},{"name":"Don Perkins","title":"Technology Director","level":"Senior Management","email":"don.perkins@halliburton.com","rel":"Cold","yamm":""},{"name":"Bill Harlan","title":"Tech Advisor Scientist Chief","level":"Senior Management","email":"bill.harlan@halliburton.com","rel":"Cold","yamm":""},{"name":"Robello Samuel","title":"Technology Fellow","level":"Senior Management","email":"Robello.Samuel@halliburton.com","rel":"Cold","yamm":""},{"name":"Thomas Pisklak","title":"Principal Scientist","level":"Senior Management","email":"thomas.pisklak@halliburton.com","rel":"Cold","yamm":""},{"name":"Erick J Acosta","title":"Director of Flow Assurance Technologies","level":"Senior Management","email":"erick.acosta@halliburton.com","rel":"Cold","yamm":""},{"name":"John Maida","title":"Chief Optical Scientist","level":"Senior Management","email":"John.Maida@halliburton.com","rel":"Cold","yamm":""},{"name":"Norm Warpinski","title":"Director of Technology","level":"Senior Management","email":"norm.warpinski@halliburton.com","rel":"Cold","yamm":""},{"name":"Mickey Pelletier","title":"Principal Scientist","level":"Senior Management","email":"mickey.pelletier@halliburton.com","rel":"Cold","yamm":""},{"name":"Dale Jamison","title":"Technology Fellow","level":"Senior Management","email":"dale.jamison@halliburton.com","rel":"Cold","yamm":""}],"Infineon":[{"name":"Andreas Gaymann-Olp","title":"Unknown","level":"Other","email":"Andreas.Gaymann-Olpe@infineon.com","rel":"Warm","yamm":""},{"name":"Bjoern Steurich","title":"System Business Development Automotive Security","level":"Senior Management","email":"bjoern.steurich@infineon.com","rel":"Warm","yamm":""},{"name":"Christian Rosengarten","title":"Senior Director Purchasing Central Services","level":"Senior Management","email":"Christian.Rosengarten@infineon.com","rel":"Warm","yamm":""},{"name":"Christian Staudt","title":"Project Director Product Development","level":"Senior Management","email":"christian.staudt@infineon.com","rel":"Warm","yamm":""},{"name":"Dirk Geiger","title":"Director Product Marketing","level":"Senior Management","email":"dirk.geiger@infineon.com","rel":"Warm","yamm":""},{"name":"Hans Hartung","title":"Unknown","level":"Mid-Management","email":"Hans.Hartung@infineon.com","rel":"Warm","yamm":""},{"name":"Jihad Haidar","title":"Senior Director R&D and Application Engineering","level":"Senior Management","email":"jihad.haidar@infineon.com","rel":"Warm","yamm":""},{"name":"Karsten Guth","title":"Senior Manager","level":"Mid-Management","email":"Karsten.Guth@infineon.com","rel":"Warm","yamm":""},{"name":"Laurens Weiss","title":"Head Package Simulation","level":"Senior Management","email":"Laurens.Weiss@infineon.com","rel":"Warm","yamm":""},{"name":"Manuel Hollfelder","title":"Senior Manager Solutions & Application Synergies","level":"nan","email":"","rel":"Warm","yamm":"Worth flagging \u2013 Infineon"},{"name":"Maya Denzler","title":"Manager Market Intelligence","level":"Senior Management","email":"maya.denzler@infineon.com","rel":"Warm","yamm":""},{"name":"Peter Kanschat","title":"Senior Director R&D Modules & Systems","level":"Senior Management","email":"peter.kanschat@infineon.com","rel":"Warm","yamm":""},{"name":"Ralf Jetzfellner","title":"Director Purchasing","level":"Senior Management","email":"Ralf.Jetzfellner@infineon.com","rel":"Warm","yamm":""},{"name":"Reinhard Gabl","title":"Head of Package Concept Development & Innovation Management","level":"Senior Management","email":"reinhard.gabl@infineon.com","rel":"Warm","yamm":""},{"name":"Robert Junker","title":"Head of Emerging Applications","level":"Senior Management","email":"Robert.Junker@infineon.com","rel":"Warm","yamm":""},{"name":"Roman Tschirbs","title":"Principal Engineer Power Module Packages","level":"nan","email":"","rel":"Warm","yamm":"Worth flagging \u2013 Infineon"},{"name":"Stefan Dankowski","title":"Director Reverse Engineering","level":"Senior Management","email":"stefan.dankowski@infineon.com","rel":"Warm","yamm":""},{"name":"Steven Fanhua Kong","title":"Head Strategy & Projects","level":"Senior Management","email":"Fanhua.Kong@infineon.com","rel":"Warm","yamm":""},{"name":"Tapan Vikas","title":"Head of Department","level":"Senior Management","email":"Tapan.Vikas@infineon.com","rel":"Warm","yamm":""},{"name":"Thomas Hamadi","title":"Innovation Manager Warstein","level":"nan","email":"","rel":"Warm","yamm":"Worth flagging \u2013 Infineon"},{"name":"Thomas Kurth","title":"Head of Technology Development Sense and Control","level":"Senior Management","email":"thomas.kurth@infineon.com","rel":"Warm","yamm":""},{"name":"Ulrich Nerz","title":"Senior Director R&D","level":"Senior Management","email":"ulrich.nerz@infineon.com","rel":"Warm","yamm":""},{"name":"Vivek Mahajan","title":"Vice President","level":"Senior Management","email":"vivek.mahajan@infineon.com","rel":"Warm","yamm":""},{"name":"Walter Orth","title":"Senior Director Physical Design and Methodology","level":"Senior Management","email":"walter.orth@infineon.com","rel":"Warm","yamm":""},{"name":"Eike Luken","title":"Head Technology Development Automotive Power Semiconductors","level":"Senior Management","email":"eike.lueken@infineon.com","rel":"Warm","yamm":""},{"name":"Hans Adlkofer","title":"VP Head of Automotive System Group","level":"Senior Management","email":"hans.adlkofer@infineon.com","rel":"Warm","yamm":""},{"name":"Johannes Huchzermeier","title":"Product Marketing Automotive","level":"Senior Management","email":"johannes.huchzermeier@infineon.com","rel":"Warm","yamm":""},{"name":"Maik Herzog","title":"Director EDA","level":"Senior Management","email":"maik.herzog@infineon.com","rel":"Warm","yamm":""},{"name":"Martin Streibl","title":"R&D Director","level":"Senior Management","email":"martin.streibl@infineon.com","rel":"Warm","yamm":""},{"name":"Sebastian Bernrieder","title":"Head of Department Automation","level":"Senior Management","email":"Sebastian.Bernrieder@infineon.com","rel":"Warm","yamm":""},{"name":"Tim Gutheit","title":"Senior Director Technology & Innovation Automotive","level":"Senior Management","email":"tim.gutheit@infineon.com","rel":"Warm","yamm":""},{"name":"Ursula Schilling","title":"Director Business Development","level":"Senior Management","email":"ursula.schilling@infineon.com","rel":"Warm","yamm":""},{"name":"Hicham Riffi","title":"Corporate Strategy","level":"Mid-Management","email":"Hicham.Riffi@infineon.com","rel":"Warm","yamm":""},{"name":"Peter Stamminger","title":"VP Operations Excellence","level":"Senior Management","email":"","rel":"Warm","yamm":""},{"name":"Uwe Jansen","title":"Senior Principal Engineer Systems and Tools Standards Support","level":"Mid-Management","email":"Uwe.Jansen@infineon.com","rel":"Warm","yamm":""},{"name":"Barbara Schaden","title":"Director Strategy Development","level":"Senior Management","email":"barbara.schaden@infineon.com","rel":"Warm","yamm":""},{"name":"Daniel Lindenmeyer","title":"Senior Business Development Manager","level":"Mid-Management","email":"daniel.lindenmeyer@infineon.com","rel":"Warm","yamm":""},{"name":"Dieter Joseph","title":"Senior Director Intellectual Property","level":"Senior Management","email":"dieter.joseph@infineon.com","rel":"Warm","yamm":""},{"name":"Klaus Oettinger","title":"Head of Foundry Process","level":"Senior Management","email":"klaus.oettinger@infineon.com","rel":"Warm","yamm":""},{"name":"Safak Kececi","title":"Head of Process Integration Product Engineering Technology Transfer","level":"Senior Management","email":"safak.kececi@infineon.com","rel":"Warm","yamm":""},{"name":"Thomas Schneid","title":"VP Corporate Account","level":"Senior Management","email":"Thomas.Schneid@infineon.com","rel":"Warm","yamm":""},{"name":"Jean-Marc Rousseau","title":"Head of BU Production Management","level":"Senior Management","email":"Jeanmarc.Rousseau@infineon.com","rel":"Warm","yamm":""},{"name":"Thomas Beer","title":"Director Application & Systems Global Head Segment Solar & Energy Storage","level":"Senior Management","email":"thomas.beer@infineon.com","rel":"Warm","yamm":""}],"Daimler":[{"name":"Baldeep Singh Anand","title":"Ideation Specialist","level":"Mid-Management","email":"baldeep.anand@daimler.com","rel":"Warm","yamm":""},{"name":"Bedriye Ozgu","title":"IT","level":"Mid-Management","email":"bedriye.oezgue@daimler.com","rel":"Warm","yamm":""},{"name":"Birgit Klockenhoff","title":"Project Engineer Advanced Materials","level":"Mid-Management","email":"birgit.klockenhoff@daimler.com","rel":"Warm","yamm":""},{"name":"Canan Tasdemir","title":"Manager","level":"Mid-Management","email":"canan.tasdemir@mercedes-benz.com","rel":"Warm","yamm":""},{"name":"Carolina Ohmer","title":"Business Development Manager Daimler Mobility Services","level":"Mid-Management","email":"carolina.ohmer@daimler.com","rel":"Warm","yamm":""},{"name":"Carsten Kaefert","title":"Strategy / DigitalLife","level":"Mid-Management","email":"carsten.kaefert@daimler.com","rel":"Warm","yamm":""},{"name":"Christian Kuhn","title":"Senior Business Development Manager","level":"Mid-Management","email":"Christian.c.kuhn@daimler.com","rel":"Warm","yamm":""},{"name":"Christof Weber","title":"Director Head of Testing & CAE Mercedes-Benz Trucks","level":"Senior Management","email":"christof.weber@daimler-truck.com","rel":"Warm","yamm":""},{"name":"Daniel Loewen","title":"Foresight Modelling Daimler InnoLab","level":"Mid-Management","email":"daniel.loewen@daimler.com","rel":"Warm","yamm":""},{"name":"Eberhard Heinz","title":"Team Lead IP & Technology Management","level":"Mid-Management","email":"eberhard.heinz@daimler.com","rel":"Warm","yamm":""},{"name":"Elisa Moerk","title":"Projekt Metropolitan Mobility Solutions","level":"Mid-Management","email":"elisa.moerk@daimler.com","rel":"Warm","yamm":""},{"name":"Erdem Zeren","title":"Senior Manager Brand & Digital Marketing","level":"Senior Management","email":"erdem.zeren@daimler.com","rel":"Warm","yamm":""},{"name":"Frank Zimmermann","title":"Head of Corporate Strategy","level":"nan","email":"","rel":"Warm","yamm":"Worth flagging \u2013 Daimler"},{"name":"Guido Vent","title":"Chiefengineer AMG One Mercedes-Benz","level":"Mid-Management","email":"guido.vent@daimler.com","rel":"Warm","yamm":""},{"name":"Gustavo Vilela Dias","title":"Metropolitan Mobility Solutions","level":"Mid-Management","email":"gustavo.dias@daimler.com","rel":"Warm","yamm":""},{"name":"Jacques Fadel","title":"Head of New Business Strategy Daimler Truck","level":"nan","email":"","rel":"Warm","yamm":"Worth flagging \u2013 Daimler"},{"name":"Josefin Lewetzky","title":"DigitalLife@Daimler Innovation & Culture","level":"Mid-Management","email":"josefin.lewetzky@daimler.com","rel":"Warm","yamm":""},{"name":"Mahesh Kurup Unnikrishnan","title":"Sr CAE Analyst Flow and Thermal Systems","level":"Mid-Management","email":"mahesh.unnikrishnan@daimler.com","rel":"Warm","yamm":""},{"name":"Michael Hettich","title":"Information Technology Sourcing Management Portland","level":"Senior Management","email":"Michael.Hettich@daimler.com","rel":"Warm","yamm":""},{"name":"Njomza Rexhepaj","title":"Risk Governance & ICS Regulatory Topics DMO Group","level":"Mid-Management","email":"njomza.rexhepaj@daimler.com","rel":"Warm","yamm":""},{"name":"Patrick Hollinger","title":"IT","level":"Mid-Management","email":"patrick.hollinger@daimler.com","rel":"Warm","yamm":""},{"name":"Raghuraman Ramamoorthy","title":"Deputy General Manager","level":"Senior Management","email":"Raghuraman.ramamoorthy@daimler.com","rel":"Warm","yamm":""},{"name":"Reinhold Schoeb","title":"Manager bei Daimler AG","level":"Mid-Management","email":"reinhold.schoeb@daimler.com","rel":"Warm","yamm":""},{"name":"Susanne Velleuer","title":"Senior Manager Product Management & Strategy Supplier Management Mercedes-Benz Cars","level":"Mid-Management","email":"susanne.velleuer@daimler.com","rel":"Warm","yamm":""},{"name":"Thomas Ganz","title":"Research at Daimler Chrysler AG","level":"Mid-Management","email":"thomas.ganz@daimler.com","rel":"Warm","yamm":""},{"name":"Thomas Schiller","title":"Manager Digital Transformation","level":"Mid-Management","email":"thomas.schiller@daimler.com","rel":"Warm","yamm":""},{"name":"Thomas Stengel","title":"Future Outside & Materials Research Sustainability and RD Functions","level":"Mid-Management","email":"thomas.t.stengel@daimler.com","rel":"Warm","yamm":""},{"name":"Udo Gayer","title":"Polymer Technology Team Leader","level":"Senior Management","email":"udo.gayer@daimler.com","rel":"Warm","yamm":""},{"name":"Uesame Akkoca","title":"Future Components & Technologies RD/RTC","level":"Senior Management","email":"uesame.akkoca@mercedes-benz.com","rel":"Warm","yamm":""},{"name":"Uwe Mierisch","title":"Head of Engineering Management and Transformation MB Trucks","level":"nan","email":"","rel":"Warm","yamm":"Worth flagging \u2013 Daimler"},{"name":"Valentin Buss","title":"Research Engineer Science & neXt Technologies","level":"Mid-Management","email":"Valentin.buss@daimler.com","rel":"Warm","yamm":""},{"name":"Daniel Haack","title":"Head After-Sales Marketing Mercedes-Benz Cars Switzerland","level":"Senior Management","email":"daniel.haack@daimler.com","rel":"Warm","yamm":""},{"name":"Hugo Campidelli","title":"Technical Innovation Specialist","level":"Mid-Management","email":"hugo.campidelli@daimler.com","rel":"Warm","yamm":""},{"name":"Jurgen Kipar","title":"Head of Development Glass Mirror & Wiper Systems","level":"Senior Management","email":"juergen.kipar@daimler.com","rel":"Warm","yamm":""},{"name":"Markus Beck","title":"Head Joining Technologies","level":"Senior Management","email":"markus.m.b.beck@daimler.com","rel":"Warm","yamm":""},{"name":"Moritz Gruters","title":"Department Future Innovation Trendscouting in R&D","level":"Mid-Management","email":"moritz.gruters@daimler.com","rel":"Warm","yamm":""},{"name":"Paolo Moggia","title":"Commercial Vehicle Product Manager Carrossiers","level":"Mid-Management","email":"paolo.moggia@daimler.com","rel":"Warm","yamm":""},{"name":"Patryk Pleszka","title":"Machining Engineer","level":"Other","email":"patryk.pleszka@daimler.com","rel":"Warm","yamm":""},{"name":"Alexander Klinkner","title":"Head of Sales Drive Train Components to External Customers","level":"Senior Management","email":"alexander.klinkner@daimler.com","rel":"Warm","yamm":""},{"name":"Dietmar Beck","title":"Head of Strategy Alternative Drives & Gear","level":"Senior Management","email":"dietmar.beck@daimler.com","rel":"Warm","yamm":""},{"name":"Hans Joerg Schur","title":"Manager Lead Testing","level":"Mid-Management","email":"hans-joerg.schur@daimler.com","rel":"Warm","yamm":""},{"name":"Kemal Cetinkaya","title":"Senior Wiring Harness Design Engineer","level":"Mid-Management","email":"kemal.cetinkaya@daimler-truck.com","rel":"Warm","yamm":""},{"name":"Manfred Boehm","title":"Manager Competition Intelligence Research & Analysis","level":"Mid-Management","email":"manfred.boehm@daimler.com","rel":"Warm","yamm":""},{"name":"Monika Kentzler","title":"Research and Innovation Funding Truck","level":"Mid-Management","email":"monika.kentzler@daimler.com","rel":"Warm","yamm":""},{"name":"Thomas Markovic","title":"Senior Manager Product Planning Daimler Trucks Future Technologies","level":"Mid-Management","email":"","rel":"Warm","yamm":""},{"name":"Felix Braun","title":"Head Business Development Overseas Markets MB Vans","level":"Senior Management","email":"felix.braun@daimler.com","rel":"Warm","yamm":""},{"name":"Hartwig Renninger","title":"Project Management MoPf Midsize Vans / Head of PMO","level":"Senior Management","email":"hartwig.renninger@daimler.com","rel":"Warm","yamm":""},{"name":"Ferdinand Fegert","title":"Manager Strategy Daimler Buses","level":"Mid-Management","email":"ferdinand.fegert@daimler.com","rel":"Warm","yamm":""},{"name":"Bruno Frankenhauser","title":"Head Forming Technology","level":"Senior Management","email":"bruno.frankenhauser@daimler.com","rel":"Warm","yamm":""},{"name":"Frieder Munk","title":"Lead Strategy Intelligence Mercedes-Benz AG","level":"Mid-Management","email":"frieder.munk@daimler.com","rel":"Warm","yamm":""},{"name":"Gerold Herfer","title":"Head of Global License Management","level":"Senior Management","email":"gerold.herfer@daimler.com","rel":"Warm","yamm":""},{"name":"Harald Rudolph","title":"Director Daimler Strategy (S/D)","level":"Senior Management","email":"harald.rudolph@daimler.com","rel":"Warm","yamm":""},{"name":"Kathrin Brinkschroder","title":"Head of Organisation R&D Mercedes-Benz Passenger Cars Worldwide","level":"Senior Management","email":"kathrin.brinkschroder@daimler.com","rel":"Warm","yamm":""},{"name":"Manish Marwah","title":"Manager","level":"Mid-Management","email":"Manish.Marwah@daimler.com","rel":"Warm","yamm":""},{"name":"Markus Haegele","title":"Senior Manager Head of Digital Life","level":"Senior Management","email":"markus.haegele@daimler.com","rel":"Warm","yamm":""},{"name":"Thomas Eisenbarth","title":"Head of Business Innovation","level":"Senior Management","email":"thomas.eisenbarth@daimler.com","rel":"Warm","yamm":""},{"name":"Roberto De Zolt","title":"Senior Manager Combustion Engine Development","level":"Mid-Management","email":"","rel":"Warm","yamm":""},{"name":"Florence Michel","title":"Thermal Project Manager R&D","level":"Mid-Management","email":"florence.michel@daimler.com","rel":"Warm","yamm":""},{"name":"Harald Feuchter","title":"IP","level":"Mid-Management","email":"harald.feuchter@daimler.com","rel":"Warm","yamm":""},{"name":"Jan Gaertner","title":"Team Leader Simulation and Innovation Thermal Management","level":"Mid-Management","email":"","rel":"Warm","yamm":""},{"name":"Guido Runkel","title":"Head of Integrated Management System Customer Services & Parts","level":"Senior Management","email":"guido.runkel@daimler.com","rel":"Warm","yamm":""},{"name":"Christian Bauer","title":"Senior Manager Cooperation & Innovation Management","level":"Mid-Management","email":"","rel":"Warm","yamm":""},{"name":"Christian Betz","title":"R&D Project Manager","level":"Mid-Management","email":"christian.c.betz@daimler.com","rel":"Warm","yamm":""},{"name":"Christian Krauser","title":"Advanced Engineering Performance & Emissions","level":"Mid-Management","email":"christian.krauser@daimler.com","rel":"Warm","yamm":""},{"name":"Juergen Dickmann","title":"Head of Research & Development Advanced Active Sensors","level":"Mid-Management","email":"juergen.dickmann@daimler.com","rel":"Warm","yamm":""},{"name":"Rene Ackel-Zakour","title":"Head of Technology Management & Technology Policy","level":"Mid-Management","email":"rene.ackel-zakour@daimler.com","rel":"Warm","yamm":""},{"name":"Christian Krajewski","title":"Director Development MB Trucks Axle Transmission","level":"Senior Management","email":"christian.krajewski@daimler.com","rel":"Warm","yamm":""},{"name":"Jasmin Frei","title":"Research & Development","level":"Mid-Management","email":"jasmin.frei@mercedes-benz.com","rel":"Warm","yamm":""},{"name":"Karl-Heinz Fuller","title":"Manager Materials Concepts AMG R&D Predevelopment BIW","level":"Mid-Management","email":"karl-heinz.fueller@mercedes-benz.com","rel":"Warm","yamm":""},{"name":"Joerg Wind","title":"Manager Strategic Energy Projects","level":"Mid-Management","email":"joerg.wind@daimler.com","rel":"Warm","yamm":""},{"name":"Vikram Menon","title":"Manager HV-Battery and Charging Systems Daimler Trucks Asia","level":"Mid-Management","email":"vikram.menon@daimler.com","rel":"Warm","yamm":""},{"name":"Prashanth Murthy","title":"Research and Development","level":"Senior Management","email":"prashanth.a.murthy@mercedes-benz.com","rel":"Warm","yamm":""},{"name":"Sourabh Bumb","title":"Innovation Strategist Mercedes-Benz R&D India","level":"Senior Management","email":"sourabh.bumb@mercedes-benz.com","rel":"Warm","yamm":""},{"name":"Dhruv Sharma","title":"Marketing","level":"Mid-Management","email":"dhruv.sharma@mercedes-benz.com","rel":"Warm","yamm":""},{"name":"Snigdha Saxena","title":"Senior Program Manager","level":"Mid-Management","email":"snigdha.saxena@daimler.com","rel":"Warm","yamm":""}],"VW Group":[{"name":"Alexander Braune","title":"Group Customer Intelligence Clinics and Testing","level":"Mid-Management","email":"alexander.braune@volkswagen.de","rel":"Warm","yamm":""},{"name":"Andrew Close","title":"Product Strategy","level":"Mid-Management","email":"andrew.close@volkswagen.de","rel":"Warm","yamm":""},{"name":"Arnav Malawade","title":"Sr Artificial Intelligence Engineer VW ADMT","level":"Other","email":"arnav.malawade@vw.com","rel":"Warm","yamm":""},{"name":"Arne-Christian Voigt","title":"Group Innovation Future Research K-AERZ","level":"Mid-Management","email":"arne-christian.voigt@volkswagen.de","rel":"Warm","yamm":""},{"name":"Christian Bauer","title":"Corporate Strategy & Market Intelligence PowerCo","level":"Senior Management","email":"christian.bauer@powerco.de","rel":"Warm","yamm":""},{"name":"Christian Lucas","title":"Engineer","level":"Other","email":"christian.lucas@volkswagen.de","rel":"Warm","yamm":""},{"name":"Claus Peter Neumann","title":"Technological Foresight","level":"Senior Management","email":"claus.peter.neumann@volkswagen.de","rel":"Warm","yamm":""},{"name":"Dirk Voeste","title":"Chief Sustainability Officer","level":"nan","email":"","rel":"Warm","yamm":"Worth flagging \u2013 VW Group"},{"name":"Emanuel Pupello","title":"Director de Proyecto","level":"nan","email":"","rel":"Warm","yamm":"Worth flagging \u2013 VW Group"},{"name":"James Mills","title":"Strategic Purchaser Graphite Raw Material Supply","level":"Mid-Management","email":"james.mills@volkswagen.de","rel":"Warm","yamm":""},{"name":"Juergen-Werner Becke","title":"Head of Lightweight Technologies Group","level":"Senior Management","email":"juergen.becke@volkswagen.de","rel":"Warm","yamm":""},{"name":"Kim Neumann","title":"Head of Market Trends & Competition Analysis","level":"Senior Management","email":"kim.neumann@volkswagen.de","rel":"Warm","yamm":""},{"name":"Konrad Wagner","title":"Head of Fleet Sales Europe & International","level":"Senior Management","email":"konrad.johannes.wagner@volkswagen.de","rel":"Warm","yamm":""},{"name":"Linda Witzke","title":"Cost Management VW Group / VW Brand","level":"Mid-Management","email":"linda.witzke@volkswagen.de","rel":"Warm","yamm":""},{"name":"Mark Bennemann","title":"Group Innovation Future Research & Foresight K-AERZ","level":"Senior Management","email":"mark.bennemann@volkswagen.de","rel":"Warm","yamm":""},{"name":"Martin Hede","title":"Technology Lead Traton","level":"Other","email":"Martin.Hede@scania.com","rel":"Warm","yamm":""},{"name":"Nitin Kaskhedikar","title":"Cost Management and Value Engineering e-Mobility","level":"Mid-Management","email":"nitin.kaskhedikar@volkswagen.de","rel":"Warm","yamm":""},{"name":"Oliver Diener","title":"Director Connected Car Product Solutions","level":"Senior Management","email":"Oliver.Diener@volkswagen.com","rel":"Warm","yamm":""},{"name":"Prof. Carlos Portillo","title":"Project Manager EA888 Engines","level":"nan","email":"","rel":"Warm","yamm":"Worth flagging \u2013 VW Group"},{"name":"Reno Filla","title":"Senior Research Engineer Predevelopment Powertrain","level":"Senior Management","email":"reno.filla@scania.com","rel":"Warm","yamm":""},{"name":"Saurabh Athavale","title":"Project Steering Purchasing","level":"Other","email":"saurabh.athavale@volkswagen.de","rel":"Warm","yamm":""},{"name":"Soeren Stobbe","title":"Powertrain Strategy GSAA","level":"Mid-Management","email":"soeren.stobbe@volkswagen.de","rel":"Warm","yamm":""},{"name":"Sven Wittfoth","title":"Head of Foresight & Open Innovation","level":"Senior Management","email":"sven.wittfoth@volkswagen.de","rel":"Warm","yamm":""},{"name":"Tabea H\u00fcllen","title":"PhD Candidate Corporate Foresight / Future Research","level":"Other","email":"tabea.huellen@volkswagen.de","rel":"Warm","yamm":""},{"name":"Thomas Doering","title":"Sr Manager Strategic Projects and Business Development","level":"Mid-Management","email":"thomas.doering@traton.com","rel":"Warm","yamm":""},{"name":"Thomas Form","title":"Head of Research and Vehicle Electronics","level":"Senior Management","email":"thomas.form@volkswagen.de","rel":"Warm","yamm":""},{"name":"Thomas Lischka","title":"Master Data Distribution Project Manager","level":"Mid-Management","email":"thomas.lischka@volkswagen.de","rel":"Warm","yamm":""},{"name":"Uwe Alber","title":"Technology Development Lightweighting","level":"Mid-Management","email":"uwe.alber@audi.de","rel":"Warm","yamm":""},{"name":"Xialong Wu","title":"Innovation Management Customer Insight","level":"Mid-Management","email":"xiaolong.wu@volkswagen.com.cn","rel":"Warm","yamm":""},{"name":"Advait Valluri","title":"Innovations Engineer Chassis R&D","level":"Mid-Management","email":"Advait.Valluri@audi.de","rel":"Warm","yamm":""},{"name":"Erhard Brandl","title":"Innovation Management","level":"Mid-Management","email":"erhard.brandl@audi.de","rel":"Warm","yamm":""},{"name":"Martin Conrads","title":"Head of Standardisation","level":"Other","email":"martin.conrads@audi.de","rel":"Warm","yamm":""},{"name":"Matjaz Korman","title":"Head of Concept Car Development Properties Functions Innovations","level":"Senior Management","email":"matjaz.korman@audi.de","rel":"Warm","yamm":""},{"name":"Heiko Stibbe","title":"Head of Market Trend & Competition Analysis","level":"Senior Management","email":"heiko.stibbe@volkswagen.de","rel":"Warm","yamm":""},{"name":"Wolfgang Schwarte","title":"Product Strategy Brand VW Passenger Cars","level":"Senior Management","email":"wolfgang.schwarte@volkswagen.de","rel":"Warm","yamm":""},{"name":"Stefan Timmermann","title":"Regional Manager Asia and Middle East SKODA AUTO AS","level":"Senior Management","email":"stefan.timmermann@volkswagen.de","rel":"Warm","yamm":""},{"name":"Timo Michel","title":"Head of Sales SEAT Deutschland GmbH","level":"Senior Management","email":"timo.michel1@volkswagen.de","rel":"Warm","yamm":""},{"name":"Jurgen Hofmann","title":"Head of Dealer Development SEAT Deutschland GmbH","level":"Senior Management","email":"juergen.hofmann@seat.de","rel":"Warm","yamm":""},{"name":"Josef Talhofer","title":"Business Development & Sales Manager","level":"Mid-Management","email":"josef.talhofer@skoda.cz","rel":"Warm","yamm":""},{"name":"Lukas Jogl","title":"Director of Technology Department SKODA Transportation","level":"Senior Management","email":"lukas.jogl@skoda.cz","rel":"Warm","yamm":""},{"name":"Frank Panse","title":"Head of IP","level":"Senior Management","email":"frank.panse@volkswagen.de","rel":"Warm","yamm":""},{"name":"Gilbert Heise","title":"Head of Market & Trend Research","level":"Senior Management","email":"gilbert.heise@volkswagen.de","rel":"Warm","yamm":""},{"name":"Holger Scholz","title":"Managing Director India","level":"Business Management","email":"holger.scholz@volkswagen.de","rel":"Warm","yamm":""},{"name":"Jens Keller","title":"Group Strategy Brand and Product Differentiation","level":"Senior Management","email":"jens.keller@volkswagen.de","rel":"Warm","yamm":""},{"name":"Klemens Alexander","title":"Project Lead Ethics & AI FutureTechnology","level":"Mid-Management","email":"Klemens.Alexander.Molinari@volkswagen.de","rel":"Warm","yamm":""},{"name":"Sascha Cubranic","title":"Deputy Director Product Market Research","level":"Senior Management","email":"sascha.cubranic@volkswagen.de","rel":"Warm","yamm":""},{"name":"Werner Mueller","title":"Product Strategy Sustainability","level":"Senior Management","email":"werner2.mueller@volkswagen.de","rel":"Warm","yamm":""},{"name":"Ben Kraaijenhagen","title":"VP Head of Foresight & Environment","level":"Senior Management","email":"ben.kraaijenhagen@man.eu","rel":"Warm","yamm":""},{"name":"Benedikt Lippay","title":"Director Future Trend Analysis","level":"Senior Management","email":"benedikt.lippay@man.eu","rel":"Warm","yamm":""},{"name":"Christian Stichert","title":"Head of Product Management Bus Chassis","level":"Senior Management","email":"christian.stichert@man.eu","rel":"Warm","yamm":""},{"name":"Goetz Esebeck","title":"VP Hybrid Technology & E-Mobility","level":"Senior Management","email":"goetz.esebeck@man.eu","rel":"Warm","yamm":""},{"name":"Markus Graf","title":"Head of Product Management & Strategy Internal Powertrain","level":"Senior Management","email":"markus.graf@man.eu","rel":"Warm","yamm":""},{"name":"Mustafa Tasallin","title":"GPB Product Management Bus","level":"Senior Management","email":"Mustafa.Tasallin@man.eu","rel":"Warm","yamm":""},{"name":"Stefan Zwerenze","title":"Director Market Intelligence","level":"Mid-Management","email":"stefan.zwerenz@man.eu","rel":"Warm","yamm":""},{"name":"Michael Witt","title":"Head of Retrofit Development R&D","level":"Senior Management","email":"mike.witt@man.eu","rel":"Warm","yamm":""},{"name":"Ulrich Orth","title":"Head of Gas Turbine Calculation / R&D","level":"Senior Management","email":"ulrich.orth@man.eu","rel":"Warm","yamm":""},{"name":"Gastao Rachou Neto","title":"Director Engineering Product Strategy & Portfolio MAN Latin America","level":"Senior Management","email":"gastao.rachou@volkswagen.com.br","rel":"Warm","yamm":""},{"name":"Korbinian Lammel","title":"Innovations Manager","level":"Mid-Management","email":"Korbinian.Lammel@renk.biz","rel":"Warm","yamm":""},{"name":"\u00c5sa H\u00e5kansson","title":"Business Development Manager Trucks Sales & Marketing","level":"Mid-Management","email":"asa.hakansson@scania.com","rel":"Warm","yamm":""},{"name":"Glenn Rosenholmer","title":"Senior Project Manager","level":"Mid-Management","email":"glenn.rosenholmer@scania.com","rel":"Warm","yamm":""},{"name":"Henrik Eng","title":"Director Public and Special Vehicles","level":"Senior Management","email":"henrik.eng@scania.com","rel":"Warm","yamm":""},{"name":"Magnus Klingvall","title":"Head of Energy Storage","level":"Senior Management","email":"magnus.klingvall@scania.com","rel":"Warm","yamm":""},{"name":"Kjell Ehn","title":"Training and Development Manager","level":"Senior Management","email":"kjell.ehn@scania.com","rel":"Warm","yamm":""},{"name":"Sven-Ake Edstrom","title":"Senior VP Truck Cab and Bus Chassis Development","level":"Senior Management","email":"sven-ake.edstrom@scania.com","rel":"Warm","yamm":""},{"name":"Mikael Jansson","title":"Managing Director Scania Australia","level":"Manager","email":"mikael.jansson@scania.com","rel":"Warm","yamm":""},{"name":"Andreas Schuller","title":"Head of Development Unfallsensierung Electronic Systems","level":"Senior Management","email":"andreas.schuller@audi.de","rel":"Warm","yamm":""},{"name":"Michael Kilger","title":"Director R&D Components Powertrain Electronics","level":"Senior Management","email":"michael.kilger@audi.de","rel":"Warm","yamm":""},{"name":"Sascha Kovacevic","title":"Head of Development Chassis Control Function / Software","level":"Senior Management","email":"sascha.kovacevic@audi.de","rel":"Warm","yamm":""},{"name":"Ricardo Sassa","title":"Executive Supervisor R&D Powertrain Systems Commercial Vehicles","level":"Mid-Management","email":"ricardo.sassa@volkswagen.com.br","rel":"Warm","yamm":""},{"name":"Sven-Hendrik Wiers","title":"VP Gas Turbines MAN Diesel & Turbo SE","level":"Senior Management","email":"sven-hendrik.wiers@man.eu","rel":"Warm","yamm":""},{"name":"Andre Hildebrandt","title":"Team Manager R&D Aerodynamics Radial Turbomachinery","level":"Mid-Management","email":"andre.hildebrandt@man.eu","rel":"Warm","yamm":""},{"name":"Heinz Zuercher","title":"Head of Product Management","level":"Senior Management","email":"heinz.zuercher@man.eu","rel":"Warm","yamm":""},{"name":"Stefan Wolf","title":"Manager Long-term and Product Strategy","level":"Mid-Management","email":"stefan.wolf@volkswagen.de","rel":"Warm","yamm":""},{"name":"Marina Bodmann","title":"District Sales Manager Organisation Turkey Israel Middle East","level":"Senior Management","email":"Marina.bodmann@volkswagen.de","rel":"Warm","yamm":""},{"name":"Martin Doering","title":"Head of Electrics / Electronics Development","level":"Senior Management","email":"martin.doering@volkswagen.com","rel":"Warm","yamm":""},{"name":"Joachim Mueller","title":"Innovations Management","level":"Mid-Management","email":"joachim.mueller@volkswagen.de","rel":"Warm","yamm":""},{"name":"Noa Yang","title":"Innovation Manager Decarbonisation","level":"Senior Management","email":"yizhuo.yang@konnect-vwgroup.com","rel":"Warm","yamm":""},{"name":"Peer Stauske","title":"Head of R&D Processes and Methods MAN Truck & Bus","level":"Senior Management","email":"peer.stauske@man.eu","rel":"Warm","yamm":""},{"name":"Cemil Yildirim","title":"Procurement","level":"Mid-Management","email":"cemil.yildirim@audi.de","rel":"Warm","yamm":""},{"name":"Jochen Cypris","title":"Combustion Engine Engineer","level":"Mid-Management","email":"jochen.cypris@man.eu","rel":"Warm","yamm":""},{"name":"Michael Zehmisch","title":"Head of eSolutions Development","level":"Senior Management","email":"Michael.Zehmisch@man.eu","rel":"Warm","yamm":""},{"name":"Stefan Meyer","title":"Strategy Manager Engineering Powertrain","level":"nan","email":"","rel":"Warm","yamm":"Worth flagging \u2013 VW Group"},{"name":"Marold Reif","title":"Sr Manager Strategy","level":"Mid-Management","email":"marold.reif@man.eu","rel":"Warm","yamm":""},{"name":"Gustavo Cezar","title":"Head of Business Development People Transport Solutions","level":"Senior Management","email":"Gustavo.Cezar@scania.com","rel":"Warm","yamm":""},{"name":"Stas Krupenia","title":"Head of Research Office","level":"Senior Management","email":"stas.krupenia@scania.eu","rel":"Warm","yamm":""}],"Volvo":[{"name":"Anne Elsasser","title":"Director Marketing & Communication Volvo Group Trucks Central Europe","level":"Senior Management","email":"anne.elsasser@volvo.com","rel":"Warm","yamm":""},{"name":"Caroline Fransson","title":"Digital Brand Director Volvo Group Headquarters","level":"Senior Management","email":"caroline.fransson@volvo.com","rel":"Warm","yamm":""},{"name":"Fares Beainy","title":"Electromobility Strategy & Business Development Manager","level":"Senior Management","email":"fares.beainy@volvo.com","rel":"Warm","yamm":""},{"name":"Gisela Blomkvist","title":"Senior Director Propulsion Strategy and Innovation Volvo Cars","level":"Senior Management","email":"gisela.blomkvist@volvocars.com","rel":"Warm","yamm":""},{"name":"Hege \u00c5berg","title":"Digital Brand Director Volvo Group","level":"Senior Management","email":"hege.aberg@volvo.com","rel":"Warm","yamm":""},{"name":"Niklas Emlind Vahul","title":"VP Head of Group Business Intelligence","level":"Mid-Management","email":"niklas.emlind.vahul@volvo.com","rel":"Warm","yamm":""},{"name":"Omair Brito Calil","title":"Commercial Lead Energy Solutions","level":"Mid-Management","email":"omair.calil@volvocars.com","rel":"Warm","yamm":""},{"name":"Peter Ewerstrand","title":"Senior Director Innovation & Tech Management","level":"Senior Management","email":"peter.ewerstrand@volvocars.com","rel":"Warm","yamm":""},{"name":"Putta Venkatraju","title":"Senior Manager","level":"Other","email":"putta.venkatraju@volvo.com","rel":"Warm","yamm":""},{"name":"Cumaziye Karaali","title":"Commercial Aftermarket Manager Volvo Group Middle East","level":"Mid-Management","email":"cumaziye.karaali@volvo.com","rel":"Warm","yamm":""},{"name":"Fredrik Bohlin","title":"Director Truck Sales","level":"Senior Management","email":"Fredrik.Bohlin@volvo.com","rel":"Warm","yamm":""},{"name":"Gregor Frieb","title":"Manager Business Intelligence & Planning Volvo Group Trucks","level":"Mid-Management","email":"gregor.frieb@volvo.com","rel":"Warm","yamm":""},{"name":"Gunnel C Eriksson","title":"Business Intelligence Manager Volvo Trucks Corporation","level":"Mid-Management","email":"gunnel.c.eriksson@volvo.com","rel":"Warm","yamm":""},{"name":"Hans Hallung","title":"VP Heavy Duty Business Strategy AB Volvo Group Trucks Strategy","level":"Senior Management","email":"hans.hallung@volvo.com","rel":"Warm","yamm":""},{"name":"Katarina Collander","title":"Strategy & Bus Dev Volvo Group Trucks EMEA","level":"Mid-Management","email":"katarina.collander@volvo.com","rel":"Warm","yamm":""},{"name":"Kina Aronsson","title":"Buyer Marketing & Special Projects","level":"Senior Management","email":"kina.aronsson@volvo.com","rel":"Warm","yamm":""},{"name":"Klas Sandren","title":"VP Volvo Group Trucks Operations","level":"Senior Management","email":"klas.sandren@volvo.com","rel":"Warm","yamm":""},{"name":"Mikael Lidhage","title":"Manager Volvo Trucks Customer Solution Center","level":"Mid-Management","email":"mikael.lidhage@volvo.com","rel":"Warm","yamm":""},{"name":"Patrick Dalmas","title":"IP & DP Development Center Manager","level":"Mid-Management","email":"patrick.dalmas@volvo.com","rel":"Warm","yamm":""},{"name":"Vishnu Rajanikanth","title":"Product Manager","level":"Mid-Management","email":"vishnu.rajanikanth@volvo.com","rel":"Warm","yamm":""},{"name":"Claudio Romero","title":"Global P&SM Business Development Director","level":"Senior Management","email":"claudio.romero@volvo.com","rel":"Warm","yamm":""},{"name":"Joakim Arndorw","title":"Aftermarket Director Sales Region EMEA North","level":"Senior Management","email":"joakim.arndorw@volvo.com","rel":"Warm","yamm":""},{"name":"Marie Helene Dumail","title":"Director Business Intelligence Volvo Construction Equipment","level":"Senior Management","email":"marie-helene.dumail@volvo.com","rel":"Warm","yamm":""},{"name":"Ove Aurich","title":"Global Portfolio Manager","level":"Mid-Management","email":"ove.aurich@volvo.com","rel":"Warm","yamm":""},{"name":"Pelle Rokedal","title":"VP Core Values Processes & Systems Technology","level":"Senior Management","email":"pelle.rokedal@volvo.com","rel":"Warm","yamm":""},{"name":"Petrus Potgieter","title":"Global Marketing Manager","level":"Mid-Management","email":"petrus.potgieter@volvo.com","rel":"Warm","yamm":""},{"name":"Tine Lefebvre","title":"Global Product Manager Vision","level":"Mid-Management","email":"tine.lefebvre@volvo.com","rel":"Warm","yamm":""},{"name":"Yann Teste","title":"Global Director Purchasing & Supplier Management","level":"Senior Management","email":"yann.teste@volvo.com","rel":"Warm","yamm":""},{"name":"Emmanuel Jupet","title":"VP Business Development & Product Management","level":"Senior Management","email":"emmanuel.jupet@volvo.com","rel":"Warm","yamm":""},{"name":"Lars Johansson","title":"Director Global Marketing","level":"Senior Management","email":"lars.i.johansson@volvo.com","rel":"Warm","yamm":""},{"name":"Magnus Ovik","title":"Business Intelligence Manager Global Product & Marketing","level":"Business Management","email":"magnus.ovik@volvo.com","rel":"Warm","yamm":""},{"name":"Uri Peleg","title":"Strategy Director","level":"Senior Management","email":"","rel":"Warm","yamm":""},{"name":"David Hanngren","title":"Product Planning Manager Industrial Power Systems","level":"Mid-Management","email":"david.hanngren@volvo.com","rel":"Warm","yamm":""},{"name":"Grethe Loretan Yllo","title":"Marine Business Segment Manager","level":"Mid-Management","email":"grethe.yllo@volvo.com","rel":"Warm","yamm":""},{"name":"Jakob Ursby","title":"Strategy Manager Marine Commercial","level":"Mid-Management","email":"jakob.ursby@volvo.com","rel":"Warm","yamm":""},{"name":"Jan Dahlsten","title":"Head of Competitive and Market Intelligence","level":"Senior Management","email":"jan.dahlsten@volvo.com","rel":"Warm","yamm":""},{"name":"Marion Valls","title":"Marketing & Sales Buyer","level":"Mid-Management","email":"marion.valls@volvo.com","rel":"Warm","yamm":""},{"name":"Romulus Grosu","title":"Director Aftermarket Sales and Customer Support","level":"Senior Management","email":"romulus.grosu@volvo.com","rel":"Warm","yamm":""},{"name":"Urban Larsson","title":"VP Head of Product Development","level":"Senior Management","email":"urban.m.larsson@volvo.com","rel":"Warm","yamm":""},{"name":"Olivier Ferlin","title":"VP Product Development","level":"Senior Management","email":"olivier.ferlin@volvo.com","rel":"Warm","yamm":""},{"name":"Ingrid Andersson","title":"SVP Purchasing","level":"Senior Management","email":"ingrid.andersson@volvo.com","rel":"Warm","yamm":""},{"name":"Johanna Erkfeldt","title":"Director Aftermarket Technology Site Gothenburg","level":"Senior Management","email":"johanna.erkfeldt@volvo.com","rel":"Warm","yamm":""},{"name":"Andreas Sandahl","title":"Manager Passive Safety R&D","level":"Mid-Management","email":"andreas.sandahl@volvocars.com","rel":"Warm","yamm":""},{"name":"Andreas Strasser","title":"Head of Research and Automotive Strategy","level":"Mid-Management","email":"Andreas.Strasser@volvocars.com","rel":"Warm","yamm":""},{"name":"Claudia Matic","title":"Strategic Buyer","level":"Other","email":"claudia.matic@volvocars.com","rel":"Warm","yamm":""},{"name":"Dino Mesihovic","title":"Product Manager within R&D","level":"Mid-Management","email":"dino.mesihovic@volvocars.com","rel":"Warm","yamm":""},{"name":"Johan Maresch","title":"Senior Innovation Manager","level":"Mid-Management","email":"johan.maresch@volvocars.com","rel":"Warm","yamm":""},{"name":"Jonas Carlsson","title":"Product Strategist","level":"Mid-Management","email":"jonas.carlsson.2@volvocars.com","rel":"Warm","yamm":""},{"name":"Karin Andre","title":"Director Corporate Innovation Office","level":"Senior Management","email":"karin.andre@volvocars.com","rel":"Warm","yamm":""},{"name":"M\u00e5rten Levenstam","title":"VP Product Planning","level":"Senior Management","email":"marten.levenstam@volvocars.com","rel":"Warm","yamm":""},{"name":"Mats Bengtsson","title":"Director R&D External Partnership Strategy","level":"Senior Management","email":"mats.bengtsson@volvocars.com","rel":"Warm","yamm":""},{"name":"Mats Lundin","title":"Senior Manager Research Partnerships","level":"Mid-Management","email":"mats.lundin@volvocars.com","rel":"Warm","yamm":""},{"name":"Mattias Berglund","title":"Senior Manager Powertrain Strategy","level":"Mid-Management","email":"mattias.berglund@volvocars.com","rel":"Warm","yamm":""},{"name":"Petter Horling","title":"Director Silicon Valley R&D Tech Center","level":"Senior Management","email":"petter.horling@volvocars.com","rel":"Warm","yamm":""},{"name":"Jo Traub","title":"Director Aftermarket Purchasing America","level":"Senior Management","email":"jo.traub@volvo.com","rel":"Warm","yamm":""},{"name":"Staffan Lindell","title":"Director Business Development Volvo Reman GTO","level":"Senior Management","email":"staffan.lindell@volvo.com","rel":"Warm","yamm":""},{"name":"Andreas Nilsson","title":"Product Planning Manager Connected Services","level":"Mid-Management","email":"andreas.nilsson@volvo.com","rel":"Warm","yamm":""},{"name":"Azra Selimovic","title":"Group Manager Advanced Engineering Electromobility Sub-systems","level":"Senior Management","email":"azra.selimovic@volvo.com","rel":"Warm","yamm":""},{"name":"Camilla Vitelli","title":"Director Development & Industrialization","level":"Senior Management","email":"camilla.vitelli@volvo.com","rel":"Warm","yamm":""},{"name":"Christian Seignot","title":"Global Technology Manager","level":"Mid-Management","email":"christian.seignot@volvo.com","rel":"Warm","yamm":""},{"name":"Henrik Liske","title":"Product Planner Services Strategic Product Planning","level":"Mid-Management","email":"henrik.liske@volvo.com","rel":"Warm","yamm":""},{"name":"Ingmar Bengtsson","title":"Strategy & Technology Leader Driver Electronics","level":"Mid-Management","email":"ingmar.bengtsson@volvo.com","rel":"Warm","yamm":""},{"name":"James Rolland","title":"VP Product Planning","level":"Senior Management","email":"james.rolland@volvo.com","rel":"Warm","yamm":""},{"name":"Jens Wicksell","title":"Global Patent Coordinator Chassis & Vehicle Dynamics","level":"Senior Management","email":"jens.wicksell@volvo.com","rel":"Warm","yamm":""},{"name":"Jessica Nymark","title":"VP Product Management Volvo Group Connected Solutions","level":"Senior Management","email":"jessica.nymark@volvo.com","rel":"Warm","yamm":""},{"name":"Johan Wallesten","title":"Director Volvo Group Trucks Technology","level":"Senior Management","email":"johan.wallesten@volvo.com","rel":"Warm","yamm":""},{"name":"Martin Claesson","title":"Interim Group Director IP Strategy & Portfolio","level":"Mid-Management","email":"martin.claesson@volvo.com","rel":"Warm","yamm":""}],"Knorr-Bremse":[{"name":"Christian Blauth","title":"Technology Foresight","level":"Senior Management","email":"christian.blauth@knorr-bremse.com","rel":"Warm","yamm":""},{"name":"Christian Staahl","title":"Head of Technology & Innovation Management","level":"Mid-Management","email":"Christian.Staahl@knorr-bremse.com","rel":"Warm","yamm":""},{"name":"Kristin Roth","title":"Specialist Innovation & Technology T/R-TI-IM","level":"Mid-Management","email":"kristin.roth@knorr-bremse.com","rel":"Warm","yamm":""},{"name":"Rahul Shirodkar","title":"Head of Purchase Knorr-Bremse Systems for Commercial Vehicles","level":"Senior Management","email":"rahul.shirodkar@knorr-bremse.com","rel":"Warm","yamm":""},{"name":"Thomas Meyer","title":"Global Director Product Group Reman Repair Reuse Project Mgmt Purchasing TruckServices","level":"Senior Management","email":"thomas.meyer@knorr-bremse.com","rel":"Warm","yamm":""},{"name":"Vishal Sanghavi","title":"Head of Aftermarket Strategy EMEA","level":"Senior Management","email":"Vishal.Sanghavi@knorr-bremse.com","rel":"Warm","yamm":""},{"name":"Johannes Graeber","title":"Head of Modernisation Strategy and Approval Rail Vehicle Systems","level":"Senior Management","email":"Johannes.Graeber@knorr-bremse.com","rel":"Warm","yamm":""},{"name":"Stephen Bradley","title":"VP Innovation and Portfolio Management","level":"Senior Management","email":"stephen.bradley@knorr-bremse.com","rel":"Warm","yamm":""},{"name":"Bill Curnock","title":"Manager Strategic Marketing & E-Commerce","level":"Senior Management","email":"bill.curnock@knorr-bremse.com","rel":"Warm","yamm":""},{"name":"Braulio Junqueira da Fonseca","title":"Director Product Strategy Vehicle System Design & Application","level":"Senior Management","email":"braulio.fonseca@knorr-bremse.com","rel":"Warm","yamm":""},{"name":"Daniel Geis-Esser","title":"Head of Product Management Transmission","level":"Senior Management","email":"Daniel.Geis-Esser@knorr-bremse.com","rel":"Warm","yamm":""},{"name":"Piergiorgio Colombo","title":"Sales & Marketing Manager","level":"Mid-Management","email":"piergiorgio.colombo@knorr-bremse.com","rel":"Warm","yamm":""},{"name":"Christoph Huber","title":"Team Leader Department Sensor Knorr-Bremse SfN GmbH","level":"Mid-Management","email":"christoph.huber@knorr-bremse.com","rel":"Warm","yamm":""},{"name":"Friedrich Hartmann","title":"Product Manager Knorr-Bremse Systeme f\u00fcr Schienenfahrzeuge GmbH","level":"Mid-Management","email":"friedrich.hartmann@knorr-bremse.com","rel":"Warm","yamm":""},{"name":"Goetz Koethe","title":"Director Logistics Strategy Innovation and Reporting","level":"Senior Management","email":"goetz.koethe@knorr-bremse.com","rel":"Warm","yamm":""},{"name":"Peter Krieg","title":"Head of Sanding / Wiper","level":"Senior Management","email":"peter.krieg@knorr-bremse.com","rel":"Warm","yamm":""},{"name":"Guenter Bendekovics","title":"Product & Sales Manager Signal Systems Zelisko GmbH","level":"Mid-Management","email":"guenter.bendekovics@knorr-bremse.com","rel":"Warm","yamm":""},{"name":"Peter Schlager","title":"Head of Development","level":"Senior Management","email":"peter.schlager@knorr-bremse.com","rel":"Warm","yamm":""},{"name":"Alessandro Varretti Lisimacus","title":"Director Product Division","level":"Senior Management","email":"lisimacus@microelettrica.com","rel":"Warm","yamm":""},{"name":"James Eaton","title":"Director of Marketing","level":"Senior Management","email":"james.eaton@bendix.com","rel":"Warm","yamm":""},{"name":"Ken Hofmann","title":"Head of Product Management EPB ELC and Telematics","level":"Senior Management","email":"Ken.Hofmann@knorr-bremse.com","rel":"Warm","yamm":""},{"name":"Federico Manfredda","title":"Managing Director Knorr-Bremse SAC","level":"Senior Management","email":"","rel":"Warm","yamm":""},{"name":"Frank Pr\u00f6ls","title":"Head / Manager Product Management","level":"Senior Management","email":"frank.proels@knorr-bremse.com","rel":"Warm","yamm":""},{"name":"Ozan Cicek","title":"Managing Director","level":"Senior Management","email":"ozan.cicek@knorr-bremse.com","rel":"Warm","yamm":""},{"name":"Savas Ada","title":"Sales and Marketing Manager Head of Trailer Business","level":"Mid-Management","email":"savas.ada@knorr-bremse.com","rel":"Warm","yamm":""},{"name":"Juan Luis Freijo","title":"Head of Product Development Merak Sistemas Integrados de Climatizacion SA","level":"Senior Management","email":"juanluis.freijo@merak-hvac.com","rel":"Warm","yamm":""},{"name":"Luisa Garcia","title":"Head of Innovation Merak","level":"Senior Management","email":"Luisa.Garcia@merak-hvac.com","rel":"Warm","yamm":""},{"name":"Markus Molnar","title":"Manager R&D Functional Parts KNORR BRAKE Systems for Commercial Vehicles","level":"Mid-Management","email":"markus.molnar@knorr-bremse.com","rel":"Warm","yamm":""},{"name":"Alexander Wagner","title":"Marketing Aftermarket Europa Mittlerer Osten Maghreb","level":"Senior Management","email":"alexander.wagner@knorr-bremse.com","rel":"Warm","yamm":""},{"name":"Florian Schlueter","title":"Director Aftermarket Strategy & Business Planning EMEA","level":"Mid-Management","email":"Florian.Schlueter@knorr-bremse.com","rel":"Warm","yamm":""},{"name":"Frank Merwerth","title":"Unknown","level":"Mid-Management","email":"frank.merwerth@knorr-bremse.com","rel":"Warm","yamm":""}],"Michelin":[{"name":"Amanda Murphy","title":"Director General Aviation","level":"nan","email":"","rel":"Warm","yamm":"Worth flagging \u2013 Michelin"},{"name":"Barbara Moore","title":"Services Buyer Michelin North America","level":"Mid-Management","email":"barbara.moore@michelin.com","rel":"Warm","yamm":""},{"name":"Olivier Mage","title":"Partnerships and Key Accounts Director","level":"Senior Management","email":"olivier.mage@michelin.com","rel":"Warm","yamm":""},{"name":"Stephen Clark","title":"Business Intelligence Manager LB Mining","level":"Mid-Management","email":"Stephen.clark@michelin.com","rel":"Warm","yamm":""},{"name":"Tony Wyatt","title":"Market Intelligence and Customer Insight Manager","level":"Mid-Management","email":"tony.wyatt@michelin.com","rel":"Warm","yamm":""},{"name":"Anne Dionisi-Fung","title":"Europe Consumer Business & Market Intelligence Lead","level":"Senior Management","email":"anne.dionisi-fung@fr.michelin.com","rel":"Warm","yamm":""},{"name":"Jerome Charachon","title":"Marketing Director Europe Passenger Car and Light Truck","level":"Senior Management","email":"jerome.charachon@fr.michelin.com","rel":"Warm","yamm":""},{"name":"Julien Hancotte","title":"Worldwide Business Strategy & Intelligence Passenger Car Original Equipment","level":"Mid-Management","email":"julien.hancotte@fr.michelin.com","rel":"Warm","yamm":""},{"name":"Raphael Kremser","title":"Business & Strategy Intelligence Manager","level":"Business Management","email":"raphael.kremser1@michelin.com","rel":"Warm","yamm":""},{"name":"Christophe Peny","title":"Purchasing Manager of Consulting Service","level":"Mid-Management","email":"christophe.peny@fr.michelin.com","rel":"Warm","yamm":""},{"name":"Serge Lafon","title":"Director of Truck Product Line","level":"Senior Management","email":"serge.lafon@fr.michelin.com","rel":"Warm","yamm":""},{"name":"Brad Weaver","title":"Business Technical and Quality Partner","level":"Mid-Management","email":"brad.weaver@us.michelin.com","rel":"Warm","yamm":""},{"name":"Kamtorn Yimfoi","title":"Manager Asia and Oceania Michelin ROH Co Ltd","level":"Mid-Management","email":"kamtorn.yimfoi@michelin.com","rel":"Warm","yamm":""},{"name":"Karine Cartron","title":"Mktg & Com Buyer","level":"Mid-Management","email":"karine.cartron@michelin.com","rel":"Warm","yamm":""},{"name":"Lili Qiu","title":"Worldwide Business Strategy & Intelligence Michelin Global","level":"Mid-Management","email":"Lili.QIU@fr.michelin.com","rel":"Warm","yamm":""},{"name":"Pierre-Yves Bonamy","title":"Corporate Development Merger & Acquisitions","level":"Mid-Management","email":"pierre-yves.bonamy@fr.michelin.com","rel":"Warm","yamm":""},{"name":"Poonsawiwat Pun","title":"Purchasing Manager Services Southeast Asia and Oceania","level":"Mid-Management","email":"poonsawiwat.pun@michelin.com","rel":"Warm","yamm":""},{"name":"Camille Demarquilly","title":"Supply Chain and Logistics Director Africa Middle East and India Region","level":"Senior Management","email":"camille.demarquilly@fr.michelin.com","rel":"Warm","yamm":""},{"name":"Chia-yu Chen","title":"Business Intelligence Director","level":"Senior Management","email":"chia-yu.chen@cn.michelin.com","rel":"Warm","yamm":""},{"name":"Francoise Dalle","title":"Responsible for Strategic Projects","level":"Mid-Management","email":"francoise.dalle@fr.michelin.com","rel":"Warm","yamm":""},{"name":"Russell Shepherd","title":"Technical Director Competitor Analysis","level":"Mid-Management","email":"","rel":"Warm","yamm":""},{"name":"Alfonso Jara","title":"Worldwide Business Segment Manager Surface Mining","level":"Mid-Management","email":"alfonso.jara@fr.michelin.com","rel":"Warm","yamm":""},{"name":"Samuel Evrard","title":"Lead Buyer Services Marketing Communication","level":"Mid-Management","email":"samuel.evrard1@michelin.com","rel":"Warm","yamm":""},{"name":"Umut Oncel","title":"Business Intelligence Manager","level":"Mid-Management","email":"umut.oncel@michelin.com","rel":"Warm","yamm":""}],"WOCO":[{"name":"Jean-Paul Brender","title":"Director Industrial Polymer Systems (IPS) / EFFBE Measurement & Control Systems","level":"Senior Management","email":"jobrender@effbe.com","rel":"Warm","yamm":""},{"name":"Verena Prasch","title":"Asst VP Sales","level":"Senior Management","email":"vprasch@de.wocogroup.com","rel":"Warm","yamm":""},{"name":"Karl Hans Stingl","title":"Head of Materials Development Automotive","level":"Senior Management","email":"","rel":"Cold","yamm":""},{"name":"Uwe Reichert","title":"EVP Automotive Market Woco Industrietechnik GmbH","level":"Senior Management","email":"ureicher1@de.wocogroup.com","rel":"Warm","yamm":""},{"name":"Christian Strafuss","title":"Head of Group Controlling","level":"Senior Management","email":"","rel":"Cold","yamm":""},{"name":"Franz Josef Wolf","title":"President Woco Industrietechnik GmbH","level":"Senior Management","email":"","rel":"Warm","yamm":""},{"name":"Hans Jurgen Kracht","title":"CEO Woco Industrietechnik GmbH","level":"Senior Management","email":"","rel":"Warm","yamm":""},{"name":"Stephan Lachmann","title":"Director Global Operation Services","level":"Senior Management","email":"slachmann@de.wocogroup.com","rel":"Warm","yamm":""},{"name":"Axel Schmidt","title":"Head of International Special Projects","level":"Senior Management","email":"aschmidt@de.wocogroup.com","rel":"Cold","yamm":""},{"name":"Thomas Doell","title":"Director Global Development Acoustics","level":"Senior Management","email":"tdoell@de.wocogroup.com","rel":"Warm","yamm":""},{"name":"Peter Tomecek","title":"VP Sales and Business Development USA Woco Tech USA Inc","level":"Senior Management","email":"ptomecek@de.wocogroup.com","rel":"Warm","yamm":""}],"Continental":[{"name":"Alexander Denecke","title":"System Program Manager","level":"Senior Management","email":"alexander.denecke@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Antonina Reichardt","title":"Innovation Process Manager","level":"Mid-Management","email":"antonina.reichardt@continental.com","rel":"Warm","yamm":""},{"name":"Christian Weber","title":"Head of ADAS Engineering","level":"Senior Management","email":"christian.10.weber@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Cristian Zaslo","title":"Group Leader","level":"Senior Management","email":"cristian.zaslo@continental-corporation.com","rel":"Warm","yamm":""},{"name":"David Ritzenthaler","title":"Head of Engineering","level":"Mid-Management","email":"david.ritzenthaler@conti-engineering.com","rel":"Warm","yamm":""},{"name":"Harald Dortschy","title":"Head of Global Sales MBC+V","level":"nan","email":"","rel":"Warm","yamm":"Worth flagging \u2013 Continental"},{"name":"Juergen Goebel","title":"Head","level":"nan","email":"","rel":"Warm","yamm":"Worth flagging \u2013 Continental"},{"name":"Karoline Kopietz","title":"Technical Sales Manager D&S","level":"Mid-Management","email":"Karoline.Kopietz@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Kristina Giannelli","title":"Global Executive Head of Global Business Solutions","level":"Senior Management","email":"kristina.giannelli@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Laszlo Agoston","title":"Head of Plant Industrial Engineering Continental Automotive Hungary","level":"Mid-Management","email":"laszlo.agoston@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Laszlo Bodis","title":"Development and Vehicle Integration","level":"Senior Management","email":"laszlo.bodis@continental.com","rel":"Warm","yamm":""},{"name":"Lisa Zangara","title":"Communications & Marketing Manager","level":"Mid-Management","email":"Lisa.Zangara@conti-tech-usa.com","rel":"Warm","yamm":""},{"name":"Patrick Merzoug","title":"Innovation Team","level":"nan","email":"","rel":"Warm","yamm":"Worth flagging \u2013 Continental"},{"name":"Petru Demian","title":"Head of EU Projects","level":"nan","email":"","rel":"Warm","yamm":"Worth flagging \u2013 Continental"},{"name":"Piero Mancinelli","title":"Global Head of R&D Industrial Fluid Solutions Continental ContiTech","level":"Senior Management","email":"piero.mancinelli@fluid.contitech.de","rel":"Warm","yamm":""},{"name":"Rahul Jois","title":"Innovation Project Manager","level":"Mid-Management","email":"rahul.jois@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Reiner Hoeger","title":"Corporate Academia Liaison Strategy & Innovation","level":"Senior Management","email":"reiner.hoeger@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Rene Korner","title":"Head of Strategy","level":"Senior Management","email":"rene.korner@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Rich Alborn","title":"North American ADAS Sensor and Telematics Product Manager","level":"Mid-Management","email":"rich.alborn@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Sergio Pucheta","title":"Global Head of Product Management & Strategic Pricing","level":"Senior Management","email":"sergio.de.jesus.pucheta.lozano@continental.com","rel":"Warm","yamm":""},{"name":"Thomas Gallner","title":"Innovation Management Strategy & Innovation Continental Automotive GmbH","level":"Senior Management","email":"thomas.gallner@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Thomas Kappeler","title":"Project Manager","level":"Mid-Management","email":"thomas.kappeler@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Valeria Janzen Diaz de Leon","title":"Corporate Purchasing Indirect Materials MarCom Services","level":"Mid-Management","email":"Valeria.2.Metzger@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Vijayanand N","title":"Strategic Market Intelligence Specialist","level":"Mid-Management","email":"vijayanand.n@continental.com","rel":"Warm","yamm":""},{"name":"Alberto Romero","title":"Business Unit R&D Manager Continental Automotive Systems","level":"Mid-Management","email":"alberto.romero-hernandez@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Andre Laurijssen","title":"Head of Market Research & Innovation Continental Automotive Group","level":"Senior Management","email":"andre.laurijssen@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Andreas Kiessling","title":"Production Director Continental Automotive Czech Republic","level":"Senior Management","email":"andreas.kiessling@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Axel Staudinger","title":"Head of Segment Electronics / Head of Business Development & Strategy","level":"Senior Management","email":"Axel.Staudinger@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Charles Hardinge","title":"Software Project Leader Group Leader","level":"Senior Management","email":"Charles.Hardinge@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Christian Betz","title":"Head of Advanced Purchasing Continental Automotive GmbH","level":"Senior Management","email":"christian.betz@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Ciprian Dimitriu","title":"IT Engineer Continental Automotive Romania SRL","level":"Senior Management","email":"ciprian.dimitriu@it.contitech.ro","rel":"Warm","yamm":""},{"name":"David Geran","title":"Director Sales & Marketing Powertrain Thailand & ASEAN","level":"Senior Management","email":"David.Geran@continental-corporation.com","rel":"Warm","yamm":""},{"name":"David Olan","title":"Project Quality Manager Continental Automotive Systems","level":"Mid-Management","email":"david.olan@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Frank Geibel","title":"New Technology Manager & Sample Build Continental Automotive Spain","level":"Mid-Management","email":"frank.geibel@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Guido Braunschweiger","title":"Manager Technology Vehicle Electronics","level":"Mid-Management","email":"guido.braunschweiger@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Jianu Florin","title":"R&D Executive Continental Automotive Romania SRL","level":"Senior Management","email":"florin.jianu@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Klaus Husslein","title":"Head of Product Line Injector Americas and Head of Product Family Aftertreatment","level":"Senior Management","email":"klaus.husslein@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Manon Kruse","title":"Category Manager Cover Glass","level":"Mid-Management","email":"manon.kruse@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Manuel Morollon Perez","title":"Head of Advanced Development Department","level":"Senior Management","email":"manuel.morollon@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Nikolaus Bettinger","title":"Senior Purchasing Manager Category Memories","level":"Mid-Management","email":"nikolaus.bettinger@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Oliver Rauber","title":"Purchasing Manager Continental Automotive GmbH","level":"Mid-Management","email":"oliver.rauber@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Ovidiu Olaru","title":"Head of Research and Development Continental Automotive","level":"Senior Management","email":"ovidiu.olaru@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Rainer Joechner","title":"Head of Segment FM2 BU FEM","level":"Senior Management","email":"Rainer.Joechner@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Rene Alexander Koerner","title":"Senior Manager Business Development","level":"Mid-Management","email":"rene.koerner@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Sten-Olaf Wilkening","title":"Director Innovation & Communication Continental Automotive GmbH","level":"Senior Management","email":"sten-olaf.wilkening@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Thorsten Mieth","title":"Marketing & Business Development","level":"Senior Management","email":"thorsten.mieth@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Tim Wagner","title":"Program Manager Wheelspeed Sensors","level":"Mid-Management","email":"Tim.Wagner@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Attila Csabai","title":"Head of R&D ContiTech Rubber Industrial Kft","level":"Senior Management","email":"attila.csabai@cbg.contitech.hu","rel":"Warm","yamm":""},{"name":"Holger Grosskreutz","title":"Competence Center eCommerce Fleet Solutions & Data Science","level":"Mid-Management","email":"holger.grosskreutz@conti.de","rel":"Warm","yamm":""},{"name":"Maria Hanczuch","title":"Marketing Intelligence Manager","level":"Mid-Management","email":"maria.hanczuch@conti.de","rel":"Warm","yamm":""},{"name":"Yuequan Li","title":"Marketing & Sales 2Wheel Tires Graduate","level":"Mid-Management","email":"yueqian.li@conti.cn","rel":"Warm","yamm":""},{"name":"Alfred Jansche","title":"R&D Powertrain Strategy & Technology","level":"Mid-Management","email":"alfred.jansche@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Nirad Pandya","title":"Head of E-Mobility Programs","level":"Senior Management","email":"nirad.pandya@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Stefan Himmelstoss","title":"Head of IT Strategy & Innovation P IT ST CPT Group GmbH","level":"Senior Management","email":"Stefan.Himmelstoss@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Stephan Roess","title":"Competitive Intelligence Manager","level":"Mid-Management","email":"stephan.roess@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Thomas Mueller","title":"Market Intelligence BU ADAS / Division Chassis & Safety","level":"Mid-Management","email":"Thomas.8.Mueller@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Alexander Klotz","title":"VP Head of Development Center Automotive Continental Automotive India","level":"Senior Management","email":"Alexander.Klotz@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Bettina Moser","title":"Interior Strategy and Business Development","level":"Mid-Management","email":"bettina.moser@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Hans-Peter Reiters","title":"Director of Strategy & Business Development Interior Division","level":"Mid-Management","email":"Hans-Peter.Reiters@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Karl Reich","title":"VP Research & Development BU Interior Division","level":"Senior Management","email":"karl.reich@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Manuj Agarwal","title":"Innovation Manager Singapore","level":"Mid-Management","email":"Manuj.Prakash.Agarwal@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Otmar Schreiner","title":"Head of Systems Development Div Interior","level":"Senior Management","email":"otmar.schreiner@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Thorsten Koehler","title":"Innovation Manager","level":"Mid-Management","email":"thorsten.koehler@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Vanessa Kuhr","title":"Market Research Manager Elektrobit","level":"Mid-Management","email":"Vanessa.Kuhr@elektrobit.com","rel":"Warm","yamm":""},{"name":"Vesta Senger","title":"Open Innovation Interior Systems & Technology Innovation","level":"Mid-Management","email":"vesta.senger@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Andreas Hemmann","title":"Pricing Analyst / Product Management Passenger PKW","level":"Business Management","email":"andreas.hemmann@conti.de","rel":"Warm","yamm":""},{"name":"Gernot Kalb","title":"Global Marketing Intelligence PLT OE","level":"Senior Management","email":"gernot.kalb@conti.de","rel":"Warm","yamm":""},{"name":"Charles Bavoux","title":"Head of Sales ContiTech Fluid Technology","level":"Senior Management","email":"charles.bavoux@fluid.contitech.de","rel":"Warm","yamm":""},{"name":"Dennis Hoffmeister","title":"Project Manager ContiTech","level":"Senior Management","email":"dennis.hoffmeister@conti.de","rel":"Warm","yamm":""},{"name":"Dirk Stuhrmann","title":"Head of R&D Segment HCS & Managing Director Contitech MGW GmbH","level":"Senior Management","email":"dirk.stuhrmann@fluid.contitech.de","rel":"Warm","yamm":""},{"name":"Mathias Warmbrunn","title":"Director Powertrain Components Actuators NA Continental Powertrain USA","level":"Senior Management","email":"mathias.warmbrunn@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Peter Biber","title":"Head of Business Development Strategy & Communication BU Powertrain Components","level":"Senior Management","email":"peter.biber@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Ronan Leroy","title":"Managing Director","level":"Senior Management","email":"ronan.leroy@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Stefan Grueneis","title":"Head of Application Center Europe Evaporative Products Continental / CPT Group GmbH","level":"Senior Management","email":"Stefan.Grueneis@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Stefan Kloeckner","title":"Business Development and Innovation Management Actuators","level":"Senior Management","email":"stefan.kloeckner@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Todd Brown","title":"Plant Director","level":"Senior Management","email":"todd.brown@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Yu Changsong","title":"Head of Subsegment GPA Powertrain Components CPT Group GmbH","level":"Senior Management","email":"changsong.yu@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Andreas Schuch","title":"Project Manager Business Development Strategy & Market Intelligence","level":"Mid-Management","email":"Andreas.Schuch@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Cristian Mihaly","title":"Head of Powertrain Transmission Engineering Romania","level":"Senior Management","email":"cristian.mihaly@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Klaus Ludwig","title":"Head of Business Development BU Transmission","level":"Senior Management","email":"klaus.ludwig@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Prasad Iyer","title":"Head of Business Development Americas","level":"Senior Management","email":"Prasad.Iyer@Continental-corporation.com","rel":"Warm","yamm":""},{"name":"Razvan Nicolae Simion","title":"Head of Product Line Drivetrain Sibiu / BU Engine & Drivetrain Systems","level":"Senior Management","email":"razvan.simion@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Sebastian Olteanu","title":"Head of Engineering BU Transmission Continental Automotive Romania SRL","level":"Senior Management","email":"sebastian.olteanu@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Bernd Gugel","title":"Head of Product Segment Valves / Development Common Rail High Pressure Pump","level":"Senior Management","email":"bernd.gugel@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Holger Meyer","title":"Head of Market Intelligence Powertrain Engine Systems Continental Automotive GmbH","level":"Senior Management","email":"holger.2.meyer@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Jan Ehrhard","title":"Director Advanced Development","level":"Senior Management","email":"jan.ehrhard@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Joris Fokkelman","title":"Advanced Project Manager Continental Automotive","level":"Mid-Management","email":"joris.fokkelman@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Stefan Nowak","title":"Head of Strategy Marketing & Communication Product Line Turbocharger E&DS CPT Group GmbH","level":"Senior Management","email":"stefan.nowack@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Thomas Kirchermeier","title":"Head of Industrial Engineering & Supply Chain Management BU Engine Systems","level":"Senior Management","email":"thomas.kirchermeier@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Dieter Hagist","title":"Head of Design BU FEM Continental Automotive GmbH","level":"Mid-Management","email":"dieter.hagist@continental-corporation.com","rel":"Warm","yamm":""},{"name":"Matthias Kadler","title":"Head of Component Design Reservoir & Fuel Level Measurement","level":"Senior Management","email":"matthias.kadler@continental-corporation.com","rel":"Warm","yamm":""}]};
+
+// Company → CSV key mapping
+const CO_CSV_KEY = {
+  bp:'BP', xom:'ExxonMobil', shell:'Shell', hal:'Halliburton',
+  cvx:'Chevron', inf:'Infineon', dai:'Daimler', vw:'VW Group',
+  vol:'Volvo', kb:'Knorr-Bremse', mich:'Michelin', woco:'WOCO', cont:'Continental'
+};
+
+// ── COMPANIES ─────────────────────────────────────────────────────────
+const COS = [
+  // ── Oil & Gas ──
+  {id:'bp',    name:'BP',                type:'O&G',              owner:'Jaideep', hq:'London, UK',        rev:'$200bn+', emp:'87,000+'},
+  {id:'cnp',   name:'ConocoPhillips',    type:'O&G',              owner:'Jaideep', hq:'Houston, TX',       rev:'$56bn',   emp:'10,000+'},
+  {id:'eni',   name:'Eni',               type:'O&G',              owner:'Jaideep', hq:'Rome, Italy',       rev:'€98bn',   emp:'32,000+'},
+  {id:'xom',   name:'ExxonMobil',        type:'O&G',              owner:'Jaideep', hq:'Spring, TX',        rev:'$400bn+', emp:'62,000+'},
+  // ── EPC / Engineering ──
+  {id:'ten',   name:'Technip Energies',  type:'EPC/Engineering',  owner:'Jaideep', hq:'Paris, France',     rev:'$6.5bn',  emp:'15,000+'},
+  {id:'tfmc',  name:'TechnipFMC',        type:'EPC/Engineering',  owner:'Chris',   hq:'London / Houston',  rev:'$8.4bn',  emp:'22,000+'},
+  // ── Utilities ──
+  {id:'edp',   name:'EDP',               type:'Utilities',        owner:'Neeraj',  hq:'Lisbon, Portugal',  rev:'€19bn',   emp:'13,000+'},
+  {id:'vatt',  name:'Vattenfall',         type:'Utilities',        owner:'Neeraj',  hq:'Stockholm, Sweden', rev:'€24bn',   emp:'21,000+'},
+  {id:'sse',   name:'SSE Renewables',    type:'Utilities',        owner:'Neeraj',  hq:'Perth, Scotland',   rev:'£10bn',   emp:'14,000+'},
+  {id:'cent',  name:'Centrica',          type:'Utilities',        owner:'Neeraj',  hq:'Windsor, UK',       rev:'£29bn',   emp:'28,000+'},
+  // ── Service company ──
+  {id:'slb',   name:'SLB',               type:'Service company',  owner:'Jaideep', hq:'Houston / Paris',   rev:'$36bn',   emp:'100,000+'},
+  // ── Tyre ──
+  {id:'mich',  name:'Michelin',          type:'Tyre',             owner:'Chris',   hq:'Clermont-Ferrand',  rev:'€28bn',   emp:'132,000+'},
+  {id:'brid',  name:'Bridgestone',       type:'Tyre',             owner:'Chris',   hq:'Tokyo, Japan',      rev:'$30bn+',  emp:'140,000+'},
+  {id:'good',  name:'Goodyear',          type:'Tyre',             owner:'Chris',   hq:'Akron, OH, USA',    rev:'$20bn',   emp:'71,000+'},
+  {id:'pir',   name:'Pirelli',           type:'Tyre',             owner:'Chris',   hq:'Milan, Italy',      rev:'€6.6bn',  emp:'30,000+'},
+  // ── Semiconductor ──
+  {id:'inf',   name:'Infineon',          type:'Semiconductor',    owner:'Neeraj',  hq:'Munich, Germany',   rev:'€16bn',   emp:'58,000+'},
+  {id:'nxp',   name:'NXP Semiconductors',type:'Semiconductor',   owner:'Neeraj',  hq:'Eindhoven, Netherlands',rev:'$13bn',emp:'34,000+'},
+  {id:'stm',   name:'STMicroelectronics',type:'Semiconductor',   owner:'Neeraj',  hq:'Geneva, Switzerland',rev:'$17bn',  emp:'50,000+'},
+  {id:'ti',    name:'Texas Instruments', type:'Semiconductor',    owner:'Neeraj',  hq:'Dallas, TX, USA',   rev:'$18bn',   emp:'34,000+'},
+  {id:'ren',   name:'Renesas Electronics',type:'Semiconductor',  owner:'Neeraj',  hq:'Tokyo, Japan',      rev:'$10bn',   emp:'21,000+'},
+  // ── Automotive OEM — Europe ──
+  {id:'vw',    name:'VW Group',          type:'Auto OEM — Europe',owner:'Chris',   hq:'Wolfsburg, Germany',rev:'€322bn',  emp:'684,000+'},
+  {id:'dai',   name:'Mercedes-Benz',     type:'Auto OEM — Europe',owner:'Chris',   hq:'Stuttgart, Germany',rev:'€153bn',  emp:'166,000+'},
+  {id:'bmw',   name:'BMW Group',         type:'Auto OEM — Europe',owner:'Chris',   hq:'Munich, Germany',   rev:'€155bn',  emp:'154,000+'},
+  {id:'stel',  name:'Stellantis',        type:'Auto OEM — Europe',owner:'Chris',   hq:'Amsterdam, Netherlands',rev:'€189bn',emp:'300,000+'},
+  {id:'reno',  name:'Renault Group',     type:'Auto OEM — Europe',owner:'Chris',   hq:'Boulogne-Billancourt',rev:'€52bn', emp:'111,000+'},
+  // ── Automotive OEM — USA ──
+  {id:'ford',  name:'Ford Motor Company',type:'Auto OEM — USA',  owner:'Jaideep', hq:'Dearborn, MI, USA', rev:'$176bn',  emp:'177,000+'},
+  {id:'gm',    name:'General Motors',    type:'Auto OEM — USA',  owner:'Jaideep', hq:'Detroit, MI, USA',  rev:'$172bn',  emp:'167,000+'},
+  {id:'tesla', name:'Tesla',             type:'Auto OEM — USA',  owner:'Jaideep', hq:'Austin, TX, USA',   rev:'$97bn',   emp:'127,000+'},
+  // ── Tier 1 Supplier ──
+  {id:'cont',  name:'Continental',       type:'Tier 1 Supplier',  owner:'Chris',   hq:'Hanover, Germany',  rev:'€42bn',   emp:'200,000+'},
+  {id:'kb',    name:'Knorr-Bremse',      type:'Tier 1 Supplier',  owner:'Chris',   hq:'Munich, Germany',   rev:'€7.1bn',  emp:'32,000+'},
+  {id:'woco',  name:'WOCO',              type:'Tier 1 Supplier',  owner:'Chris',   hq:'Bad Soden, Germany',rev:'€1.2bn',  emp:'9,000+'},
+  // ── Truck Manufacturer ──
+  {id:'vol',   name:'Volvo Group',       type:'Truck Manufacturer',owner:'Chris',  hq:'Gothenburg, Sweden',rev:'€52bn',   emp:'105,000+'},
+  {id:'dtruck',name:'Daimler Truck',     type:'Truck Manufacturer',owner:'Chris',  hq:'Stuttgart, Germany',rev:'€56bn',   emp:'100,000+'},
+  {id:'traton',name:'TRATON Group',      type:'Truck Manufacturer',owner:'Chris',  hq:'Munich, Germany',   rev:'€46bn',   emp:'103,000+'},
+  {id:'paccar',name:'PACCAR',            type:'Truck Manufacturer',owner:'Jaideep',hq:'Bellevue, WA, USA', rev:'$30bn',   emp:'32,000+'},
+  {id:'iveco', name:'IVECO Group',       type:'Truck Manufacturer',owner:'Chris',  hq:'Turin, Italy',      rev:'€16bn',   emp:'34,000+'},
+];
+const GROUPS = [
+  'O&G','EPC/Engineering','Utilities','Service company',
+  'Tyre','Semiconductor',
+  'Auto OEM — Europe','Auto OEM — USA',
+  'Tier 1 Supplier','Truck Manufacturer'
+];
+const GNAMES = {
+  'O&G':'Oil & Gas',
+  'EPC/Engineering':'EPC / Engineering',
+  'Utilities':'Utilities',
+  'Service company':'Services',
+  'Tyre':'Tyre Manufacturers',
+  'Semiconductor':'Semiconductors',
+  'Auto OEM — Europe':'Automotive OEM — Europe',
+  'Auto OEM — USA':'Automotive OEM — USA',
+  'Tier 1 Supplier':'Tier 1 Suppliers',
+  'Truck Manufacturer':'Truck Manufacturers'
+};
+
+// ── STATE ─────────────────────────────────────────────────────────────
+let curId = null;
+let planCache = {}, ckState = {};
+function loadState(){
+  try{planCache=JSON.parse(localStorage.getItem('fb_v3_plans')||'{}')}catch(e){}
+  try{ckState  =JSON.parse(localStorage.getItem('fb_v3_ck')   ||'{}')}catch(e){}
+}
+function saveState(){
+  localStorage.setItem('fb_v3_plans',JSON.stringify(planCache));
+  localStorage.setItem('fb_v3_ck',   JSON.stringify(ckState));
+}
+function getKey(){return document.getElementById('apiKey').value||localStorage.getItem('fb_v3_key')||''}
+
+function saveKey(){
+  const k=document.getElementById('apiKey').value;
+  if(k)localStorage.setItem('fb_v3_key',k);
+  const su=document.getElementById('scriptUrl');
+  if(su&&su.value)localStorage.setItem('fb_v3_script',su.value);
+}
+
+function clearAllCache(){
+  if(!confirm('Clear all cached account plans? They will be regenerated fresh (with FB capability mapping) next time you open them.'))return;
+  planCache={};
+  localStorage.removeItem('fb_v3_plans');
+  if(curId)selectCo(curId);
+  else showToast('Cache cleared — open any account to regenerate');
+}
+
+function getContacts(id){
+  const key = CO_CSV_KEY[id];
+  return key ? (CSV_CONTACTS[key]||[]) : [];
+}
+
+function progress(id){
+  const cs=getContacts(id);
+  const total=cs.length*5; let done=0;
+  cs.forEach((_,i)=>{
+    if(ckState[`${id}_${i}_li`])done++;
+    if(ckState[`${id}_${i}_em`])done++;
+    if(ckState[`${id}_${i}_ca`])done++;
+    if(ckState[`${id}_${i}_mt`])done++;
+    if(ckState[`${id}_${i}_pr`])done++;
+  });
+  return{done,total};
+}
+
+// ── SIDEBAR ───────────────────────────────────────────────────────────
+function renderSB(){
+  let h='';
+  GROUPS.forEach(g=>{
+    const cs=COS.filter(c=>c.type===g);
+    if(!cs.length)return;
+    h+=`<div class="sg-lbl">${GNAMES[g]}</div>`;
+    cs.forEach(c=>{
+      const {done,total}=progress(c.id);
+      const dc=total===0?'':(done===total?'full':'part');
+      const hasCt=getContacts(c.id).length>0;
+      h+=`<div class="si ${curId===c.id?'active':''}" onclick="selectCo('${c.id}')">
+        <div>
+          <div class="si-name">${c.name}${hasCt?'<span style="color:#3a9a6a;font-size:8px;margin-left:4px">●</span>':''}</div>
+          <div class="si-owner">${c.owner}</div>
+        </div>
+        <div class="sdot ${dc}"></div>
+      </div>`;
+    });
+  });
+  document.getElementById('sb-list').innerHTML=h;
+}
+
+// ── SELECT ────────────────────────────────────────────────────────────
+async function selectCo(id){
+  curId=id; renderSB();
+  const co=COS.find(c=>c.id===id);
+  showLoading('Generating intelligence brief…','Calling Claude API');
+  const plan=await getPlan(co);
+  const contacts=getContacts(id);
+  renderBrief(co,plan,contacts);
+  renderSB();
+}
+
+function showLoading(msg,sub){
+  document.getElementById('cwrap').innerHTML=`<div class="state-box"><div class="spin"></div><div class="state-msg">${msg}</div><div class="state-sub" id="ls">${sub}</div></div>`;
+}
+function setLS(t){const e=document.getElementById('ls');if(e)e.textContent=t}
+
+// ── PLAN GENERATION ───────────────────────────────────────────────────
+async function getPlan(co){
+  if(planCache[co.id])return planCache[co.id];
+  return generatePlan(co);
+}
+
+async function generatePlan(co){
+  const key=getKey();
+  if(!key)return{error:'No API key. Paste your Anthropic API key in the sidebar.'};
+  setLS('Generating with Claude — this takes ~30 seconds…');
+
+  const prompt=`You are a senior FutureBridge analyst. Produce a structured account intelligence brief for ${co.name} (${co.type}, HQ: ${co.hq}, Revenue: ${co.rev}).
+
+The brief follows this chain: Business Performance → Strategy → Initiatives → Technologies → Weak Signals → Cross-industry Adjacency → Executive Takeaways.
+
+Return ONLY valid JSON, no markdown, no extra text:
+
+{
+  "pain_points": [
+    {
+      "function": "Function name (e.g. R&D, Technology, Procurement, Operations, Strategy, Finance, Digital)",
+      "icon": "single emoji representing this function",
+      "pains": ["Specific pain point 1 — concrete, not generic", "Specific pain point 2", "Specific pain point 3"],
+      "fb_opportunity": "One sentence: where FutureBridge intelligence directly addresses this function's pain"
+    }
+  ],
+  "hero_subtitle": "One sentence — the single most important commercial argument for why ${co.name} needs technology intelligence right now.",
+  "performance": [
+    {"id":"${co.id.toUpperCase()}-P1","title":"Pressure title (5-7 words)","description":"2-3 sentences. Specific business pressure or financial outcome. Named, evidenced.","leads_to":"Strategy pillar this drives"}
+  ],
+  "strategy": [
+    {"title":"Strategic pillar title","because":"One sentence: what pressure makes this necessary?","description":"2-3 sentences. What is the company doing and why?","drivers":["Driver A","Driver B","Driver C"],"leads_to":"Initiative group name"}
+  ],
+  "initiatives": [
+    {"group":"Strategy pillar name","items":[
+      {
+        "title":"Initiative name — specific and funded, 4-7 words",
+        "description":"2 sentences max. What is being done and why now. Reference real programme names or announced targets where known.",
+        "hypothesis":"1 sentence only. The testable belief that must hold for this initiative to succeed — not a description. Format: 'The bet is that [specific named condition] holds, meaning if [named assumption] proves wrong, the commercial case collapses.' Name a price, a threshold, a policy outcome. No generic statements.",
+        "wntbt":["Condition 1 — under 12 words, specific and falsifiable","Condition 2 — under 12 words","Condition 3 — under 12 words"],
+        "tech_link":"3-5 words",
+        "fb_entry":{
+          "capability":"Pick one from: Foresight & Weak Signal Scanning | Technology Landscape & Deep Dive | Market & Regulatory Assessment | Competitive Intelligence | Business Disruption Monitoring | Technology Roadmaps & Horizon Planning | Business Model Evaluation | WNTBT & Assumption Mapping | GTM Strategy & Scenario Planning | Portfolio Competitiveness | Innovation Pipeline Development | Decision-Grade Governance Packs | Innovation Scanning & Scouting | Partner & Supplier Identification | M&A Target Identification & Profiling | Technology & Vendor Benchmarking | Opportunity Radar Mapping | Cross-Industry Innovation Transfer | Digital Vision & Roadmap Design | AI & Automation Use-Case Identification | Proof-of-Concept Design & Validation | Technology & Commercial Due Diligence | Acquisition Process Support | Post-Acquisition Integration Intelligence",
+          "tier":"Discovery & Actionable Insights | Positioning & Strategy | Implementation & Disruption",
+          "deliverable":"1 sentence. Specific FB output — name the artefact (market map, decision pack, partner shortlist, etc).",
+          "value":"1 sentence. The specific decision this enables for ${co.name}."
+        }
+      }
+    ]}
+  ],
+  "technologies": [
+    {"icon":"emoji","title":"Technology name","description":"2 sentences. Why it matters specifically to ${co.name}.","maturity":0.4,"initiatives":["Initiative"],"leads_to_signal":"Signal to watch"}
+  ],
+  "weak_signals": [
+    {"name":"Named signal — startup, patent cluster, pilot, or programme","type":"startup|patent|pilot|academic|regulatory|xsector","heat":3,"initiative":"Initiative title it links to","description":"2 sentences max. Name a real entity or filing.","implication":"1 sentence specific to ${co.name}."}
+  ],
+  "adjacency": [
+    {"problem":"Specific problem ${co.name} is solving — 6-10 words","sector":"Adjacent industry","technologies":"Specific technologies — 5-10 words","readiness":"Now to 2 years|2 to 5 years|5 to 10 years","implication":"1 sentence, commercially specific to ${co.name}."}
+  ],
+  "takeaways": [
+    {"title":"Conclusion title","body":"2-3 sentences following from chain logic. Specific to ${co.name}."}
+  ]
+}
+
+Requirements — these are hard counts, not suggestions:
+- pain_points: exactly 6 business functions, each with exactly 3 pain points
+- performance: exactly 4 items
+- strategy: exactly 4 items  
+- initiatives: exactly 2 groups, exactly 2 items each (4 total); EVERY item must have hypothesis (1 sentence, testable), wntbt (exactly 3 conditions, ≤12 words each), and a fully populated fb_entry
+- technologies: exactly 8 items; maturity 0.1–0.9
+- weak_signals: exactly 10 items; heat 1–5
+- adjacency: exactly 5 rows
+- takeaways: exactly 5 items then one item with title "The opportunity for FutureBridge" and body describing the commercial engagement opportunity
+
+Writing style: Bloomberg Intelligence. Short sentences 10-18 words. No consultant language. Commercially specific. Evidence-based.`;
+
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':key,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:8192,messages:[{role:'user',content:prompt}]})
+    });
+    if(!r.ok){const e=await r.json().catch(()=>({}));return{error:`API error ${r.status}: ${e.error?.message||r.statusText}`}}
+    const d=await r.json();
+    const txt=d.content.map(b=>b.text||'').join('');
+    const clean=txt.replace(/```json|```/g,'').trim();
+    let parsed;
+    try{
+      parsed=JSON.parse(clean);
+    }catch(e){
+      // attempt to recover truncated JSON by finding last complete top-level key
+      console.warn('JSON parse failed, attempting recovery:',e.message);
+      return{error:`Generation failed — response was truncated (token limit). Click ↺ Regenerate to try again. Detail: ${e.message}`};
+    }
+    planCache[co.id]=parsed;
+    saveState();
+    return parsed;
+  }catch(e){return{error:`Generation failed: ${e.message}`}}
+}
+
+// ── RENDER BRIEF ──────────────────────────────────────────────────────
+function renderBrief(co,plan,contacts){
+  if(plan.error){
+    document.getElementById('cwrap').innerHTML=`
+      <nav class="brief-nav"><div class="brief-nav-inner"><div class="brief-brand">${co.name} <span>Account Plan</span></div></div></nav>
+      <div class="container" style="padding-top:40px"><div style="padding:20px;background:#fff8f8;border:1px solid var(--red-mid);color:var(--red);font-size:13px;border-radius:3px">⚠ ${plan.error}</div></div>`;
+    return;
+  }
+
+  const {done,total}=progress(co.id);
+  const pct=total?Math.round(done/total*100):0;
+  const pf=plan.performance||[];const st=plan.strategy||[];
+  const ini=plan.initiatives||[];const tech=plan.technologies||[];
+  const ws=plan.weak_signals||[];const adj=plan.adjacency||[];
+  const tk=plan.takeaways||[];const pp=plan.pain_points||[];
+
+  // chain
+  const chainHTML=`<div class="chain">
+    <a href="#perf-sec" class="cnode cp" style="text-decoration:none"><div class="cnode-num">01</div><div class="cnode-ico">◈</div><div class="cnode-title">Performance</div><div class="cnode-desc">Business pressures</div></a>
+    <a href="#strat-sec" class="cnode cs" style="text-decoration:none"><div class="cnode-num">02</div><div class="cnode-ico">◇</div><div class="cnode-title">Strategy</div><div class="cnode-desc">Strategic responses</div></a>
+    <a href="#pp-sec" class="cnode" style="text-decoration:none;border-right:1px solid var(--mid)"><div class="cnode-num">03</div><div class="cnode-ico" style="background:var(--red-pale);color:var(--red)">⚑</div><div class="cnode-title" style="color:var(--red)">Pain Points</div><div class="cnode-desc">By function</div></a>
+    <a href="#init-sec" class="cnode ci" style="text-decoration:none"><div class="cnode-num">04</div><div class="cnode-ico">▦</div><div class="cnode-title">Initiatives</div><div class="cnode-desc">Funded programmes</div></a>
+    <a href="#fb-sec" class="cnode cw" style="text-decoration:none"><div class="cnode-num">04b</div><div class="cnode-ico" style="background:rgba(248,78,93,.15)">F</div><div class="cnode-title" style="color:var(--red)">FB Map</div><div class="cnode-desc">Capability entry</div></a>
+    <a href="#tech-sec" class="cnode ct" style="text-decoration:none"><div class="cnode-num">05</div><div class="cnode-ico">⬡</div><div class="cnode-title">Technologies</div><div class="cnode-desc">Key tech areas</div></a>
+    <a href="#sig-sec" class="cnode cw" style="text-decoration:none"><div class="cnode-num">06</div><div class="cnode-ico">⚡</div><div class="cnode-title">Weak Signals</div><div class="cnode-desc">Early TRL indicators</div></a>
+  </div>`;
+
+  // counter strip
+  const stripHTML=`<div class="count-strip">
+    <div class="cs-node cs-p"><div class="csl">Pressures</div><div class="csn">${pf.length}</div></div>
+    <div class="cs-arr">→</div>
+    <div class="cs-node cs-s"><div class="csl">Strategies</div><div class="csn">${st.length}</div></div>
+    <div class="cs-arr">→</div>
+    <div class="cs-node cs-i"><div class="csl">Initiatives</div><div class="csn">${ini.reduce((a,g)=>a+(g.items||[]).length,0)}</div></div>
+    <div class="cs-arr">→</div>
+    <div class="cs-node cs-t"><div class="csl">Technologies</div><div class="csn">${tech.length}</div></div>
+    <div class="cs-arr">→</div>
+    <div class="cs-node cs-w"><div class="csl">Signals</div><div class="csn">${ws.length}</div></div>
+  </div>`;
+
+  // perf cards
+  const perfHTML=pf.map((p,i)=>`
+    <div class="perf-card anim d${(i%5)+1}">
+      <div class="perf-id">${p.id||`${co.id.toUpperCase()}-P${i+1}`}</div>
+      <h3>${p.title}</h3>
+      <p class="wide">${p.description}</p>
+      <div class="lt lt-s">→ ${p.leads_to}</div>
+    </div>`).join('');
+
+  // strat cards
+  const stratHTML=st.map((s,i)=>`
+    <div class="strat-card anim d${(i%5)+1}">
+      <div class="strat-because">${s.because}</div>
+      <h3>${s.title}</h3>
+      <p class="wide">${s.description}</p>
+      <div class="driver-row">${(s.drivers||[]).map(d=>`<span class="driver">${d}</span>`).join('')}</div>
+      <div class="lt lt-i">→ ${s.leads_to}</div>
+    </div>`).join('');
+
+  // initiatives
+  const initHTML=ini.map((g,gi)=>`
+    <div>
+      <div class="ig-hdr"><span class="ig-tag">${g.group}</span><div class="ig-line"></div></div>
+      <div class="init-row">${(g.items||[]).map((it,i)=>{
+        const fb=it.fb_entry||{};
+        const wntbtItems=(it.wntbt||[]).map(w=>`<div class="hyp-wntbt-item">${w}</div>`).join('');
+        const hypBlock=it.hypothesis?`
+          <div class="hyp-block">
+            <div class="hyp-lbl">Hypothesis</div>
+            <div class="hyp-text">${it.hypothesis}</div>
+            ${wntbtItems?`<div class="hyp-wntbt">${wntbtItems}</div>`:''}
+          </div>`:'';
+        const fbPanel=fb.capability?`
+          <div class="fb-entry">
+            <div class="fb-entry-lbl">FutureBridge entry point</div>
+            <div class="fb-cap-name">${fb.capability}</div>
+            <div class="fb-cap-tier">${fb.tier||''}</div>
+            <div class="fb-cap-deliverable">${fb.deliverable||''}</div>
+            <div class="fb-cap-value">${fb.value||''}</div>
+          </div>`:'';
+        return`<div class="init-card anim d${(i%5)+1}">
+          <h4>${it.title}</h4>
+          <p class="wide">${it.description}</p>
+          ${hypBlock}
+          <div class="init-tl">→ ${it.tech_link}</div>
+          ${fbPanel}
+        </div>`;
+      }).join('')}</div>
+    </div>`).join('');
+
+  // tech cards
+  const techHTML=tech.map((t,i)=>`
+    <div class="tech-card anim d${(i%5)+1}">
+      <div class="tech-ico">${t.icon||'⬡'}</div>
+      <h4>${t.title}</h4>
+      <p class="wide">${t.description}</p>
+      <div class="mat-row">
+        <div class="mat-lbl">TRL</div>
+        <div class="mat-bar"><div class="mat-fill" style="width:${Math.round((t.maturity||0.4)*100)}%"></div></div>
+        <div style="font-size:9px;color:var(--dim);white-space:nowrap">${Math.round((t.maturity||0.4)*9)}/9</div>
+      </div>
+      <div class="tech-tags">${(t.initiatives||[]).map(x=>`<span class="tech-itag">${x}</span>`).join('')}</div>
+      <div class="tech-lt">→ Watch: ${t.leads_to_signal||''}</div>
+    </div>`).join('');
+
+  // signals
+  const sigHTML=ws.map(s=>{
+    const dots=[1,2,3,4,5].map(n=>`<div class="hd ${n<=(s.heat||3)?'on':''}"></div>`).join('');
+    return`<tr>
+      <td>
+        <div class="sig-name">${s.name}</div>
+        <span class="stype stype-${s.type||'startup'}">${s.type||'startup'}</span>
+        <div class="heat">${dots}</div>
+      </td>
+      <td style="color:var(--dim);font-size:11px">${s.initiative}</td>
+      <td>${s.description}</td>
+      <td style="font-size:11px;font-style:italic;color:#666">${s.implication}</td>
+    </tr>`;
+  }).join('');
+
+  // adjacency
+  const adjHTML=adj.map(r=>{
+    const rcls=r.readiness&&r.readiness.includes('Now')?'r-now':r.readiness&&r.readiness.includes('10')?'r-long':'r-mid';
+    return`<tr>
+      <td><div class="adj-prob">${r.problem}</div></td>
+      <td><span class="adj-sector">${r.sector}</span></td>
+      <td style="font-size:11px;color:#555">${r.technologies}</td>
+      <td class="${rcls}">${r.readiness}</td>
+      <td style="font-size:11px;color:#666">${r.implication}</td>
+    </tr>`;
+  }).join('');
+
+  // takeaways
+  const tkHTML=tk.map((t,i)=>{
+    const isLast=(i===tk.length-1)&&t.title&&t.title.toLowerCase().includes('futurbridge');
+    return`<div class="tk-card ${isLast?'hl':''} anim d${(i%5)+1}">
+      <span class="tk-num">${isLast?'+':String(i+1).padStart(2,'0')}</span>
+      <h3>${t.title}</h3>
+      <p class="wide">${t.body}</p>
+    </div>`;
+  }).join('');
+
+  // pain points
+  const ppHTML=pp.map((fn,i)=>`
+    <div class="pp-card anim d${(i%5)+1}">
+      <div class="pp-fn"><span class="pp-fn-ico">${fn.icon||'⚑'}</span>${fn.function}</div>
+      <ul class="pp-items">${(fn.pains||[]).map(p=>`<li class="pp-item">${p}</li>`).join('')}</ul>
+      ${fn.fb_opportunity?`<div class="pp-opp">↗ FB opportunity: ${fn.fb_opportunity}</div>`:''}
+    </div>`).join('');
+
+  // contacts
+  const ctHTML=renderContacts(co,contacts);
+  const ctMsg=contacts.length===0
+    ?`<div class="ct-msg">No contacts found in database for ${co.name}. The CSV covers: BP, ExxonMobil, Shell, Halliburton, Chevron, Infineon, Daimler, VW Group, Volvo, Knorr-Bremse, Michelin, WOCO, Continental.</div>`:'';
+
+  // fb capability map — consolidated view across all initiative fb_entries
+  // detect whether this is a stale cached plan (pre-v6, no fb_entry or hypothesis fields)
+  const hasNewFields=ini.some(g=>(g.items||[]).some(it=>it.fb_entry&&it.fb_entry.capability));
+  const allFbItems=ini.flatMap(g=>(g.items||[]).filter(it=>it.fb_entry&&it.fb_entry.capability).map(it=>({init:it.title,hyp:it.hypothesis||'',fb:it.fb_entry})));
+  const fbMapHTML=allFbItems.length?allFbItems.map((x,i)=>`
+    <div class="fb-map-card anim d${(i%5)+1}">
+      <div class="fb-mc-init">${x.init}</div>
+      <div class="fb-mc-title">${x.fb.capability}</div>
+      <div class="fb-mc-tier">${x.fb.tier||''}</div>
+      ${x.hyp?`<div style="font-size:9.5px;color:#444;line-height:1.5;font-style:italic;margin-bottom:7px;padding-bottom:7px;border-bottom:1px solid #1a1a1a">${x.hyp}</div>`:''}
+      <div class="fb-mc-dlv">${x.fb.deliverable||''}</div>
+      <div class="fb-mc-val">${x.fb.value||''}</div>
+    </div>`).join(''):`
+    <div style="grid-column:1/-1;background:#fff8f8;border:1px solid var(--red-mid);border-radius:3px;padding:32px 36px;display:flex;align-items:flex-start;gap:24px">
+      <div style="font-size:28px;flex-shrink:0;color:var(--red);opacity:.5">F</div>
+      <div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--red);margin-bottom:6px">Plan needs regenerating</div>
+        <div style="font-size:13px;color:#444;line-height:1.6;max-width:52ch;margin-bottom:16px">This plan was cached before capability mapping was added. Regenerate it to load FutureBridge entry points, hypotheses, and WNTBT conditions for each initiative.</div>
+        <button onclick="regenPlan()" style="background:var(--red);color:#fff;border:none;padding:9px 20px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:all .15s" onmouseover="this.style.background='#d43a4a'" onmouseout="this.style.background='var(--red)'">↺ Regenerate plan now</button>
+      </div>
+    </div>`;
+
+  document.getElementById('cwrap').innerHTML=`
+    <!-- NAV -->
+    <nav class="brief-nav">
+      <div class="brief-nav-inner">
+        <div class="brief-brand">${co.name} <span>Account Plan</span> · FutureBridge Advisory</div>
+        <div class="nav-chain">
+          <a href="#perf-sec" class="nn np">Performance</a><span class="nav-arr">→</span>
+          <a href="#strat-sec" class="nn ns">Strategy</a><span class="nav-arr">→</span>
+          <a href="#pp-sec" class="nn nw">Pain Points</a><span class="nav-arr">→</span>
+          <a href="#init-sec" class="nn ni">Initiatives</a><span class="nav-arr">→</span>
+          <a href="#fb-sec" class="nn" style="color:var(--red)">FB Map</a><span class="nav-arr">→</span>
+          <a href="#tech-sec" class="nn nt">Technologies</a><span class="nav-arr">→</span>
+          <a href="#sig-sec" class="nn nw">Signals</a><span class="nav-arr">·</span>
+          <a href="#ct-sec" class="nn nc">Contacts (${contacts.length})</a><span class="nav-arr">·</span>
+          <a href="#mtg-sec" class="nn" style="color:#7b4caf">Meetings</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <section id="hero">
+      <div class="container">
+        <div class="hero-eye anim d1"><div class="hero-eye-line"></div><span class="lbl-r">Strategic Account Plan</span></div>
+        <h1 class="xl anim d2">${co.name}</h1>
+        <p class="hero-sub anim d3">${plan.hero_subtitle||''}</p>
+        ${chainHTML}
+        <div class="hero-meta anim d4">
+          <div><div class="hm-lbl">Practice owner</div><div class="hm-val">${co.owner}</div></div>
+          <div><div class="hm-lbl">HQ</div><div class="hm-val">${co.hq}</div></div>
+          <div><div class="hm-lbl">Revenue</div><div class="hm-val">${co.rev}</div></div>
+          <div><div class="hm-lbl">Employees</div><div class="hm-val">${co.emp}</div></div>
+          <div><div class="hm-lbl">Contacts loaded</div><div class="hm-val">${contacts.length}</div></div>
+          <div><div class="hm-lbl">Outreach progress</div><div class="hm-val">${done}/${total} actions (${pct}%)</div></div>
+          <button class="regen-btn" id="rgbtn" onclick="regenPlan()">↺ Regenerate</button>
+        </div>
+      </div>
+    </section>
+
+    ${stripHTML}
+
+    <!-- PERFORMANCE -->
+    <section id="perf-sec">
+      <div class="container">
+        <div class="sh">
+          <div class="sh-num">01 / 07</div>
+          <div class="sh-text">
+            <span class="stag stag-p">Business Performance</span>
+            <h2 class="lg">The pressures shaping every decision</h2>
+            <p>These are not background context. They are the specific business conditions that make certain technology and intelligence investments unavoidable.</p>
+          </div>
+        </div>
+        <div class="perf-grid">${perfHTML}</div>
+      </div>
+    </section>
+
+    <!-- STRATEGY -->
+    <section id="strat-sec">
+      <div class="container">
+        <div class="sh">
+          <div class="sh-num">02 / 08</div>
+          <div class="sh-text">
+            <span class="stag stag-s">Strategic Response</span>
+            <h2 class="lg">How ${co.name} is responding</h2>
+            <p>Each pillar follows directly from a performance pressure. Strategy without that link is theory. These are the bets the company is actually making.</p>
+          </div>
+        </div>
+        <div class="strat-grid">${stratHTML}</div>
+      </div>
+    </section>
+
+    <!-- PAIN POINTS -->
+    <section id="pp-sec">
+      <div class="container">
+        <div class="sh">
+          <div class="sh-num">03 / 08</div>
+          <div class="sh-text">
+            <span class="stag stag-w">Pain Points by Function</span>
+            <h2 class="lg">Where the pressure lands inside the business</h2>
+            <p>Business pressures translate differently across functions. These are the specific problems each team is trying to solve — and where FutureBridge intelligence is directly applicable.</p>
+          </div>
+        </div>
+        <div class="pp-grid">${ppHTML}</div>
+      </div>
+    </section>
+
+    <!-- INITIATIVES -->
+    <section id="init-sec">
+      <div class="container">
+        <div class="sh">
+          <div class="sh-num">04 / 08</div>
+          <div class="sh-text">
+            <span class="stag stag-i">Strategic Initiatives</span>
+            <h2 class="lg">The programmes that matter</h2>
+            <p>Initiatives are the layer most organisations skip. These are funded, named, and real. They tell you which technologies are genuinely in scope — as opposed to theoretically interesting.</p>
+          </div>
+        </div>
+        ${!hasNewFields?`<div style="background:#fff8f8;border:1px solid var(--red-mid);border-left:3px solid var(--red);padding:12px 16px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;gap:16px;border-radius:0 2px 2px 0">
+          <div>
+            <div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--red);margin-bottom:3px">Stale plan — missing hypotheses &amp; capability mapping</div>
+            <div style="font-size:11px;color:#333;line-height:1.5">This plan predates v6. Regenerate to add hypotheses, WNTBT conditions, and FutureBridge entry points to each initiative.</div>
+          </div>
+          <button onclick="regenPlan()" style="flex-shrink:0;background:var(--red);color:#fff;border:none;padding:7px 14px;font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border-radius:2px;white-space:nowrap">↺ Regenerate</button>
+        </div>`:''}
+        <div class="init-groups">${initHTML}</div>
+      </div>
+    </section>
+
+    <!-- FB ENTRY POINTS -->
+    <section id="fb-sec">
+      <div class="container">
+        <div class="sh">
+          <div class="sh-num">04b</div>
+          <div class="sh-text">
+            <span class="stag">FutureBridge capability map</span>
+            <h2 class="lg">Where we add value — by initiative</h2>
+            <p style="color:#555">Each initiative above maps to a specific FutureBridge capability. This is the entry point conversation — what we do, what we deliver, and what decision it enables for ${co.name}.</p>
+          </div>
+        </div>
+        <div class="fb-map-grid">${fbMapHTML}</div>
+      </div>
+    </section>
+
+    <!-- TECHNOLOGIES -->
+    <section id="tech-sec">
+      <div class="container">
+        <div class="sh">
+          <div class="sh-num">05 / 08</div>
+          <div class="sh-text">
+            <span class="stag stag-t">Key Technologies</span>
+            <h2 class="lg">The technology watchlist</h2>
+            <p>These are the technologies that matter because the initiatives above require them. Maturity ratings reflect current commercial deployment readiness, not theoretical capability.</p>
+          </div>
+        </div>
+        <div class="tech-grid">${techHTML}</div>
+      </div>
+    </section>
+
+    <!-- WEAK SIGNALS -->
+    <section id="sig-sec">
+      <div class="container">
+        <div class="sh">
+          <div class="sh-num">06 / 08</div>
+          <div class="sh-text">
+            <span class="stag stag-w">Weak Signals</span>
+            <h2 class="lg">Early indicators — TRL 1 to 4</h2>
+            <p>A signal only matters when you know why it matters. Each entry here is connected to a specific initiative. Heat rating indicates speed of development.</p>
+          </div>
+        </div>
+        <div class="sig-intro">
+          <div class="sig-intro-ico">⚡</div>
+          <p>These signals are specific — named startups, patent clusters, academic programmes, regulatory drafts. <strong>Generic trend statements are excluded.</strong> Each one is traceable to an initiative and a commercial implication.</p>
+        </div>
+        <table class="sig-table">
+          <thead><tr><th>Signal</th><th>Initiative</th><th>Evidence</th><th>Implication for ${co.name}</th></tr></thead>
+          <tbody>${sigHTML}</tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ADJACENCY -->
+    <section id="adj-sec">
+      <div class="container">
+        <div class="sh">
+          <div class="sh-num">07 / 08</div>
+          <div class="sh-text">
+            <span class="stag stag-t">Cross-industry Adjacency</span>
+            <h2 class="lg">Solutions from outside the sector</h2>
+            <p>Adjacent industries have often solved problems that energy and industrial companies are still treating as novel. These transfers are faster than internal R&D and frequently underexplored.</p>
+          </div>
+        </div>
+        <div class="adj-wrap">
+          <table class="adj-table">
+            <thead><tr><th>${co.name} problem</th><th>Adjacent sector</th><th>Technology analogue</th><th>Transfer readiness</th><th>Strategic implication</th></tr></thead>
+            <tbody>${adjHTML}</tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAKEAWAYS -->
+    <section id="tk-sec">
+      <div class="container">
+        <div class="sh">
+          <div class="sh-num">08 / 08</div>
+          <div class="sh-text">
+            <span class="stag stag-p">Executive Takeaways</span>
+            <h2 class="lg">Conclusions from the chain</h2>
+            <p>These follow directly from the logic traced above — from business pressure through to emerging signal. They are specific to ${co.name}, not generic sector observations.</p>
+          </div>
+        </div>
+        <div class="tk-grid">${tkHTML}</div>
+      </div>
+    </section>
+
+    <!-- CONTACTS -->
+    <section id="ct-sec">
+      <div class="container">
+        <div class="sh">
+          <div class="sh-num">+</div>
+          <div class="sh-text">
+            <span class="stag stag-p">Contact Tracker</span>
+            <h2 class="lg">Key contacts &amp; outreach progression</h2>
+            <p>Sourced from the FutureBridge contacts master CSV. Track LinkedIn connection, email, call, meeting held, and proposition developed. Progress is saved locally in your browser.</p>
+          </div>
+        </div>
+        ${ctMsg}
+        <div class="ct-hdr-row">
+          <div class="ct-controls">
+            <input class="ct-search" type="text" placeholder="Search name or title…" oninput="filterCt(this.value,'${co.id}')">
+            <select class="ct-filter" onchange="filterCtBy(this.value,'${co.id}')">
+              <option value="">All contacts</option>
+              <option value="li">Not yet connected</option>
+              <option value="em">Not yet emailed</option>
+              <option value="ca">Not yet called</option>
+              <option value="mt">No meeting yet</option>
+              <option value="pr">No proposition yet</option>
+              <option value="CXO">CXO level</option>
+              <option value="Senior Management">Senior Management</option>
+              <option value="Mid-Management">Mid-Management</option>
+              <option value="Warm">Warm relationship</option>
+              <option value="Cold">Cold contacts</option>
+            </select>
+            <span class="ct-stat" id="ct-cnt">${contacts.length} contacts</span>
+          </div>
+        </div>
+        <div id="ct-tbl">${ctHTML}</div>
+        <div class="prog-wrap"><div class="prog-fill" id="pf" style="width:${pct}%"></div></div>
+        <div class="prog-lbl" id="pl">${done} of ${total} engagement actions complete — LinkedIn · Email · Call · Meeting · Proposition (${pct}%)</div>
+      </div>
+    </section>
+
+    <!-- MEETINGS -->
+    <section id="mtg-sec">
+      <div class="container">
+        <div class="sh">
+          <div class="sh-num">✦</div>
+          <div class="sh-text">
+            <span class="stag" style="background:rgba(123,76,175,.1);color:#7b4caf">Meeting Intelligence</span>
+            <h2 class="lg">Meeting log &amp; pattern analysis</h2>
+            <p>Log meetings and Fathom transcripts. Claude analyses each one and automatically runs longitudinal pattern analysis across all meetings with this account.</p>
+          </div>
+        </div>
+
+        <div class="mtg-tabs">
+          <button class="mtg-tab active" onclick="mtgTab('log','${co.id}',this)">Log meeting</button>
+          <button class="mtg-tab" onclick="mtgTab('history','${co.id}',this)">History</button>
+          <button class="mtg-tab" onclick="mtgTab('patterns','${co.id}',this)">Pattern analysis</button>
+        </div>
+
+        <!-- LOG -->
+        <div id="mtg-log-${co.id}" class="mtg-pane active">
+          <div class="mf-grid">
+            <div class="mfg">
+              <label>Contact name</label>
+              <input type="text" id="mf-contact-${co.id}" placeholder="e.g. Richard Griffith">
+            </div>
+            <div class="mfg">
+              <label>Contact title</label>
+              <input type="text" id="mf-ctitle-${co.id}" placeholder="e.g. CIO">
+            </div>
+            <div class="mfg">
+              <label>Meeting date</label>
+              <input type="date" id="mf-date-${co.id}" value="${new Date().toISOString().split('T')[0]}">
+            </div>
+          </div>
+          <div class="mf-grid two" style="margin-bottom:16px">
+            <div class="mfg">
+              <label>Meeting type</label>
+              <select id="mf-type-${co.id}">
+                <option value="intro">Introductory</option>
+                <option value="discovery">Discovery</option>
+                <option value="proposal">Proposal</option>
+                <option value="review">Review / check-in</option>
+                <option value="qbr">QBR</option>
+                <option value="followup">Follow-up</option>
+              </select>
+            </div>
+            <div class="mfg">
+              <label>FutureBridge rep</label>
+              <input type="text" id="mf-rep-${co.id}" placeholder="e.g. Chris Guerin">
+            </div>
+          </div>
+          <div class="mfg mf-full" style="margin-bottom:14px">
+            <label>Objectives &amp; pre-meeting context</label>
+            <textarea id="mf-objectives-${co.id}" rows="3" placeholder="What were you trying to achieve? Any pre-meeting context from the account brief…"></textarea>
+          </div>
+          <div class="mfg mf-full">
+            <label>Fathom transcript / meeting notes</label>
+            <textarea id="mf-transcript-${co.id}" rows="12" placeholder="Paste your Fathom transcript here, or type meeting notes directly.
+
+The AI will extract: key themes, commitments (both sides), signals confirmed from this account brief, FutureBridge opportunities, objections, and next actions.
+
+It will also automatically compare this meeting against all previous ones for ${co.name} and update the longitudinal pattern analysis." oninput="updateWC('${co.id}')"></textarea>
+            <div class="wc" id="mf-wc-${co.id}">0 words</div>
+          </div>
+          <div class="mtg-submit-row" style="margin-top:14px">
+            <button class="mtg-submit-btn" id="mf-btn-${co.id}" onclick="submitMtg('${co.id}','${co.name}')">↑ Analyse &amp; save</button>
+            <span class="mtg-status" id="mf-status-${co.id}"></span>
+          </div>
+          <div id="mf-analysis-${co.id}"></div>
+        </div>
+
+        <!-- HISTORY -->
+        <div id="mtg-history-${co.id}" class="mtg-pane">
+          <div id="mf-hist-out-${co.id}">
+            <div class="empty-mtg">Loading meeting history…</div>
+          </div>
+        </div>
+
+        <!-- PATTERNS -->
+        <div id="mtg-patterns-${co.id}" class="mtg-pane">
+          <button class="longi-run-btn" id="longi-btn-${co.id}" onclick="runLongi('${co.id}','${co.name}')">⚡ Run full pattern analysis</button>
+          <div id="mf-longi-out-${co.id}">
+            <div class="empty-mtg">Click above to generate a full longitudinal pattern analysis across all meetings with ${co.name}.</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <div class="brief-footer">
+      <div class="bf-brand">FutureBridge <span>Advisory</span> · ${co.name} Account Plan</div>
+      <div class="bf-note">Confidential. For internal use only. Intelligence generated by Claude · FutureBridge analysis.</div>
+    </div>`;
+
+  // animate
+  setTimeout(()=>{
+    const obs=new IntersectionObserver(entries=>{
+      entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');obs.unobserve(e.target)}});
+    },{threshold:.1});
+    document.querySelectorAll('.anim').forEach(el=>obs.observe(el));
+  },100);
+}
+
+// ── CONTACTS TABLE ────────────────────────────────────────────────────
+let _ctSearch='', _ctFilter='';
+function renderContacts(co,contacts,search,flt){
+  search=search||''; flt=flt||'';
+  let rows=contacts;
+
+  if(search){
+    const f=search.toLowerCase();
+    rows=rows.filter(c=>(c.name||'').toLowerCase().includes(f)||(c.title||'').toLowerCase().includes(f));
+  }
+
+  // filter by field action or level/rel
+  if(flt==='li'||flt==='em'||flt==='ca'){
+    rows=rows.filter((_,i)=>!ckState[`${co.id}_${contacts.indexOf(_)}_${flt}`]);
+  } else if(flt==='CXO'||flt==='Senior Management'||flt==='Mid-Management'){
+    rows=rows.filter(c=>c.level===flt);
+  } else if(flt==='Warm'||flt==='Cold'){
+    rows=rows.filter(c=>c.rel===flt);
+  }
+
+  document.getElementById('ct-cnt')&&(document.getElementById('ct-cnt').textContent=rows.length+' contacts');
+
+  if(!rows.length)return`<p style="font-size:13px;color:var(--dim);padding:20px 0">No contacts match the current filter.</p>`;
+
+  const ths=`<tr>
+    <th style="width:28px">#</th>
+    <th>Name</th>
+    <th>Title</th>
+    <th>Level</th>
+    <th>Email</th>
+    <th style="width:72px">LinkedIn</th>
+    <th>Rel</th>
+    <th style="width:64px;text-align:center">Connected</th>
+    <th style="width:64px;text-align:center">Emailed</th>
+    <th style="width:64px;text-align:center">Called</th>
+    <th style="width:64px;text-align:center">Meeting</th>
+    <th style="width:64px;text-align:center">Proposal</th>
+  </tr>`;
+
+  const trs=rows.map(c=>{
+    const oi=contacts.indexOf(c);
+    const li=ckState[`${co.id}_${oi}_li`]||false;
+    const em=ckState[`${co.id}_${oi}_em`]||false;
+    const ca=ckState[`${co.id}_${oi}_ca`]||false;
+    const mt=ckState[`${co.id}_${oi}_mt`]||false;
+    const pr=ckState[`${co.id}_${oi}_pr`]||false;
+    const rel=c.rel||'';
+    const lvl=(c.level||'').replace('-Management','').replace('Business ','Biz ');
+    const email=c.email||'';
+    const liSearch=`https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(c.name+' '+co.name)}`;
+    return`<tr>
+      <td style="color:var(--dim);font-size:10px">${oi+1}</td>
+      <td><div class="c-name">${c.name}</div></td>
+      <td><div class="c-role">${c.title}</div></td>
+      <td><span class="c-lvl">${lvl}</span></td>
+      <td><div class="c-email">${email}</div></td>
+      <td><a href="${liSearch}" target="_blank" style="font-size:10px;color:#0077b5;font-weight:700;letter-spacing:.04em;white-space:nowrap;text-decoration:none" title="Search ${c.name} on LinkedIn">↗ LinkedIn</a></td>
+      <td><span class="c-rel ${rel.toLowerCase()}">${rel}</span></td>
+      <td style="text-align:center"><button class="ck ${li?'d-li':''}" onclick="toggle('${co.id}',${oi},'li')" title="${li?'Connected':'Mark LinkedIn connected'}">${li?'✓':''}</button></td>
+      <td style="text-align:center"><button class="ck ${em?'d-em':''}" onclick="toggle('${co.id}',${oi},'em')" title="${em?'Emailed':'Mark emailed'}">${em?'✓':''}</button></td>
+      <td style="text-align:center"><button class="ck ${ca?'d-ca':''}" onclick="toggle('${co.id}',${oi},'ca')" title="${ca?'Called/Met':'Mark called or met'}">${ca?'✓':''}</button></td>
+      <td style="text-align:center"><button class="ck ${mt?'d-mt':''}" onclick="toggle('${co.id}',${oi},'mt')" title="${mt?'Meeting held':'Mark meeting held'}">${mt?'✓':''}</button></td>
+      <td style="text-align:center"><button class="ck ${pr?'d-pr':''}" onclick="toggle('${co.id}',${oi},'pr')" title="${pr?'Proposition developed':'Mark proposition developed'}">${pr?'✓':''}</button></td>
+    </tr>`;
+  }).join('');
+
+  return`<table class="ct-table"><thead>${ths}</thead><tbody>${trs}</tbody></table>`;
+}
+
+function filterCt(val,id){
+  _ctSearch=val;
+  const co=COS.find(c=>c.id===id);
+  const contacts=getContacts(id);
+  const el=document.getElementById('ct-tbl');
+  if(el)el.innerHTML=renderContacts(co,contacts,val,_ctFilter);
+}
+function filterCtBy(val,id){
+  _ctFilter=val;
+  filterCt(_ctSearch,id);
+}
+
+function toggle(coid,idx,field){
+  const key=`${coid}_${idx}_${field}`;
+  ckState[key]=!ckState[key];
+  saveState();
+  const co=COS.find(c=>c.id===coid);
+  const contacts=getContacts(coid);
+  const el=document.getElementById('ct-tbl');
+  if(el)el.innerHTML=renderContacts(co,contacts,_ctSearch,_ctFilter);
+  const {done,total}=progress(coid);
+  const pct=total?Math.round(done/total*100):0;
+  const pf=document.getElementById('pf');const pl=document.getElementById('pl');
+  if(pf)pf.style.width=pct+'%';
+  if(pl)pl.textContent=`${done} of ${total} outreach actions complete (${pct}%)`;
+  renderSB();
+}
+
+async function regenPlan(){
+  const btn=document.getElementById('rgbtn');
+  if(btn){btn.disabled=true;btn.textContent='Regenerating…'}
+  const co=COS.find(c=>c.id===curId);
+  delete planCache[co.id];saveState();
+  const plan=await generatePlan(co);
+  const contacts=getContacts(curId);
+  renderBrief(co,plan,contacts);renderSB();
+}
+
+// ── MEETING INTELLIGENCE ──────────────────────────────────────────────
+function saveKey(){
+  localStorage.setItem('fb_v3_key', document.getElementById('apiKey').value);
+  const su=document.getElementById('scriptUrl');
+  if(su) localStorage.setItem('fb_v3_script', su.value);
+}
+function getScriptUrl(){ return (document.getElementById('scriptUrl')||{}).value || localStorage.getItem('fb_v3_script') || ''; }
+
+function mtgTab(tab, coId, el){
+  const panes=['log','history','patterns'];
+  panes.forEach(p=>{
+    const el2=document.getElementById(`mtg-${p}-${coId}`);
+    if(el2) el2.classList.toggle('active', p===tab);
+  });
+  el.closest('.mtg-tabs').querySelectorAll('.mtg-tab').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  if(tab==='history') loadMtgHistory(coId);
+}
+
+function updateWC(coId){
+  const ta=document.getElementById(`mf-transcript-${coId}`);
+  const wc=document.getElementById(`mf-wc-${coId}`);
+  if(!ta||!wc) return;
+  const words=ta.value.trim()?ta.value.trim().split(/\s+/).length:0;
+  wc.textContent=words.toLocaleString()+' words';
+}
+
+async function submitMtg(coId, coName){
+  const contact = document.getElementById(`mf-contact-${coId}`)?.value?.trim()||'';
+  const ctitle  = document.getElementById(`mf-ctitle-${coId}`)?.value?.trim()||'';
+  const date    = document.getElementById(`mf-date-${coId}`)?.value||'';
+  const mtype   = document.getElementById(`mf-type-${coId}`)?.value||'intro';
+  const rep     = document.getElementById(`mf-rep-${coId}`)?.value?.trim()||'';
+  const objectives = document.getElementById(`mf-objectives-${coId}`)?.value?.trim()||'';
+  const transcript = document.getElementById(`mf-transcript-${coId}`)?.value?.trim()||'';
+
+  if(!contact){ showToast('Enter the contact name'); return; }
+  if(!transcript){ showToast('Paste a transcript or notes'); return; }
+  if(!getKey()){ showToast('Add your Anthropic API key in the sidebar'); return; }
+
+  const btn=document.getElementById(`mf-btn-${coId}`);
+  const status=document.getElementById(`mf-status-${coId}`);
+  btn.disabled=true; status.textContent='Loading account history…';
+
+  const prev = await fetchMtgs(coName);
+  status.textContent='Analysing with Claude…';
+
+  const analysis = await analyseMtg(coName, contact, ctitle, date, mtype, objectives, transcript, prev);
+
+  status.textContent='Saving to Sheets…';
+  await saveMtg({ meeting_id:'MTG-'+Date.now(), date, company:coName, contact, contact_title:ctitle,
+    meeting_type:mtype, rep_name:rep, objectives, transcript,
+    ai_summary: analysis.summary||'', themes: JSON.stringify(analysis.themes||[]),
+    commitments: JSON.stringify(analysis.commitments||[]),
+    signals_confirmed: JSON.stringify(analysis.signals_confirmed||[]),
+    fb_opportunities: JSON.stringify(analysis.fb_opportunities||[]),
+    sentiment: analysis.sentiment||'neutral',
+    longitudinal: JSON.stringify(analysis.longitudinal||{}),
+    created_at: new Date().toISOString()
+  });
+
+  btn.disabled=false; status.textContent='';
+  if(analysis.error){ showToast('Analysis failed: '+analysis.error, true); return; }
+  showToast('Meeting saved and analysed ✓');
+  renderMtgAnalysis(analysis, prev.length+1, coId);
+}
+
+async function analyseMtg(coName, contact, ctitle, date, mtype, objectives, transcript, prev){
+  const key=getKey();
+  if(!key) return{error:'No API key'};
+
+  const prevText = prev.length
+    ? prev.map((m,i)=>`Meeting ${i+1} (${m.date}, ${m.meeting_type||''}, ${m.contact||''}): ${m.ai_summary||m.transcript?.substring(0,300)||''}`).join('\n\n')
+    : 'No previous meetings logged for this account.';
+
+  const prompt=`You are a senior FutureBridge analyst. Analyse this meeting for ${coName}.
+
+CONTACT: ${contact}${ctitle?' ('+ctitle+')':''}  DATE: ${date}  TYPE: ${mtype}
+OBJECTIVES: ${objectives||'Not specified'}
+TRANSCRIPT/NOTES: ${transcript}
+
+PREVIOUS MEETINGS WITH ${coName} (${prev.length} total):
+${prevText}
+
+Return ONLY valid JSON:
+{
+  "summary": "3-4 sentences. What happened, what was decided, what matters commercially.",
+  "sentiment": "positive|neutral|negative",
+  "sentiment_reason": "One sentence.",
+  "themes": ["theme 1","theme 2","theme 3","theme 4"],
+  "commitments": [{"who":"FutureBridge|${coName}","what":"Specific commitment","deadline":"by [date] or not specified"}],
+  "signals_confirmed": [{"signal":"What was confirmed","significance":"Why it matters"}],
+  "fb_opportunities": [{"opportunity":"Specific FutureBridge product or engagement type","evidence":"What was said"}],
+  "objections": ["Resistance or blockers raised"],
+  "next_actions": ["Next action 1","Next action 2"],
+  "longitudinal": {
+    "meeting_count": ${prev.length+1},
+    "relationship_trajectory": "improving|stable|declining|too_early",
+    "trajectory_score": 0.6,
+    "recurring_themes": ["Theme recurring across meetings"],
+    "pattern_observations": ["Pattern observable across meetings"],
+    "fb_readiness": "low|medium|high",
+    "fb_readiness_reason": "One sentence on where the account is commercially.",
+    "recommended_next_move": "Specific, concrete recommendation for next engagement."
+  }
+}
+Write like a senior analyst debriefing a partner. Be commercially direct.`;
+
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2500,messages:[{role:'user',content:prompt}]})
+    });
+    if(!r.ok){const e=await r.json().catch(()=>({}));return{error:`API ${r.status}: ${e.error?.message||r.statusText}`};}
+    const d=await r.json();
+    const txt=d.content.map(b=>b.text||'').join('');
+    return JSON.parse(txt.replace(/```json|```/g,'').trim());
+  }catch(e){return{error:e.message};}
+}
+
+function renderMtgAnalysis(a, n, coId){
+  const el=document.getElementById(`mf-analysis-${coId}`);
+  if(!el) return;
+  const sentCls={positive:'positive',neutral:'neutral',negative:'negative'}[a.sentiment]||'neutral';
+  const sentLbl={positive:'Positive',neutral:'Neutral',negative:'Needs attention'}[a.sentiment]||'—';
+  const L=a.longitudinal||{};
+  const trajPct=Math.round((L.trajectory_score||0.5)*100);
+  const trajCol=trajPct>=65?'#3a9a6a':trajPct>=40?'#c47d20':'#F84E5D';
+  const rdCol={high:'#3a9a6a',medium:'#c47d20',low:'#F84E5D'}[L.fb_readiness]||'#888';
+
+  const commitHTML=(a.commitments||[]).map(c=>`<li class="ma-item"><strong>${c.who}:</strong> ${c.what}${c.deadline&&c.deadline!=='not specified'?' <span style="color:var(--dim);font-size:10px">'+c.deadline+'</span>':''}</li>`).join('')||'<li class="ma-item" style="color:#aaa">None explicit</li>';
+  const sigHTML=(a.signals_confirmed||[]).map(s=>`<li class="ma-item"><strong>${s.signal}</strong> — ${s.significance}</li>`).join('')||'<li class="ma-item" style="color:#aaa">None confirmed</li>';
+  const fbHTML=(a.fb_opportunities||[]).map(o=>`<li class="ma-item"><strong>${o.opportunity}</strong> — ${o.evidence}</li>`).join('')||'<li class="ma-item" style="color:#aaa">None identified</li>';
+  const objHTML=(a.objections||[]).map(o=>`<li class="ma-item">${o}</li>`).join('')||'<li class="ma-item" style="color:#aaa">None flagged</li>';
+  const nextHTML=(a.next_actions||[]).map(n=>`<li class="ma-item">${n}</li>`).join('')||'<li class="ma-item" style="color:#aaa">None</li>';
+  const recurHTML=(L.recurring_themes||[]).map(t=>`<li class="l-item">${t}</li>`).join('')||'<li class="l-item" style="color:#444">First meeting — patterns emerge over time</li>';
+  const patHTML=(L.pattern_observations||[]).map(p=>`<li class="l-item">${p}</li>`).join('')||'<li class="l-item" style="color:#444">Log more meetings for pattern analysis</li>';
+
+  el.innerHTML=`<div class="ma-wrap">
+    <div class="ma-hdr">
+      <h3 class="ma-title">Meeting analysis — ${n} meeting${n===1?'':'s'} with this account</h3>
+      <span class="ma-badge ${sentCls}">${sentLbl}</span>
+    </div>
+    <div class="ma-grid">
+      <div class="ma-card full"><div class="ma-lbl d">Summary</div><p class="ma-text w">${a.summary||''}</p><div style="font-size:11px;color:var(--dim);margin-top:6px;font-style:italic">${a.sentiment_reason||''}</div></div>
+      <div class="ma-card"><div class="ma-lbl d">Themes</div><ul class="ma-items">${(a.themes||[]).map(t=>`<li class="ma-item">${t}</li>`).join('')}</ul></div>
+      <div class="ma-card"><div class="ma-lbl d">Objections &amp; blockers</div><ul class="ma-items">${objHTML}</ul></div>
+      <div class="ma-card"><div class="ma-lbl r">Commitments</div><ul class="ma-items">${commitHTML}</ul></div>
+      <div class="ma-card"><div class="ma-lbl b">Signals confirmed</div><ul class="ma-items">${sigHTML}</ul></div>
+      <div class="ma-card"><div class="ma-lbl g">FB opportunities</div><ul class="ma-items">${fbHTML}</ul></div>
+      <div class="ma-card"><div class="ma-lbl" style="color:#7b4caf">Next actions</div><ul class="ma-items">${nextHTML}</ul></div>
+    </div>
+    <div class="longi-box">
+      <div class="longi-hdr">Longitudinal pattern · ${n} meeting${n===1?'':'s'}</div>
+      <div class="longi-sub">Updated automatically on every submission</div>
+      <div class="longi-grid">
+        <div class="lc"><div class="ll b">Relationship trajectory</div>
+          <div class="traj-row"><div class="traj-bar"><div class="traj-fill" style="width:${trajPct}%;background:${trajCol}"></div></div>
+          <div class="traj-lbl" style="color:${trajCol}">${(L.relationship_trajectory||'').replace('_',' ')} · ${trajPct}%</div></div>
+        </div>
+        <div class="lc"><div class="ll g">FB readiness</div>
+          <div style="font-size:18px;font-weight:bold;color:${rdCol};font-family:var(--font-m);margin-bottom:4px">${(L.fb_readiness||'—').toUpperCase()}</div>
+          <div style="font-size:11px;color:#aaa">${L.fb_readiness_reason||''}</div>
+        </div>
+        <div class="lc"><div class="ll r">Recurring themes</div><ul class="l-items">${recurHTML}</ul></div>
+        <div class="lc"><div class="ll a">Patterns</div><ul class="l-items">${patHTML}</ul></div>
+        <div class="lc full"><div class="ll w">Recommended next move</div><div class="l-text">${L.recommended_next_move||'Log more meetings to generate recommendations.'}</div></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+async function loadMtgHistory(coId){
+  const co=COS.find(c=>c.id===coId);
+  const el=document.getElementById(`mf-hist-out-${coId}`);
+  if(!el) return;
+  el.innerHTML='<div class="empty-mtg">Loading…</div>';
+  const meetings=await fetchMtgs(co.name);
+  if(!meetings.length){ el.innerHTML=`<div class="empty-mtg">No meetings logged yet for ${co.name}. Use the Log Meeting tab.</div>`; return; }
+
+  const byS=meetings.reduce((a,m)=>{ a[m.sentiment||'unknown']=(a[m.sentiment||'unknown']||0)+1; return a; },{});
+  const statsHTML=`<div class="mtg-stats">
+    <div class="mtg-stat"><div class="mtg-stat-n">${meetings.length}</div><div class="mtg-stat-l">Total</div></div>
+    <div class="mtg-stat"><div class="mtg-stat-n" style="color:#3a9a6a">${byS.positive||0}</div><div class="mtg-stat-l">Positive</div></div>
+    <div class="mtg-stat"><div class="mtg-stat-n" style="color:#888">${byS.neutral||0}</div><div class="mtg-stat-l">Neutral</div></div>
+    <div class="mtg-stat"><div class="mtg-stat-n" style="color:var(--red)">${byS.negative||0}</div><div class="mtg-stat-l">Needs attention</div></div>
+  </div>`;
+
+  const sorted=[...meetings].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const cardsHTML=sorted.map(m=>{
+    const themes=tryParseMtg(m.themes,[]);
+    const fbs=tryParseMtg(m.fb_opportunities,[]);
+    const sc={positive:'s-positive',neutral:'s-neutral',negative:'s-negative'}[m.sentiment]||'s-neutral';
+    const sl={positive:'Positive',neutral:'Neutral',negative:'Needs attention'}[m.sentiment]||'—';
+    const tc='t-'+(m.meeting_type||'intro');
+    const tl={intro:'Intro',discovery:'Discovery',proposal:'Proposal',review:'Review',qbr:'QBR',followup:'Follow-up'}[m.meeting_type]||m.meeting_type||'—';
+    const tagsHTML=themes.slice(0,4).map(t=>`<span class="mc-tag">${t}</span>`).join('');
+    const fbHTML=fbs.slice(0,2).map(o=>`<li class="ma-item" style="font-size:11px">${typeof o==='object'?o.opportunity:o}</li>`).join('');
+    return`<div class="mc">
+      <div class="mc-head" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open');this.querySelector('.mc-arr').classList.toggle('open')">
+        <div class="mc-date">${m.date||'—'}</div>
+        <div><div class="mc-who">${m.contact||'—'}</div><div class="mc-role">${m.contact_title||''}</div></div>
+        <span class="mc-type ${tc}">${tl}</span>
+        <span class="mc-sent ${sc}" style="margin-left:auto">${sl}</span>
+        <span class="mc-arr">▶</span>
+      </div>
+      <div class="mc-body">
+        <p class="mc-summary">${m.ai_summary||'No summary.'}</p>
+        <div class="mc-tags">${tagsHTML}</div>
+        ${fbHTML?`<div style="font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:5px">FB Opportunities</div><ul class="ma-items">${fbHTML}</ul>`:''}
+      </div>
+    </div>`;
+  }).join('');
+
+  el.innerHTML=statsHTML+'<div class="mc-list">'+cardsHTML+'</div>';
+}
+
+async function runLongi(coId, coName){
+  const btn=document.getElementById(`longi-btn-${coId}`);
+  const el=document.getElementById(`mf-longi-out-${coId}`);
+  btn.disabled=true; btn.textContent='Running…';
+  el.innerHTML='<div class="empty-mtg">Generating full pattern analysis…</div>';
+  const meetings=await fetchMtgs(coName);
+  if(!meetings.length){ el.innerHTML='<div class="empty-mtg">No meetings logged yet.</div>'; btn.disabled=false; btn.textContent='⚡ Run full pattern analysis'; return; }
+
+  const key=getKey();
+  if(!key){ el.innerHTML='<div class="empty-mtg">No API key configured.</div>'; btn.disabled=false; btn.textContent='⚡ Run full pattern analysis'; return; }
+
+  const summaries=meetings.map((m,i)=>`Meeting ${i+1} (${m.date}, ${m.meeting_type}, ${m.contact}): ${m.ai_summary||m.transcript?.substring(0,350)||'No summary'}`).join('\n\n');
+
+  const prompt=`You are a senior FutureBridge analyst. Analyse the complete meeting history for ${coName} and produce a deep longitudinal intelligence report.
+
+MEETING HISTORY (${meetings.length} meetings):
+${summaries}
+
+Return ONLY valid JSON:
+{
+  "executive_summary": "3-4 sentences. Overall relationship state and single most important insight.",
+  "relationship_health": "strong|developing|stalled|at_risk",
+  "health_score": 0.7,
+  "recurring_themes": [{"theme":"Name","frequency":2,"trajectory":"growing|stable|declining","significance":"Why this matters"}],
+  "key_signals": ["Signal confirmed across meetings that aligns with account brief intelligence"],
+  "commitment_analysis": "2 sentences on whether commitments on both sides have been followed through.",
+  "fb_readiness": "low|medium|high",
+  "fb_readiness_evidence": ["Evidence point 1","Evidence point 2"],
+  "biggest_opportunity": "Single most commercially significant opportunity visible from the pattern.",
+  "biggest_risk": "Single most significant risk to the relationship or deal.",
+  "recommended_strategy": "2-3 sentences. Concrete 90-day strategy for this account."
+}`;
+
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,messages:[{role:'user',content:prompt}]})
+    });
+    const d=await r.json();
+    const L=JSON.parse(d.content.map(b=>b.text||'').join('').replace(/```json|```/g,'').trim());
+    const hcol={strong:'#3a9a6a',developing:'#c47d20',stalled:'#888',at_risk:'#F84E5D'}[L.relationship_health]||'#888';
+    const rcol={high:'#3a9a6a',medium:'#c47d20',low:'#F84E5D'}[L.fb_readiness]||'#888';
+    const hpct=Math.round((L.health_score||0.5)*100);
+    const themesHTML=(L.recurring_themes||[]).map(t=>`
+      <div style="padding:10px;background:#1a1a1a;border-radius:2px;margin-bottom:6px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+          <span style="font-size:11px;font-weight:700;color:#fff">${t.theme}</span>
+          <span style="font-size:9px;font-family:var(--font-m);color:#444">×${t.frequency}</span>
+          <span style="font-size:9px;color:${t.trajectory==='growing'?'#3a9a6a':t.trajectory==='declining'?'#F84E5D':'#888'};font-weight:700;margin-left:auto">${t.trajectory}</span>
+        </div>
+        <div style="font-size:11px;color:#777">${t.significance}</div>
+      </div>`).join('');
+
+    el.innerHTML=`<div class="longi-box">
+      <div class="longi-hdr">Full pattern analysis — ${coName} · ${meetings.length} meetings</div>
+      <div class="longi-sub">Generated ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</div>
+      <div class="longi-grid">
+        <div class="lc"><div class="ll b">Relationship health</div>
+          <div class="traj-row"><div class="traj-bar"><div class="traj-fill" style="width:${hpct}%;background:${hcol}"></div></div>
+          <div class="traj-lbl" style="color:${hcol}">${(L.relationship_health||'').replace('_',' ')} · ${hpct}%</div></div>
+        </div>
+        <div class="lc"><div class="ll g">FB readiness</div>
+          <div style="font-size:18px;font-weight:bold;color:${rcol};font-family:var(--font-m);margin-bottom:4px">${(L.fb_readiness||'—').toUpperCase()}</div>
+          <ul class="l-items">${(L.fb_readiness_evidence||[]).map(e=>`<li class="l-item">${e}</li>`).join('')}</ul>
+        </div>
+        <div class="lc full"><div class="ll w">Executive summary</div><div class="l-text">${L.executive_summary||''}</div></div>
+        <div class="lc full"><div class="ll r">Recurring themes</div>${themesHTML||'<div style="color:#444;font-size:12px">Insufficient data</div>'}</div>
+        <div class="lc"><div class="ll a">Biggest opportunity</div><div class="l-text">${L.biggest_opportunity||'—'}</div></div>
+        <div class="lc"><div class="ll r">Biggest risk</div><div class="l-text">${L.biggest_risk||'—'}</div></div>
+        <div class="lc full"><div class="ll w">Recommended 90-day strategy</div><div class="l-text">${L.recommended_strategy||'—'}</div></div>
+      </div>
+    </div>`;
+  }catch(e){
+    el.innerHTML=`<div class="empty-mtg" style="color:var(--red)">Failed: ${e.message}</div>`;
+  }
+  btn.disabled=false; btn.textContent='⚡ Run full pattern analysis';
+}
+
+async function fetchMtgs(coName){
+  const url=getScriptUrl();
+  if(!url) return [];
+  try{
+    const r=await fetch(`${url}?action=getMeetings&company=${encodeURIComponent(coName)}`);
+    if(!r.ok) return [];
+    const d=await r.json();
+    return d.meetings||[];
+  }catch(e){ return []; }
+}
+
+async function saveMtg(data){
+  const url=getScriptUrl();
+  if(!url){ showToast('No Apps Script URL — meeting not saved to Sheets',true); return false; }
+  try{
+    await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'saveMeeting',data})});
+    return true;
+  }catch(e){ showToast('Sheets save failed: '+e.message,true); return false; }
+}
+
+function tryParseMtg(str,fb){ if(Array.isArray(str))return str; try{return JSON.parse(str);}catch(e){return fb;} }
+
+function showToast(msg,err){
+  let t=document.getElementById('__toast__');
+  if(!t){ t=document.createElement('div'); t.id='__toast__'; t.style.cssText='position:fixed;bottom:20px;right:20px;background:#000;color:#fff;padding:10px 18px;font-size:12px;font-weight:700;border-radius:3px;z-index:9999;opacity:0;transform:translateY(6px);transition:all .22s;pointer-events:none'; document.body.appendChild(t); }
+  t.textContent=msg;
+  t.style.background=err?'#F84E5D':'#000';
+  t.style.opacity='1'; t.style.transform='translateY(0)';
+  setTimeout(()=>{ t.style.opacity='0'; t.style.transform='translateY(6px)'; },3000);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────
+loadState();
+const sk=localStorage.getItem('fb_v3_key')||'';
+document.getElementById('apiKey').value=sk;
+const su=document.getElementById('scriptUrl');
+if(su) su.value=localStorage.getItem('fb_v3_script')||'';
+renderSB();
+</script>
+</body>
+</html>
