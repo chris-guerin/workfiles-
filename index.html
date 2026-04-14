@@ -5,377 +5,304 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>FutureBridge — Intelligence Tools</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
-
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --black:#000;--white:#fff;--red:#F84E5D;
-  --grey:#4B4B55;--light:#F5F5F3;--mid:#E0E0DC;--dim:#888;
-  --red-pale:rgba(248,78,93,.06);--red-mid:rgba(248,78,93,.18);
-  --serif:'DM Serif Display',Georgia,serif;
-  --sans:'DM Sans',Helvetica,sans-serif;
-  --mono:'DM Mono','Courier New',monospace;
+  --black:#000;--white:#fff;--red:#F84E5D;--grey:#4B4B55;
+  --bg:#F7F7F5;--border:#E0E0DC;--text:#111;--muted:#666;--faint:#aaa;
+  --red-pale:rgba(248,78,93,.07);--red-border:rgba(248,78,93,.3);
 }
 html{scroll-behavior:smooth}
 body{
-  font-family:var(--sans);background:var(--black);color:var(--white);
-  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;
-  min-height:100vh;
-}
-
-/* ── GRAIN OVERLAY ── */
-body::before{
-  content:'';position:fixed;inset:0;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-  opacity:.5;pointer-events:none;z-index:0;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  background:var(--bg);color:var(--text);
+  font-size:15px;line-height:1.65;
+  -webkit-font-smoothing:antialiased;
 }
 
 /* ── HEADER ── */
-header{
+.hdr{
   position:fixed;top:0;left:0;right:0;z-index:100;
   display:flex;align-items:center;justify-content:space-between;
-  padding:18px 48px;border-bottom:1px solid #111;
-  background:rgba(0,0,0,.92);backdrop-filter:blur(12px);
+  padding:16px 48px;
+  background:rgba(247,247,245,.97);border-bottom:1px solid var(--border);
 }
-.h-device{display:flex;flex-direction:column;gap:3px}
-.h-device span{display:block;background:var(--white);height:3px;border-radius:1px}
-.h-device span:nth-child(1){width:24px}
-.h-device span:nth-child(2){width:16px}
-.h-device span:nth-child(3){width:9px}
-.h-logo{font-family:var(--sans);font-size:14px;font-weight:600;letter-spacing:.04em;color:var(--white)}
-.h-tag{font-family:var(--mono);font-size:9px;color:#333;letter-spacing:.1em;text-transform:uppercase}
+.hdr-left{display:flex;align-items:center;gap:16px}
+.device{display:flex;flex-direction:column;gap:3px}
+.device span{display:block;background:var(--black);height:3px;border-radius:1px}
+.device span:nth-child(1){width:22px}
+.device span:nth-child(2){width:14px}
+.device span:nth-child(3){width:8px}
+.logo{font-size:13px;font-weight:700;letter-spacing:.06em;color:var(--black)}
+.hdr-tag{font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-family:'Courier New',monospace}
 
 /* ── HERO ── */
 .hero{
-  min-height:100vh;display:flex;flex-direction:column;
-  justify-content:flex-end;padding:0 48px 64px;
-  position:relative;overflow:hidden;
+  min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;
+  padding:120px 48px 64px;
+  border-bottom:3px solid var(--black);
+  position:relative;background:var(--white);
 }
-.hero-bg-line{
-  position:absolute;top:0;bottom:0;left:48px;
-  width:1px;background:linear-gradient(to bottom,transparent,#1a1a1a 20%,#1a1a1a 80%,transparent);
-}
-.hero-bg-line:nth-child(2){left:auto;right:48px}
-.hero-eyebrow{
-  display:flex;align-items:center;gap:12px;margin-bottom:28px;
-  animation:fadeUp .6s ease .1s both;
-}
-.hero-line{width:32px;height:1px;background:var(--red)}
-.hero-lbl{font-family:var(--mono);font-size:10px;color:var(--red);letter-spacing:.14em;text-transform:uppercase;font-weight:500}
+.eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:24px;opacity:0;animation:up .5s ease .05s forwards}
+.eyebrow-line{width:28px;height:2px;background:var(--red)}
+.eyebrow-lbl{font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--red);font-family:'Courier New',monospace}
+
 h1{
-  font-family:var(--serif);
   font-size:clamp(3rem,7vw,6.5rem);
-  line-height:1.0;letter-spacing:-.02em;color:var(--white);
-  margin-bottom:28px;max-width:14ch;
-  animation:fadeUp .7s ease .2s both;
+  font-weight:700;letter-spacing:-.035em;line-height:1.0;
+  color:var(--black);margin-bottom:24px;max-width:14ch;
+  opacity:0;animation:up .6s ease .1s forwards;
 }
-h1 em{color:var(--red);font-style:italic}
-.hero-sub{
-  font-size:15px;color:#666;max-width:52ch;line-height:1.7;
+h1 .accent{color:var(--red)}
+
+.hero-body{
+  font-size:16px;color:var(--muted);max-width:52ch;line-height:1.7;
   margin-bottom:48px;
-  animation:fadeUp .7s ease .3s both;
+  opacity:0;animation:up .6s ease .2s forwards;
 }
-.hero-meta{
-  display:flex;gap:40px;padding-top:24px;
-  border-top:1px solid #1a1a1a;
-  animation:fadeUp .7s ease .4s both;
+
+.hero-stats{
+  display:flex;flex-wrap:wrap;gap:0;border-top:1px solid var(--border);
+  opacity:0;animation:up .6s ease .3s forwards;
 }
-.hm{display:flex;flex-direction:column;gap:3px}
-.hm-l{font-family:var(--mono);font-size:8px;color:#333;letter-spacing:.12em;text-transform:uppercase}
-.hm-v{font-size:13px;color:#666}
+.stat{padding:20px 36px 0 0;margin-right:36px;border-right:1px solid var(--border)}
+.stat:last-child{border-right:none;margin-right:0;padding-right:0}
+.stat-lbl{font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-family:'Courier New',monospace;margin-bottom:5px}
+.stat-val{font-size:14px;color:var(--black);font-weight:500}
 
-/* ── TOOLS SECTION ── */
-.tools{padding:80px 48px;position:relative;z-index:1}
-.section-hdr{display:flex;align-items:baseline;gap:16px;margin-bottom:48px}
-.section-hdr h2{font-family:var(--serif);font-size:clamp(1.6rem,3vw,2.4rem);color:var(--white)}
-.section-hdr-line{flex:1;height:1px;background:#1a1a1a}
-.section-hdr .count{font-family:var(--mono);font-size:10px;color:#333;letter-spacing:.1em}
+/* ── SECTIONS ── */
+.section{padding:72px 48px;border-bottom:1px solid var(--border);background:var(--bg)}
+.section.white{background:var(--white)}
+.section-head{display:flex;align-items:center;gap:16px;margin-bottom:40px}
+.section-head h2{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);white-space:nowrap;font-family:'Courier New',monospace}
+.section-rule{flex:1;height:1px;background:var(--border)}
+.section-count{font-size:9px;color:var(--faint);font-family:'Courier New',monospace;letter-spacing:.08em;white-space:nowrap}
 
-.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#111}
-.tool-card{
-  background:var(--black);padding:32px 28px;
+/* ── TOOL CARDS ── */
+.tools-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:1px;background:var(--border)}
+.tool{
+  background:var(--white);padding:36px 28px;
   display:flex;flex-direction:column;
-  transition:background .2s ease;
-  text-decoration:none;
-  position:relative;overflow:hidden;
+  text-decoration:none;color:inherit;
+  position:relative;
+  transition:background .18s ease;
+  border-top:3px solid transparent;
 }
-.tool-card::before{
-  content:'';position:absolute;left:0;top:0;bottom:0;
-  width:2px;background:var(--red);
-  transform:scaleY(0);transform-origin:bottom;
-  transition:transform .25s ease;
-}
-.tool-card:hover{background:#080808}
-.tool-card:hover::before{transform:scaleY(1)}
-.tool-card.primary{background:#0a0a0a}
-.tool-card.primary::before{transform:scaleY(1)}
-.tool-card.wip{opacity:.45;cursor:default;pointer-events:none}
+.tool:hover{background:#fafaf8}
+.tool.active{border-top-color:var(--red)}
+.tool.dim{opacity:.4;pointer-events:none}
 
-.tc-num{font-family:var(--mono);font-size:9px;color:#2a2a2a;letter-spacing:.1em;margin-bottom:20px}
-.tc-icon{font-size:22px;margin-bottom:14px;display:block}
-.tc-title{font-family:var(--serif);font-size:1.25rem;color:var(--white);margin-bottom:8px;line-height:1.2}
-.tc-desc{font-size:12px;color:#555;line-height:1.6;margin-bottom:20px;flex:1}
-.tc-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:20px}
-.tc-tag{
-  font-family:var(--mono);font-size:8px;letter-spacing:.08em;
-  text-transform:uppercase;padding:2px 7px;
-  border:1px solid #1a1a1a;color:#333;border-radius:1px;
+.tool-num{font-size:9px;color:var(--faint);font-family:'Courier New',monospace;letter-spacing:.1em;margin-bottom:24px}
+.tool-icon{
+  width:38px;height:38px;border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:20px;font-size:14px;color:var(--muted);
 }
-.tc-tag.live{border-color:rgba(248,78,93,.3);color:var(--red)}
-.tc-cta{
-  display:inline-flex;align-items:center;gap:8px;
-  font-family:var(--mono);font-size:9px;font-weight:500;
-  letter-spacing:.1em;text-transform:uppercase;
-  color:#333;transition:color .2s ease;
-  margin-top:auto;
+.tool.active .tool-icon{border-color:var(--red-border);color:var(--red);background:var(--red-pale)}
+.tool-title{font-size:19px;font-weight:700;color:var(--black);margin-bottom:10px;letter-spacing:-.01em}
+.tool-desc{font-size:12.5px;color:var(--muted);line-height:1.65;margin-bottom:20px;flex:1}
+.tool-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:24px}
+.tag{
+  font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  padding:3px 8px;border:1px solid var(--border);color:var(--faint);
+  font-family:'Courier New',monospace;
 }
-.tool-card:hover .tc-cta{color:var(--white)}
-.tc-cta-arrow{
-  width:20px;height:1px;background:currentColor;position:relative;
-  transition:width .2s ease;
+.tag.live{border-color:var(--red-border);color:var(--red);background:var(--red-pale)}
+.tool-link{
+  display:inline-flex;align-items:center;gap:10px;
+  font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);font-family:'Courier New',monospace;
+  margin-top:auto;transition:color .18s ease;
 }
-.tc-cta-arrow::after{
-  content:'';position:absolute;right:0;top:-3px;
-  width:6px;height:6px;border-right:1px solid currentColor;
-  border-top:1px solid currentColor;transform:rotate(45deg);
-}
-.tool-card:hover .tc-cta-arrow{width:30px}
+.tool.active:hover .tool-link,.tool:hover .tool-link{color:var(--black)}
+.tool-link-line{width:24px;height:1px;background:currentColor;position:relative;transition:width .2s ease}
+.tool-link-line::after{content:'';position:absolute;right:-1px;top:-3px;width:6px;height:6px;border-top:1px solid currentColor;border-right:1px solid currentColor;transform:rotate(45deg)}
+.tool:hover .tool-link-line{width:36px}
 
-/* ── WIDE CARD ── */
-.tool-card.wide{grid-column:span 2}
-
-/* ── COMPANIES STRIP ── */
-.companies{padding:0 48px 80px;position:relative;z-index:1}
-.co-label{font-family:var(--mono);font-size:8px;color:#222;letter-spacing:.14em;text-transform:uppercase;margin-bottom:16px}
-.co-strip{
-  display:flex;flex-wrap:wrap;gap:6px;
-  padding:20px 0;border-top:1px solid #111;border-bottom:1px solid #111;
+/* ── COMPANIES ── */
+.cos-grid{display:flex;flex-wrap:wrap;gap:6px}
+.cos-pill{
+  font-size:9px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  padding:5px 11px;border:1px solid var(--border);color:var(--muted);
+  font-family:'Courier New',monospace;background:var(--white);
 }
-.co-pill{
-  font-family:var(--mono);font-size:9px;letter-spacing:.06em;
-  padding:4px 10px;border:1px solid #1a1a1a;color:#333;
-  border-radius:1px;transition:all .15s ease;
-}
-.co-pill.active{border-color:rgba(248,78,93,.25);color:var(--red)}
-.co-pill:hover{border-color:#333;color:#666}
+.cos-pill.new{border-color:var(--red-border);color:var(--red);background:var(--red-pale)}
 
-/* ── HOW IT WORKS ── */
-.how{padding:0 48px 80px;position:relative;z-index:1}
-.how-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#111;margin-top:0}
-.how-step{background:var(--black);padding:28px 24px}
-.how-n{font-family:var(--mono);font-size:32px;color:#111;line-height:1;margin-bottom:16px;font-weight:500}
-.how-t{font-size:12px;font-weight:600;color:var(--white);margin-bottom:6px;letter-spacing:.02em}
-.how-d{font-size:11px;color:#444;line-height:1.6}
+/* ── HOW ── */
+.how-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border)}
+.how-step{background:var(--white);padding:36px 28px}
+.how-n{
+  font-size:52px;font-weight:700;letter-spacing:-.04em;
+  color:var(--border);line-height:1;margin-bottom:20px;
+}
+.how-t{font-size:13px;font-weight:700;color:var(--black);margin-bottom:8px}
+.how-d{font-size:12px;color:var(--muted);line-height:1.65}
 
 /* ── FOOTER ── */
 footer{
-  border-top:1px solid #111;padding:24px 48px;
-  display:flex;align-items:center;justify-content:space-between;
-  position:relative;z-index:1;
+  padding:22px 48px;display:flex;align-items:center;
+  justify-content:space-between;background:var(--black);
 }
-.f-left{display:flex;align-items:center;gap:24px}
-.f-logo{font-family:var(--sans);font-size:13px;font-weight:600;color:#333}
-.f-note{font-family:var(--mono);font-size:9px;color:#222;letter-spacing:.08em}
-.f-right{font-family:var(--mono);font-size:9px;color:#222;letter-spacing:.06em}
+.f-brand{font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--white)}
+.f-note{font-size:9px;color:#444;font-family:'Courier New',monospace;letter-spacing:.06em}
 
-/* ── ANIMATIONS ── */
-@keyframes fadeUp{
-  from{opacity:0;transform:translateY(18px)}
+/* ── ANIM ── */
+@keyframes up{
+  from{opacity:0;transform:translateY(16px)}
   to{opacity:1;transform:translateY(0)}
 }
-.reveal{
-  opacity:0;transform:translateY(16px);
-  transition:opacity .55s ease,transform .55s ease;
-}
+.reveal{opacity:0;transform:translateY(12px);transition:opacity .5s ease,transform .5s ease}
 .reveal.vis{opacity:1;transform:translateY(0)}
 
 /* ── RESPONSIVE ── */
-@media(max-width:900px){
-  header{padding:16px 24px}
-  .hero{padding:0 24px 48px}
-  .tools{padding:60px 24px}
-  .companies,.how{padding-left:24px;padding-right:24px}
-  footer{padding:20px 24px;flex-direction:column;gap:10px;text-align:center}
-  .tools-grid{grid-template-columns:1fr}
-  .tool-card.wide{grid-column:span 1}
-  .how-grid{grid-template-columns:1fr 1fr}
-  h1{font-size:2.8rem}
+@media(max-width:960px){
+  .hdr,.hero,.section,footer{padding-left:24px;padding-right:24px}
+  .tools-grid,.how-grid{grid-template-columns:1fr}
+  h1{font-size:3rem}
+  .stat{padding-right:20px;margin-right:20px}
 }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="h-device"><span></span><span></span><span></span></div>
-  <div class="h-logo">FutureBridge</div>
-  <div class="h-tag">Intelligence Tools · v7</div>
+<header class="hdr">
+  <div class="hdr-left">
+    <div class="device"><span></span><span></span><span></span></div>
+    <div class="logo">FutureBridge</div>
+  </div>
+  <div class="hdr-tag">Intelligence Tools &nbsp;·&nbsp; v7</div>
 </header>
 
+<!-- HERO -->
 <section class="hero">
-  <div class="hero-bg-line"></div>
-  <div class="hero-bg-line"></div>
-
-  <div class="hero-eyebrow">
-    <div class="hero-line"></div>
-    <div class="hero-lbl">FutureBridge Advisory</div>
+  <div class="eyebrow">
+    <div class="eyebrow-line"></div>
+    <div class="eyebrow-lbl">FutureBridge Advisory</div>
   </div>
-
-  <h1>Account intelligence.<br><em>Built to win.</em></h1>
-
-  <p class="hero-sub">AI-powered account plans, initiative hypotheses, and capability mapping across 36 companies — from tyre manufacturers to semiconductor groups to global OEMs. Select a company. Get a brief in 30 seconds.</p>
-
-  <div class="hero-meta">
-    <div class="hm"><div class="hm-l">Companies</div><div class="hm-v">36</div></div>
-    <div class="hm"><div class="hm-l">Sectors</div><div class="hm-v">10</div></div>
-    <div class="hm"><div class="hm-l">Per brief</div><div class="hm-v">4 initiatives · hypotheses · FB map</div></div>
-    <div class="hm"><div class="hm-l">Requires</div><div class="hm-v">Anthropic API key</div></div>
+  <h1>Account<br>intelligence.<br><span class="accent">Built to win.</span></h1>
+  <p class="hero-body">AI-powered account plans, initiative hypotheses, and capability mapping across 36 companies — tyre manufacturers, semiconductor groups, global OEMs, and truck makers. Select a company. Get a brief in 30 seconds.</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-lbl">Companies</div><div class="stat-val">36</div></div>
+    <div class="stat"><div class="stat-lbl">Sectors</div><div class="stat-val">10</div></div>
+    <div class="stat"><div class="stat-lbl">Per brief</div><div class="stat-val">4 initiatives · hypotheses · FB map</div></div>
+    <div class="stat"><div class="stat-lbl">Requires</div><div class="stat-val">Anthropic API key</div></div>
   </div>
 </section>
 
-<section class="tools" id="tools">
-  <div class="section-hdr">
+<!-- TOOLS -->
+<section class="section white reveal">
+  <div class="section-head">
     <h2>Tools</h2>
-    <div class="section-hdr-line"></div>
-    <div class="count">01 live · 02 in build</div>
+    <div class="section-rule"></div>
+    <div class="section-count">01 live &nbsp;·&nbsp; 02 in build</div>
   </div>
-
   <div class="tools-grid">
-
-    <a href="account_plans_v7.html" class="tool-card primary wide reveal">
-      <div class="tc-num">01 / 03</div>
-      <span class="tc-icon">◈</span>
-      <div class="tc-title">Account Plans</div>
-      <p class="tc-desc">AI-generated intelligence briefs for 36 companies across O&amp;G, utilities, tyre, semiconductor, automotive OEM, Tier 1 suppliers, and truck manufacturers. Each plan follows the chain: Performance → Strategy → Pain Points → Initiatives → Technologies → Weak Signals. Every initiative carries a hypothesis, WNTBT conditions, and a mapped FutureBridge entry point.</p>
-      <div class="tc-tags">
-        <span class="tc-tag live">Live</span>
-        <span class="tc-tag">36 companies</span>
-        <span class="tc-tag">Hypotheses</span>
-        <span class="tc-tag">FB capability map</span>
-        <span class="tc-tag">Meeting log</span>
-        <span class="tc-tag">Longitudinal analysis</span>
+    <a href="account_plans_v7.html" class="tool active">
+      <div class="tool-num">01 / 03</div>
+      <div class="tool-icon">◈</div>
+      <div class="tool-title">Account Plans</div>
+      <p class="tool-desc">AI-generated intelligence briefs for 36 companies across O&amp;G, utilities, tyre, semiconductor, automotive OEM, Tier 1 suppliers, and truck manufacturers. Follows the chain: Performance → Strategy → Pain Points → Initiatives → Technologies → Weak Signals. Every initiative carries a hypothesis, WNTBT conditions, and a mapped FutureBridge entry point.</p>
+      <div class="tool-tags">
+        <span class="tag live">Live</span>
+        <span class="tag">36 companies</span>
+        <span class="tag">Hypotheses</span>
+        <span class="tag">FB capability map</span>
+        <span class="tag">Meeting log</span>
+        <span class="tag">Longitudinal analysis</span>
       </div>
-      <div class="tc-cta">Open tool <span class="tc-cta-arrow"></span></div>
+      <div class="tool-link">Open tool <span class="tool-link-line"></span></div>
     </a>
-
-    <div class="tool-card wip reveal">
-      <div class="tc-num">02 / 03</div>
-      <span class="tc-icon">◇</span>
-      <div class="tc-title">Proposal Builder</div>
-      <p class="tc-desc">Generate approach notes and commercial proposals mapped to account plan initiatives. Auto-populates scope, methodology, team structure, and fee options from the account plan data.</p>
-      <div class="tc-tags">
-        <span class="tc-tag">In build</span>
-        <span class="tc-tag">Approach notes</span>
-        <span class="tc-tag">Fee modelling</span>
-      </div>
-      <div class="tc-cta">Coming soon <span class="tc-cta-arrow"></span></div>
+    <div class="tool dim">
+      <div class="tool-num">02 / 03</div>
+      <div class="tool-icon">◇</div>
+      <div class="tool-title">Proposal Builder</div>
+      <p class="tool-desc">Generate approach notes and commercial proposals mapped to account plan initiatives. Auto-populates scope, methodology, team structure, and fee options.</p>
+      <div class="tool-tags"><span class="tag">In build</span><span class="tag">Approach notes</span><span class="tag">Fee modelling</span></div>
+      <div class="tool-link">Coming soon <span class="tool-link-line"></span></div>
     </div>
-
-    <div class="tool-card wip reveal">
-      <div class="tc-num">03 / 03</div>
-      <span class="tc-icon">▦</span>
-      <div class="tc-title">Weak Signal Monitor</div>
-      <p class="tc-desc">Continuous monitoring of named signals from account plans. Tracks startup funding rounds, patent clusters, regulatory drafts, and pilot announcements. Surfaces the ones that change a hypothesis.</p>
-      <div class="tc-tags">
-        <span class="tc-tag">In build</span>
-        <span class="tc-tag">Signal tracking</span>
-        <span class="tc-tag">Hypothesis alerts</span>
-      </div>
-      <div class="tc-cta">Coming soon <span class="tc-cta-arrow"></span></div>
+    <div class="tool dim">
+      <div class="tool-num">03 / 03</div>
+      <div class="tool-icon">▦</div>
+      <div class="tool-title">Weak Signal Monitor</div>
+      <p class="tool-desc">Continuous monitoring of named signals from account plans. Tracks startup funding, patent clusters, regulatory drafts. Surfaces the ones that change a hypothesis.</p>
+      <div class="tool-tags"><span class="tag">In build</span><span class="tag">Signal tracking</span><span class="tag">Hypothesis alerts</span></div>
+      <div class="tool-link">Coming soon <span class="tool-link-line"></span></div>
     </div>
-
   </div>
 </section>
 
-<section class="companies reveal" id="companies">
-  <div class="co-label">Companies covered — v7</div>
-  <div class="co-strip">
-    <span class="co-pill active">Michelin</span>
-    <span class="co-pill active">Bridgestone</span>
-    <span class="co-pill active">Goodyear</span>
-    <span class="co-pill active">Pirelli</span>
-    <span class="co-pill active">Infineon</span>
-    <span class="co-pill active">NXP Semiconductors</span>
-    <span class="co-pill active">STMicroelectronics</span>
-    <span class="co-pill active">Texas Instruments</span>
-    <span class="co-pill active">Renesas Electronics</span>
-    <span class="co-pill active">VW Group</span>
-    <span class="co-pill active">Mercedes-Benz</span>
-    <span class="co-pill active">BMW Group</span>
-    <span class="co-pill active">Stellantis</span>
-    <span class="co-pill active">Renault Group</span>
-    <span class="co-pill active">Ford</span>
-    <span class="co-pill active">General Motors</span>
-    <span class="co-pill active">Tesla</span>
-    <span class="co-pill active">Volvo Group</span>
-    <span class="co-pill active">Daimler Truck</span>
-    <span class="co-pill active">TRATON Group</span>
-    <span class="co-pill active">PACCAR</span>
-    <span class="co-pill active">IVECO Group</span>
-    <span class="co-pill active">Continental</span>
-    <span class="co-pill active">Knorr-Bremse</span>
-    <span class="co-pill active">WOCO</span>
-    <span class="co-pill">BP</span>
-    <span class="co-pill">ExxonMobil</span>
-    <span class="co-pill">ConocoPhillips</span>
-    <span class="co-pill">Eni</span>
-    <span class="co-pill">SLB</span>
-    <span class="co-pill">Technip Energies</span>
-    <span class="co-pill">TechnipFMC</span>
-    <span class="co-pill">EDP</span>
-    <span class="co-pill">Vattenfall</span>
-    <span class="co-pill">SSE Renewables</span>
-    <span class="co-pill">Centrica</span>
+<!-- COMPANIES -->
+<section class="section reveal">
+  <div class="section-head">
+    <h2>Companies covered</h2>
+    <div class="section-rule"></div>
+    <div class="section-count">v7 &nbsp;·&nbsp; 36 total</div>
+  </div>
+  <div class="cos-grid">
+    <span class="cos-pill new">Michelin</span>
+    <span class="cos-pill new">Bridgestone</span>
+    <span class="cos-pill new">Goodyear</span>
+    <span class="cos-pill new">Pirelli</span>
+    <span class="cos-pill new">Infineon</span>
+    <span class="cos-pill new">NXP Semiconductors</span>
+    <span class="cos-pill new">STMicroelectronics</span>
+    <span class="cos-pill new">Texas Instruments</span>
+    <span class="cos-pill new">Renesas Electronics</span>
+    <span class="cos-pill new">VW Group</span>
+    <span class="cos-pill new">Mercedes-Benz</span>
+    <span class="cos-pill new">BMW Group</span>
+    <span class="cos-pill new">Stellantis</span>
+    <span class="cos-pill new">Renault Group</span>
+    <span class="cos-pill new">Ford</span>
+    <span class="cos-pill new">General Motors</span>
+    <span class="cos-pill new">Tesla</span>
+    <span class="cos-pill new">Volvo Group</span>
+    <span class="cos-pill new">Daimler Truck</span>
+    <span class="cos-pill new">TRATON Group</span>
+    <span class="cos-pill new">PACCAR</span>
+    <span class="cos-pill new">IVECO Group</span>
+    <span class="cos-pill new">Continental</span>
+    <span class="cos-pill new">Knorr-Bremse</span>
+    <span class="cos-pill new">WOCO</span>
+    <span class="cos-pill">BP</span>
+    <span class="cos-pill">ExxonMobil</span>
+    <span class="cos-pill">ConocoPhillips</span>
+    <span class="cos-pill">Eni</span>
+    <span class="cos-pill">SLB</span>
+    <span class="cos-pill">Technip Energies</span>
+    <span class="cos-pill">TechnipFMC</span>
+    <span class="cos-pill">EDP</span>
+    <span class="cos-pill">Vattenfall</span>
+    <span class="cos-pill">SSE Renewables</span>
+    <span class="cos-pill">Centrica</span>
   </div>
 </section>
 
-<section class="how reveal" id="how">
-  <div class="section-hdr" style="margin-bottom:0">
+<!-- HOW -->
+<section class="section white reveal">
+  <div class="section-head">
     <h2>How it works</h2>
-    <div class="section-hdr-line"></div>
+    <div class="section-rule"></div>
   </div>
   <div class="how-grid">
-    <div class="how-step reveal">
-      <div class="how-n">01</div>
-      <div class="how-t">Paste your API key</div>
-      <div class="how-d">Add your Anthropic API key in the sidebar. Stays in your browser — nothing is sent to any server.</div>
-    </div>
-    <div class="how-step reveal">
-      <div class="how-n">02</div>
-      <div class="how-t">Select a company</div>
-      <div class="how-d">Pick any of the 36 companies from the sidebar. The plan generates fresh in ~30 seconds and caches locally.</div>
-    </div>
-    <div class="how-step reveal">
-      <div class="how-n">03</div>
-      <div class="how-t">Read the chain</div>
-      <div class="how-d">Follow the intelligence chain: pressures → strategy → pain points → initiatives → technologies → weak signals.</div>
-    </div>
-    <div class="how-step reveal">
-      <div class="how-n">04</div>
-      <div class="how-t">Use the FB map</div>
-      <div class="how-d">Every initiative has a hypothesis and a FutureBridge capability entry point. Use it to shape the opening conversation.</div>
-    </div>
+    <div class="how-step"><div class="how-n">01</div><div class="how-t">Paste your API key</div><div class="how-d">Add your Anthropic API key in the sidebar. Stays in your browser — nothing sent to any server.</div></div>
+    <div class="how-step"><div class="how-n">02</div><div class="how-t">Select a company</div><div class="how-d">Pick any of the 36 companies. The plan generates fresh in ~30 seconds and caches locally.</div></div>
+    <div class="how-step"><div class="how-n">03</div><div class="how-t">Read the chain</div><div class="how-d">Follow the intelligence chain: pressures → strategy → pain points → initiatives → technologies → weak signals.</div></div>
+    <div class="how-step"><div class="how-n">04</div><div class="how-t">Use the FB map</div><div class="how-d">Every initiative has a hypothesis and a FutureBridge capability entry point — your opening conversation, pre-built.</div></div>
   </div>
 </section>
 
 <footer>
-  <div class="f-left">
-    <div class="f-logo">FutureBridge</div>
-    <div class="f-note">Strictly confidential · Internal use only</div>
-  </div>
-  <div class="f-right">Advisory Intelligence Tools · v7 · 2025</div>
+  <div class="f-brand">FutureBridge</div>
+  <div class="f-note">Strictly confidential &nbsp;·&nbsp; Internal use only &nbsp;·&nbsp; v7 &nbsp;·&nbsp; 2025</div>
 </footer>
 
 <script>
-// Scroll reveal
-const obs = new IntersectionObserver((entries) => {
-  entries.forEach((e, i) => {
-    if (e.isIntersecting) {
-      setTimeout(() => e.target.classList.add('vis'), i * 60);
-      obs.unobserve(e.target);
-    }
+const io=new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{
+    if(e.isIntersecting){setTimeout(()=>e.target.classList.add('vis'),i*80);io.unobserve(e.target)}
   });
-}, { threshold: 0.08 });
-document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+},{threshold:.06});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 </script>
 </body>
 </html>
