@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FutureBridge Intelligence — Chris Sherwood</title>
+<meta name="description" content="Industry hypotheses, signal tracking and technology intelligence across automotive, energy, semiconductor and mobility sectors.">
+<meta property="og:title" content="FutureBridge Intelligence">
+<meta property="og:description" content="Where industry is heading and why. Updated daily.">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#000;--white:#fff;--red:#F84E5D;--grey:#4B4B55;
+  --bg:#F5F5F3;--surface:#fff;--border:#E2E2DC;
+  --text:#111;--mid:#444;--muted:#666;--faint:#999;
+  /* Secondary — charts & data only */
+  --purple:#9D7AD2;--yellow:#FDCF41;--green:#22AE8A;
+  --lblue:#48B8E7;--blue:#3F43AD;
+  --red-pale:rgba(248,78,93,.07);--red-b:rgba(248,78,93,.22);
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  background:var(--bg);color:var(--text);
+  font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased;
+}
+
+/* ═══════════════════════════════════
+   HEADER — black, top only
+═══════════════════════════════════ */
+.hdr{
+  position:sticky;top:0;z-index:100;
+  background:var(--black);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 52px;border-bottom:1px solid #1a1a1a;
+}
+.hdr-left{display:flex;align-items:center;gap:14px}
+.device{display:flex;flex-direction:column;gap:3px}
+.device span{display:block;background:#fff;height:3px;border-radius:1px}
+.device span:nth-child(1){width:22px}
+.device span:nth-child(2){width:14px}
+.device span:nth-child(3){width:8px}
+.hdr-logo{font-size:13px;font-weight:700;letter-spacing:.06em;color:#fff}
+.hdr-right{display:flex;align-items:center;gap:20px}
+.hdr-date{font-size:9px;color:#444;font-family:'Courier New',monospace;letter-spacing:.08em}
+.hdr-tag{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#333;font-family:'Courier New',monospace}
+
+/* ═══════════════════════════════════
+   HERO — white, large type
+═══════════════════════════════════ */
+.hero{
+  background:var(--white);
+  padding:72px 52px 60px;
+  border-bottom:3px solid var(--black);
+  position:relative;overflow:hidden;
+}
+.hero::after{
+  content:'';position:absolute;right:0;top:0;bottom:0;width:320px;
+  background:linear-gradient(to right,transparent,rgba(245,245,243,.6));
+  pointer-events:none;
+}
+.hero-inner{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:1fr 340px;gap:60px;align-items:end}
+.hero-left{}
+.eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.ey-line{width:28px;height:2px;background:var(--red)}
+.ey-lbl{font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--red);font-family:'Courier New',monospace}
+h1{
+  font-size:clamp(2.6rem,5vw,4.6rem);
+  font-weight:700;letter-spacing:-.03em;line-height:1.0;
+  color:var(--black);margin-bottom:18px;
+}
+.hero-sub{font-size:16px;color:var(--muted);max-width:48ch;line-height:1.7;margin-bottom:32px}
+.hero-bio{display:flex;align-items:flex-start;gap:14px;padding-top:24px;border-top:1px solid var(--border)}
+.bio-avatar{
+  width:44px;height:44px;border-radius:50%;
+  background:var(--black);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:700;color:#fff;
+}
+.bio-name{font-size:14px;font-weight:700;color:var(--black)}
+.bio-title{font-size:12px;color:var(--muted);margin-top:2px}
+.hero-stats{display:flex;flex-direction:column;gap:12px;padding:24px;background:var(--bg);border:1px solid var(--border);border-radius:2px}
+.hs-row{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.hs-row:last-child{border-bottom:none;padding-bottom:0}
+.hs-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-family:'Courier New',monospace}
+.hs-val{font-size:18px;font-weight:700;color:var(--black)}
+.hs-sub{font-size:10px;color:var(--muted);margin-top:1px}
+
+/* ═══════════════════════════════════
+   SHARED LAYOUT
+═══════════════════════════════════ */
+.container{max-width:1080px;margin:0 auto;padding:0 52px}
+.section{padding:60px 0;border-bottom:1px solid var(--border)}
+.sec-head{display:flex;align-items:center;gap:16px;margin-bottom:36px}
+.sec-head h2{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);white-space:nowrap;font-family:'Courier New',monospace}
+.sec-rule{flex:1;height:1px;background:var(--border)}
+.sec-meta{font-size:9px;color:var(--faint);font-family:'Courier New',monospace;letter-spacing:.08em;white-space:nowrap}
+
+/* ═══════════════════════════════════
+   HYPOTHESES — white bg
+═══════════════════════════════════ */
+#hypotheses{background:var(--white)}
+.hyp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border)}
+.hyp-card{
+  background:var(--white);padding:28px 24px;
+  position:relative;overflow:hidden;
+  transition:background .15s;
+  border-top:3px solid transparent;
+}
+.hyp-card.strong{border-top-color:var(--red)}
+.hyp-card.building{border-top-color:var(--grey)}
+.hyp-card.watching{border-top-color:var(--border)}
+.hyp-card:hover{background:var(--bg)}
+.hyp-sector{font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:10px;font-family:'Courier New',monospace}
+.hyp-title{font-size:15px;font-weight:700;color:var(--black);line-height:1.3;margin-bottom:10px}
+.hyp-body{font-size:12.5px;color:var(--muted);line-height:1.65;margin-bottom:16px}
+.hyp-footer{display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--border)}
+.hyp-conf{display:flex;align-items:center;gap:5px}
+.hyp-conf-lbl{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-family:'Courier New',monospace}
+.conf-bar{display:flex;gap:2px}
+.conf-pip{width:12px;height:3px;border-radius:1px;background:var(--border)}
+.conf-pip.on{background:var(--red)}
+.hyp-updated{font-size:9px;color:var(--faint);font-family:'Courier New',monospace}
+
+/* ═══════════════════════════════════
+   HEATMAP — light bg
+═══════════════════════════════════ */
+#heatmap{background:var(--bg)}
+.heatmap-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:20px}
+.hm-cell{background:var(--white);border:1px solid var(--border);padding:18px 14px;border-radius:2px;position:relative;overflow:hidden;transition:transform .12s,box-shadow .12s}
+.hm-cell:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.hm-bar{position:absolute;bottom:0;left:0;right:0;transition:height .4s ease}
+.hm-sector{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);font-family:'Courier New',monospace;margin-bottom:10px;position:relative;z-index:1}
+.hm-score{font-size:28px;font-weight:700;letter-spacing:-.03em;color:var(--black);line-height:1;margin-bottom:4px;position:relative;z-index:1}
+.hm-label{font-size:10px;color:var(--muted);position:relative;z-index:1}
+.hm-delta{font-size:9px;font-weight:700;font-family:'Courier New',monospace;position:relative;z-index:1;margin-top:6px}
+.hm-delta.up{color:var(--green)}
+.hm-delta.dn{color:var(--red)}
+.hm-legend{display:flex;align-items:center;gap:20px;font-size:10px;color:var(--faint)}
+.hm-leg-item{display:flex;align-items:center;gap:6px}
+.hm-leg-dot{width:8px;height:8px;border-radius:1px}
+
+/* ═══════════════════════════════════
+   STORIES — white bg
+═══════════════════════════════════ */
+#stories{background:var(--white)}
+.stories-list{display:flex;flex-direction:column;gap:0}
+.story{
+  display:grid;grid-template-columns:48px 1fr auto;
+  gap:0 20px;padding:20px 0;
+  border-bottom:1px solid var(--border);
+  align-items:baseline;
+  transition:background .12s;
+}
+.story:first-child{border-top:1px solid var(--border)}
+.story:hover{background:var(--bg);margin:0 -52px;padding-left:52px;padding-right:52px}
+.story-n{font-size:22px;font-weight:700;color:var(--border);font-family:'Courier New',monospace;letter-spacing:-.02em;padding-top:3px}
+.story-body{}
+.story-sector{font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin-bottom:5px;font-family:'Courier New',monospace}
+.story-title{font-size:15px;font-weight:700;color:var(--black);line-height:1.3;margin-bottom:5px}
+.story-desc{font-size:12.5px;color:var(--muted);line-height:1.6;max-width:70ch}
+.story-hyp{display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:10px;color:var(--grey);background:var(--bg);padding:3px 9px;border:1px solid var(--border)}
+.story-hyp::before{content:'↳';color:var(--red);font-size:9px}
+.story-meta{text-align:right;white-space:nowrap}
+.story-time{font-size:9px;color:var(--faint);font-family:'Courier New',monospace;display:block;margin-bottom:4px}
+.story-heat{display:flex;gap:2px;justify-content:flex-end}
+.heat-pip{width:8px;height:8px;border-radius:1px;background:var(--border)}
+.heat-pip.on{background:var(--red)}
+
+/* ═══════════════════════════════════
+   SNIPPETS — light bg, LinkedIn-ready
+═══════════════════════════════════ */
+#snippets{background:var(--bg)}
+.snippets-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border)}
+.snippet{
+  background:var(--white);padding:28px 26px;
+  position:relative;
+  transition:background .15s;
+}
+.snippet:hover{background:#fafaf8}
+.snippet-num{font-size:9px;color:var(--faint);font-family:'Courier New',monospace;letter-spacing:.1em;margin-bottom:14px}
+.snippet-sector{font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px;display:inline-block;padding:2px 8px;font-family:'Courier New',monospace}
+.snippet-title{font-size:16px;font-weight:700;color:var(--black);line-height:1.25;margin-bottom:10px}
+.snippet-body{font-size:13px;color:var(--mid);line-height:1.7;margin-bottom:18px}
+.snippet-signal{background:var(--bg);border-left:3px solid var(--red);padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--mid);line-height:1.6}
+.snippet-signal strong{color:var(--black)}
+.snippet-footer{display:flex;align-items:center;justify-content:space-between}
+.snippet-share{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);font-family:'Courier New',monospace;
+  text-decoration:none;border:1px solid var(--border);padding:6px 12px;
+  transition:all .15s;
+}
+.snippet-share:hover{background:var(--black);color:#fff;border-color:var(--black)}
+.snippet-share svg{width:12px;height:12px}
+.snippet-date{font-size:9px;color:var(--faint);font-family:'Courier New',monospace}
+
+/* ═══════════════════════════════════
+   SECTOR COLOUR SYSTEM (chips only)
+═══════════════════════════════════ */
+.s-auto{background:rgba(63,67,173,.08);color:var(--blue)}
+.s-energy{background:rgba(253,207,65,.15);color:#7a6000}
+.s-semi{background:rgba(157,122,210,.1);color:var(--purple)}
+.s-tyre{background:rgba(34,174,138,.09);color:var(--green)}
+.s-truck{background:rgba(72,184,231,.1);color:#1a7a9a}
+.s-mobility{background:rgba(248,78,93,.07);color:var(--red)}
+
+/* ═══════════════════════════════════
+   ABOUT STRIP
+═══════════════════════════════════ */
+.about{
+  background:var(--black);
+  padding:52px;
+}
+.about-inner{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:1fr 340px;gap:60px;align-items:center}
+.about-text h3{font-size:18px;font-weight:700;color:#fff;margin-bottom:12px;letter-spacing:-.01em}
+.about-text p{font-size:13.5px;color:#555;line-height:1.75;max-width:54ch}
+.about-links{display:flex;flex-direction:column;gap:10px}
+.about-link{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;background:#0a0a0a;border:1px solid #1a1a1a;
+  text-decoration:none;transition:background .15s;
+}
+.about-link:hover{background:#111;border-color:#2a2a2a}
+.al-label{font-size:12px;font-weight:700;color:#fff}
+.al-sub{font-size:10px;color:#444;margin-top:1px}
+.al-arr{color:#333;font-size:16px;transition:color .15s}
+.about-link:hover .al-arr{color:var(--red)}
+
+/* ═══════════════════════════════════
+   FOOTER
+═══════════════════════════════════ */
+footer{
+  background:var(--white);border-top:1px solid var(--border);
+  padding:20px 52px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.f-left{display:flex;align-items:center;gap:16px}
+.f-logo{font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--black)}
+.f-note{font-size:9px;color:var(--faint);font-family:'Courier New',monospace;letter-spacing:.06em}
+
+/* ═══════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════ */
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.hero-left>*{opacity:0;animation:up .55s ease forwards}
+.eyebrow{animation-delay:.05s}
+h1{animation-delay:.12s}
+.hero-sub{animation-delay:.18s}
+.hero-bio{animation-delay:.24s}
+.hero-stats{opacity:0;animation:up .55s ease .2s forwards}
+
+.reveal{opacity:0;transform:translateY(10px);transition:opacity .5s ease,transform .5s ease}
+.reveal.vis{opacity:1;transform:translateY(0)}
+
+/* ═══════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════ */
+@media(max-width:1020px){
+  .hero-inner{grid-template-columns:1fr}
+  .hero-stats{display:grid;grid-template-columns:repeat(3,1fr)}
+  .hs-row{flex-direction:column;gap:3px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+  .about-inner{grid-template-columns:1fr}
+  .heatmap-grid{grid-template-columns:repeat(3,1fr)}
+  .hyp-grid{grid-template-columns:1fr 1fr}
+  .snippets-grid{grid-template-columns:1fr}
+}
+@media(max-width:700px){
+  .hdr,.hero,.container,.about,footer{padding-left:20px;padding-right:20px}
+  .hero{padding-top:48px;padding-bottom:40px}
+  .heatmap-grid{grid-template-columns:repeat(2,1fr)}
+  .hyp-grid{grid-template-columns:1fr}
+  .story{grid-template-columns:36px 1fr;grid-template-rows:auto auto}
+  .story-meta{grid-column:2}
+  h1{font-size:2.4rem}
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-left">
+    <div class="device"><span></span><span></span><span></span></div>
+    <div class="hdr-logo">FutureBridge</div>
+  </div>
+  <div class="hdr-right">
+    <div class="hdr-date" id="hdrDate"></div>
+    <div class="hdr-tag">Intelligence · Daily</div>
+  </div>
+</header>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="eyebrow"><div class="ey-line"></div><div class="ey-lbl">Industry Intelligence</div></div>
+      <h1>Where industry<br>is heading.<br>And why.</h1>
+      <p class="hero-sub">Signals, hypotheses and technology intelligence across automotive, energy, semiconductor and mobility sectors. Updated daily.</p>
+      <div class="hero-bio">
+        <div class="bio-avatar">CS</div>
+        <div>
+          <div class="bio-name">Chris Sherwood</div>
+          <div class="bio-title">Managing Director, FutureBridge Advisory</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="hs-row">
+        <div><div class="hs-lbl">Hypotheses tracked</div><div class="hs-val" id="statHyp">12</div></div>
+      </div>
+      <div class="hs-row">
+        <div><div class="hs-lbl">Signals today</div><div class="hs-val" id="statSig">—</div><div class="hs-sub" id="statSigSub">Loading…</div></div>
+      </div>
+      <div class="hs-row">
+        <div><div class="hs-lbl">Sectors monitored</div><div class="hs-val">6</div></div>
+      </div>
+      <div class="hs-row">
+        <div><div class="hs-lbl">Updated</div><div class="hs-val" id="statUpdated" style="font-size:13px">Daily</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ HYPOTHESES ══ -->
+<section class="section" id="hypotheses">
+  <div class="container">
+    <div class="sec-head">
+      <h2>Current hypotheses</h2>
+      <div class="sec-rule"></div>
+      <div class="sec-meta">Chris's current sector bets</div>
+    </div>
+    <div class="hyp-grid" id="hypGrid">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ══ HEATMAP ══ -->
+<section class="section" id="heatmap">
+  <div class="container">
+    <div class="sec-head">
+      <h2>Signal heatmap</h2>
+      <div class="sec-rule"></div>
+      <div class="sec-meta">Activity intensity by sector today</div>
+    </div>
+    <div class="heatmap-grid" id="heatmapGrid">
+      <!-- Populated by JS -->
+    </div>
+    <div class="hm-legend">
+      <div class="hm-leg-item"><div class="hm-leg-dot" style="background:var(--green)"></div>Low activity</div>
+      <div class="hm-leg-item"><div class="hm-leg-dot" style="background:var(--yellow)"></div>Moderate</div>
+      <div class="hm-leg-item"><div class="hm-leg-dot" style="background:var(--red)"></div>High signal volume</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ STORIES ══ -->
+<section class="section" id="stories">
+  <div class="container">
+    <div class="sec-head">
+      <h2>Top stories today</h2>
+      <div class="sec-rule"></div>
+      <div class="sec-meta" id="storiesDate">Updated today</div>
+    </div>
+    <div class="stories-list" id="storiesList">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ══ SNIPPETS ══ -->
+<section class="section" id="snippets">
+  <div class="container">
+    <div class="sec-head">
+      <h2>Research snippets</h2>
+      <div class="sec-rule"></div>
+      <div class="sec-meta">10 items · each shareable on LinkedIn</div>
+    </div>
+    <div class="snippets-grid" id="snippetsGrid">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ══ ABOUT STRIP ══ -->
+<div class="about">
+  <div class="about-inner">
+    <div class="about-text">
+      <h3>FutureBridge Advisory</h3>
+      <p>We help industrial, energy, and technology companies identify the emerging technologies and market shifts that will define their next decade — before they become obvious. This page reflects our current sector views and signal monitoring.</p>
+    </div>
+    <div class="about-links">
+      <a href="https://www.futurebridge.com" target="_blank" class="about-link">
+        <div><div class="al-label">FutureBridge.com</div><div class="al-sub">Full intelligence platform</div></div>
+        <div class="al-arr">→</div>
+      </a>
+      <a href="https://www.linkedin.com/company/futurebridge" target="_blank" class="about-link">
+        <div><div class="al-label">LinkedIn</div><div class="al-sub">Follow for daily signals</div></div>
+        <div class="al-arr">→</div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="f-left">
+    <div class="device" style="transform:scale(.8);transform-origin:left"><span style="background:#000"></span><span style="background:#000"></span><span style="background:#000"></span></div>
+    <div class="f-logo">FutureBridge</div>
+  </div>
+  <div class="f-note" id="footerNote">Intelligence · Updated daily · © 2025 FutureBridge Advisory</div>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════
+//  DATA — replace with signals.json fetch when live
+// ═══════════════════════════════════════════════
+const DATA = {
+  updated: new Date().toISOString(),
+  stats: { signals_today: 34, hypotheses: 12 },
+
+  hypotheses: [
+    {
+      sector: 'Automotive OEM',
+      title: 'Software-defined vehicle economics will force a platform consolidation by 2027',
+      body: 'The cost of developing and maintaining separate software stacks per model line is becoming untenable. OEMs that have not committed to a single E/E architecture by 2026 will face margin pressure that makes consolidation inevitable.',
+      confidence: 4,
+      conviction: 'strong',
+      updated: '12 Apr 2025'
+    },
+    {
+      sector: 'Semiconductor',
+      title: 'SiC adoption in automotive will undershoot 2025 forecasts — but 2027 will overshoot them',
+      body: 'Supply chain constraints and qualification timelines are slowing near-term SiC penetration. However, capacity coming online from Infineon, STMicro and Wolfspeed in 2026 creates a step change that most forecasts have underpriced.',
+      confidence: 3,
+      conviction: 'building',
+      updated: '10 Apr 2025'
+    },
+    {
+      sector: 'Energy',
+      title: 'Green hydrogen cost reduction is running 18-24 months behind the IEA central scenario',
+      body: 'Electrolyser manufacturing costs have not fallen at the projected rate. Industrial buyers are quietly extending their fossil fuel hedges. The inflection point is real — the timeline is not.',
+      confidence: 4,
+      conviction: 'strong',
+      updated: '08 Apr 2025'
+    },
+    {
+      sector: 'Tyre',
+      title: 'EV-specific tyre performance requirements are a genuine differentiation window — for two years',
+      body: 'Higher torque, lower NVH expectations and range anxiety are creating measurable demand for purpose-designed EV tyres. Michelin and Bridgestone are investing. The window closes when general compound technology catches up.',
+      confidence: 3,
+      conviction: 'building',
+      updated: '07 Apr 2025'
+    },
+    {
+      sector: 'Truck & CV',
+      title: 'Hydrogen fuel cell trucks will find their first durable commercial market in mining, not long-haul',
+      body: 'Long-haul hydrogen economics remain challenged by infrastructure. Mining operations offer controlled routes, captive fuelling, and operators already comfortable with hydrogen. IVECO, Hyzon and OEMs with mining exposure are moving here quietly.',
+      confidence: 3,
+      conviction: 'building',
+      updated: '05 Apr 2025'
+    },
+    {
+      sector: 'Mobility',
+      title: 'Autonomous vehicles in regulated industrial environments will reach commercial scale before public roads',
+      body: 'Port logistics, factory intralogistics and airport ground operations offer defined environments, clear liability, and willing operators. The regulatory path is shorter. Scale will come here first and fund the public-road push.',
+      confidence: 2,
+      conviction: 'watching',
+      updated: '03 Apr 2025'
+    }
+  ],
+
+  heatmap: [
+    { sector: 'Automotive OEM', score: 87, delta: '+12', trend: 'up', color: 'var(--blue)' },
+    { sector: 'Semiconductor', score: 74, delta: '+5',  trend: 'up', color: 'var(--purple)' },
+    { sector: 'Energy & Utilities', score: 61, delta: '-3', trend: 'dn', color: 'var(--yellow)' },
+    { sector: 'Tyre', score: 45, delta: '+8',  trend: 'up', color: 'var(--green)' },
+    { sector: 'Truck & CV', score: 68, delta: '+2',  trend: 'up', color: 'var(--lblue)' },
+    { sector: 'Mobility', score: 52, delta: '-1', trend: 'dn', color: 'var(--red)' }
+  ],
+
+  stories: [
+    {
+      sector: 'Semiconductor',
+      title: 'Infineon expands SiC capacity at Villach — 2026 production targets revised upward by 40%',
+      desc: 'Confirmed capex increase signals Infineon\'s confidence in automotive SiC demand recovering faster than its conservative public guidance suggested. Watch NXP and STM for matching moves.',
+      hypothesis: 'SiC adoption: 2027 overshoot thesis',
+      time: '2h ago', heat: 4
+    },
+    {
+      sector: 'Automotive OEM',
+      title: 'Volkswagen Group announces unified E/E architecture across all brands by 2026',
+      desc: 'The announcement confirms the software platform consolidation hypothesis. The timeline is aggressive — execution risk is high, but the strategic direction is now locked in.',
+      hypothesis: 'SDV platform consolidation by 2027',
+      time: '4h ago', heat: 5
+    },
+    {
+      sector: 'Energy',
+      title: 'Shell quietly extends LNG contracts through 2032 — green hydrogen timeline re-evaluated',
+      desc: 'Not a public announcement — contract registrations in EU energy disclosures. Shell\'s posture suggests internal timelines for green hydrogen cost parity have slipped by 18-24 months.',
+      hypothesis: 'Green hydrogen behind IEA scenario',
+      time: '6h ago', heat: 4
+    },
+    {
+      sector: 'Truck & CV',
+      title: 'BHP trials Hyzon hydrogen fuel cell trucks at Pilbara operations — order confirmed for 20 units',
+      desc: 'Mining as the first durable market for H2 trucks is playing out. BHP\'s Pilbara operation is a controlled environment with captive fuelling. Watch Rio Tinto and Anglo American for follow-on announcements.',
+      hypothesis: 'H2 trucks: mining first, long-haul second',
+      time: '8h ago', heat: 3
+    },
+    {
+      sector: 'Mobility',
+      title: 'Hamburg port signs Einride autonomous truck contract — 24/7 intralogistics from Q3 2025',
+      desc: 'Controlled industrial environments continuing to demonstrate faster AV commercialisation than public roads. Hamburg joins Singapore and Rotterdam in port AV deployments.',
+      hypothesis: 'Industrial AV reaches scale before public roads',
+      time: '10h ago', heat: 3
+    },
+    {
+      sector: 'Tyre',
+      title: 'Michelin launches Pilot Sport EV — dedicated compound for high-torque electric platforms',
+      desc: 'First OEM-spec EV-specific tyre from Michelin validates the differentiation window thesis. Porsche Taycan and BMW iX as reference vehicles suggests premium positioning.',
+      hypothesis: 'EV tyre differentiation window open',
+      time: '12h ago', heat: 3
+    },
+    {
+      sector: 'Semiconductor',
+      title: 'Renesas acquires US power management startup — fills ADAS domain controller gap',
+      desc: 'Renesas has been the weakest of the five Tier-1 auto semis on software integration. This acquisition addresses the gap directly. Likely response to competitive pressure from NXP S32.',
+      hypothesis: 'SDV consolidation forcing supplier moves',
+      time: '14h ago', heat: 2
+    },
+    {
+      sector: 'Energy',
+      title: 'EU revises industrial hydrogen mandate — 42% target timeline extended by two years',
+      desc: 'Expected revision. Industrial buyers have been lobbying for timeline relief since 2023. The extension further delays the cost-parity forcing function for green hydrogen at scale.',
+      hypothesis: 'Green hydrogen behind IEA scenario',
+      time: '16h ago', heat: 4
+    },
+    {
+      sector: 'Automotive OEM',
+      title: 'Stellantis and Foxconn deepen SDV partnership — joint platform for 2027 model cycle',
+      desc: 'Foxconn\'s automotive ambitions are finding their real market: supplying SDV infrastructure to OEMs that cannot afford to build it independently. Stellantis is the clearest example of the consolidation under financial pressure.',
+      hypothesis: 'SDV platform consolidation by 2027',
+      time: '18h ago', heat: 3
+    },
+    {
+      sector: 'Tyre',
+      title: 'Goodyear patents active tread compound system — real-time stiffness adjustment for EV torque management',
+      desc: 'Patent filing, not a product. But active tread management would be a step-change in EV tyre differentiation and raise the technical barrier for the window significantly.',
+      hypothesis: 'EV tyre differentiation window open',
+      time: '20h ago', heat: 2
+    }
+  ],
+
+  snippets: [
+    {
+      sector: 'Automotive OEM', sector_class: 's-auto',
+      title: 'Software is eating the car — but OEMs are not ready for the diet',
+      body: 'The transition from hardware-defined to software-defined vehicles requires OEMs to behave more like technology companies than manufacturers. Most cannot. The capability gap between Tesla\'s software organisation and a traditional OEM\'s IT department is not narrowing at the pace required.',
+      signal: 'VW\'s unified architecture announcement and Stellantis-Foxconn partnership signal recognition of the problem. Recognition is not capability.',
+      date: '15 Apr 2025'
+    },
+    {
+      sector: 'Semiconductor', sector_class: 's-semi',
+      title: 'The SiC correction is real — the recovery will be sharper than expected',
+      body: 'Power semiconductor inventories are elevated and near-term EV demand has disappointed. But capacity investments already committed by Infineon, STMicro and Wolfspeed will not be reversed. When demand recovers — and it will — supply will be tighter than consensus forecasts suggest.',
+      signal: 'Infineon\'s Villach expansion announcement is the clearest leading indicator yet that Tier-1 suppliers see the 2026-2027 demand curve differently to the current consensus.',
+      date: '14 Apr 2025'
+    },
+    {
+      sector: 'Energy', sector_class: 's-energy',
+      title: 'Hydrogen\'s credibility problem is a timing problem, not a technology problem',
+      body: 'Green hydrogen works. The cost curve is real. The question has always been when — and the honest answer is later than most 2022-era forecasts suggested. Companies that built strategies around $2/kg by 2030 are now quietly revising. That revision is not failure — it is accuracy.',
+      signal: 'Shell\'s extended LNG contracts and the EU mandate timeline revision together indicate the industrial sector has absorbed the updated timeline and is acting accordingly.',
+      date: '13 Apr 2025'
+    },
+    {
+      sector: 'Tyre', sector_class: 's-tyre',
+      title: 'EV tyres: the product is real, the market window is short',
+      body: 'EV-specific tyre performance requirements are measurably different from ICE applications. Higher torque, different thermal profiles, and customer range anxiety create genuine product differentiation. The window is real — but it is probably two to three years before general compounds close the gap.',
+      signal: 'Michelin Pilot Sport EV launch and Goodyear active tread patent together confirm that premium tyre manufacturers see the window and are moving.',
+      date: '12 Apr 2025'
+    },
+    {
+      sector: 'Truck & CV', sector_class: 's-truck',
+      title: 'The hydrogen truck story needs a rewrite — mining, not motorways',
+      body: 'Long-haul hydrogen trucking economics remain challenged. Infrastructure is sparse, payback periods are long, and operators need certainty. Mining operations offer exactly what public roads cannot: defined routes, captive fuelling, and risk-tolerant operators with sustainability mandates to meet.',
+      signal: 'BHP\'s Pilbara deployment with Hyzon is not a pilot. It is a commercial contract. Rio Tinto and Anglo American are watching.',
+      date: '11 Apr 2025'
+    },
+    {
+      sector: 'Mobility', sector_class: 's-mobility',
+      title: 'Autonomous vehicles will be commercial before they are public',
+      body: 'The commercial AV opportunity is in controlled industrial environments — ports, factories, airports, mines. These offer defined geographies, clear liability structures, and operators who understand the risk profile. The technology being proven here is exactly what will eventually go on public roads.',
+      signal: 'Hamburg port + Singapore + Rotterdam deployments form a pattern. Einride\'s contract structure — operational from day one, not a trial — is the clearest signal of genuine commercial maturity.',
+      date: '10 Apr 2025'
+    },
+    {
+      sector: 'Semiconductor', sector_class: 's-semi',
+      title: 'ADAS consolidation is a semiconductor story as much as a software story',
+      body: 'The shift to zonal E/E architectures consolidates domain controllers and reduces the total number of chips per vehicle — but dramatically increases the value per chip. Suppliers with strong software integration capabilities alongside silicon will win disproportionately.',
+      signal: 'Renesas acquisition plugs a gap that was visible for 18 months. NXP\'s S32 platform has been pulling design wins while Renesas rebuilt. The gap is closing but NXP has runway.',
+      date: '09 Apr 2025'
+    },
+    {
+      sector: 'Energy', sector_class: 's-energy',
+      title: 'The energy transition is proceeding — the timeline is being rewritten',
+      body: 'Renewable capacity additions are at record levels. Battery storage is scaling faster than any forecast. Green hydrogen is behind schedule. Nuclear is back on the agenda. The transition is real and irreversible — the sequencing and pace are different to what was assumed three years ago.',
+      signal: 'EU mandate timeline revision signals that policy is catching up to commercial reality rather than leading it. A rare and useful signal of genuine recalibration.',
+      date: '08 Apr 2025'
+    },
+    {
+      sector: 'Automotive OEM', sector_class: 's-auto',
+      title: 'Consolidation among Tier-2 automotive suppliers is accelerating',
+      body: 'The transition to SDV and electrification requires capital that many Tier-2 suppliers do not have. Consolidation is happening — through acquisition, joint venture, and attrition. OEMs that have not mapped their supply chain exposure to this consolidation are carrying undisclosed risk.',
+      signal: 'Stellantis-Foxconn and the wider pattern of OEMs seeking technology partnerships rather than building capability in-house is creating acquisition targets at the Tier-2 level.',
+      date: '07 Apr 2025'
+    },
+    {
+      sector: 'Tyre', sector_class: 's-tyre',
+      title: 'Tyre data is becoming more valuable than tyre rubber',
+      body: 'Modern tyres are instrumented. Pressure, temperature, wear, and road-surface data are generated continuously. The manufacturers who build the data infrastructure now will have an asset that compounds over time — and that asset is invisible on a balance sheet today.',
+      signal: 'Michelin\'s connected services division revenue is growing faster than its tyre revenue. Pirelli\'s Cyber Tyre platform has 3 OEM integrations confirmed for 2025 model year.',
+      date: '06 Apr 2025'
+    }
+  ]
+};
+
+// ═══════════════════════════════════════════════
+//  RENDER FUNCTIONS
+// ═══════════════════════════════════════════════
+function init(){
+  // Header date
+  const now = new Date();
+  document.getElementById('hdrDate').textContent =
+    now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).toUpperCase();
+  document.getElementById('storiesDate').textContent =
+    'Updated ' + now.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+  document.getElementById('footerNote').textContent =
+    `Intelligence · Updated ${now.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})} · © 2025 FutureBridge Advisory`;
+
+  // Stats
+  document.getElementById('statHyp').textContent  = DATA.hypotheses.length;
+  document.getElementById('statSig').textContent   = DATA.stats.signals_today;
+  document.getElementById('statSigSub').textContent = 'across ' + DATA.heatmap.length + ' sectors';
+  document.getElementById('statUpdated').textContent =
+    now.toLocaleDateString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+
+  renderHypotheses();
+  renderHeatmap();
+  renderStories();
+  renderSnippets();
+  initReveal();
+}
+
+function renderHypotheses(){
+  const grid = document.getElementById('hypGrid');
+  grid.innerHTML = DATA.hypotheses.map(h => {
+    const pips = [1,2,3,4,5].map(n =>
+      `<div class="conf-pip ${n <= h.confidence ? 'on' : ''}"></div>`
+    ).join('');
+    return `
+    <div class="hyp-card ${h.conviction} reveal">
+      <div class="hyp-sector">${h.sector}</div>
+      <div class="hyp-title">${h.title}</div>
+      <div class="hyp-body">${h.body}</div>
+      <div class="hyp-footer">
+        <div class="hyp-conf">
+          <div class="hyp-conf-lbl">Conviction</div>
+          <div class="conf-bar">${pips}</div>
+        </div>
+        <div class="hyp-updated">${h.updated}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderHeatmap(){
+  const grid = document.getElementById('heatmapGrid');
+  const max  = Math.max(...DATA.heatmap.map(h => h.score));
+  grid.innerHTML = DATA.heatmap.map(h => {
+    const pct    = Math.round(h.score / max * 100);
+    const clr    = h.score > 75 ? 'var(--red)' : h.score > 55 ? 'var(--yellow)' : 'var(--green)';
+    const opac   = 0.06 + (h.score / max) * 0.1;
+    return `
+    <div class="hm-cell reveal">
+      <div class="hm-bar" style="height:${pct * 0.4}%;background:${clr};opacity:${opac}"></div>
+      <div class="hm-sector">${h.sector}</div>
+      <div class="hm-score">${h.score}</div>
+      <div class="hm-label">signal score</div>
+      <div class="hm-delta ${h.trend}">${h.delta} vs yesterday</div>
+    </div>`;
+  }).join('');
+}
+
+function renderStories(){
+  const list = document.getElementById('storiesList');
+  const sectorClass = {
+    'Semiconductor':'s-semi','Automotive OEM':'s-auto','Energy':'s-energy',
+    'Tyre':'s-tyre','Truck & CV':'s-truck','Mobility':'s-mobility'
+  };
+  list.innerHTML = DATA.stories.map((s, i) => {
+    const pips = [1,2,3,4,5].map(n =>
+      `<div class="heat-pip ${n <= s.heat ? 'on' : ''}"></div>`
+    ).join('');
+    const cls = sectorClass[s.sector] || '';
+    return `
+    <div class="story reveal">
+      <div class="story-n">${String(i+1).padStart(2,'0')}</div>
+      <div class="story-body">
+        <div class="story-sector ${cls}">${s.sector}</div>
+        <div class="story-title">${s.title}</div>
+        <div class="story-desc">${s.desc}</div>
+        <div class="story-hyp">${s.hypothesis}</div>
+      </div>
+      <div class="story-meta">
+        <span class="story-time">${s.time}</span>
+        <div class="story-heat">${pips}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderSnippets(){
+  const grid = document.getElementById('snippetsGrid');
+  grid.innerHTML = DATA.snippets.map((s, i) => {
+    const anchor = `snippet-${i+1}`;
+    const url    = `${location.href.split('#')[0]}#${anchor}`;
+    return `
+    <div class="snippet reveal" id="${anchor}">
+      <div class="snippet-num">0${i+1} / 10</div>
+      <span class="snippet-sector ${s.sector_class}">${s.sector}</span>
+      <div class="snippet-title">${s.title}</div>
+      <div class="snippet-body">${s.body}</div>
+      <div class="snippet-signal"><strong>Signal:</strong> ${s.signal}</div>
+      <div class="snippet-footer">
+        <a href="${url}" class="snippet-share" onclick="copyLink('${url}',event)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+          Share
+        </a>
+        <div class="snippet-date">${s.date}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function copyLink(url, e){
+  e.preventDefault();
+  navigator.clipboard.writeText(url).then(()=>{
+    const btn = e.currentTarget;
+    const orig = btn.innerHTML;
+    btn.textContent = '✓ Copied';
+    setTimeout(()=>{ btn.innerHTML = orig; }, 1800);
+  }).catch(()=>{ window.open(url,'_blank'); });
+}
+
+function initReveal(){
+  const io = new IntersectionObserver(entries => {
+    entries.forEach((el, i) => {
+      if(el.isIntersecting){
+        setTimeout(()=>el.target.classList.add('vis'), i * 55);
+        io.unobserve(el.target);
+      }
+    });
+  }, { threshold: 0.06 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+}
+
+// ═══════════════════════════════════════════════
+//  LOAD — try signals.json first, fall back to DATA
+// ═══════════════════════════════════════════════
+async function load(){
+  try{
+    const r = await fetch('signals.json');
+    if(r.ok){
+      const d = await r.json();
+      if(d.hypotheses) DATA.hypotheses = d.hypotheses;
+      if(d.heatmap)    DATA.heatmap    = d.heatmap;
+      if(d.stories)    DATA.stories    = d.stories;
+      if(d.snippets)   DATA.snippets   = d.snippets;
+      if(d.stats)      DATA.stats      = d.stats;
+    }
+  }catch(e){ /* no signals.json yet — use built-in data */ }
+  init();
+}
+
+load();
+</script>
+</body>
+</html>
