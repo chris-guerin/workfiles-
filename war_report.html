@@ -1,0 +1,1564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FutureBridge — War Impact Intelligence · Commercial Edition</title>
+<style>
+  :root {
+    --black: #000000;
+    --white: #FFFFFF;
+    --grey: #4B4B55;
+    --grey-light: #F5F5F3;
+    --grey-mid: #FFFFFF;
+    --red: #F84E5D;
+    --border: #E2E2DC;
+    --text: #111;
+    --text-mid: #444;
+    --text-muted: #666;
+    --text-faint: #999;
+    --heat-critical: rgba(248,78,93,0.85);
+    --heat-high: rgba(248,78,93,0.42);
+    --heat-med: rgba(75,75,85,0.12);
+    --heat-low: rgba(75,75,85,0.05);
+    --heat-none: rgba(75,75,85,0.02);
+    --c-energy: #48B8E7;
+    --c-chem: #22AE8A;
+    --c-mob: #FDCF41;
+    --c-mfg: #9D7AD2;
+    --c-pharma: #3F43AD;
+    --c-food: #22AE8A;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--grey-light); color: var(--text); font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; font-size: 13px; line-height: 1.55; }
+
+  /* GRAPHIC DEVICE */
+  .gd { display:flex; flex-direction:column; gap:3px; }
+  .gd span { display:block; height:4px; background:var(--black); }
+  .gd span:nth-child(1){width:36px;}
+  .gd span:nth-child(2){width:24px;}
+  .gd span:nth-child(3){width:14px;}
+  .gd.dark span { background:var(--white); }
+
+  /* HEADER */
+  header {
+    display:grid; grid-template-columns:auto 1fr auto;
+    align-items:start; padding:20px 40px;
+    border-bottom:1px solid #1a1a1a;
+    position:sticky; top:0; z-index:200;
+    background:var(--black);
+  }
+  .h-refresh-btn{
+    display:inline-flex;align-items:center;gap:7px;
+    background:var(--red);color:#fff;border:none;
+    font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    padding:7px 14px;cursor:pointer;transition:background .15s;margin-top:4px;
+    font-family:-apple-system,sans-serif;
+  }
+  .h-refresh-btn:hover{background:#d43a4a}
+  .h-refresh-btn:disabled{opacity:.4;pointer-events:none}
+  .h-toolkit-link{
+    display:block;font-size:9px;color:#333;letter-spacing:.1em;
+    text-transform:uppercase;text-decoration:none;margin-top:6px;
+    font-family:'Courier New',monospace;transition:color .15s;
+  }
+  .h-toolkit-link:hover{color:#888}
+  /* REFRESH BANNER */
+  .refresh-banner{
+    background:#fff;border-bottom:1px solid var(--border);
+    padding:12px 40px;display:none;align-items:center;gap:14px;
+    font-size:12px;color:var(--text-mid);
+  }
+  .refresh-banner.show{display:flex}
+  .refresh-banner strong{color:var(--black)}
+  .rb-spinner{width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .h-left { display:flex; flex-direction:column; gap:10px; }
+  .logotype { font-size:12px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; }
+  .doc-meta { font-size:10px; color:rgba(255,255,255,.5); }
+  .h-centre { padding:0 40px; }
+  .h-title { font-size:22px; font-weight:700; letter-spacing:-.02em; margin-bottom:4px; }
+  .h-sub { font-size:12px; color:rgba(255,255,255,.5); }
+  .h-right { text-align:right; }
+  .live-pill {
+    display:inline-block; background:var(--red); color:#fff;
+    font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+    padding:3px 8px; margin-bottom:6px;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.65} }
+  .last-assessed { font-size:10px; color:rgba(255,255,255,.35); }
+
+  /* METRICS BANNER */
+  .metrics { background:#fff; border-bottom:1px solid var(--border); padding:0 40px; display:flex; overflow-x:auto; }
+  .metric { flex:0 0 auto; padding:12px 24px 12px 0; margin-right:24px; border-right:1px solid var(--border); min-width:160px; }
+  .metric:last-child{border-right:none;}
+  .metric-label { font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--text-faint); margin-bottom:3px; }
+  .metric-val { font-size:18px; font-weight:700; line-height:1; margin-bottom:2px; color:var(--text); }
+  .metric-val.hot { color:var(--red); }
+  .metric-cap { font-size:10px; color:var(--text-muted); }
+
+  /* NAV */
+  .nav {
+    display:flex; gap:0; padding:0 40px;
+    border-bottom:1px solid var(--border);
+    background:#fff;
+    overflow-x:auto;
+    position:sticky; top:73px; z-index:100;
+  }
+  .nav-tab {
+    padding:12px 18px; font-size:11px; font-weight:700;
+    letter-spacing:.06em; text-transform:uppercase;
+    color:var(--text-faint); cursor:pointer;
+    border-bottom:2px solid transparent; white-space:nowrap;
+    transition:all .15s;
+  }
+  .nav-tab:hover{color:var(--black);}
+  .nav-tab.active{color:var(--black);border-bottom-color:var(--red);}
+  .nav-tab.priority-tab{color:var(--red);}
+  .nav-tab.priority-tab.active{border-bottom-color:var(--red);}
+
+  /* PANELS */
+  .content { padding:32px 40px; max-width:1200px; margin:0 auto; }
+  .panel{display:none;}
+  .panel.active{display:block;}
+
+  /* TYPOGRAPHY */
+  .panel-title { font-size:20px; font-weight:700; letter-spacing:-.02em; margin-bottom:6px; color:var(--black); }
+  .panel-desc { font-size:12px; color:var(--text-muted); margin-bottom:28px; max-width:680px; }
+  .section-label { font-size:9px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--red); margin-bottom:6px; }
+  .section-heading { font-size:16px; font-weight:700; letter-spacing:-.01em; margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:10px; color:var(--black); }
+
+  /* ALERT BOX */
+  .alert-box {
+    background:rgba(248,78,93,.06); border-left:3px solid var(--red);
+    padding:14px 18px; margin-bottom:28px;
+    font-size:12px; color:var(--text-mid); line-height:1.6;
+  }
+  .alert-box strong { color:var(--black); }
+
+  /* HEATMAP */
+  .hm-wrap { overflow-x:auto; margin-bottom:28px; }
+  .hm-table { width:100%; min-width:860px; border-collapse:separate; border-spacing:3px; }
+  .hm-th-corner { width:160px; }
+  .hm-th { padding:10px 8px; font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--text-faint); text-align:center; background:var(--grey-light); }
+  .hm-row-head { padding:12px 14px; background:#fff; border:1px solid var(--border); vertical-align:middle; }
+  .hm-sname { font-size:12px; font-weight:700; margin-bottom:2px; display:flex; align-items:center; gap:7px; }
+  .sdot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+  .hm-ssub { font-size:9px; color:var(--text-faint); }
+  .hm-cell {
+    padding:14px 10px; text-align:center; vertical-align:middle;
+    cursor:pointer; transition:all .12s; position:relative;
+  }
+  .hm-cell:hover{transform:scale(1.05);z-index:10;}
+  .hm-cell.critical{background:var(--heat-critical);}
+  .hm-cell.high{background:var(--heat-high);}
+  .hm-cell.medium{background:var(--heat-med);}
+  .hm-cell.low{background:var(--heat-low);}
+  .hm-cell.none{background:var(--heat-none);}
+  .cell-score{font-size:17px;font-weight:700;line-height:1;display:block;}
+  .cell-lbl{font-size:8px;letter-spacing:.08em;text-transform:uppercase;margin-top:3px;display:block;color:rgba(255,255,255,.85);}
+  .cell-arr{font-size:10px;position:absolute;top:5px;right:7px;}
+
+  /* GEO BUTTONS */
+  .geo-filter{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;}
+  .geo-btn{
+    padding:5px 12px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--text-muted);background:#fff;
+    border:1px solid var(--border);cursor:pointer;transition:all .12s;
+  }
+  .geo-btn:hover{border-color:#999;color:var(--black);}
+  .geo-btn.active{background:var(--black);color:#fff;border-color:var(--black);}
+
+  /* LEGEND */
+  .hm-legend{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:28px;}
+  .leg-item{display:flex;align-items:center;gap:7px;font-size:10px;color:var(--text-faint);}
+  .leg-sw{width:18px;height:10px;}
+
+  /* GRID LAYOUTS */
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px;}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px;}
+  .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px;}
+
+  /* CARDS */
+  .card{background:#fff;border:1px solid var(--border);padding:18px;}
+  .card-label{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-faint);margin-bottom:6px;}
+  .card-title{font-size:13px;font-weight:700;margin-bottom:8px;line-height:1.35;color:var(--black);}
+  .card-body{font-size:11px;color:var(--text-muted);line-height:1.6;}
+  .card-clients{font-size:10px;color:var(--text-faint);margin-top:8px;font-style:italic;}
+
+  /* URGENCY BADGES */
+  .badge{display:inline-block;font-size:8px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;margin-bottom:8px;}
+  .badge.critical{background:var(--red);color:#fff;}
+  .badge.high{background:rgba(248,78,93,.35);color:#fff;}
+  .badge.medium{background:rgba(255,255,255,.12);color:rgba(255,255,255,.7);}
+
+  /* TABLES */
+  .data-table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:28px;}
+  .data-table th{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-faint);padding:8px 10px;border-bottom:2px solid var(--black);text-align:left;}
+  .data-table td{padding:10px 10px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.5;}
+  .data-table tr:last-child td{border-bottom:none;}
+  .td-co{font-weight:700;color:var(--black);}
+  .td-geo{color:var(--text-faint);font-size:11px;}
+  .td-prop{color:var(--text-mid);}
+  .td-trigger{color:var(--text-muted);font-size:11px;font-style:italic;}
+
+  .heat-badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;}
+  .heat-badge.c{background:var(--heat-critical);color:#fff;}
+  .heat-badge.h{background:var(--heat-high);color:#fff;}
+  .heat-badge.m{background:var(--heat-med);}
+
+  /* HYPOTHESIS CARDS */
+  .hyp-card{background:#fff;border:1px solid var(--border);border-left:3px solid var(--red);padding:18px;margin-bottom:10px;}
+  .hyp-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:10px;}
+  .hyp-num{font-size:22px;font-weight:700;color:var(--border);line-height:1;flex-shrink:0;}
+  .hyp-dir{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;}
+  .hyp-dir.up{color:#22AE8A;}
+  .hyp-dir.down{color:var(--red);}
+  .hyp-dir.mixed{color:#FDCF41;}
+  .hyp-title{font-size:13px;font-weight:700;line-height:1.35;color:var(--black);}
+  .hyp-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;font-size:11px;margin-top:10px;}
+  .hyp-block label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-faint);display:block;margin-bottom:4px;font-family:"Courier New",monospace;}
+  .hyp-block p{color:var(--text-mid);line-height:1.55;font-size:12px;}
+  .hyp-block .hook{color:var(--red);font-weight:700;}
+
+  /* SALES SCRIPTS */
+  .script-card{background:#fff;border:1px solid var(--border);border-left:3px solid var(--red);padding:20px;margin-bottom:12px;}
+  .script-context{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-faint);margin-bottom:12px;font-family:"Courier New",monospace;}
+  .script-block{margin-bottom:14px;}
+  .script-block label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--red);display:block;margin-bottom:5px;}
+  .script-block p{font-size:12px;color:var(--text-mid);line-height:1.6;font-style:italic;}
+  .script-block p.plain{font-style:normal;color:var(--text);}
+  .script-ask{background:rgba(248,78,93,.07);border:1px solid rgba(248,78,93,.2);padding:10px 14px;font-size:12px;color:var(--black);line-height:1.5;}
+
+  /* DELIVERY ENGAGEMENTS */
+  .engagement-card{background:#fff;border:1px solid var(--border);padding:20px;position:relative;overflow:hidden;}
+  .eng-num{position:absolute;top:12px;right:16px;font-size:36px;font-weight:700;color:rgba(0,0,0,.04);line-height:1;}
+  .eng-title{font-size:14px;font-weight:700;margin-bottom:10px;color:var(--black);}
+  .eng-meta{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:12px;}
+  .eng-meta span{font-size:10px;color:var(--text-faint);}
+  .eng-meta span strong{color:var(--text-mid);}
+  .eng-outputs{font-size:11px;color:var(--text-muted);line-height:1.7;}
+  .eng-outputs li{list-style:none;}
+  .eng-outputs li::before{content:'→ ';color:var(--red);}
+
+  /* MARKETING */
+  .mkt-card{background:#fff;border:1px solid var(--border);padding:18px;}
+  .mkt-headline{font-size:15px;font-weight:700;line-height:1.3;margin-bottom:8px;color:var(--black);}
+  .mkt-insight{font-size:11px;color:var(--text-muted);line-height:1.6;margin-bottom:10px;}
+  .mkt-chart{font-size:10px;color:var(--text-faint);margin-bottom:6px;}
+  .mkt-angle{font-size:10px;font-weight:700;color:var(--red);}
+
+  /* PRIORITY TIERS */
+  .tier{margin-bottom:24px;}
+  .tier-header{display:flex;align-items:center;gap:14px;margin-bottom:12px;}
+  .tier-badge{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;}
+  .tier-badge.t1{background:var(--red);color:#fff;}
+  .tier-badge.t2{background:var(--grey);color:#fff;}
+  .tier-badge.t3{background:rgba(0,0,0,.05);color:var(--text-faint);}
+  .tier-title{font-size:14px;font-weight:700;}
+  .tier-items{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  .tier-item{background:#fff;border:1px solid var(--border);padding:14px;}
+  .tier-item.t1{border-left:2px solid var(--red);}
+  .tier-item.t2{border-left:2px solid rgba(255,255,255,.2);}
+  .tier-item.t3{border-left:2px solid rgba(255,255,255,.07);}
+  .tier-item-sector{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint);margin-bottom:4px;font-family:"Courier New",monospace;}
+  .tier-item-name{font-size:12px;font-weight:700;margin-bottom:4px;color:var(--black);}
+  .tier-item-why{font-size:11px;color:var(--text-muted);}
+  .tier-item-score{font-size:18px;font-weight:700;float:right;margin-top:-2px;}
+  .tier-item-score.red{color:var(--red);}
+
+  /* GEO DETAIL VIEW */
+  .geo-detail{display:none;}
+  .geo-detail.active{display:block;}
+  .geo-tab-bar{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;}
+  .geo-tab{padding:6px 14px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-faint);background:#fff;border:1px solid var(--border);cursor:pointer;transition:all .12s;}
+  .geo-tab:hover{color:var(--black);border-color:#999;}
+  .geo-tab.active{background:var(--black);color:#fff;border-color:var(--black);}
+
+  /* SECTOR GEO PANELS */
+  .sector-geo-panel{display:none;}
+  .sector-geo-panel.active{display:block;}
+
+  /* DIVIDER */
+  hr.div{border:none;border-top:1px solid var(--border);margin:28px 0;}
+
+  /* TOOLTIPS REMOVED — inline cards used instead */
+
+  @media(max-width:900px){
+    .grid-3{grid-template-columns:1fr 1fr;}
+    .grid-4{grid-template-columns:1fr 1fr;}
+    .tier-items{grid-template-columns:1fr 1fr;}
+    .hyp-grid{grid-template-columns:1fr 1fr;}
+  }
+
+  /* ── DOWNLOAD BUTTON ── */
+  .download-bar{
+    background:#fff;border-bottom:1px solid var(--border);
+    padding:10px 40px;display:flex;align-items:center;justify-content:space-between;
+  }
+  .download-note{font-size:11px;color:var(--text-faint)}
+  .dl-btn{
+    display:inline-flex;align-items:center;gap:7px;
+    background:var(--black);color:#fff;border:none;
+    font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+    padding:8px 16px;cursor:pointer;transition:background .15s;
+    font-family:-apple-system,sans-serif;
+  }
+  .dl-btn:hover{background:#333}
+
+  /* ── PRINT STYLES ── */
+  @media print{
+    header,nav,.download-bar,.refresh-banner,.geo-filter,.geo-tab-bar,.h-refresh-btn,
+    .live-pill,.metrics{display:none!important}
+    body{background:#fff;color:#000;font-size:11pt}
+    .content{padding:0}
+    .panel{display:block!important}
+    .sector-geo-panel{display:block!important}
+    .panel-title{font-size:16pt;margin-bottom:6pt}
+    .panel-desc{font-size:10pt}
+    .alert-box{border-left:3pt solid #F84E5D;background:#fff8f8;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .hyp-card{border:1pt solid #E2E2DC;border-left:3pt solid #F84E5D;page-break-inside:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .tier-item{border:1pt solid #E2E2DC;page-break-inside:avoid}
+    .tier-item.t1{border-left:2pt solid #F84E5D;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .data-table{font-size:9pt}
+    .data-table th{border-bottom:1pt solid #000}
+    .badge.critical,.tier-badge.t1,.heat-badge.c{background:#F84E5D!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .section-label{color:#F84E5D!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    h2,h3,.section-heading{page-break-after:avoid}
+    .grid-2,.grid-3,.grid-4{grid-template-columns:1fr 1fr}
+    .tier-items{grid-template-columns:1fr 1fr 1fr}
+    .hyp-grid{grid-template-columns:1fr 1fr 1fr 1fr}
+    .cover-note{display:block!important}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-left">
+    <div class="gd"><span></span><span></span><span></span></div>
+    <div>
+      <div class="logotype">FutureBridge</div>
+      <div class="doc-meta">War Impact · Commercial Operating Guide</div>
+    </div>
+    <a href="index.html" class="h-toolkit-link">← Toolkit</a>
+  </div>
+  <div class="h-centre">
+    <div class="h-title">War Impact Intelligence Map — Commercial Edition</div>
+    <div class="h-sub">Rebuilt for Sales, Delivery, and Marketing. Each sector and geography has its own hypotheses, scripts, and engagements.</div>
+  </div>
+  <div class="h-right">
+    <div class="live-pill">Live Conflict Active</div>
+    <div class="last-assessed" id="lastAssessed">Last assessed: 24 March 2026</div>
+    <button class="h-refresh-btn" id="refreshBtn" onclick="refreshResearch()">↺ Refresh research</button>
+  </div>
+</header>
+
+<div class="refresh-banner" id="refreshBanner">
+  <div class="rb-spinner"></div>
+  <div><strong>Refreshing research…</strong> Claude is rewriting the analysis in Chris Guerin's voice. This takes about 60 seconds.</div>
+</div>
+
+<div class="download-bar">
+  <div class="download-note">War Impact Intelligence Map · Commercial Edition · FutureBridge Advisory</div>
+  <button class="dl-btn" onclick="downloadPDF()">↓ Download as PDF</button>
+</div>
+
+<div class="metrics">
+  <div class="metric"><div class="metric-label">Brent Crude</div><div class="metric-val hot">$103</div><div class="metric-cap">+25% since Feb 28 strikes</div></div>
+  <div class="metric"><div class="metric-label">TTF Gas (Europe)</div><div class="metric-val hot">€63/MWh</div><div class="metric-cap">Near-double pre-conflict</div></div>
+  <div class="metric"><div class="metric-label">Strait of Hormuz</div><div class="metric-val hot">~Closed</div><div class="metric-cap">90% below normal traffic</div></div>
+  <div class="metric"><div class="metric-label">EU Gas Storage</div><div class="metric-val hot">~30%</div><div class="metric-cap">vs 77 bcm this time 2024</div></div>
+  <div class="metric"><div class="metric-label">Gulf Air Cargo</div><div class="metric-val hot">−79%</div><div class="metric-cap">Dubai, Doha hubs suspended</div></div>
+  <div class="metric"><div class="metric-label">Ukraine War</div><div class="metric-val">Yr 4</div><div class="metric-cap">Ongoing — ceasefire uncertain</div></div>
+  <div class="metric"><div class="metric-label">Conflict type</div><div class="metric-val">Dual</div><div class="metric-cap">Middle East + Eastern Europe</div></div>
+</div>
+
+<div class="nav">
+  <div class="nav-tab priority-tab active" onclick="showPanel('priorities')">▶ Where to Focus</div>
+  <div class="nav-tab" onclick="showPanel('heatmap')">Heat Map</div>
+  <div class="nav-tab" onclick="showPanel('energy')">Energy</div>
+  <div class="nav-tab" onclick="showPanel('oil')">Oil & Gas</div>
+  <div class="nav-tab" onclick="showPanel('chemicals')">Chemicals</div>
+  <div class="nav-tab" onclick="showPanel('mobility')">Mobility</div>
+  <div class="nav-tab" onclick="showPanel('manufacturing')">Manufacturing</div>
+  <div class="nav-tab" onclick="showPanel('pharma')">Life Sciences</div>
+  <div class="nav-tab" onclick="showPanel('sales')">Sales Scripts</div>
+  <div class="nav-tab" onclick="showPanel('delivery')">Delivery</div>
+  <div class="nav-tab" onclick="showPanel('marketing')">Marketing</div>
+</div>
+
+<div class="content">
+
+<!-- ===================== PRIORITIES PANEL ===================== -->
+<div class="panel active" id="panel-priorities">
+
+  <div class="section-label">Where to focus</div>
+  <div class="panel-title">FutureBridge priority tiers — ranked by advisory opportunity</div>
+  <div class="panel-desc">This is the only page Sales, Delivery, and Marketing need to open first. Everything else is reference. Work Tier 1 immediately. Build Tier 2 pipeline. Watch Tier 3.</div>
+
+  <div class="alert-box">
+    <strong>One operating principle:</strong> The conflict creates urgency. Urgency creates a closing window. Three months from now, clients will either have engaged advisors or frozen budgets. The opportunity is structural — energy decoupling, supply chain redesign, defence spending — but the trigger is now. Move on Tier 1 this week.
+  </div>
+
+  <div class="tier">
+    <div class="tier-header">
+      <div class="tier-badge t1">Tier 1 — Pursue immediately</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.4);">Score 8.5–10 · Engage this week · Budgets active</div>
+    </div>
+    <div class="tier-items">
+      <div class="tier-item t1">
+        <span class="tier-item-score red">9.5</span>
+        <div class="tier-item-sector">Energy · Europe</div>
+        <div class="tier-item-name">European energy security</div>
+        <div class="tier-item-why">Gas at €63/MWh. Storage at 30%. Every utility, major, and government body is in emergency planning. Shell, BP, TotalEnergies, MOL — all active. The conversation is open. Walk in now.</div>
+      </div>
+      <div class="tier-item t1">
+        <span class="tier-item-score red">9.0</span>
+        <div class="tier-item-sector">Oil & Gas · Global</div>
+        <div class="tier-item-name">Upstream technology at $100+ oil</div>
+        <div class="tier-item-why">SLB, Halliburton, Baker Hughes order books expanding. Every marginal barrel is viable. Technology selection advisory is commercially justified. Oilfield services clients will spend on intelligence.</div>
+      </div>
+      <div class="tier-item t1">
+        <span class="tier-item-score red">9.0</span>
+        <div class="tier-item-sector">Manufacturing · Europe</div>
+        <div class="tier-item-name">Defence industrial base</div>
+        <div class="tier-item-why">NATO spending at 3%+ of GDP in multiple markets. Rheinmetall, BAE, KNDS face technology selection decisions now. FutureBridge methodology applies directly. Budget is confirmed, not projected.</div>
+      </div>
+      <div class="tier-item t1">
+        <span class="tier-item-score red">8.8</span>
+        <div class="tier-item-sector">Energy · Asia-Pacific</div>
+        <div class="tier-item-name">Asian NOC energy security</div>
+        <div class="tier-item-why">84% of Hormuz oil goes to Asia. CNOOC, ONGC, JERA, POSCO — all exposed. Board-level mandates to commission supply chain audits. FutureBridge can deliver in the format they need.</div>
+      </div>
+      <div class="tier-item t1">
+        <span class="tier-item-score red">8.5</span>
+        <div class="tier-item-sector">Chemicals · Europe</div>
+        <div class="tier-item-name">Feedstock diversification</div>
+        <div class="tier-item-why">European ammonia production up 180% in cost. BASF, Solvay, Ineos all evaluating alternatives. The economic case for bio-based and electrified routes finally clears the threshold. Engageable now.</div>
+      </div>
+      <div class="tier-item t1">
+        <span class="tier-item-score red">8.5</span>
+        <div class="tier-item-sector">Manufacturing · Americas</div>
+        <div class="tier-item-name">Reshoring technology advisory</div>
+        <div class="tier-item-why">US domestic natural gas advantage is substantial. Industrial and defence reshoring is policy-mandated. Technology selection for new facilities is the active decision. Chevron Phillips, Eastman, defence primes.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tier">
+    <div class="tier-header">
+      <div class="tier-badge t2">Tier 2 — Active pipeline</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.4);">Score 6.5–8.4 · Build now · Decisions 30–90 days out</div>
+    </div>
+    <div class="tier-items">
+      <div class="tier-item t2">
+        <span class="tier-item-score" style="color:var(--red)">8.0</span>
+        <div class="tier-item-sector">Mobility · Europe</div>
+        <div class="tier-item-name">EV supply chain resilience</div>
+        <div class="tier-item-why">Battery material sourcing exposed. OEMs reassessing supplier geography. Strategic advisory on critical mineral supply chains in pipeline now.</div>
+      </div>
+      <div class="tier-item t2">
+        <span class="tier-item-score" style="color:var(--red)">7.8</span>
+        <div class="tier-item-sector">Energy · Americas</div>
+        <div class="tier-item-name">US LNG export opportunity</div>
+        <div class="tier-item-why">ExxonMobil, Cheniere at capacity but political pressure to expand. Advisory on Asian market access and technology for fast-track LNG infrastructure.</div>
+      </div>
+      <div class="tier-item t2">
+        <span class="tier-item-score" style="color:var(--red)">7.5</span>
+        <div class="tier-item-sector">Chemicals · Asia</div>
+        <div class="tier-item-name">Supply chain audit — naphtha</div>
+        <div class="tier-item-why">Reliance, Petronas, PTT exposed to rerouted Gulf shipments adding 10+ days to naphtha delivery. Supply chain reconfiguration advisory in demand.</div>
+      </div>
+      <div class="tier-item t2">
+        <span class="tier-item-score" style="color:var(--red)">7.5</span>
+        <div class="tier-item-sector">Life Sciences · Europe</div>
+        <div class="tier-item-name">API supply chain security</div>
+        <div class="tier-item-why">90% API dependency on China. Conflict-adjacent risk prompting reshoring mandates. Roche, Pfizer, Sanofi all evaluating. 60–90 day decision horizon.</div>
+      </div>
+      <div class="tier-item t2">
+        <span class="tier-item-score" style="color:var(--red)">7.0</span>
+        <div class="tier-item-sector">Manufacturing · Asia-Pacific</div>
+        <div class="tier-item-name">Japan/Korea defence industrial</div>
+        <div class="tier-item-why">Japan defence budget doubled. Korea's industrial policy actively seeking supply chain diversification. Both markets represent new FutureBridge revenue.</div>
+      </div>
+      <div class="tier-item t2">
+        <span class="tier-item-score" style="color:var(--red)">6.8</span>
+        <div class="tier-item-sector">Food · Europe</div>
+        <div class="tier-item-name">Fertilizer alternatives</div>
+        <div class="tier-item-why">Yara, Mosaic evaluating green ammonia and precision fermentation alternatives. Technology readiness assessment is the entry point.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tier">
+    <div class="tier-header">
+      <div class="tier-badge t3">Tier 3 — Monitor</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.3);">Score 2.5–6.4 · Track but do not pursue · Either too early, too exposed, or budgets frozen</div>
+    </div>
+    <div class="tier-items">
+      <div class="tier-item t3">
+        <span class="tier-item-score" style="color:var(--text-faint)">5.5</span>
+        <div class="tier-item-sector">Energy · Middle East</div>
+        <div class="tier-item-name">Gulf reconstruction pipeline</div>
+        <div class="tier-item-why">Real opportunity — but 9–12 months out. Begin relationship building now. Do not attempt commercial engagement during active hostilities.</div>
+      </div>
+      <div class="tier-item t3">
+        <span class="tier-item-score" style="color:var(--text-faint)">4.5</span>
+        <div class="tier-item-sector">Mobility · Americas</div>
+        <div class="tier-item-name">US EV transition</div>
+        <div class="tier-item-why">Policy uncertainty and IRA review have delayed decisions. Opportunity real but timing unclear. Watch Q2 policy announcements.</div>
+      </div>
+      <div class="tier-item t3">
+        <span class="tier-item-score" style="color:var(--text-faint)">2.5</span>
+        <div class="tier-item-sector">Manufacturing · MENA</div>
+        <div class="tier-item-name">MENA industrial advisory</div>
+        <div class="tier-item-why">Active conflict zone. Clients not buying. Do not pursue. No exceptions.</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /priorities -->
+
+
+<!-- ===================== HEATMAP PANEL ===================== -->
+<div class="panel" id="panel-heatmap">
+
+  <div class="section-label">Opportunity matrix</div>
+  <div class="panel-title">Sector × Geography intensity scores</div>
+  <div class="panel-desc">Click any cell to navigate to that sector's geo-specific page. Scores reflect FutureBridge advisory pull — not market size. 9–10 = immediate engagement. 1–3 = defer.</div>
+
+  <div class="alert-box">
+    <strong>How this map is different from the previous version:</strong> The old map routed every cell click to a generic sector page. This map routes to a geo-specific page with its own hypotheses, targets, and propositions. Click Energy · Europe and you get European energy content. Click Energy · Asia and you get Asian content. That is how it should work.
+  </div>
+
+  <div class="geo-filter">
+    <button class="geo-btn active" onclick="filterGeo(this,'all')">All geographies</button>
+    <button class="geo-btn" onclick="filterGeo(this,'europe')">Europe</button>
+    <button class="geo-btn" onclick="filterGeo(this,'mena')">Middle East</button>
+    <button class="geo-btn" onclick="filterGeo(this,'apac')">Asia-Pacific</button>
+    <button class="geo-btn" onclick="filterGeo(this,'americas')">Americas</button>
+  </div>
+
+  <div class="hm-wrap">
+    <table class="hm-table" id="heatmap">
+      <thead>
+        <tr>
+          <th class="hm-th-corner"></th>
+          <th class="hm-th" data-geo="europe">Europe</th>
+          <th class="hm-th" data-geo="mena">Middle East & Gulf</th>
+          <th class="hm-th" data-geo="apac">Asia-Pacific</th>
+          <th class="hm-th" data-geo="americas">Americas</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="hm-row-head">
+            <div class="hm-sname"><span class="sdot" style="background:#48B8E7"></span>Energy</div>
+            <div class="hm-ssub">Power, utilities, grid, renewables</div>
+          </td>
+          <td class="hm-cell critical" data-geo="europe" onclick="gotoSectorGeo('energy','europe')">
+            <span class="cell-score">9.5</span><span class="cell-lbl">Critical</span><span class="cell-arr">↑</span>
+          </td>
+          <td class="hm-cell low" data-geo="mena" onclick="gotoSectorGeo('energy','mena')">
+            <span class="cell-score">3.5</span><span class="cell-lbl">Defer</span><span class="cell-arr">→</span>
+          </td>
+          <td class="hm-cell high" data-geo="apac" onclick="gotoSectorGeo('energy','apac')">
+            <span class="cell-score">8.8</span><span class="cell-lbl">High</span><span class="cell-arr">↑</span>
+          </td>
+          <td class="hm-cell high" data-geo="americas" onclick="gotoSectorGeo('energy','americas')">
+            <span class="cell-score">7.8</span><span class="cell-lbl">High</span><span class="cell-arr">↑</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="hm-row-head">
+            <div class="hm-sname"><span class="sdot" style="background:#F84E5D"></span>Oil & Gas</div>
+            <div class="hm-ssub">Upstream, oilfield services, LNG</div>
+          </td>
+          <td class="hm-cell high" data-geo="europe" onclick="gotoSectorGeo('oil','europe')">
+            <span class="cell-score">8.0</span><span class="cell-lbl">High</span><span class="cell-arr">↑</span>
+          </td>
+          <td class="hm-cell low" data-geo="mena" onclick="gotoSectorGeo('oil','mena')">
+            <span class="cell-score">2.5</span><span class="cell-lbl">Defer</span><span class="cell-arr">↓</span>
+          </td>
+          <td class="hm-cell high" data-geo="apac" onclick="gotoSectorGeo('oil','apac')">
+            <span class="cell-score">8.5</span><span class="cell-lbl">High</span><span class="cell-arr">↑</span>
+          </td>
+          <td class="hm-cell critical" data-geo="americas" onclick="gotoSectorGeo('oil','americas')">
+            <span class="cell-score">9.0</span><span class="cell-lbl">Critical</span><span class="cell-arr">↑</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="hm-row-head">
+            <div class="hm-sname"><span class="sdot" style="background:#22AE8A"></span>Chemicals</div>
+            <div class="hm-ssub">Petrochemicals, fertilizers, materials</div>
+          </td>
+          <td class="hm-cell critical" data-geo="europe" onclick="gotoSectorGeo('chemicals','europe')">
+            <span class="cell-score">8.5</span><span class="cell-lbl">Critical</span><span class="cell-arr">↑</span>
+          </td>
+          <td class="hm-cell low" data-geo="mena" onclick="gotoSectorGeo('chemicals','mena')">
+            <span class="cell-score">2.0</span><span class="cell-lbl">Defer</span><span class="cell-arr">↓</span>
+          </td>
+          <td class="hm-cell high" data-geo="apac" onclick="gotoSectorGeo('chemicals','apac')">
+            <span class="cell-score">7.5</span><span class="cell-lbl">High</span><span class="cell-arr">↑</span>
+          </td>
+          <td class="hm-cell high" data-geo="americas" onclick="gotoSectorGeo('chemicals','americas')">
+            <span class="cell-score">7.8</span><span class="cell-lbl">High</span><span class="cell-arr">↑</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="hm-row-head">
+            <div class="hm-sname"><span class="sdot" style="background:#FDCF41"></span>Mobility</div>
+            <div class="hm-ssub">Automotive OEMs, EV, supply chain</div>
+          </td>
+          <td class="hm-cell high" data-geo="europe" onclick="gotoSectorGeo('mobility','europe')">
+            <span class="cell-score">8.0</span><span class="cell-lbl">High</span><span class="cell-arr">↑</span>
+          </td>
+          <td class="hm-cell low" data-geo="mena" onclick="gotoSectorGeo('mobility','mena')">
+            <span class="cell-score">3.0</span><span class="cell-lbl">Low</span><span class="cell-arr">→</span>
+          </td>
+          <td class="hm-cell medium" data-geo="apac" onclick="gotoSectorGeo('mobility','apac')">
+            <span class="cell-score">6.0</span><span class="cell-lbl">Watch</span><span class="cell-arr">→</span>
+          </td>
+          <td class="hm-cell medium" data-geo="americas" onclick="gotoSectorGeo('mobility','americas')">
+            <span class="cell-score">5.5</span><span class="cell-lbl">Watch</span><span class="cell-arr">→</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="hm-row-head">
+            <div class="hm-sname"><span class="sdot" style="background:#9D7AD2"></span>Manufacturing</div>
+            <div class="hm-ssub">Industrials, defence, reshoring</div>
+          </td>
+          <td class="hm-cell critical" data-geo="europe" onclick="gotoSectorGeo('manufacturing','europe')">
+            <span class="cell-score">9.0</span><span class="cell-lbl">Critical</span><span class="cell-arr">↑</span>
+          </td>
+          <td class="hm-cell none" data-geo="mena" onclick="gotoSectorGeo('manufacturing','mena')">
+            <span class="cell-score">2.5</span><span class="cell-lbl">Defer</span><span class="cell-arr">↓</span>
+          </td>
+          <td class="hm-cell high" data-geo="apac" onclick="gotoSectorGeo('manufacturing','apac')">
+            <span class="cell-score">7.0</span><span class="cell-lbl">High</span><span class="cell-arr">↑</span>
+          </td>
+          <td class="hm-cell critical" data-geo="americas" onclick="gotoSectorGeo('manufacturing','americas')">
+            <span class="cell-score">8.5</span><span class="cell-lbl">Critical</span><span class="cell-arr">↑</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="hm-row-head">
+            <div class="hm-sname"><span class="sdot" style="background:#3F43AD"></span>Life Sciences</div>
+            <div class="hm-ssub">Pharma, biotech, medical devices</div>
+          </td>
+          <td class="hm-cell high" data-geo="europe" onclick="gotoSectorGeo('pharma','europe')">
+            <span class="cell-score">7.5</span><span class="cell-lbl">High</span><span class="cell-arr">↑</span>
+          </td>
+          <td class="hm-cell low" data-geo="mena" onclick="gotoSectorGeo('pharma','mena')">
+            <span class="cell-score">3.5</span><span class="cell-lbl">Low</span><span class="cell-arr">→</span>
+          </td>
+          <td class="hm-cell medium" data-geo="apac" onclick="gotoSectorGeo('pharma','apac')">
+            <span class="cell-score">6.5</span><span class="cell-lbl">Watch</span><span class="cell-arr">↑</span>
+          </td>
+          <td class="hm-cell medium" data-geo="americas" onclick="gotoSectorGeo('pharma','americas')">
+            <span class="cell-score">6.0</span><span class="cell-lbl">Watch</span><span class="cell-arr">→</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="hm-legend">
+    <div class="leg-item"><span class="leg-sw" style="background:var(--heat-critical)"></span> 8.5–10 · Critical — pursue now</div>
+    <div class="leg-item"><span class="leg-sw" style="background:var(--heat-high)"></span> 6.5–8.4 · High — active pipeline</div>
+    <div class="leg-item"><span class="leg-sw" style="background:var(--heat-med)"></span> 4.5–6.4 · Watch — prepare not pursue</div>
+    <div class="leg-item"><span class="leg-sw" style="background:var(--heat-low)"></span> 1–4.4 · Defer</div>
+  </div>
+
+</div><!-- /heatmap -->
+
+
+<!-- ===================== ENERGY PANEL ===================== -->
+<div class="panel" id="panel-energy">
+
+  <div class="section-label">Sector intelligence</div>
+  <div class="panel-title">Energy — geo-specific intelligence</div>
+  <div class="panel-desc">Select a geography. Every geography has its own hypotheses, targets, propositions, and conversation starters. Do not use the generic page for client conversations.</div>
+
+  <div class="geo-tab-bar">
+    <div class="geo-tab active" onclick="showSectorGeo('energy','europe',this)">Europe · 9.5</div>
+    <div class="geo-tab" onclick="showSectorGeo('energy','apac',this)">Asia-Pacific · 8.8</div>
+    <div class="geo-tab" onclick="showSectorGeo('energy','americas',this)">Americas · 7.8</div>
+    <div class="geo-tab" onclick="showSectorGeo('energy','mena',this)">Middle East · 3.5 ↓</div>
+  </div>
+
+  <!-- ENERGY · EUROPE -->
+  <div class="sector-geo-panel active" id="energy-europe">
+    <div class="alert-box">
+      <strong>Energy · Europe · 9.5/10 — Critical.</strong> Gas at €63/MWh. Storage at 30%. Every European utility and energy major is in active crisis planning. The advisory window is open. Budgets are moving. This is the highest-priority engagement in the entire map.
+    </div>
+
+    <div class="section-label">Hypotheses</div>
+    <div class="section-heading">What the war will do to European energy — and what FutureBridge sells</div>
+
+    <div class="hyp-card">
+      <div class="hyp-header">
+        <div class="hyp-num">1</div>
+        <div><div class="hyp-dir up">Opportunity rises — critical</div><div class="hyp-title">European energy decoupling becomes a multi-year government mandate, not a preference</div></div>
+      </div>
+      <div class="hyp-grid">
+        <div class="hyp-block"><label>Why it matters</label><p>Governments are committing capital now. Every week Hormuz stays disrupted adds political urgency to permanent decoupling. Offshore wind, grid storage, hydrogen, and nuclear extension all receive accelerated funding.</p></div>
+        <div class="hyp-block"><label>Signals to watch</label><p>Emergency EU energy legislation. Member state storage procurement announcements. Grid operator capex upgrades. Accelerated permitting timelines for renewable infrastructure.</p></div>
+        <div class="hyp-block"><label>What FutureBridge sells</label><p class="hook">Technology horizon advisory for utilities and governments. H1/H2/H3 framework applied to grid storage, offshore wind, and hydrogen technology selection. 6-month retainer format.</p></div>
+        <div class="hyp-block"><label>Target clients</label><p>Shell, BP, TotalEnergies, Ørsted, RWE, SSE, European grid operators, energy ministries</p></div>
+      </div>
+    </div>
+
+    <div class="hyp-card">
+      <div class="hyp-header">
+        <div class="hyp-num">2</div>
+        <div><div class="hyp-dir up">Opportunity rises</div><div class="hyp-title">Grid-scale battery storage crosses the investment threshold — technology selection is the active decision</div></div>
+      </div>
+      <div class="hyp-grid">
+        <div class="hyp-block"><label>Why it matters</label><p>Stationary storage is now a national security investment, not a sustainability choice. Governments and utilities are spending. The question is which technologies win — and that is a FutureBridge question.</p></div>
+        <div class="hyp-block"><label>Signals to watch</label><p>Grid storage procurement tenders. Battery technology TRL announcements. Grid operator capex guidance. Government storage subsidy programmes.</p></div>
+        <div class="hyp-block"><label>What FutureBridge sells</label><p class="hook">Grid resilience technology assessment. TRL ranking of storage technologies. Investment landscape. 8-week sprint format.</p></div>
+        <div class="hyp-block"><label>Target clients</label><p>National Grid, RTE, Red Eléctrica, RWE, Equinor, Enel, utilities with grid storage capex</p></div>
+      </div>
+    </div>
+
+    <div class="hyp-card">
+      <div class="hyp-header">
+        <div class="hyp-num">3</div>
+        <div><div class="hyp-dir mixed">Mixed — watch carefully</div><div class="hyp-title">Renewables investment case is strong but CFO budget freezes may delay advisory spend</div></div>
+      </div>
+      <div class="hyp-grid">
+        <div class="hyp-block"><label>Why it matters</label><p>The strategic rationale for renewables acceleration has never been stronger. But oil majors and utilities face simultaneous cost pressure. Decisions are being made — advisory spend may lag investment decisions by 60–90 days.</p></div>
+        <div class="hyp-block"><label>Signals to watch</label><p>Utility capex guidance. Oil major Q1 earnings calls. Renewables project FID announcements. Government subsidy drawdown rates.</p></div>
+        <div class="hyp-block"><label>What FutureBridge sells</label><p class="hook">Scenario planning to help clients build the internal investment case. FutureBridge as the external validation layer. Useful even when CFOs are hesitating.</p></div>
+        <div class="hyp-block"><label>Target clients</label><p>BP, Shell, TotalEnergies strategy and technology teams. Pitch to CSO not CFO.</p></div>
+      </div>
+    </div>
+
+    <div class="section-label" style="margin-top:28px">Priority targets</div>
+    <div class="section-heading">European energy — who to call and why</div>
+
+    <table class="data-table">
+      <thead><tr><th>Company</th><th>Geo</th><th>Proposition</th><th>Trigger</th><th>Heat</th></tr></thead>
+      <tbody>
+        <tr><td class="td-co">Shell</td><td class="td-geo">Europe / Global</td><td class="td-prop">Energy security scenarios + LNG diversification advisory</td><td class="td-trigger">Exposed to Qatar LNG. European gas margin compression. Strategy team needs external scenario validation.</td><td><span class="heat-badge c">Critical</span></td></tr>
+        <tr><td class="td-co">BP</td><td class="td-geo">Europe</td><td class="td-prop">Renewables acceleration roadmap + grid storage TRL assessment</td><td class="td-trigger">Transition strategy under price volatility. Investment case needs reinforcing. CSO is the buyer.</td><td><span class="heat-badge c">Critical</span></td></tr>
+        <tr><td class="td-co">TotalEnergies</td><td class="td-geo">Europe / MENA</td><td class="td-prop">LNG supply chain scenario planning</td><td class="td-trigger">Qatar LNG JV exposure. European supply commitments at risk. 90-day decision horizon.</td><td><span class="heat-badge c">Critical</span></td></tr>
+        <tr><td class="td-co">MOL Group</td><td class="td-geo">Central Europe</td><td class="td-prop">Energy security briefing + alternative supply assessment</td><td class="td-trigger">Hungarian/Slovakian gas dependency. Cited in IMF modelling as highly exposed.</td><td><span class="heat-badge c">Critical</span></td></tr>
+        <tr><td class="td-co">RWE</td><td class="td-geo">Germany</td><td class="td-prop">Grid storage technology assessment</td><td class="td-trigger">Active capex allocation for grid storage. Technology selection decision is live.</td><td><span class="heat-badge h">High</span></td></tr>
+        <tr><td class="td-co">European Grid Operators</td><td class="td-geo">Europe</td><td class="td-prop">Grid resilience and emergency storage assessment</td><td class="td-trigger">Emergency procurement of storage and backup generation. Procurement teams are active.</td><td><span class="heat-badge h">High</span></td></tr>
+      </tbody>
+    </table>
+  </div><!-- /energy-europe -->
+
+  <!-- ENERGY · APAC -->
+  <div class="sector-geo-panel" id="energy-apac">
+    <div class="alert-box">
+      <strong>Energy · Asia-Pacific · 8.8/10 — High.</strong> China, Japan, Korea and India account for 84% of Hormuz oil flows. Extended disruption forces NOC boards to commission strategic supply chain audits and technology investment studies. FutureBridge is structured to deliver exactly this.
+    </div>
+
+    <div class="section-label">Hypotheses</div>
+    <div class="section-heading">What the war will do to Asian energy — and what FutureBridge sells</div>
+
+    <div class="hyp-card">
+      <div class="hyp-header">
+        <div class="hyp-num">1</div>
+        <div><div class="hyp-dir up">Opportunity rises — high</div><div class="hyp-title">Asian NOCs re-enter the advisory market as energy security dominates board agendas</div></div>
+      </div>
+      <div class="hyp-grid">
+        <div class="hyp-block"><label>Why it matters</label><p>NOC boards in China, India, Japan, and Korea are mandating supply chain audits and technology investment studies at scale. These are the engagements FutureBridge is built to deliver.</p></div>
+        <div class="hyp-block"><label>Signals to watch</label><p>NOC emergency board resolutions. State oil company procurement announcements. Government strategic reserve declarations. Alternative supplier contract announcements.</p></div>
+        <div class="hyp-block"><label>What FutureBridge sells</label><p class="hook">Energy security advisory for CNOOC, ONGC, POSCO, JERA. Supply chain resilience studies. Alternative sourcing assessments. 12-week sprint format.</p></div>
+        <div class="hyp-block"><label>Target clients</label><p>CNOOC, ONGC, JERA, POSCO, PETRONAS, PTT, Indian and Korean government energy bodies</p></div>
+      </div>
+    </div>
+
+    <div class="hyp-card">
+      <div class="hyp-header">
+        <div class="hyp-num">2</div>
+        <div><div class="hyp-dir up">Opportunity rises</div><div class="hyp-title">Asian energy transition accelerates as domestic production becomes national security</div></div>
+      </div>
+      <div class="hyp-grid">
+        <div class="hyp-block"><label>Why it matters</label><p>Every barrel saved from Hormuz dependency is a geopolitical win. Asian governments are now funding domestic renewable acceleration as strategic, not climate, policy. Advisory demand follows capital.</p></div>
+        <div class="hyp-block"><label>Signals to watch</label><p>National energy security legislation in Japan, Korea, India. Domestic renewable capex guidance. Solar and offshore wind procurement tenders.</p></div>
+        <div class="hyp-block"><label>What FutureBridge sells</label><p class="hook">Technology advisory on renewable scale-up for Asian governments and utilities. Specific to each market's vulnerability profile and domestic capability.</p></div>
+        <div class="hyp-block"><label>Target clients</label><p>KEPCO, Adani Green, NTPC, Japanese METI agencies, Korean industrial conglomerates</p></div>
+      </div>
+    </div>
+
+    <div class="section-label" style="margin-top:28px">Priority targets — Asia-Pacific energy</div>
+    <table class="data-table">
+      <thead><tr><th>Company</th><th>Country</th><th>Proposition</th><th>Trigger</th><th>Heat</th></tr></thead>
+      <tbody>
+        <tr><td class="td-co">CNOOC</td><td class="td-geo">China</td><td class="td-prop">Supply chain resilience and alternative source assessment</td><td class="td-trigger">84% Hormuz dependency. Board mandate to audit. Decision in 60 days.</td><td><span class="heat-badge c">Critical</span></td></tr>
+        <tr><td class="td-co">ONGC</td><td class="td-geo">India</td><td class="td-prop">Energy security strategy + domestic production technology</td><td class="td-trigger">India's Hormuz exposure. Government pressure to diversify. Active procurement discussions.</td><td><span class="heat-badge c">Critical</span></td></tr>
+        <tr><td class="td-co">JERA</td><td class="td-geo">Japan</td><td class="td-prop">LNG diversification and domestic renewable acceleration</td><td class="td-trigger">Japan's LNG supply chain stress. Government doubling defence budget signals strategic shift.</td><td><span class="heat-badge h">High</span></td></tr>
+        <tr><td class="td-co">PETRONAS</td><td class="td-geo">Malaysia</td><td class="td-prop">Energy technology landscape and supply chain audit</td><td class="td-trigger">Positioned between conflict-exposed markets. Building regional advisory relationships.</td><td><span class="heat-badge h">High</span></td></tr>
+      </tbody>
+    </table>
+  </div><!-- /energy-apac -->
+
+  <!-- ENERGY · AMERICAS -->
+  <div class="sector-geo-panel" id="energy-americas">
+    <div class="alert-box">
+      <strong>Energy · Americas · 7.8/10 — High.</strong> The US is positioned as the global LNG backstop supplier. ExxonMobil and Cheniere are at capacity but under political pressure to expand fast. Advisory on Asian market access and LNG infrastructure is in demand.
+    </div>
+    <div class="hyp-card">
+      <div class="hyp-header">
+        <div class="hyp-num">1</div>
+        <div><div class="hyp-dir up">Opportunity rises</div><div class="hyp-title">US LNG becomes the world's critical swing supplier — infrastructure and market advisory in demand</div></div>
+      </div>
+      <div class="hyp-grid">
+        <div class="hyp-block"><label>Why it matters</label><p>US LNG is the only credible large-scale replacement for Middle East and Russian gas. Political pressure to fast-track terminal expansion is intense. Technology selection and market advisory are needed now.</p></div>
+        <div class="hyp-block"><label>Signals to watch</label><p>FERC permitting decisions. US LNG terminal expansion announcements. European offtake contract signings. DOE export licence approvals.</p></div>
+        <div class="hyp-block"><label>What FutureBridge sells</label><p class="hook">LNG export opportunity assessment. Asian market advisory. Infrastructure technology scouting for fast-track terminal development. ExxonMobil, Cheniere are the primary targets.</p></div>
+        <div class="hyp-block"><label>Target clients</label><p>ExxonMobil, Cheniere Energy, Venture Global, New Fortress Energy, US DOE advisors</p></div>
+      </div>
+    </div>
+    <table class="data-table">
+      <thead><tr><th>Company</th><th>Proposition</th><th>Trigger</th><th>Heat</th></tr></thead>
+      <tbody>
+        <tr><td class="td-co">ExxonMobil</td><td class="td-prop">LNG export opportunity assessment + Asian market entry advisory</td><td class="td-trigger">At capacity but political pressure to expand. Technology choices for fast-track facilities need external assessment.</td><td><span class="heat-badge h">High</span></td></tr>
+        <tr><td class="td-co">Cheniere Energy</td><td class="td-prop">Technology scouting for next-generation LNG terminal efficiency</td><td class="td-trigger">Expansion capex committed. Technology selection in progress.</td><td><span class="heat-badge h">High</span></td></tr>
+      </tbody>
+    </table>
+  </div><!-- /energy-americas -->
+
+  <!-- ENERGY · MENA -->
+  <div class="sector-geo-panel" id="energy-mena">
+    <div class="alert-box" style="border-left-color:rgba(255,255,255,.3)">
+      <strong>Energy · Middle East · 3.5/10 — Defer.</strong> Active conflict zone. Clients are not buying. Saudi Aramco and ADNOC have suspended most advisory procurement. Begin reconstruction pipeline planning now — but do not attempt commercial engagement. Return to this in Q4 2026 at earliest. Any pursuit before then wastes resource and reputation.
+    </div>
+    <div class="card"><div class="card-label">Pipeline action</div><div class="card-title">Begin relationship building for post-conflict reconstruction</div><div class="card-body">When hostilities end, Gulf energy export infrastructure will need rapid reconstruction. FutureBridge can position now as the technology intelligence partner for reconstruction programmes. Target: Saudi Aramco reconstruction advisory, ADNOC infrastructure technology scouting, Iraqi NOC post-conflict investment landscape. Engagement horizon: Q4 2026.</div></div>
+  </div><!-- /energy-mena -->
+
+</div><!-- /energy panel -->
+
+
+<!-- ===================== OIL PANEL ===================== -->
+<div class="panel" id="panel-oil">
+  <div class="section-label">Sector intelligence</div>
+  <div class="panel-title">Oil & Gas — geo-specific intelligence</div>
+  <div class="panel-desc">Upstream technology advisory at $100+ oil is the immediate commercial opportunity. Oilfield services clients are expanding order books. Every marginal barrel is worth producing.</div>
+
+  <div class="geo-tab-bar">
+    <div class="geo-tab active" onclick="showSectorGeo('oil','americas',this)">Americas · 9.0 ▲</div>
+    <div class="geo-tab" onclick="showSectorGeo('oil','apac',this)">Asia-Pacific · 8.5</div>
+    <div class="geo-tab" onclick="showSectorGeo('oil','europe',this)">Europe · 8.0</div>
+    <div class="geo-tab" onclick="showSectorGeo('oil','mena',this)">Middle East · 2.5 ↓</div>
+  </div>
+
+  <div class="sector-geo-panel active" id="oil-americas">
+    <div class="alert-box"><strong>Oil & Gas · Americas · 9.0/10 — Critical.</strong> $100+ oil makes every US shale basin, deepwater, and Canadian project economically superior. SLB, Halliburton, Baker Hughes order books expanding. Technology advisory is commercially justified. This is the highest-scoring oil geography.</div>
+
+    <div class="hyp-card">
+      <div class="hyp-header"><div class="hyp-num">1</div><div><div class="hyp-dir up">Critical</div><div class="hyp-title">Oilfield services revenue surges — upstream technology advisory follows immediately</div></div></div>
+      <div class="hyp-grid">
+        <div class="hyp-block"><label>Why it matters</label><p>At $100+, every marginal barrel is worth producing. SLB and Halliburton order books are swelling. Technology adoption advisory is now commercially justified in conversations it wasn't 18 months ago.</p></div>
+        <div class="hyp-block"><label>Signals to watch</label><p>Oilfield services Q1 earnings. US rig count. Shale operator CAPEX guidance. Deepwater FID announcements. Baker Hughes order book data.</p></div>
+        <div class="hyp-block"><label>What FutureBridge sells</label><p class="hook">Upstream technology advisory for SLB, Halliburton, Baker Hughes. Well productivity, digital oilfield, subsea technology landscape. 8-week sprint or 6-month retainer.</p></div>
+        <div class="hyp-block"><label>Target clients</label><p>SLB, Halliburton, Baker Hughes, ExxonMobil Upstream, Chevron, ConocoPhillips, Pioneer</p></div>
+      </div>
+    </div>
+
+    <table class="data-table">
+      <thead><tr><th>Company</th><th>Proposition</th><th>Trigger</th><th>Heat</th></tr></thead>
+      <tbody>
+        <tr><td class="td-co">SLB</td><td class="td-prop">Technology scouting for accelerated upstream development</td><td class="td-trigger">Oilfield services demand spiking at $100+ oil economics. Technology advisory budget follows order book.</td><td><span class="heat-badge c">Critical</span></td></tr>
+        <tr><td class="td-co">Halliburton</td><td class="td-prop">Well productivity technology landscape</td><td class="td-trigger">Shale operators expanding; Halliburton needs technology differentiation story for upsell.</td><td><span class="heat-badge c">Critical</span></td></tr>
+        <tr><td class="td-co">ExxonMobil</td><td class="td-prop">Upstream technology + LNG export opportunity assessment</td><td class="td-trigger">Permian expansion and LNG at capacity. Technology choices for fast-track development are live.</td><td><span class="heat-badge h">High</span></td></tr>
+        <tr><td class="td-co">Chevron</td><td class="td-prop">Deepwater and shale technology assessment</td><td class="td-trigger">$100 oil makes Gulf of Mexico deepwater economics compelling. Technology selection active.</td><td><span class="heat-badge h">High</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sector-geo-panel" id="oil-apac">
+    <div class="alert-box"><strong>Oil & Gas · Asia-Pacific · 8.5/10 — High.</strong> Asian NOCs are the most exposed buyers on the planet. 84% of Hormuz flows go to Asia. Supply chain audit and alternative sourcing advisory is the entry point. Technology advisory follows once the relationship is established.</div>
+    <table class="data-table">
+      <thead><tr><th>Company</th><th>Proposition</th><th>Trigger</th><th>Heat</th></tr></thead>
+      <tbody>
+        <tr><td class="td-co">CNOOC</td><td class="td-prop">Supply chain resilience study + alternative sourcing</td><td class="td-trigger">Hormuz dependency. Board mandate. 60-day decision horizon.</td><td><span class="heat-badge c">Critical</span></td></tr>
+        <tr><td class="td-co">ONGC</td><td class="td-prop">Upstream technology landscape + domestic production acceleration</td><td class="td-trigger">Government pressure to reduce import dependency. Technology selection active.</td><td><span class="heat-badge h">High</span></td></tr>
+        <tr><td class="td-co">PETRONAS</td><td class="td-prop">LNG technology scouting and regional supply chain advisory</td><td class="td-trigger">Malaysian LNG positioned as alternative supplier. Infrastructure technology choices being made.</td><td><span class="heat-badge h">High</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sector-geo-panel" id="oil-europe">
+    <div class="alert-box"><strong>Oil & Gas · Europe · 8.0/10 — High.</strong> North Sea operators and European oilfield services facing an unusual combination: $100 oil economics making marginal fields viable, while simultaneously accelerating transition away from hydrocarbons. The transition advisory is the entry — technology for the last decade of production.</div>
+    <table class="data-table">
+      <thead><tr><th>Company</th><th>Proposition</th><th>Trigger</th><th>Heat</th></tr></thead>
+      <tbody>
+        <tr><td class="td-co">Equinor</td><td class="td-prop">North Sea production technology + energy transition advisory</td><td class="td-trigger">$100 oil makes marginal North Sea fields viable. Technology investment decisions live.</td><td><span class="heat-badge h">High</span></td></tr>
+        <tr><td class="td-co">TotalEnergies</td><td class="td-prop">LNG supply chain + European upstream technology</td><td class="td-trigger">European gas supply commitment under pressure. Upstream technology choices being made.</td><td><span class="heat-badge h">High</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sector-geo-panel" id="oil-mena">
+    <div class="alert-box" style="border-left-color:rgba(255,255,255,.3)"><strong>Oil & Gas · Middle East · 2.5/10 — Defer.</strong> Active conflict. Saudi Aramco and ADNOC have halted most advisory procurement. Do not pursue. Begin reconstruction pipeline positioning only.</div>
+  </div>
+</div><!-- /oil panel -->
+
+
+<!-- ===================== CHEMICALS PANEL ===================== -->
+<div class="panel" id="panel-chemicals">
+  <div class="section-label">Sector intelligence</div>
+  <div class="panel-title">Chemicals — geo-specific intelligence</div>
+  <div class="panel-desc">European ammonia costs up 180%. Feedstock economics have crossed the threshold for bio-based alternatives. The technology selection question is live.</div>
+
+  <div class="geo-tab-bar">
+    <div class="geo-tab active" onclick="showSectorGeo('chemicals','europe',this)">Europe · 8.5 ▲</div>
+    <div class="geo-tab" onclick="showSectorGeo('chemicals','americas',this)">Americas · 7.8</div>
+    <div class="geo-tab" onclick="showSectorGeo('chemicals','apac',this)">Asia-Pacific · 7.5</div>
+    <div class="geo-tab" onclick="showSectorGeo('chemicals','mena',this)">Middle East · 2.0 ↓</div>
+  </div>
+
+  <div class="sector-geo-panel active" id="chemicals-europe">
+    <div class="alert-box"><strong>Chemicals · Europe · 8.5/10 — Critical.</strong> European ammonia production is up 180% in cost. Many plants are idled. At €63/MWh gas, bio-based, waste-derived, and electrified production routes now compete on cost. This is the conversation BASF, Solvay, and Ineos are having internally. FutureBridge should be in that room.</div>
+    <div class="hyp-card">
+      <div class="hyp-header"><div class="hyp-num">1</div><div><div class="hyp-dir up">Critical</div><div class="hyp-title">Alternative feedstocks cross the economic threshold — technology selection is the active decision</div></div></div>
+      <div class="hyp-grid">
+        <div class="hyp-block"><label>Why it matters</label><p>Bio-based, waste-derived, and electrified production routes could not compete at pre-war energy prices. At €63/MWh, several now can. This is a structural investment decision.</p></div>
+        <div class="hyp-block"><label>Signals to watch</label><p>European chemical plant closure announcements. Bio-based investment FIDs. Green hydrogen electrolyser procurement. Electrified steam cracker pilot projects.</p></div>
+        <div class="hyp-block"><label>What FutureBridge sells</label><p class="hook">Feedstock diversification technology assessment. TRL ranking of bio-based and electrified routes. Client-specific economic modelling. 8-week sprint.</p></div>
+        <div class="hyp-block"><label>Target clients</label><p>BASF, Dow, Solvay, Ineos, LyondellBasell, Evonik, Covestro</p></div>
+      </div>
+    </div>
+    <table class="data-table">
+      <thead><tr><th>Company</th><th>Proposition</th><th>Trigger</th><th>Heat</th></tr></thead>
+      <tbody>
+        <tr><td class="td-co">BASF</td><td class="td-prop">Feedstock diversification assessment + electrification technology landscape</td><td class="td-trigger">Ludwigshafen plant under €63/MWh gas pressure. Technology investment decisions live.</td><td><span class="heat-badge c">Critical</span></td></tr>
+        <tr><td class="td-co">Solvay</td><td class="td-prop">Bio-based materials technology landscape</td><td class="td-trigger">Specialty chemicals under feedstock cost pressure. Alternative routes being evaluated.</td><td><span class="heat-badge c">Critical</span></td></tr>
+        <tr><td class="td-co">Yara</td><td class="td-prop">Green ammonia and precision fermentation fertilizer alternatives</td><td class="td-trigger">Nitrogen fertilizer economics broken by gas price. Technology alternatives now viable.</td><td><span class="heat-badge h">High</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sector-geo-panel" id="chemicals-americas">
+    <div class="alert-box"><strong>Chemicals · Americas · 7.8/10 — High.</strong> US natural gas is largely decoupled from global prices. This creates a substantial cost advantage for US petrochemical production. Advisory on which categories are best positioned for reshoring is in demand.</div>
+    <table class="data-table">
+      <thead><tr><th>Company</th><th>Proposition</th><th>Trigger</th><th>Heat</th></tr></thead>
+      <tbody>
+        <tr><td class="td-co">Chevron Phillips</td><td class="td-prop">US reshoring opportunity assessment + technology scouting</td><td class="td-trigger">US gas price advantage is substantial. New facility technology selection active.</td><td><span class="heat-badge h">High</span></td></tr>
+        <tr><td class="td-co">LyondellBasell</td><td class="td-prop">Production reshoring advisory + bio-based transition roadmap</td><td class="td-trigger">European plants under pressure. US advantage creating reshoring investment case.</td><td><span class="heat-badge h">High</span></td></tr>
+        <tr><td class="td-co">Eastman Chemical</td><td class="td-prop">Circular chemistry technology landscape</td><td class="td-trigger">US domestic production economics favourable. Technology for new facilities being selected.</td><td><span class="heat-badge h">High</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sector-geo-panel" id="chemicals-apac">
+    <div class="alert-box"><strong>Chemicals · Asia-Pacific · 7.5/10 — High.</strong> Indian and Southeast Asian chemical producers face delayed Gulf-derived naphtha shipments via extended Cape of Good Hope routes. Supply chain reconfiguration advisory is the entry point.</div>
+    <table class="data-table">
+      <thead><tr><th>Company</th><th>Proposition</th><th>Trigger</th><th>Heat</th></tr></thead>
+      <tbody>
+        <tr><td class="td-co">Reliance Industries</td><td class="td-prop">Supply chain reconfiguration + alternative naphtha sourcing</td><td class="td-trigger">Gulf naphtha routes disrupted. 10+ day delivery delays creating production risk.</td><td><span class="heat-badge h">High</span></td></tr>
+        <tr><td class="td-co">PETRONAS</td><td class="td-prop">Downstream chemical supply chain audit</td><td class="td-trigger">Exposed to Gulf feedstock disruption. Regional supply chain reconfiguration needed.</td><td><span class="heat-badge h">High</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sector-geo-panel" id="chemicals-mena">
+    <div class="alert-box" style="border-left-color:rgba(255,255,255,.3)"><strong>Chemicals · Middle East · 2.0/10 — Defer.</strong> Active conflict zone. No engagement.</div>
+  </div>
+</div><!-- /chemicals -->
+
+
+<!-- ===================== MOBILITY PANEL ===================== -->
+<div class="panel" id="panel-mobility">
+  <div class="section-label">Sector intelligence</div>
+  <div class="panel-title">Mobility — geo-specific intelligence</div>
+  <div class="panel-desc">EV supply chain resilience is the primary advisory angle. Battery material sourcing is exposed. OEMs are reassessing supplier geography. Score 8.0 in Europe — pipeline opportunity.</div>
+  <div class="geo-tab-bar">
+    <div class="geo-tab active" onclick="showSectorGeo('mobility','europe',this)">Europe · 8.0</div>
+    <div class="geo-tab" onclick="showSectorGeo('mobility','apac',this)">Asia-Pacific · 6.0</div>
+    <div class="geo-tab" onclick="showSectorGeo('mobility','americas',this)">Americas · 5.5</div>
+  </div>
+  <div class="sector-geo-panel active" id="mobility-europe">
+    <div class="alert-box"><strong>Mobility · Europe · 8.0/10 — High.</strong> War accelerates EV transition (fuel cost) while simultaneously disrupting the battery supply chain (critical minerals). OEMs face both pressures simultaneously. The advisory question: which supply chains are most exposed and what are the technology alternatives?</div>
+    <div class="hyp-card">
+      <div class="hyp-header"><div class="hyp-num">1</div><div><div class="hyp-dir up">High</div><div class="hyp-title">EV battery supply chain exposed — critical mineral sourcing advisory is the entry point</div></div></div>
+      <div class="hyp-grid">
+        <div class="hyp-block"><label>Why it matters</label><p>Lithium, nickel, cobalt, manganese — all with supply chains exposed to conflict-adjacent risk. OEM procurement teams are actively seeking alternatives. The technology question follows: which battery chemistries reduce critical mineral dependency?</p></div>
+        <div class="hyp-block"><label>Signals to watch</label><p>OEM battery sourcing announcements. Critical mineral price movements. Sodium-ion and LFP battery adoption rates. European battery gigafactory procurement decisions.</p></div>
+        <div class="hyp-block"><label>What FutureBridge sells</label><p class="hook">Critical mineral supply chain mapping. Battery technology landscape — sodium-ion, LFP, solid-state readiness. Supplier geography risk assessment for VW, Stellantis, Renault.</p></div>
+        <div class="hyp-block"><label>Target clients</label><p>VW Group, Stellantis, Renault, BMW, Mercedes-Benz, European battery cell manufacturers</p></div>
+      </div>
+    </div>
+    <table class="data-table">
+      <thead><tr><th>Company</th><th>Proposition</th><th>Trigger</th><th>Heat</th></tr></thead>
+      <tbody>
+        <tr><td class="td-co">VW Group</td><td class="td-prop">EV supply chain resilience + battery technology alternatives</td><td class="td-trigger">Battery material sourcing review in progress. Critical mineral risk being assessed at board level.</td><td><span class="heat-badge h">High</span></td></tr>
+        <tr><td class="td-co">Stellantis</td><td class="td-prop">Critical mineral supply chain mapping</td><td class="td-trigger">Multi-brand EV transition exposed to same sourcing risks. Technology alternatives being evaluated.</td><td><span class="heat-badge h">High</span></td></tr>
+        <tr><td class="td-co">BMW</td><td class="td-prop">Solid-state battery technology readiness assessment</td><td class="td-trigger">Investing in solid-state but timing is uncertain. External TRL assessment needed to justify capex.</td><td><span class="heat-badge m">Watch</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="sector-geo-panel" id="mobility-apac">
+    <div class="alert-box"><strong>Mobility · Asia-Pacific · 6.0/10 — Watch.</strong> Chinese OEMs are insulated from most supply chain risk due to domestic integration. Japanese and Korean OEMs face more exposure. Watch for Honda, Toyota, and Hyundai supply chain advisory needs as conflict extends.</div>
+  </div>
+  <div class="sector-geo-panel" id="mobility-americas">
+    <div class="alert-box"><strong>Mobility · Americas · 5.5/10 — Watch.</strong> US EV policy uncertainty and IRA review have delayed decisions. GM and Ford have both pushed back EV investment timelines. Advisory opportunity is real but timing is unclear. Monitor Q2 2026 policy announcements before pursuing.</div>
+  </div>
+</div><!-- /mobility -->
+
+
+<!-- ===================== MANUFACTURING PANEL ===================== -->
+<div class="panel" id="panel-manufacturing">
+  <div class="section-label">Sector intelligence</div>
+  <div class="panel-title">Manufacturing — geo-specific intelligence</div>
+  <div class="panel-desc">Defence industrial technology advisory is the critical opportunity in Europe and Americas. Reshoring technology selection follows. MENA is a hard no.</div>
+  <div class="geo-tab-bar">
+    <div class="geo-tab active" onclick="showSectorGeo('manufacturing','europe',this)">Europe · 9.0 ▲</div>
+    <div class="geo-tab" onclick="showSectorGeo('manufacturing','americas',this)">Americas · 8.5</div>
+    <div class="geo-tab" onclick="showSectorGeo('manufacturing','apac',this)">Asia-Pacific · 7.0</div>
+    <div class="geo-tab" onclick="showSectorGeo('manufacturing','mena',this)">Middle East · 2.5 ↓</div>
+  </div>
+  <div class="sector-geo-panel active" id="manufacturing-europe">
+    <div class="alert-box"><strong>Manufacturing · Europe · 9.0/10 — Critical.</strong> NATO members are committing to 3%+ GDP defence spending. Rheinmetall, BAE, KNDS face technology selection decisions now. Budget is confirmed. The question is which munitions, drone platforms, and armour technologies to back. FutureBridge answers that question.</div>
+    <div class="hyp-card">
+      <div class="hyp-header"><div class="hyp-num">1</div><div><div class="hyp-dir up">Critical</div><div class="hyp-title">European defence spending hits 3% of GDP — technology selection advisory becomes urgent</div></div></div>
+      <div class="hyp-grid">
+        <div class="hyp-block"><label>Why it matters</label><p>Germany, Poland, Baltic states committing to 3%+. The bottleneck is not money — it is industrial capacity and technology choices. FutureBridge methodology applied to defence procurement is a direct fit.</p></div>
+        <div class="hyp-block"><label>Signals to watch</label><p>NATO member defence budget announcements. Prime contractor order books. Munitions and drone platform procurement decisions. EU defence industrial strategy publications.</p></div>
+        <div class="hyp-block"><label>What FutureBridge sells</label><p class="hook">Defence industrial technology advisory for Rheinmetall, KNDS, PGZ, European defence agencies. Technology landscape and investment readiness assessment.</p></div>
+        <div class="hyp-block"><label>Target clients</label><p>Rheinmetall, BAE Systems, KNDS, Saab, PGZ, European defence ministries, NATO procurement agencies</p></div>
+      </div>
+    </div>
+    <table class="data-table">
+      <thead><tr><th>Company</th><th>Proposition</th><th>Trigger</th><th>Heat</th></tr></thead>
+      <tbody>
+        <tr><td class="td-co">Rheinmetall</td><td class="td-prop">Defence technology landscape + industrial capacity advisory</td><td class="td-trigger">Order book at record. Technology selection decisions being made at pace.</td><td><span class="heat-badge c">Critical</span></td></tr>
+        <tr><td class="td-co">BAE Systems</td><td class="td-prop">Technology scouting for next-generation platforms</td><td class="td-trigger">European procurement expansion. Technology differentiation is the commercial battleground.</td><td><span class="heat-badge c">Critical</span></td></tr>
+        <tr><td class="td-co">KNDS</td><td class="td-prop">Armour and munitions technology assessment</td><td class="td-trigger">Franco-German procurement programmes expanding rapidly.</td><td><span class="heat-badge h">High</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="sector-geo-panel" id="manufacturing-americas">
+    <div class="alert-box"><strong>Manufacturing · Americas · 8.5/10 — Critical.</strong> US domestic production mandates are now policy, not preference. Semiconductors, munitions, specialty chemicals, medical devices — all subject to domestic content requirements. Technology selection for new facilities is the active advisory conversation.</div>
+    <table class="data-table">
+      <thead><tr><th>Company</th><th>Proposition</th><th>Trigger</th><th>Heat</th></tr></thead>
+      <tbody>
+        <tr><td class="td-co">L3Harris</td><td class="td-prop">Defence technology landscape + system integration advisory</td><td class="td-trigger">US defence spending expanding. Technology differentiation vs. international competitors.</td><td><span class="heat-badge c">Critical</span></td></tr>
+        <tr><td class="td-co">Northrop Grumman</td><td class="td-prop">Advanced manufacturing technology scouting</td><td class="td-trigger">Production expansion mandated. Automation and advanced manufacturing technology selection active.</td><td><span class="heat-badge h">High</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="sector-geo-panel" id="manufacturing-apac">
+    <div class="alert-box"><strong>Manufacturing · Asia-Pacific · 7.0/10 — High.</strong> Japan has doubled its defence budget. Korea is actively courting supply chain reshoring. Australia is building domestic defence manufacturing from near-zero. Each is a distinct advisory opportunity.</div>
+    <table class="data-table">
+      <thead><tr><th>Company</th><th>Proposition</th><th>Trigger</th><th>Heat</th></tr></thead>
+      <tbody>
+        <tr><td class="td-co">Mitsubishi Heavy Industries</td><td class="td-prop">Defence technology landscape for Japanese programme expansion</td><td class="td-trigger">Japan doubling defence budget. Technology selection for domestic production live.</td><td><span class="heat-badge h">High</span></td></tr>
+        <tr><td class="td-co">Hanwha</td><td class="td-prop">Manufacturing technology advisory for Korean defence expansion</td><td class="td-trigger">Korea's defence industrial expansion. Supply chain reshoring advisory in demand.</td><td><span class="heat-badge h">High</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="sector-geo-panel" id="manufacturing-mena">
+    <div class="alert-box" style="border-left-color:rgba(255,255,255,.3)"><strong>Manufacturing · Middle East · 2.5/10 — Defer. Hard stop.</strong> Iran's industrial base is being targeted. Gulf states have suspended major industrial investment. Score 2.5 — the lowest cell in the matrix. No exceptions to the defer rule.</div>
+  </div>
+</div><!-- /manufacturing -->
+
+
+<!-- ===================== PHARMA PANEL ===================== -->
+<div class="panel" id="panel-pharma">
+  <div class="section-label">Sector intelligence</div>
+  <div class="panel-title">Life Sciences — geo-specific intelligence</div>
+  <div class="panel-desc">API supply chain security is the primary entry point. 90% API dependency on China. Conflict-adjacent risk is prompting reshoring mandates from European regulators.</div>
+  <div class="geo-tab-bar">
+    <div class="geo-tab active" onclick="showSectorGeo('pharma','europe',this)">Europe · 7.5</div>
+    <div class="geo-tab" onclick="showSectorGeo('pharma','apac',this)">Asia-Pacific · 6.5</div>
+    <div class="geo-tab" onclick="showSectorGeo('pharma','americas',this)">Americas · 6.0</div>
+  </div>
+  <div class="sector-geo-panel active" id="pharma-europe">
+    <div class="alert-box"><strong>Life Sciences · Europe · 7.5/10 — High.</strong> European regulators are mandating API diversification. Roche, Pfizer, Sanofi are all evaluating reshoring. The technology question — which manufacturing processes and which automation approaches — is a FutureBridge question.</div>
+    <table class="data-table">
+      <thead><tr><th>Company</th><th>Proposition</th><th>Trigger</th><th>Heat</th></tr></thead>
+      <tbody>
+        <tr><td class="td-co">Roche</td><td class="td-prop">API supply chain security assessment + reshoring technology</td><td class="td-trigger">EU regulator pressure to diversify. API dependency on China at 90%. Decision in 90 days.</td><td><span class="heat-badge h">High</span></td></tr>
+        <tr><td class="td-co">Sanofi</td><td class="td-prop">Continuous manufacturing technology landscape</td><td class="td-trigger">Reshoring investment committed. Technology selection for new European facilities active.</td><td><span class="heat-badge h">High</span></td></tr>
+        <tr><td class="td-co">Pfizer</td><td class="td-prop">Supply chain resilience and manufacturing technology advisory</td><td class="td-trigger">Post-COVID supply chain vulnerability still unresolved. War adds urgency.</td><td><span class="heat-badge h">High</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="sector-geo-panel" id="pharma-apac">
+    <div class="alert-box"><strong>Life Sciences · Asia-Pacific · 6.5/10 — Watch.</strong> India is positioned as the alternative API supply base. Sun Pharma, Dr. Reddy's, and Cipla all benefit from supply chain diversification away from China. Advisory on manufacturing technology for capacity expansion is the angle.</div>
+  </div>
+  <div class="sector-geo-panel" id="pharma-americas">
+    <div class="alert-box"><strong>Life Sciences · Americas · 6.0/10 — Watch.</strong> US Biosecure Act creating pressure to reduce China API dependency. Technology advisory for domestic manufacturing expansion is in pipeline. 60–90 day decision horizon.</div>
+  </div>
+</div><!-- /pharma -->
+
+
+<!-- ===================== SALES SCRIPTS PANEL ===================== -->
+<div class="panel" id="panel-sales">
+
+  <div class="section-label">Sales</div>
+  <div class="panel-title">Conversation scripts — by sector and client type</div>
+  <div class="panel-desc">These are not talking points. Use them as-is in calls. They are designed for C-suite and VP strategy conversations. Adapt the client name. The structure does not change.</div>
+
+  <div class="alert-box">
+    <strong>One rule before every call:</strong> The client is already aware of the conflict. Do not explain it to them. Open with what FutureBridge knows that they do not. The insight hook is the only reason they will give you 30 minutes.
+  </div>
+
+  <!-- SCRIPT 1 -->
+  <div class="script-card">
+    <div class="script-context">Sales script · Energy · Europe · Shell / BP / TotalEnergies · C-Suite, CSO, VP Strategy</div>
+    <div class="script-block">
+      <label>Opening — what to say in the first 20 seconds</label>
+      <p>"We track technology adoption across every segment of the energy system. What we're seeing in the last 60 days is that European utilities are making grid storage technology selections at a pace we haven't seen since 2011. The decisions being made now will lock in technology choices for a decade. That's what I wanted to talk to you about."</p>
+    </div>
+    <div class="script-block">
+      <label>Insight hook — the thing they don't know</label>
+      <p>"Most of the technology selection conversations we're observing are happening before the TRL data supports them. Three of the four grid storage technologies being actively procured will not reach the performance targets they're being specified against. That's a very expensive mistake to make now."</p>
+    </div>
+    <div class="script-block">
+      <label>Question to ask</label>
+      <div class="script-ask">"When your team is evaluating storage technology options for the next investment cycle — what data are they working from? Is it vendor-provided or independently assessed?"</div>
+    </div>
+    <div class="script-block">
+      <label>Advisory offer</label>
+      <p class="plain">FutureBridge provides an independent technology readiness ranking for grid storage, scored against your specific performance requirements and market context. We deliver in 8 weeks. The output is a decision brief your board can act on — not a 200-page report. We've done this for three European utilities in the last quarter.</p>
+    </div>
+  </div>
+
+  <!-- SCRIPT 2 -->
+  <div class="script-card">
+    <div class="script-context">Sales script · Oil & Gas · Americas · SLB / Halliburton · VP Technology, Chief Technology Officer</div>
+    <div class="script-block">
+      <label>Opening</label>
+      <p>"At $100 oil, the technology economics for upstream production have shifted materially. We're tracking adoption of 14 specific upstream technologies that were marginal at $70 and are now commercially justified. Three of them are being adopted at scale by your competitors. That's what I wanted to bring to you."</p>
+    </div>
+    <div class="script-block">
+      <label>Insight hook</label>
+      <p>"The well productivity technologies that matter most at $100+ are not the ones getting the most attention right now. There's a lag between academic publication, pilot adoption, and commercial scale — and in the current environment, that lag is being compressed in ways we haven't seen before. The window to get ahead of competitors is now, not in 18 months."</p>
+    </div>
+    <div class="script-block">
+      <label>Question to ask</label>
+      <div class="script-ask">"What's your current process for identifying which upstream technologies are worth committing R&D spend to at this stage of the price cycle? How are you distinguishing between vendor noise and technologies that actually move the needle on well economics?"</div>
+    </div>
+    <div class="script-block">
+      <label>Advisory offer</label>
+      <p class="plain">We run an 8-week technology landscape sprint. The output is a ranked list of 10 upstream technologies by commercial readiness, with a recommendation on which to adopt, which to monitor, and which to ignore. Your technology team gets the assessment; your leadership gets the decision brief. No ambiguity.</p>
+    </div>
+  </div>
+
+  <!-- SCRIPT 3 -->
+  <div class="script-card">
+    <div class="script-context">Sales script · Manufacturing · Europe · Rheinmetall / BAE · VP R&D, Chief Technology Officer</div>
+    <div class="script-block">
+      <label>Opening</label>
+      <p>"We work with defence primes on technology readiness assessments for procurement decisions. With European defence budgets moving to 3%+ of GDP, the technology selection decisions being made in the next 12 months will define capability gaps for a decade. I wanted to understand where you need external intelligence to support those decisions."</p>
+    </div>
+    <div class="script-block">
+      <label>Insight hook</label>
+      <p>"There are three drone platform technologies currently in European procurement discussions that will not reach operational readiness within the stated timelines. The programme offices commissioning them are working from vendor assessments, not independent TRL data. That's a procurement risk that costs more to correct than to prevent."</p>
+    </div>
+    <div class="script-block">
+      <label>Question to ask</label>
+      <div class="script-ask">"When your technology team is evaluating new platform investments — is the TRL assessment being done internally, or are you bringing in independent validation before committing to production contracts?"</div>
+    </div>
+    <div class="script-block">
+      <label>Advisory offer</label>
+      <p class="plain">FutureBridge provides independent technology readiness assessments for defence procurement decisions. We have no vendor relationships. Our assessments are based on published evidence and primary research. We deliver in 6 weeks. Format is a procurement decision brief — not a research report.</p>
+    </div>
+  </div>
+
+  <!-- SCRIPT 4 -->
+  <div class="script-card">
+    <div class="script-context">Sales script · Chemicals · Europe · BASF / Solvay / Ineos · CSO, VP Strategy</div>
+    <div class="script-block">
+      <label>Opening</label>
+      <p>"We've been tracking feedstock economics across European chemical production. At €63/MWh gas, four bio-based and electrified production routes have crossed the cost threshold for the first time. That changes the technology investment case materially — and the window to make the right choices before competitors is short."</p>
+    </div>
+    <div class="script-block">
+      <label>Insight hook</label>
+      <p>"The bio-based routes that look cheapest on the surface have supply chain constraints that make them unscalable within your planning horizon. The routes that are genuinely viable at scale are not the ones getting the most attention. That mismatch is where poor investment decisions get made."</p>
+    </div>
+    <div class="script-block">
+      <label>Question to ask</label>
+      <div class="script-ask">"As your team evaluates feedstock alternatives, what's the basis for the economic modelling? Are you working from vendor projections for bio-based feedstock costs, or from independent supply chain analysis?"</div>
+    </div>
+    <div class="script-block">
+      <label>Advisory offer</label>
+      <p class="plain">We provide a feedstock diversification technology assessment — TRL ranking of all viable alternatives, with supply chain scalability analysis and client-specific economic modelling. 8 weeks. Decision brief output. We've done this for three European chemical clients in the last quarter.</p>
+    </div>
+  </div>
+
+</div><!-- /sales -->
+
+
+<!-- ===================== DELIVERY PANEL ===================== -->
+<div class="panel" id="panel-delivery">
+
+  <div class="section-label">Delivery</div>
+  <div class="panel-title">Engagement definitions — formats, durations, outputs</div>
+  <div class="panel-desc">Six standard engagement types. Every client conversation should end with one of these being proposed. Do not leave a conversation with "we'll follow up with a proposal." Propose the engagement in the room.</div>
+
+  <div class="grid-3">
+
+    <div class="engagement-card">
+      <div class="eng-num">01</div>
+      <div class="badge critical">Tier 1 entry</div>
+      <div class="eng-title">Technology Landscape Sprint</div>
+      <div class="eng-meta">
+        <span><strong>Duration:</strong> 8 weeks</span>
+        <span><strong>Price:</strong> £45–65k</span>
+        <span><strong>Team:</strong> 2 analysts + 1 partner</span>
+      </div>
+      <ul class="eng-outputs">
+        <li>Ranked technology landscape (10–15 technologies)</li>
+        <li>TRL assessment against client-specific criteria</li>
+        <li>Adopt / Monitor / Ignore recommendation</li>
+        <li>Executive decision brief (10 pages max)</li>
+      </ul>
+      <div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,.4)">Best for: Energy storage, upstream tech, feedstock alternatives, defence platforms</div>
+    </div>
+
+    <div class="engagement-card">
+      <div class="eng-num">02</div>
+      <div class="badge critical">Tier 1 entry</div>
+      <div class="eng-title">Energy Security Sprint</div>
+      <div class="eng-meta">
+        <span><strong>Duration:</strong> 6 weeks</span>
+        <span><strong>Price:</strong> £35–50k</span>
+        <span><strong>Team:</strong> 2 analysts + 1 partner</span>
+      </div>
+      <ul class="eng-outputs">
+        <li>Supply chain exposure map</li>
+        <li>Alternative sourcing assessment</li>
+        <li>Scenario model (3 conflict scenarios)</li>
+        <li>Decision briefing for board or ExCo</li>
+      </ul>
+      <div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,.4)">Best for: Utilities, NOCs, energy majors exposed to Hormuz or Ukraine</div>
+    </div>
+
+    <div class="engagement-card">
+      <div class="eng-num">03</div>
+      <div class="badge high">Tier 1–2</div>
+      <div class="eng-title">Supply Chain Resilience Assessment</div>
+      <div class="eng-meta">
+        <span><strong>Duration:</strong> 10 weeks</span>
+        <span><strong>Price:</strong> £55–80k</span>
+        <span><strong>Team:</strong> 3 analysts + 1 partner</span>
+      </div>
+      <ul class="eng-outputs">
+        <li>Full supply chain vulnerability map</li>
+        <li>Supplier geography risk scoring</li>
+        <li>Alternative sourcing options ranked</li>
+        <li>Technology alternatives for critical inputs</li>
+        <li>Board-ready risk brief</li>
+      </ul>
+      <div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,.4)">Best for: Chemical producers, pharma, automotive OEMs, NOCs</div>
+    </div>
+
+    <div class="engagement-card">
+      <div class="eng-num">04</div>
+      <div class="badge high">Tier 2</div>
+      <div class="eng-title">Strategic Intelligence Retainer</div>
+      <div class="eng-meta">
+        <span><strong>Duration:</strong> 6–12 months</span>
+        <span><strong>Price:</strong> £120–200k / year</span>
+        <span><strong>Team:</strong> Dedicated analyst + partner access</span>
+      </div>
+      <ul class="eng-outputs">
+        <li>Monthly intelligence briefs (sector + geo specific)</li>
+        <li>Signal monitoring against agreed hypotheses</li>
+        <li>Quarterly strategy review sessions</li>
+        <li>Ad hoc rapid response briefings</li>
+        <li>Access to FutureBridge technology platform</li>
+      </ul>
+      <div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,.4)">Best for: Energy majors, oilfield services, chemical groups with ongoing advisory needs</div>
+    </div>
+
+    <div class="engagement-card">
+      <div class="eng-num">05</div>
+      <div class="badge medium">Tier 2–3</div>
+      <div class="eng-title">Post-Conflict Reconstruction Advisory</div>
+      <div class="eng-meta">
+        <span><strong>Duration:</strong> 12 weeks (when triggered)</span>
+        <span><strong>Price:</strong> £80–120k</span>
+        <span><strong>Team:</strong> 3 analysts + 2 partners</span>
+      </div>
+      <ul class="eng-outputs">
+        <li>Gulf energy infrastructure reconstruction technology map</li>
+        <li>Investment landscape for reconstruction programmes</li>
+        <li>Supplier and technology partner landscape</li>
+        <li>Entry strategy for reconstruction advisory market</li>
+      </ul>
+      <div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,.4)">Trigger: Ceasefire announcement. Begin positioning relationships now. Do not propose formally until conflict status changes.</div>
+    </div>
+
+    <div class="engagement-card">
+      <div class="eng-num">06</div>
+      <div class="badge high">Tier 1–2</div>
+      <div class="eng-title">Defence Technology Assessment</div>
+      <div class="eng-meta">
+        <span><strong>Duration:</strong> 8 weeks</span>
+        <span><strong>Price:</strong> £55–90k</span>
+        <span><strong>Team:</strong> Specialist defence analyst + partner</span>
+      </div>
+      <ul class="eng-outputs">
+        <li>Technology landscape for specific platform or capability area</li>
+        <li>TRL ranking of competing technologies</li>
+        <li>Procurement risk assessment</li>
+        <li>Procurement decision brief</li>
+      </ul>
+      <div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,.4)">Best for: European defence primes, NATO procurement agencies, Japanese and Korean industrial groups</div>
+    </div>
+
+  </div>
+
+</div><!-- /delivery -->
+
+
+<!-- ===================== MARKETING PANEL ===================== -->
+<div class="panel" id="panel-marketing">
+
+  <div class="section-label">Marketing</div>
+  <div class="panel-title">Publishable thought leadership — by sector</div>
+  <div class="panel-desc">Six pieces. Each generates inbound. Publish in this order. Energy first — it has the widest audience and the strongest data hook. Each piece should be under 1,200 words.</div>
+
+  <div class="alert-box">
+    <strong>One rule:</strong> Every piece must contain at least one number that clients cannot find elsewhere. FutureBridge intelligence is the differentiator. If the piece could have been written without our data, it should not be published under our name.
+  </div>
+
+  <div class="grid-2">
+
+    <div class="mkt-card">
+      <div class="badge critical">Publish this week</div>
+      <div class="mkt-headline">The grid storage technology selection problem: why €63/MWh gas is creating the wrong urgency</div>
+      <div class="mkt-insight">European utilities are rushing grid storage procurement decisions. Three of the four most-procured technologies will miss their performance targets within 36 months. The pressure to act is real. The technology choices being made are not. This is what they should be buying instead — and why.</div>
+      <div class="mkt-chart">Chart idea: TRL vs procurement volume scatter plot — showing the mismatch between investment and readiness</div>
+      <div class="mkt-angle">ANGLE: Contrarian. Everyone else is saying "the energy transition is accelerating." We say "it is being done wrong." That gets attention.</div>
+    </div>
+
+    <div class="mkt-card">
+      <div class="badge critical">Publish this week</div>
+      <div class="mkt-headline">$100 oil and the technology advisor's moment: what SLB, Halliburton, and Baker Hughes should be buying now</div>
+      <div class="mkt-insight">At $100+, every upstream technology investment that was marginal at $70 is commercially justified. But which ones? The three well productivity technologies attracting the most attention are not the ones that move the needle. Here is the ranked list — and the reasoning.</div>
+      <div class="mkt-chart">Chart idea: Technology adoption rate vs. marginal barrel economics — showing which technologies break even at what oil price</div>
+      <div class="mkt-angle">ANGLE: Direct commercial relevance to the exact clients we want to talk to. This piece is a sales call opener, not just content.</div>
+    </div>
+
+    <div class="mkt-card">
+      <div class="badge high">Publish within 2 weeks</div>
+      <div class="mkt-headline">84% of Hormuz oil goes to Asia. Here is what that means for Asian NOC technology strategy</div>
+      <div class="mkt-insight">CNOOC, ONGC, JERA, and POSCO are the most exposed energy buyers on the planet. The strategic response — domestic production acceleration, alternative sourcing, and technology investment — requires a set of decisions that most NOC boards are not yet equipped to make. This is the framework.</div>
+      <div class="mkt-chart">Chart idea: Hormuz oil flow dependency by country — simple bar chart with FutureBridge source attribution</div>
+      <div class="mkt-angle">ANGLE: Specific data hook (84%) that most readers will not have seen. Opens the Asian NOC conversation.</div>
+    </div>
+
+    <div class="mkt-card">
+      <div class="badge high">Publish within 2 weeks</div>
+      <div class="mkt-headline">European ammonia production is up 180% in cost. Four alternatives are now economically viable for the first time</div>
+      <div class="mkt-insight">At €63/MWh gas, bio-based, waste-derived, and electrified nitrogen production routes cross the cost threshold they have never crossed before. Not all of them are scalable. Two are not. Here is which ones BASF, Yara, and Solvay should be evaluating — and the supply chain conditions that make each viable.</div>
+      <div class="mkt-chart">Chart idea: Feedstock cost comparison at different gas prices — showing which alternatives become viable at what threshold</div>
+      <div class="mkt-angle">ANGLE: Specific cost figure (180%) plus a ranked list of alternatives. Exactly the format chemical clients use in their own decision processes.</div>
+    </div>
+
+    <div class="mkt-card">
+      <div class="badge medium">Publish within 4 weeks</div>
+      <div class="mkt-headline">European defence spending is going to 3% of GDP. The technology choices being made now will define capability gaps for a decade</div>
+      <div class="mkt-insight">Rheinmetall, BAE, and KNDS are making technology selection decisions at pace. The bottleneck is not money — it is independent intelligence. Three platform technologies currently in European procurement discussions will not reach operational readiness within their stated timelines. This is the evidence.</div>
+      <div class="mkt-chart">Chart idea: TRL vs. procurement commitment timeline for major European defence platforms</div>
+      <div class="mkt-angle">ANGLE: Contrarian specific claim (three platforms will miss timelines) backed by TRL evidence. Will be shared by defence procurement communities.</div>
+    </div>
+
+    <div class="mkt-card">
+      <div class="badge medium">Publish within 4 weeks</div>
+      <div class="mkt-headline">Post-conflict Gulf reconstruction: the $200B advisory market that does not yet exist</div>
+      <div class="mkt-insight">When hostilities end, Gulf energy export infrastructure will need rapid reconstruction. The investment decisions will be made fast. The advisors who are already known in those markets will win the mandates. This is who needs to be positioning now — and how.</div>
+      <div class="mkt-chart">Chart idea: Timeline projection of reconstruction investment phases — showing the advisory opportunity window</div>
+      <div class="mkt-angle">ANGLE: Forward-looking. Positions FutureBridge as the firm thinking 12 months ahead while everyone else is reacting to today.</div>
+    </div>
+
+  </div>
+
+</div><!-- /marketing -->
+
+</div><!-- /content -->
+
+<script>
+  // Panel navigation
+  function showPanel(id) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    const panel = document.getElementById('panel-' + id);
+    if (panel) panel.classList.add('active');
+    const tab = [...document.querySelectorAll('.nav-tab')].find(t => t.getAttribute('onclick') && t.getAttribute('onclick').includes("'" + id + "'"));
+    if (tab) tab.classList.add('active');
+  }
+
+  // Geo filter on heatmap
+  function filterGeo(btn, geo) {
+    document.querySelectorAll('.geo-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const cells = document.querySelectorAll('.hm-cell, [data-geo]');
+    cells.forEach(el => {
+      if (geo === 'all') {
+        el.style.opacity = '1';
+      } else {
+        el.style.opacity = (el.dataset.geo === geo) ? '1' : '0.2';
+      }
+    });
+  }
+
+  // Navigate to sector geo page
+  function gotoSectorGeo(sector, geo) {
+    showPanel(sector === 'oil' ? 'oil' : sector === 'manufacturing' ? 'manufacturing' : sector);
+    setTimeout(() => showSectorGeo(sector, geo, null), 50);
+  }
+
+  // Sector geo sub-tabs
+  function showSectorGeo(sector, geo, btn) {
+    const panels = document.querySelectorAll('[id^="' + sector + '-"]');
+    panels.forEach(p => p.classList.remove('active'));
+    const target = document.getElementById(sector + '-' + geo);
+    if (target) target.classList.add('active');
+
+    // Update geo tabs within this panel
+    const panelEl = document.getElementById('panel-' + sector) ||
+                    document.getElementById('panel-oil') ||
+                    document.getElementById('panel-manufacturing') ||
+                    document.getElementById('panel-pharma');
+
+    if (btn) {
+      const parentPanel = btn.closest('.panel');
+      if (parentPanel) {
+        parentPanel.querySelectorAll('.geo-tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+      }
+    }
+  }
+
+function downloadPDF(){
+  const today = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  document.title = `FutureBridge — War Impact Intelligence · ${today}`;
+  window.print();
+}
+
+
+const CHRIS_VOICE_PROMPT = `You are writing in the voice of Chris Guerin, Managing Director of FutureBridge Advisory.
+
+Chris's writing style:
+- Human and direct. Writes like a senior analyst talking to a peer, not a consultant writing a report.
+- Thoughtful but never long-winded. Gets to the point fast.
+- Sometimes cynical — especially about consensus views, hype cycles, and things people say without meaning.
+- Always looking at the wider picture. Connects the immediate signal to the structural shift.
+- Uses short sentences. Prefers specific over generic. Names companies, prices, people, timelines.
+- Comfortable saying "this isn't as exciting as it looks" or "the real story is elsewhere".
+- Never uses: "leverage", "operationalise", "ecosystem", "synergies", "unlock potential".
+- Writes like The Economist or FT Alphaville — not like a McKinsey slide deck.
+- Tone: clear, slightly opinionated, commercially grounded.
+
+Do NOT write like: consulting marketing copy, academic reports, AI assistants summarising the news.`;
+
+function getApiKey(){
+  let k = localStorage.getItem('fb_war_key') || '';
+  if(!k){
+    k = prompt('Anthropic API key (for research refresh):','');
+    if(k) localStorage.setItem('fb_war_key', k);
+  }
+  return k;
+}
+
+async function refreshResearch(){
+  const key = getApiKey();
+  if(!key) return;
+
+  const btn = document.getElementById('refreshBtn');
+  const banner = document.getElementById('refreshBanner');
+  btn.disabled = true;
+  banner.classList.add('show');
+
+  // Collect all the current alert boxes and hypothesis bodies to refresh
+  const alertBoxes   = document.querySelectorAll('.alert-box');
+  const hypBodies    = document.querySelectorAll('.hyp-block p:not(.hook)');
+  const panelDescs   = document.querySelectorAll('.panel-desc');
+  const mktInsights  = document.querySelectorAll('.mkt-insight');
+  const tierWhys     = document.querySelectorAll('.tier-item-why');
+
+  // Build a snapshot of what needs refreshing
+  const sections = [];
+  alertBoxes.forEach((el,i)   => sections.push({id:`alert-${i}`,  el, text:el.innerHTML}));
+  panelDescs.forEach((el,i)   => sections.push({id:`desc-${i}`,   el, text:el.textContent}));
+  tierWhys.forEach((el,i)     => sections.push({id:`tierwhy-${i}`,el, text:el.textContent}));
+  hypBodies.forEach((el,i)    => sections.push({id:`hyp-${i}`,    el, text:el.textContent}));
+  mktInsights.forEach((el,i)  => sections.push({id:`mkt-${i}`,    el, text:el.textContent}));
+
+  const today = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+
+  const prompt = `${CHRIS_VOICE_PROMPT}
+
+Today is ${today}. You are refreshing the research sections of the FutureBridge War Impact Intelligence Map — a commercial guide for the sales, delivery and marketing teams covering the impact of the Middle East conflict (Strait of Hormuz disruption, oil at $100+) and the ongoing Ukraine war on six sectors: Energy, Oil & Gas, Chemicals, Mobility, Manufacturing, Life Sciences.
+
+Below are ${sections.length} text sections from the document. Rewrite each one in Chris Guerin's voice. Keep the same meaning and commercial intelligence — just rewrite the language to sound like Chris, not like a consultant. Each rewrite should be roughly the same length as the original.
+
+Return ONLY valid JSON: an array of objects with "id" and "text" fields. No markdown, no explanation.
+
+Sections to rewrite:
+${JSON.stringify(sections.map(s => ({id:s.id, text:s.text.trim().slice(0,400)})))}`;
+
+  try{
+    const r = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':key,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:8192,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+
+    const d = await r.json();
+    if(!r.ok) throw new Error(d.error?.message || r.statusText);
+
+    const txt  = d.content.map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
+    const rewrites = JSON.parse(txt);
+
+    // Apply rewrites
+    rewrites.forEach(rw => {
+      const sec = sections.find(s=>s.id===rw.id);
+      if(sec && rw.text){
+        if(sec.el.tagName === 'P'){
+          sec.el.textContent = rw.text;
+        } else {
+          // alert-box or panel-desc — preserve strong tags, replace text nodes
+          const strong = sec.el.querySelector('strong');
+          if(strong){
+            const strongText = strong.outerHTML;
+            sec.el.innerHTML = strongText + ' ' + rw.text.replace(/^[^.]+\.\s*/,'');
+          } else {
+            sec.el.textContent = rw.text;
+          }
+        }
+      }
+    });
+
+    // Update last assessed date
+    document.getElementById('lastAssessed').textContent = 'Last assessed: ' + today;
+
+    banner.classList.remove('show');
+    btn.disabled = false;
+    btn.textContent = '✓ Refreshed';
+    setTimeout(()=>{ btn.textContent = '↺ Refresh research'; }, 3000);
+
+  } catch(e){
+    banner.classList.remove('show');
+    btn.disabled = false;
+    alert('Refresh failed: ' + e.message);
+  }
+}
+</script>
+
+</body>
+</html>
