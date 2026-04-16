@@ -210,7 +210,7 @@ footer{background:var(--black);padding:20px 52px;display:flex;align-items:center
       <div class="hero-note">Strictly confidential · Internal access only · API key required for AI tools</div>
     </div>
     <div class="hero-stats">
-      <div class="hs"><div class="hs-l">Tools live</div><div class="hs-v">11</div></div>
+      <div class="hs"><div class="hs-l">Tools live</div><div class="hs-v">12</div></div>
       <div class="hs"><div class="hs-l">In build</div><div class="hs-v">3</div></div>
       <div class="hs"><div class="hs-l">Companies</div><div class="hs-v">36</div></div>
       <div class="hs"><div class="hs-l">Sectors</div><div class="hs-v">10</div></div>
@@ -242,6 +242,7 @@ footer{background:var(--black);padding:20px 52px;display:flex;align-items:center
           <span class="tag">Meeting log</span>
         </div>
         <div class="t-link">Open tool <span class="t-arr"></span></div>
+        <div onclick="event.preventDefault();event.stopPropagation();copyWarLink()" style="margin-top:10px;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--red);font-family:'Courier New',monospace;cursor:pointer;padding:6px 0;border-top:1px solid var(--border)" title="Copy direct link">⎘ Copy direct link</div>
       </a>
 
       <a href="insight_forecast.html" class="tool live">
@@ -410,6 +411,22 @@ footer{background:var(--black);padding:20px 52px;display:flex;align-items:center
     <div style="margin-top:1px;background:var(--border)">
     <div class="grid-2" style="background:transparent;gap:1px">
 
+      <a href="war_report.html" class="tool live" id="war-card">
+        <div class="t-num">08</div>
+        <div class="t-icon">⚑</div>
+        <div class="t-title">War Impact Intelligence Map</div>
+        <p class="t-desc">Commercial operating guide for Sales, Delivery, and Marketing. Sector × geography heatmap, ranked priority tiers, hypothesis packs, sales scripts, delivery engagements, and six publishable thought leadership articles — each expandable to a full evidenced piece with citations, projection, and closing question.</p>
+        <div class="t-tags">
+          <span class="tag live">Live</span>
+          <span class="tag">6 sectors</span>
+          <span class="tag">4 geographies</span>
+          <span class="tag">Sales scripts</span>
+          <span class="tag">↺ Monthly refresh</span>
+          <span class="tag">↓ PDF</span>
+        </div>
+        <div class="t-link">Open tool <span class="t-arr"></span></div>
+      </a>
+
       <a href="signal_engine_showcase__1_.html" class="tool ref">
         <div class="t-num">11</div>
         <div class="t-icon">◉</div>
@@ -535,6 +552,17 @@ const io=new IntersectionObserver(entries=>{
   });
 },{threshold:.05});
 document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+function copyWarLink(){
+  const base = window.location.href.replace(/index\.html$/, '').replace(/\/$/, '');
+  const url = base + '/war_report.html';
+  navigator.clipboard.writeText(url).then(function(){
+    const el = document.querySelector('#war-card [onclick*="copyWarLink"]');
+    if(el){ el.textContent = '✓ Link copied'; setTimeout(function(){ el.textContent = '⎘ Copy direct link'; }, 2000); }
+  }).catch(function(){
+    window.prompt('Copy this link:', url);
+  });
+}
 </script>
 </body>
 </html>

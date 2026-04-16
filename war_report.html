@@ -293,7 +293,104 @@
     .hyp-grid{grid-template-columns:1fr 1fr;}
   }
 
-  /* ── DOWNLOAD BUTTON ── */
+  /* ── MARKETING ARTICLE MODAL ── */
+  .art-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;
+    display:flex;align-items:flex-start;justify-content:center;
+    padding:40px 20px;overflow-y:auto;
+    opacity:0;pointer-events:none;transition:opacity .2s;
+  }
+  .art-overlay.open{opacity:1;pointer-events:all}
+  .art-modal{
+    background:#fff;width:100%;max-width:780px;
+    border-top:4px solid var(--black);
+    position:relative;
+  }
+  .art-modal-hdr{
+    padding:28px 36px 20px;
+    border-bottom:1px solid var(--border);
+    display:flex;align-items:flex-start;justify-content:space-between;gap:20px;
+    position:sticky;top:0;background:#fff;z-index:10;
+  }
+  .art-close{
+    flex-shrink:0;width:32px;height:32px;border:1px solid var(--border);
+    background:#fff;cursor:pointer;font-size:16px;color:var(--text-muted);
+    display:flex;align-items:center;justify-content:center;
+    transition:all .15s;
+  }
+  .art-close:hover{background:var(--black);color:#fff;border-color:var(--black)}
+  .art-badge{font-size:8px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+    padding:2px 8px;font-family:'Courier New',monospace;margin-bottom:8px;display:inline-block}
+  .art-headline{font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1.2;color:var(--black)}
+  .art-body{padding:28px 36px 36px}
+  .art-byline{
+    display:flex;align-items:center;gap:12px;
+    margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border);
+    font-size:12px;color:var(--text-muted);
+  }
+  .art-byline strong{color:var(--black)}
+  .art-avatar{
+    width:36px;height:36px;border-radius:50%;background:var(--black);
+    display:flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:700;color:#fff;flex-shrink:0;
+  }
+  /* Article typography */
+  .art-content{font-size:14px;color:var(--mid);line-height:1.8;max-width:64ch}
+  .art-content p{margin-bottom:18px}
+  .art-content p:last-child{margin-bottom:0}
+  .art-content strong{color:var(--black);font-weight:700}
+  .art-content em{font-style:italic;color:var(--text-muted)}
+  .art-cite{
+    font-size:10px;color:var(--red);font-family:'Courier New',monospace;
+    vertical-align:super;font-style:normal;font-weight:700;
+    cursor:default;
+  }
+  .art-projection{
+    background:var(--bg);border-left:3px solid var(--black);
+    padding:16px 20px;margin:24px 0;
+  }
+  .art-projection-lbl{font-size:8px;font-weight:700;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--text-faint);margin-bottom:8px;
+    font-family:'Courier New',monospace;}
+  .art-projection p{font-size:13.5px;color:var(--black);line-height:1.7;font-weight:500}
+  .art-question{
+    background:var(--red-pale);border:1px solid var(--red-b);
+    border-left:3px solid var(--red);padding:16px 20px;margin-top:24px;
+  }
+  .art-question-lbl{font-size:8px;font-weight:700;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--red);margin-bottom:8px;
+    font-family:'Courier New',monospace;}
+  .art-question p{font-size:13.5px;color:var(--black);line-height:1.65;font-style:italic}
+  .art-refs{margin-top:28px;padding-top:18px;border-top:1px solid var(--border)}
+  .art-refs-lbl{font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--text-faint);margin-bottom:10px;font-family:'Courier New',monospace;}
+  .art-ref-item{font-size:10.5px;color:var(--text-muted);line-height:1.6;
+    display:flex;gap:8px;margin-bottom:6px;}
+  .art-ref-n{color:var(--red);font-family:'Courier New',monospace;font-size:10px;
+    font-weight:700;flex-shrink:0;min-width:18px}
+  .art-footer{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 36px;border-top:1px solid var(--border);background:#fafaf8;
+  }
+  .art-note{font-size:10px;color:var(--text-faint);font-family:'Courier New',monospace}
+  /* Generating state */
+  .art-generating{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    min-height:320px;gap:16px;color:var(--text-muted);
+  }
+  .art-spin{width:24px;height:24px;border:2px solid var(--border);
+    border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite}
+  .art-gen-msg{font-size:13px}.art-gen-sub{font-size:10px;color:var(--text-faint);font-family:'Courier New',monospace}
+  /* Make cards clickable */
+  .mkt-card{cursor:pointer;transition:background .15s,transform .12s,box-shadow .12s}
+  .mkt-card:hover{background:#fafaf8;transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.07)}
+  .mkt-read-more{
+    display:inline-flex;align-items:center;gap:6px;margin-top:12px;
+    font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--red);font-family:'Courier New',monospace;
+  }
+  .mkt-read-more::after{content:'→';transition:margin .15s}
+  .mkt-card:hover .mkt-read-more::after{margin-left:4px}
   .download-bar{
     background:#fff;border-bottom:1px solid var(--border);
     padding:10px 40px;display:flex;align-items:center;justify-content:space-between;
@@ -1328,52 +1425,52 @@
 
   <div class="grid-2">
 
-    <div class="mkt-card">
+    <div class="mkt-card" onclick="openArticle(0)">
       <div class="badge critical">Publish this week</div>
       <div class="mkt-headline">The grid storage technology selection problem: why €63/MWh gas is creating the wrong urgency</div>
       <div class="mkt-insight">European utilities are rushing grid storage procurement decisions. Three of the four most-procured technologies will miss their performance targets within 36 months. The pressure to act is real. The technology choices being made are not. This is what they should be buying instead — and why.</div>
-      <div class="mkt-chart">Chart idea: TRL vs procurement volume scatter plot — showing the mismatch between investment and readiness</div>
       <div class="mkt-angle">ANGLE: Contrarian. Everyone else is saying "the energy transition is accelerating." We say "it is being done wrong." That gets attention.</div>
+      <div class="mkt-read-more">Read full story</div>
     </div>
 
-    <div class="mkt-card">
+    <div class="mkt-card" onclick="openArticle(1)">
       <div class="badge critical">Publish this week</div>
       <div class="mkt-headline">$100 oil and the technology advisor's moment: what SLB, Halliburton, and Baker Hughes should be buying now</div>
       <div class="mkt-insight">At $100+, every upstream technology investment that was marginal at $70 is commercially justified. But which ones? The three well productivity technologies attracting the most attention are not the ones that move the needle. Here is the ranked list — and the reasoning.</div>
-      <div class="mkt-chart">Chart idea: Technology adoption rate vs. marginal barrel economics — showing which technologies break even at what oil price</div>
       <div class="mkt-angle">ANGLE: Direct commercial relevance to the exact clients we want to talk to. This piece is a sales call opener, not just content.</div>
+      <div class="mkt-read-more">Read full story</div>
     </div>
 
-    <div class="mkt-card">
+    <div class="mkt-card" onclick="openArticle(2)">
       <div class="badge high">Publish within 2 weeks</div>
       <div class="mkt-headline">84% of Hormuz oil goes to Asia. Here is what that means for Asian NOC technology strategy</div>
       <div class="mkt-insight">CNOOC, ONGC, JERA, and POSCO are the most exposed energy buyers on the planet. The strategic response — domestic production acceleration, alternative sourcing, and technology investment — requires a set of decisions that most NOC boards are not yet equipped to make. This is the framework.</div>
-      <div class="mkt-chart">Chart idea: Hormuz oil flow dependency by country — simple bar chart with FutureBridge source attribution</div>
       <div class="mkt-angle">ANGLE: Specific data hook (84%) that most readers will not have seen. Opens the Asian NOC conversation.</div>
+      <div class="mkt-read-more">Read full story</div>
     </div>
 
-    <div class="mkt-card">
+    <div class="mkt-card" onclick="openArticle(3)">
       <div class="badge high">Publish within 2 weeks</div>
       <div class="mkt-headline">European ammonia production is up 180% in cost. Four alternatives are now economically viable for the first time</div>
       <div class="mkt-insight">At €63/MWh gas, bio-based, waste-derived, and electrified nitrogen production routes cross the cost threshold they have never crossed before. Not all of them are scalable. Two are not. Here is which ones BASF, Yara, and Solvay should be evaluating — and the supply chain conditions that make each viable.</div>
-      <div class="mkt-chart">Chart idea: Feedstock cost comparison at different gas prices — showing which alternatives become viable at what threshold</div>
       <div class="mkt-angle">ANGLE: Specific cost figure (180%) plus a ranked list of alternatives. Exactly the format chemical clients use in their own decision processes.</div>
+      <div class="mkt-read-more">Read full story</div>
     </div>
 
-    <div class="mkt-card">
+    <div class="mkt-card" onclick="openArticle(4)">
       <div class="badge medium">Publish within 4 weeks</div>
       <div class="mkt-headline">European defence spending is going to 3% of GDP. The technology choices being made now will define capability gaps for a decade</div>
       <div class="mkt-insight">Rheinmetall, BAE, and KNDS are making technology selection decisions at pace. The bottleneck is not money — it is independent intelligence. Three platform technologies currently in European procurement discussions will not reach operational readiness within their stated timelines. This is the evidence.</div>
-      <div class="mkt-chart">Chart idea: TRL vs. procurement commitment timeline for major European defence platforms</div>
       <div class="mkt-angle">ANGLE: Contrarian specific claim (three platforms will miss timelines) backed by TRL evidence. Will be shared by defence procurement communities.</div>
+      <div class="mkt-read-more">Read full story</div>
     </div>
 
-    <div class="mkt-card">
+    <div class="mkt-card" onclick="openArticle(5)">
       <div class="badge medium">Publish within 4 weeks</div>
       <div class="mkt-headline">Post-conflict Gulf reconstruction: the $200B advisory market that does not yet exist</div>
       <div class="mkt-insight">When hostilities end, Gulf energy export infrastructure will need rapid reconstruction. The investment decisions will be made fast. The advisors who are already known in those markets will win the mandates. This is who needs to be positioning now — and how.</div>
-      <div class="mkt-chart">Chart idea: Timeline projection of reconstruction investment phases — showing the advisory opportunity window</div>
       <div class="mkt-angle">ANGLE: Forward-looking. Positions FutureBridge as the firm thinking 12 months ahead while everyone else is reacting to today.</div>
+      <div class="mkt-read-more">Read full story</div>
     </div>
 
   </div>
@@ -1381,6 +1478,32 @@
 </div><!-- /marketing -->
 
 </div><!-- /content -->
+
+<!-- ═══════════════════════════════════════
+     ARTICLE MODAL
+═══════════════════════════════════════ -->
+<div class="art-overlay" id="artOverlay" onclick="if(event.target===this)closeArticle()">
+  <div class="art-modal" id="artModal">
+    <div class="art-modal-hdr">
+      <div>
+        <div class="art-badge badge" id="artBadge"></div>
+        <div class="art-headline" id="artHeadline"></div>
+      </div>
+      <button class="art-close" onclick="closeArticle()">✕</button>
+    </div>
+    <div class="art-body">
+      <div class="art-byline">
+        <div class="art-avatar">CG</div>
+        <div>
+          <div><strong>Chris Guerin</strong> · Client Partner, FutureBridge Advisory</div>
+          <div id="artDate"></div>
+        </div>
+        <button class="dl-btn" style="margin-left:auto;flex-shrink:0" onclick="printArticle()">↓ PDF</button>
+      </div>
+      <div id="artContent"></div>
+    </div>
+  </div>
+</div>
 
 <script>
   // Panel navigation
@@ -1435,35 +1558,565 @@
     }
   }
 
-function downloadPDF(){
+const CHRIS_VOICE_PROMPT = [
+  "You are writing in the voice of Chris Guerin, Client Partner, FutureBridge Advisory.",
+  "",
+  "Chris's writing style:",
+  "- Human and direct. Writes like a senior analyst talking to a peer, not a consultant writing a report.",
+  "- Thoughtful but never long-winded. Gets to the point fast.",
+  "- Sometimes cynical — especially about consensus views, hype cycles, and things people say without meaning.",
+  "- Always looking at the wider picture. Connects the immediate signal to the structural shift.",
+  "- Uses short sentences. Prefers specific over generic. Names companies, prices, people, timelines.",
+  "- Comfortable saying 'this isn\'t as exciting as it looks' or 'the real story is elsewhere'.",
+  "- Never uses: leverage, operationalise, ecosystem, synergies, unlock potential.",
+  "- Writes like The Economist or FT Alphaville — not like a McKinsey slide deck.",
+  "- Tone: clear, slightly opinionated, commercially grounded.",
+  "",
+  "Do NOT write like: consulting marketing copy, academic reports, AI assistants summarising the news."
+].join("\n");
+
+// ── MARKETING ARTICLES ───────────────────────────────────────────────
+
+const ARTICLES = [
+  { badge:'Publish this week', badgeClass:'critical',
+    headline:'The grid storage technology selection problem: why €63/MWh gas is creating the wrong urgency',
+    brief:'European utilities are rushing grid storage procurement decisions under extreme gas price pressure. Three of the four most-procured technologies will miss performance targets. Context: TTF gas at €63/MWh, EU storage at 30%, Strait of Hormuz ~closed.' },
+  { badge:'Publish this week', badgeClass:'critical',
+    headline:'$100 oil and the technology advisor\'s moment: what SLB, Halliburton, and Baker Hughes should be buying now',
+    brief:'At $100+ oil, upstream technology investment cases that failed at $70 now clear the threshold. The three well productivity technologies getting the most attention are not the ones that move the needle. Context: Brent at $103, oilfield services order books expanding.' },
+  { badge:'Publish within 2 weeks', badgeClass:'high',
+    headline:'84% of Hormuz oil goes to Asia. Here is what that means for Asian NOC technology strategy',
+    brief:'CNOOC, ONGC, JERA, and POSCO are the most exposed energy buyers on the planet. The strategic response — domestic production, alternative sourcing, technology investment — requires decisions most NOC boards are not equipped to make. Context: Hormuz ~90% below normal traffic.' },
+  { badge:'Publish within 2 weeks', badgeClass:'high',
+    headline:'European ammonia production is up 180% in cost. Four alternatives are now economically viable for the first time',
+    brief:'At €63/MWh gas, bio-based, waste-derived, and electrified nitrogen routes cross the cost threshold for the first time. Not all are scalable. Context: European gas at near-double pre-conflict levels, BASF, Yara, Solvay all evaluating alternatives.' },
+  { badge:'Publish within 4 weeks', badgeClass:'medium',
+    headline:'European defence spending is going to 3% of GDP. The technology choices being made now will define capability gaps for a decade',
+    brief:'Rheinmetall, BAE, and KNDS are making platform technology selections at pace. The bottleneck is independent intelligence. Three technologies in active European procurement will not reach operational readiness in their stated timelines. Context: NATO 3%+ GDP commitments confirmed across multiple markets.' },
+  { badge:'Publish within 4 weeks', badgeClass:'medium',
+    headline:'Post-conflict Gulf reconstruction: the $200B advisory market that does not yet exist',
+    brief:'When hostilities end, Gulf energy infrastructure will need rapid reconstruction. Advisory mandates will go to firms already known in those markets. Context: Saudi Aramco, ADNOC procurement suspended. Reconstruction horizon: Q4 2026 earliest.' }
+];
+
+// ── ARTICLE CACHE — stored per article, read directly from localStorage ──
+function getCached(idx){
+  try{ return localStorage.getItem('fb_art_' + idx) || ''; }catch(e){ return ''; }
+}
+function setCached(idx, html){
+  try{ localStorage.setItem('fb_art_' + idx, html); }catch(e){ console.warn('Cache write failed',e); }
+}
+function clearCached(idx){
+  try{ localStorage.removeItem('fb_art_' + idx); }catch(e){}
+}
+
+function openArticle(idx){
+  const art = ARTICLES[idx];
+  const overlay = document.getElementById('artOverlay');
+  const badge   = document.getElementById('artBadge');
+  const headline = document.getElementById('artHeadline');
+  const dateEl  = document.getElementById('artDate');
+  const content = document.getElementById('artContent');
+
+  badge.textContent = art.badge;
+  badge.className = 'art-badge badge ' + art.badgeClass;
+  headline.textContent = art.headline;
+  dateEl.textContent = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  // Read directly from localStorage — persists across page loads
+  const cached = getCached(idx);
+  if(cached){
+    // Restore the finalised title to modal and card
+    try{
+      const savedTitle = localStorage.getItem('fb_art_title_'+idx);
+      if(savedTitle){
+        headline.textContent = savedTitle;
+        // Sync the marketing card headline too
+        const card = document.querySelector('.mkt-card[onclick="openArticle('+idx+')"]');
+        if(card){
+          const hEl = card.querySelector('.mkt-headline');
+          if(hEl) hEl.textContent = savedTitle;
+          // Also update the insight text to match article opening
+          const intro = localStorage.getItem('fb_art_intro_'+idx);
+          if(intro){
+            const insightEl = card.querySelector('.mkt-insight');
+            if(insightEl) insightEl.textContent = intro + '…';
+          }
+        }
+      }
+    }catch(e){}
+    content.innerHTML = cached
+      + `<div style="padding:8px 36px 0;border-top:1px solid var(--border);margin-top:0">
+           <button onclick="regenArticle(${idx})" style="background:none;border:none;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);cursor:pointer;font-family:'Courier New',monospace;padding:10px 0;transition:color .15s" onmouseover="this.style.color='var(--black)'" onmouseout="this.style.color='var(--faint)'">↺ Regenerate this story</button>
+         </div>`;
+    return;
+  }
+
+  // No cache — show key input or spinner
+  const existingKey = localStorage.getItem('fb_v3_key') || localStorage.getItem('fb_war_key') || '';
+  if(!existingKey){
+    content.innerHTML = `
+      <div style="padding:32px 0">
+        <div style="font-size:13px;color:var(--mid);margin-bottom:20px;line-height:1.6">
+          Enter your Anthropic API key to generate the full story. Same key as Account Plans.
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px">
+          <input id="artKeyInput" type="password" placeholder="sk-ant-..."
+            style="flex:1;border:1px solid var(--border);padding:10px 12px;font-size:13px;outline:none;border-radius:2px;font-family:inherit;transition:border-color .15s"
+            onfocus="this.style.borderColor='#000'" onblur="this.style.borderColor='var(--border)'">
+          <button onclick="saveAndGenerate(${idx})"
+            style="background:var(--black);color:#fff;border:none;padding:10px 20px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit">
+            Generate →
+          </button>
+        </div>
+        <div style="font-size:10px;color:var(--faint)">Saved locally. Never sent anywhere except Anthropic.</div>
+      </div>`;
+    return;
+  }
+
+  content.innerHTML = `<div class="art-generating">
+    <div class="art-spin"></div>
+    <div class="art-gen-msg">Writing full story…</div>
+    <div class="art-gen-sub">Claude · Chris Guerin voice · ~20 seconds</div>
+  </div>`;
+
+  generateArticle(idx, art, content);
+}
+
+function regenArticle(idx){
+  clearCached(idx);
+  const art = ARTICLES[idx];
+  const content = document.getElementById('artContent');
+  content.innerHTML = `<div class="art-generating">
+    <div class="art-spin"></div>
+    <div class="art-gen-msg">Rewriting…</div>
+    <div class="art-gen-sub">Claude · Chris Guerin voice · ~20 seconds</div>
+  </div>`;
+  generateArticle(idx, art, content);
+}
+
+function closeArticle(){
+  document.getElementById('artOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function saveAndGenerate(idx){
+  const input = document.getElementById('artKeyInput');
+  const k = input ? input.value.trim() : '';
+  if(!k){ input.style.borderColor='var(--red)'; return; }
+  localStorage.setItem('fb_war_key', k);
+  const art = ARTICLES[idx];
+  const content = document.getElementById('artContent');
+  content.innerHTML = `<div class="art-generating">
+    <div class="art-spin"></div>
+    <div class="art-gen-msg">Writing full story…</div>
+    <div class="art-gen-sub">Claude · Chris Guerin voice · ~20 seconds</div>
+  </div>`;
+  generateArticle(idx, art, content);
+}
+
+async function generateArticle(idx, art, contentEl){
+  const key = getApiKey();
+  if(!key){
+    contentEl.innerHTML = `<div style="padding:20px">
+      <div style="color:var(--red);font-weight:700;margin-bottom:8px">No API key found.</div>
+      <button onclick="closeArticle()" style="background:var(--black);color:#fff;border:none;padding:8px 16px;font-size:11px;font-weight:700;cursor:pointer">Close</button>
+    </div>`;
+    return;
+  }
+
   const today = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
-  document.title = `FutureBridge — War Impact Intelligence · ${today}`;
+  const hdrs = {
+    'Content-Type':'application/json',
+    'x-api-key':key,
+    'anthropic-version':'2023-06-01',
+    'anthropic-dangerous-direct-browser-access':'true'
+  };
+
+  function status(step, msg){
+    const steps = ['Build evidence foundation','Write from confidence','Verify & destroy','Write clean final'];
+    contentEl.innerHTML = `<div class="art-generating">
+      <div class="art-spin"></div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px;text-align:left">
+        ${steps.map((s,i)=>`
+          <div style="display:flex;gap:10px;align-items:center;opacity:${i+1===step?'1':i+1<step?'0.35':'0.2'}">
+            <span style="font-size:15px;width:18px;text-align:center">${i+1<step?'✓':i+1===step?'⟳':'○'}</span>
+            <span style="font-size:12px;color:${i+1===step?'var(--black)':'var(--faint)'}">${s}</span>
+          </div>`).join('')}
+      </div>
+      <div class="art-gen-sub" style="margin-top:16px">${msg}</div>
+    </div>`;
+  }
+
+  const CHRIS = [
+    "Write in the first person as Chris Guerin, Client Partner at FutureBridge Advisory.",
+    "This is a column, not a market note. You are not reporting what the market is doing — you are saying what you think about it, and why the consensus view is incomplete or wrong.",
+    "Voice: human, direct, commercially grounded, sometimes cynical. Short sentences 10-18 words.",
+    "The column should have a point of view from the first sentence. It should make the reader slightly uncomfortable — not aggressive, but honest in a way that most market commentary is not.",
+    "Look for the inconsistency or contradiction in the situation. The gap between what companies say and what they do. The data point that does not fit the narrative. The thing everyone is assuming that probably is not true. That is your opening.",
+    "Close with what you actually think — a direct statement, not a question posed to the reader.",
+    "Write like FT Alphaville or The Economist at its most direct. Never like a consultant or an AI assistant.",
+    "Never use: leverage, operationalise, ecosystem, synergies, unlock potential, going forward.",
+    "You are not writing industry updates or technology commentary. You are writing about why rational systems produce suboptimal outcomes. That is the lane. Stay in it.",
+    "Columns buy freedom of interpretation — not freedom from accuracy. The discipline is: how much can I remove and still be right?"
+  ].join("\n");
+
+  try {
+
+    // ══ STAGE 0: HYPOTHESIS ═══════════════════════════════════════
+    // Goal: find the sharpest contradiction, prove it exists, connect it to the war.
+    // The Builder writes from this brief — not from the marketing card description.
+    status(1, 'Finding the contradiction and proving it…');
+
+    const r0 = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST', headers:hdrs,
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:2000,
+        tools:[{"type":"web_search_20250305","name":"web_search"}],
+        messages:[{role:'user', content:
+          'You are building the evidentiary foundation for a FutureBridge intelligence column. Today is ' + today + '.\n\n' +
+          'TOPIC: ' + art.headline + '\n' +
+          'CONTEXT: ' + art.brief + '\n\n' +
+          'YOUR JOB — work through these steps in order. Do not skip to writing.\n\n' +
+          'STEP 1 — FIND THE DATA. Search broadly. Find what is actually happening in this space.\n' +
+          'Do not filter for what sounds interesting. Find what is true. Numbers, directions, company actions, market conditions.\n\n' +
+          'STEP 2 — IDENTIFY THE TENSION. Not a contradiction yet — a tension.\n' +
+          'Look for: price signal vs physical reality. Policy intent vs market behaviour. Technology promise vs revenue model. Speed vs system requirement.\n' +
+          'A tension is something that does not quite add up. State it in one sentence without explaining it yet.\n\n' +
+          'STEP 3 — GENERATE THREE COMPETING EXPLANATIONS for why this tension exists.\n' +
+          'Force yourself to consider all three before choosing one:\n' +
+          '  A) Markets are irrational — actors are making genuinely bad decisions\n' +
+          '  B) Markets are rational but incomplete — the incentive structure rewards the wrong thing\n' +
+          '  C) System incentives are misaligned — rational actors produce collectively suboptimal outcomes\n' +
+          'Which explanation has the strongest mechanism — one that shows up repeatedly and across industries?\n\n' +
+          'STEP 4 — APPLY THE SENIOR OPERATOR TEST.\n' +
+          'Imagine a senior operator in this sector — a CFO, a head of strategy, someone who has spent 20 years in the industry.\n' +
+          'Would they push back on this explanation? If they would not — if they would simply nod along — kill it.\n' +
+          'A column worth writing makes a senior operator slightly uncomfortable. It challenges something they currently believe.\n' +
+          'If this tension does not pass that test, return premise_confirmed: false and do not proceed.\n\n' +
+          'STEP 5 — WAR CATALYST. What is the current conflict specifically doing to create or amplify this tension?\n' +
+          'Not generally — specifically. If the connection is weak, flag it.\n\n' +
+          'STEP 6 — SAFE FRAMINGS. For each verified fact, write the directional version that carries the meaning without the precision.\n' +
+          '"88% lithium-ion" becomes "the vast majority of new capacity is lithium-ion".\n' +
+          '"revenues fell from X to Y" becomes "revenues in this market have already compressed sharply".\n' +
+          'These are what the Builder will write from. The data stays in the foundation. It does not appear in the piece.\n\n' +
+          'Return JSON:\n' +
+          '{\n' +
+          '  "data_found": ["verified fact with source", "verified fact with source", "verified fact with source"],\n' +
+          '  "tension": "the thing that does not add up — one sentence, no explanation yet",\n' +
+          '  "explanations": {"irrational": "...", "incomplete": "...", "misaligned": "..."},\n' +
+          '  "winning_explanation": "the one with the strongest repeatable mechanism",\n' +
+          '  "senior_operator_test": "would challenge or would not challenge — and why",\n' +
+          '  "premise_confirmed": true or false,\n' +
+          '  "premise": "what the data shows and what it means — one sentence",\n' +
+          '  "war_catalyst": "what the conflict is specifically doing to this tension",\n' +
+          '  "system_driver": "the incentive structure that makes rational actors produce this outcome",\n' +
+          '  "safe_framings": ["directional version of fact 1", "directional version of fact 2", "directional version of fact 3"],\n' +
+          '  "strongest_angle": "the opening sentence of the column — states the tension as an uncomfortable truth",\n' +
+          '  "war_doc_justified": true or false with one sentence explanation\n' +
+          '}'
+        }]
+      })
+    });
+    const d0 = await r0.json();
+    if(!r0.ok) throw new Error(d0.error?.message || r0.statusText);
+
+    const txt0 = d0.content.filter(b=>b.type==='text').map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
+    let hypothesis = {};
+    try{
+      const m = txt0.match(/\{[\s\S]*\}/);
+      if(m) hypothesis = JSON.parse(m[0]);
+    }catch(e){ hypothesis = {strongest_angle: art.brief, war_catalyst: '', verified_facts: []}; }
+
+    // If the war doc justification fails, note it but continue — writer can judge
+    const warNote = hypothesis.war_doc_justified === false
+      ? '\n\nNOTE: This topic may belong on the public page rather than the war doc — the conflict connection is weak. Write the piece anyway but keep the war catalyst prominent.'
+      : '';
+
+    // ══ STAGE 1: BUILDER ══════════════════════════════════════════
+    // Builder receives the hypothesis brief, not the marketing card description
+    status(2, 'Building argument from proven contradiction…');
+
+    const r1 = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST', headers:hdrs,
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1500,
+        messages:[{role:'user', content:
+          CHRIS + '\n\n' +
+          'Write the argument for this intelligence piece. FIRST DRAFT.\n\n' +
+          'HEADLINE (working title — the Finisher will rewrite this): ' + art.headline + '\n\n' +
+          'EVIDENTIARY FOUNDATION — you have already seen the data. Write from confidence, not from citation.\n\n' +
+          'Opening: ' + (hypothesis.strongest_angle||hypothesis.premise||art.brief) + '\n' +
+          'The tension: ' + (hypothesis.tension||hypothesis.contradiction||'') + '\n' +
+          'Why it exists (the mechanism — this is the spine of the piece): ' + (hypothesis.winning_explanation||hypothesis.system_driver||'') + '\n' +
+          'War catalyst: ' + (hypothesis.war_catalyst||'') + '\n' +
+          'What the data shows (directional — do not use the precise numbers):\n' +
+          (hypothesis.safe_framings||hypothesis.verified_facts||[]).map(function(f,i){return (i+1)+'. '+f;}).join('\n') + '\n\n' +
+          'THE SENIOR OPERATOR TEST — this piece must make a senior operator slightly uncomfortable. It must challenge something they currently believe, not confirm it.\n\n' +
+          warNote + '\n\n' +
+          'OPENING PREMISE — start here, make this explicit in paragraph one:\n' +
+          'Most oilfield service revenues are tied to activity: rigs drilled, wells completed, interventions performed.\n' +
+          'Technologies that reduce that activity, or shift value from services to software and outcomes, are structurally harder to justify — not because managers are short-sighted, but because the revenue model punishes them for it.\n' +
+          'At high oil prices, this effect is stronger, not weaker. The constraint is not capital or risk appetite. It is the structural conflict between what earns today and what wins tomorrow.\n' +
+          'That is the piece. Write from there.\n\n' +
+          'THREE TIERS OF CLAIMS — know which tier you are in at every sentence:\n' +
+          'TIER 1 — Structural truths. These are your strongest ground. Revenue models shape behaviour. Time pressure narrows decision space. Incentive structures determine what gets funded. Write these with confidence.\n' +
+          'TIER 2 — Directional statements. Fine if loosely framed. Gas prices spiked sharply. Deployment is accelerating. Budgets are rising. These are defensible as long as you do not attach a specific number you cannot source.\n' +
+          'TIER 3 — Specific facts. Named deals, exact prices, precise volumes. Only enter tier 3 if a fact appears verbatim in the CONTEXT above. Otherwise stay in tiers 1 and 2.\n\n' +
+          'ABSOLUTE RULES:\n' +
+          '- DO NOT name any acquisition or deal unless it appears verbatim in the CONTEXT. If it is not there, it does not exist for this draft.\n' +
+          '- DO NOT invent specific percentages or statistics. Use directional language: the majority, a significant portion, roughly double, sharply higher.\n' +
+          '- Implied intent rule: never write "companies choose X instead of Y". Write "the system makes X easier to justify than Y". You are describing structural pressure, not management decisions.\n' +
+          '- Do not over-claim outcomes. Do not write "this will fail" or "most will underperform". Describe the pressure and direction. Let the reader draw the conclusion.\n' +
+          '- Projections describe structural risk, not guaranteed outcomes.\n' +
+          '- When expressing your reading rather than a fact, write it naturally: I suspect, the pattern suggests, my reading is.\n\n' +
+          'OPENING — this is everything:\n' +
+          'The opening sentence must state a contradiction, exception, or uncomfortable inconsistency directly. Not a frame for one. The thing itself.\n' +
+          'BANNED opening patterns — never use these:\n' +
+          '- I keep hearing... / Everyone is saying... / The consensus view is...\n' +
+          '- There is a growing... / It is becoming clear... / The data shows...\n' +
+          '- In recent months... / Against a backdrop of...\n' +
+          'STRONG opening patterns — use these instead:\n' +
+          '- State the contradiction flat: "[Company/sector] is doing X. The economics say they should be doing Y. The gap between those two things is the piece."\n' +
+          '- Lead with the exception: "[X] is supposed to [outcome]. [Specific counter-evidence]. That is worth examining."\n' +
+          '- Name the uncomfortable truth: "The thing nobody wants to say about [topic] is [specific observation]."\n\n' +
+          'STRUCTURE:\n' +
+          '- Opening (2 sentences max): the contradiction or exception, stated directly.\n' +
+          '- Para 2: why this contradiction exists — the structural mechanism.\n' +
+          '- Para 3-4: evidence that supports the mechanism, not the surface observation. Each paragraph must advance the argument.\n' +
+          '- Para 5: what this means structurally — consequence, not prediction.\n' +
+          '- Close: one hard direct sentence. What you actually think. Not a question, not a hedge, not a call to action.\n\n' +
+          'The contradiction should be named in the opening and resolved in the close. The reader should finish knowing not just that the contradiction exists but why it exists and what it means.\n\n' +
+          'Return plain text, no JSON.'
+        }]
+      })
+    });
+    const d1 = await r1.json();
+    if(!r1.ok) throw new Error(d1.error?.message || r1.statusText);
+    const draft = d1.content.map(b=>b.text||'').join('').trim();
+
+    // ══ STAGE 2: VERIFIER ═════════════════════════════════════════
+    // Goal: attack every specific claim. Classify. Remove. Do NOT rewrite.
+    status(3, 'Attacking every claim — removing anything unsupported…');
+
+    const r2 = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST', headers:hdrs,
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:3000,
+        tools:[{"type":"web_search_20250305","name":"web_search"}],
+        messages:[{role:'user', content:
+          'You are a forensic verifier for FutureBridge Advisory, a research firm whose reputation depends on accuracy.\n\n' +
+          'DRAFT TO ATTACK:\n' + draft + '\n\n' +
+          'Your job: attack everything. Not rewrite. Not improve. Destroy weak claims.\n\n' +
+          'WHAT TO ATTACK — search the web for each. Be systematic:\n' +
+          '1. M&A CLAIMS — remove on sight unless sourced (these destroy credibility instantly):\n' +
+          '   Search EVERY named acquisition or deal: "[Company A] [Company B] acquisition [year]".\n' +
+          '   If you cannot find a dated press release or news article confirming it: verdict is FALSE, remove entirely.\n' +
+          '   Do not soften to UNSUPPORTED — a wrong deal claim is actively harmful, not just missing. Mark FALSE and remove.\n' +
+          '   Note: Baker Hughes acquiring Chart Industries is a known hallucination in this domain — flag immediately if it appears.\n' +
+          '2. Specific numbers, percentages, prices, dates, volumes — verify every one\n' +
+          '3. Company statements — did they actually say this publicly? Search for the quote.\n' +
+          '4. Causal claims — "X caused Y" — is this established or assumed?\n' +
+          '5. Projections with invented numbers — "will fall 15%" — UNSUPPORTED unless sourced\n' +
+          '6. Dynamic situations described as static — "blocked since February" — verify current status\n\n' +
+          'VERDICTS:\n' +
+          '- VERIFIED: found a solid, datable public source. Include the actual number if different.\n' +
+          '- LIKELY: directionally right, minor uncertainty, no clean source but not contradicted.\n' +
+          '- UNSUPPORTED: cannot find evidence. Do not guess. Mark for removal.\n' +
+          '- FALSE: actively contradicted by evidence. State what is actually true.\n\n' +
+          'SPECIAL RULES:\n' +
+          '- Treat all forward projections with invented percentages as UNSUPPORTED unless sourced.\n' +
+          '- Treat fluid/ongoing situations (conflicts, prices) as needing current verification, not memory.\n' +
+          '- If a claim is LIKELY but uses false precision, note the safer phrasing.\n\n' +
+          'Return JSON: {"claims":[{"text":"exact claim","verdict":"VERIFIED|LIKELY|UNSUPPORTED|FALSE",' +
+          '"real_value":"corrected or safer phrasing","source":"source name and date","source_url":"url"}],' +
+          '"safe_context":"2-3 sentences of verified macro context with real sourced numbers"}'
+        }]
+      })
+    });
+    const d2 = await r2.json();
+    if(!r2.ok) throw new Error(d2.error?.message || r2.statusText);
+
+    const txt2 = d2.content.filter(b=>b.type==='text').map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
+    let verification = {claims:[], safe_context:''};
+    try {
+      const match = txt2.match(/\{[\s\S]*\}/);
+      if(match) verification = JSON.parse(match[0]);
+    } catch(e){}
+
+    // Build what survived verification
+    const verified = (verification.claims||[]).filter(c=>c.verdict==='VERIFIED'||c.verdict==='LIKELY');
+    const removed  = (verification.claims||[]).filter(c=>c.verdict==='UNSUPPORTED'||c.verdict==='FALSE');
+
+    // ══ STAGE 3: FINISHER ═════════════════════════════════════════
+    // Goal: clean final copy. Inject ONLY what survived. Ranges not false precision.
+    status(4, 'Writing clean final from verified facts only…');
+
+    const safeNumbers = verified.map(c=>
+      `- "${c.text}" → USE: ${c.real_value||'as written'} (Source: ${c.source||'verified'})`
+    ).join('\n');
+
+    const r3 = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST', headers:hdrs,
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:2000,
+        messages:[{role:'user', content:
+          CHRIS + '\n\n' +
+          'You are writing the final published version of this intelligence piece for FutureBridge Advisory.\n\n' +
+          'ORIGINAL BRIEF HEADLINE (do not use this — write a better one after you have written the piece):\n' + art.headline + '\n\n' +
+          'DRAFT:\n' + draft + '\n\n' +
+          'SAFE FACTS (the ONLY specific claims you may include):\n' + (safeNumbers||'None verified — all claims must remain directional.') + '\n\n' +
+          (verification.safe_context ? 'VERIFIED CONTEXT:\n' + verification.safe_context + '\n\n' : '') +
+          'RULES — these are absolute:\n' +
+          '1. Only safe facts above may appear as stated facts. Everything else must be generalised or cut.\n' +
+          '2. Use ranges not precision: "mid-€40s" not "€43/MWh". "The majority" not "87%". "Roughly double" not "2.3x".\n' +
+          '3. If a point cannot survive without an unsafe claim, cut the point entirely.\n' +
+          '4. Forward projections must be framed as structural risk: not "will fall 15%" but "structurally exposed to underperformance".\n' +
+          '5. Analytical judgements that are not sourced facts must use natural hedging language — never a bracket label. Use: I suspect, the pattern suggests, it is hard to avoid the conclusion that, one reading of this is, my reading is, what this looks like to me. The hedging is in the language, not a marker.\n' +
+          '6. Never describe a dynamic situation as static. Disruption is fluid — write it that way.\n' +
+          '7. If you have a surviving verified concrete example (a real deal, a real company action), lead with it or anchor a paragraph with it. Do not bury it.\n' +
+          '8. No repetition — if the same structural point is made twice, cut the weaker version.\n' +
+          '9. The close must be sharp and direct. No polite consulting questions. No "will they recognise..." endings.\n' +
+          '10. Short sentences. Operator tone. No filler.\n' +
+          '11. THE TWO-QUESTION TEST — run this on every specific claim before finalising:\n' +
+          '    Q1: Could someone check this in 10 seconds and prove it wrong? If yes — cut or generalise.\n' +
+          '    Q2: Does the argument survive without this fact? If yes — remove it. Evidence that is not load-bearing makes the piece fragile, not stronger.\n' +
+          '    The mechanism carries the piece. Data supports it. Data does not become the target.\n\n' +
+          'TITLE RULE: Write the title last, after the piece is complete. The title must name the contradiction or exception the piece actually argues — not the topic it covers. If the piece drifted from the original brief headline, the new title should reflect where the argument actually landed. A good title makes a claim or names a tension. It does not describe a subject.\n\n' +
+          'Return JSON: {"title":"the final title — written after the piece, not before","paragraphs":["..."],"projection":"...","question":"...","sources":[{"name":"...","url":"..."}]}'
+        }]
+      })
+    });
+    const d3 = await r3.json();
+    if(!r3.ok) throw new Error(d3.error?.message || r3.statusText);
+
+    const txt3 = d3.content.map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
+    let article = {};
+    try {
+      const match = txt3.match(/\{[\s\S]*\}/);
+      if(match) article = JSON.parse(match[0]);
+    } catch(e){ article = {paragraphs:[txt3], projection:'', question:'', sources:[]}; }
+
+    // ══ RENDER ════════════════════════════════════════════════════
+    const parasHTML = (article.paragraphs||[]).map(p=>{
+      const clean = p.replace(/\[OPINION\]/g, '');
+      return `<p>${clean}</p>`;
+    }).join('');
+
+    const sourcesHTML = (article.sources||[]).filter(s=>s&&s.name).map(s=>
+      `<div class="art-ref-item"><span class="art-ref-n">→</span><span>${s.url?`<a href="${s.url}" target="_blank" style="color:var(--blue);text-decoration:none">${s.name}</a>`:s.name}</span></div>`
+    ).join('');
+
+    const html = `
+      <div class="art-content">
+        ${parasHTML}
+        <div class="art-projection">
+          <div class="art-projection-lbl">Projection — 12 to 24 months</div>
+          <p>${(article.projection||'').replace(/\[OPINION\]/g,'')}</p>
+        </div>
+        <div class="art-question">
+          <div class="art-question-lbl">The question you should be asking</div>
+          <p>${article.question||''}</p>
+        </div>
+        ${sourcesHTML?`<div class="art-refs"><div class="art-refs-lbl">Sources</div>${sourcesHTML}</div>`:''}
+      </div>
+      <div class="art-footer">
+        <div class="art-note">FutureBridge Advisory · ${today}</div>
+        <button class="dl-btn" onclick="printArticle()">↓ Download PDF</button>
+      </div>`;
+
+    // Update the modal headline AND the marketing card if the Finisher wrote a better title
+    if(article.title && article.title.trim()){
+      const finalTitle = article.title.trim();
+      document.getElementById('artHeadline').textContent = finalTitle;
+      // Update the card that was clicked so summary matches article
+      const card = document.querySelector('.mkt-card[onclick="openArticle('+idx+')"]');
+      if(card){
+        const headlineEl = card.querySelector('.mkt-headline');
+        if(headlineEl) headlineEl.textContent = finalTitle;
+      }
+    }
+    contentEl.innerHTML = html;
+    setCached(idx, html);
+    // Cache title and opening paragraph for card sync
+    try{
+      localStorage.setItem('fb_art_title_'+idx, article.title||'');
+      const firstPara = (article.paragraphs||[])[0]||'';
+      localStorage.setItem('fb_art_intro_'+idx, firstPara.slice(0,180));
+    }catch(e){}
+
+  } catch(e) {
+    contentEl.innerHTML = `<div style="padding:24px">
+      <div style="color:var(--red);font-weight:700;margin-bottom:8px">Generation failed</div>
+      <div style="font-size:12px;color:var(--mid);margin-bottom:16px;line-height:1.6">${e.message}</div>
+      <button onclick="regenArticle(${idx})" style="background:var(--black);color:#fff;border:none;padding:8px 16px;font-size:11px;font-weight:700;cursor:pointer;margin-right:10px">Try again</button>
+      <button onclick="closeArticle()" style="background:none;border:1px solid var(--border);padding:8px 16px;font-size:11px;font-weight:700;cursor:pointer;color:var(--mid)">Close</button>
+    </div>`;
+  }
+}
+
+
+function printArticle(){
+  const headline = document.getElementById('artHeadline').textContent;
+  const content  = document.getElementById('artContent').innerHTML;
+  const today    = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  const w = window.open('','_blank','width=760,height:1000');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+<title>${headline} — FutureBridge</title>
+<style>
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;margin:40px;color:#111;font-size:13px;line-height:1.75;max-width:640px}
+  .cover{border-bottom:3px solid #000;padding-bottom:18px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:start}
+  .device{display:flex;flex-direction:column;gap:3px}.device span{display:block;background:#000;height:3px;border-radius:1px}
+  .device span:nth-child(1){width:22px}.device span:nth-child(2){width:14px}.device span:nth-child(3){width:8px}
+  .logo{font-size:12px;font-weight:700;letter-spacing:.06em}
+  h1{font-size:20px;font-weight:700;letter-spacing:-.02em;line-height:1.2;margin:20px 0 6px;color:#000}
+  .byline{font-size:11px;color:#666;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid #E2E2DC}
+  .art-content p{margin-bottom:16px;font-size:13px;color:#333;line-height:1.75}
+  .art-cite{font-size:9px;color:#F84E5D;vertical-align:super;font-weight:700}
+  .art-projection{background:#F5F5F3;border-left:3px solid #000;padding:14px 18px;margin:20px 0}
+  .art-projection-lbl{font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#999;margin-bottom:6px;font-family:"Courier New",monospace}
+  .art-projection p{font-size:13px;color:#000;line-height:1.7;font-weight:500;margin:0}
+  .art-question{background:rgba(248,78,93,.06);border-left:3px solid #F84E5D;padding:14px 18px;margin-top:20px}
+  .art-question-lbl{font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#F84E5D;margin-bottom:6px;font-family:"Courier New",monospace}
+  .art-question p{font-size:13px;color:#000;line-height:1.65;font-style:italic;margin:0}
+  .art-refs{margin-top:24px;padding-top:14px;border-top:1px solid #E2E2DC}
+  .art-refs-lbl{font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#999;margin-bottom:8px;font-family:"Courier New",monospace}
+  .art-ref-item{font-size:10px;color:#666;display:flex;gap:7px;margin-bottom:5px;line-height:1.5}
+  .art-ref-n{color:#F84E5D;font-family:"Courier New",monospace;font-weight:700;flex-shrink:0}
+  .art-footer{display:none}.dl-btn{display:none}
+  @media print{body{margin:20px}}
+</style>
+</head><body>
+<div class="cover">
+  <div><div class="device"><span></span><span></span><span></span></div><div class="logo">FutureBridge</div></div>
+  <div style="font-size:10px;color:#999;font-family:'Courier New',monospace;text-align:right">Intelligence Brief<br>${today}</div>
+</div>
+<h1>${headline}</h1>
+<div class="byline">Chris Guerin · Client Partner, FutureBridge Advisory · ${today}</div>
+${content}
+<script>window.onload=()=>{window.print()}<\/script>
+</body></html>`);
+  w.document.close();
+}
+
+function downloadPDF(){
   window.print();
 }
 
 
-const CHRIS_VOICE_PROMPT = `You are writing in the voice of Chris Guerin, Managing Director of FutureBridge Advisory.
 
-Chris's writing style:
-- Human and direct. Writes like a senior analyst talking to a peer, not a consultant writing a report.
-- Thoughtful but never long-winded. Gets to the point fast.
-- Sometimes cynical — especially about consensus views, hype cycles, and things people say without meaning.
-- Always looking at the wider picture. Connects the immediate signal to the structural shift.
-- Uses short sentences. Prefers specific over generic. Names companies, prices, people, timelines.
-- Comfortable saying "this isn't as exciting as it looks" or "the real story is elsewhere".
-- Never uses: "leverage", "operationalise", "ecosystem", "synergies", "unlock potential".
-- Writes like The Economist or FT Alphaville — not like a McKinsey slide deck.
-- Tone: clear, slightly opinionated, commercially grounded.
-
-Do NOT write like: consulting marketing copy, academic reports, AI assistants summarising the news.`;
 
 function getApiKey(){
-  let k = localStorage.getItem('fb_war_key') || '';
-  if(!k){
-    k = prompt('Anthropic API key (for research refresh):','');
-    if(k) localStorage.setItem('fb_war_key', k);
-  }
-  return k;
+  // Check all possible stored locations — account plans uses fb_v3_key
+  return localStorage.getItem('fb_v3_key')
+      || localStorage.getItem('fb_war_key')
+      || document.getElementById('artKeyInput')?.value.trim()
+      || '';
 }
 
 async function refreshResearch(){
@@ -1492,16 +2145,16 @@ async function refreshResearch(){
 
   const today = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
 
-  const prompt = `${CHRIS_VOICE_PROMPT}
-
-Today is ${today}. You are refreshing the research sections of the FutureBridge War Impact Intelligence Map — a commercial guide for the sales, delivery and marketing teams covering the impact of the Middle East conflict (Strait of Hormuz disruption, oil at $100+) and the ongoing Ukraine war on six sectors: Energy, Oil & Gas, Chemicals, Mobility, Manufacturing, Life Sciences.
-
-Below are ${sections.length} text sections from the document. Rewrite each one in Chris Guerin's voice. Keep the same meaning and commercial intelligence — just rewrite the language to sound like Chris, not like a consultant. Each rewrite should be roughly the same length as the original.
-
-Return ONLY valid JSON: an array of objects with "id" and "text" fields. No markdown, no explanation.
-
-Sections to rewrite:
-${JSON.stringify(sections.map(s => ({id:s.id, text:s.text.trim().slice(0,400)})))}`;
+  const prompt = [
+    CHRIS_VOICE_PROMPT,
+    "",
+    "Today is " + today + ". You are refreshing the War Impact Intelligence Map research sections.",
+    "Covers: Middle East conflict (Hormuz disruption, $100+ oil) and Ukraine war across Energy, Oil & Gas, Chemicals, Mobility, Manufacturing, Life Sciences.",
+    "",
+    "Below are " + sections.length + " sections. Rewrite each in Chris Guerin's voice — same meaning, rewritten language, same length.",
+    "Return ONLY valid JSON: array of {id, text} objects. No markdown.",
+    "Sections: " + JSON.stringify(sections.map(function(s){return {id:s.id,text:s.text.trim().slice(0,400)};}))
+  ].join("\n");
 
   try{
     const r = await fetch('https://api.anthropic.com/v1/messages',{
