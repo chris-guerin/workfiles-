@@ -114,12 +114,11 @@ The full binding ruleset is **Section 19 of `ARCHITECTURE.md` (R1 through R25)**
 
 ## Session start checklist
 
-Before making any changes:
-1. Read the open items list above and confirm which is in scope
-2. Check WF-15 last execution status if pipeline work is planned
-3. Do not branch WF-15
-4. Do not modify Hypothesis Sheet column schema
-5. If touching client copy, confirm writing rules and brand guidelines apply
+1. Read CLAUDE.md (this file).
+2. Read ARCHITECTURE.md in full, including all 25 rules in Section 19.
+3. Read SESSION.md if it exists (continuing session).
+4. Read HANDOFF.md for the handoff protocol between chat-Claude and terminal-Claude.
+5. Confirm understanding by listing the rules R1-R25 you expect to apply this session.
 
 ---
 
