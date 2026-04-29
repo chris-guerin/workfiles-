@@ -1,0 +1,15 @@
+{
+  "name": "wf15-sync",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Local sync bridge for WF-15 Signal Engine workflow on n8n",
+  "scripts": {
+    "pull": "node sync.js pull",
+    "diff": "node sync.js diff",
+    "push": "node sync.js push"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

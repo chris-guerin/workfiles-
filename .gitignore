@@ -1,0 +1,8 @@
+db/.env
+db/node_modules/
+db/backups/
+.env
+*.env
+node_modules/
+n8n/workflows/
+n8n/backups/

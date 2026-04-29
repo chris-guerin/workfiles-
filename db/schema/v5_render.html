@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Hypothesis register v5.0 — schema reference</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  :root {
+    --ink: #000000;
+    --paper: #ffffff;
+    --grey: #4B4B55;
+    --grey-light: #e8e8eb;
+    --highlight: #F84E5D;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Circular Std", Arial, sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    margin: 0;
+    padding: 48px 24px;
+    line-height: 1.45;
+  }
+  main {
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+  header {
+    border-bottom: 1px solid var(--grey);
+    padding-bottom: 24px;
+    margin-bottom: 32px;
+  }
+  h1 { font-size: 28px; font-weight: 600; margin: 0 0 8px 0; letter-spacing: -0.01em; }
+  h2 { font-size: 20px; font-weight: 600; margin: 40px 0 12px 0; padding-top: 20px; border-top: 1px solid var(--grey-light); }
+  h3 { font-size: 16px; font-weight: 600; margin: 24px 0 8px 0; color: var(--grey); }
+  p { margin: 0 0 12px 0; max-width: 70ch; }
+  .meta { color: var(--grey); font-size: 13px; }
+  .meta strong { color: var(--ink); font-weight: 600; }
+  .nav { margin: 16px 0 0 0; font-size: 14px; }
+  .nav a { color: var(--ink); text-decoration: underline; margin-right: 16px; }
+  .nav a:hover { color: var(--highlight); }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 12px 0 24px 0;
+  }
+  th, td {
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--grey-light);
+    vertical-align: top;
+  }
+  th {
+    font-weight: 600;
+    color: var(--grey);
+    border-bottom: 1px solid var(--grey);
+    text-transform: none;
+  }
+  td.col-name { font-family: "SF Mono", Consolas, monospace; font-size: 12px; }
+  td.col-type { font-family: "SF Mono", Consolas, monospace; font-size: 12px; color: var(--grey); }
+  td.col-null { color: var(--grey); font-size: 12px; width: 40px; }
+  td.col-src { color: var(--grey); font-size: 12px; width: 80px; }
+  td.col-notes { color: var(--grey); }
+  .new { color: var(--highlight); }
+  .legacy { color: var(--grey); font-style: italic; }
+  .footer { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--grey-light); color: var(--grey); font-size: 13px; }
+  ul { padding-left: 24px; }
+  li { margin: 4px 0; max-width: 70ch; }
+  code { font-family: "SF Mono", Consolas, monospace; font-size: 13px; background: var(--grey-light); padding: 1px 5px; border-radius: 2px; }
+  .totals { display: flex; gap: 32px; margin: 16px 0 24px 0; }
+  .total { padding: 12px 16px; border: 1px solid var(--grey-light); }
+  .total-num { font-size: 22px; font-weight: 600; }
+  .total-label { font-size: 12px; color: var(--grey); }
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <h1>Hypothesis register — schema v5.0</h1>
+  <p class="meta">
+    <strong>FutureBridge Advisory</strong> · Signal Engine · 28 April 2026 · Confidential<br>
+    Supersedes <code>hypothesis_repository_v4_final.html</code> (25 March 2026, 49 cols) and the live 28 April register (45 cols).
+    See ARCHITECTURE.md v5.3 Section 8 and R14.
+  </p>
+  <p class="nav">
+    <a href="#section-a">Section A — core identity</a>
+    <a href="#section-b">Section B — decision layer</a>
+    <a href="#section-c">Section C — bucket layer</a>
+    <a href="#notes">Design notes</a>
+  </p>
+</header>
+
+<section>
+  <h2>Overview</h2>
+  <div class="totals">
+    <div class="total"><div class="total-num">76</div><div class="total-label">columns total</div></div>
+    <div class="total"><div class="total-num">3</div><div class="total-label">sections</div></div>
+    <div class="total"><div class="total-num">118</div><div class="total-label">active hypotheses (cap 150)</div></div>
+    <div class="total"><div class="total-num">v5.0</div><div class="total-label">schema version, frozen per R14</div></div>
+  </div>
+  <p>v5 unifies two schemas that were assumed competing but turned out to be two layers of the same hypothesis. The decision layer (drawn primarily from the 25 March CSV/HTML) is outward-facing — what the client sees and acts on. The bucket layer (drawn primarily from the 28 April live register) is inward-facing — the noise-to-signal substrate aligned to R16. Both are required.</p>
+  <p>Section A is the spine that joins them. Section B is the decision layer. Section C is the bucket layer.</p>
+</section>
+
+<section id="section-a">
+  <h2>Section A — core identity (16 cols)</h2>
+  <p>The spine. Identifier, register, sector, ownership, methodological and administrative state, audit trail, lifecycle resolution.</p>
+  <table>
+    <thead><tr><th>Column</th><th>Type</th><th>NULL</th><th>Source</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="col-name">hyp_id</td><td class="col-type">TEXT, PK</td><td class="col-null">no</td><td class="col-src">both</td><td class="col-notes">Permissive format CHECK; tighten in v6</td></tr>
+      <tr><td class="col-name">register</td><td class="col-type">TEXT</td><td class="col-null">no</td><td class="col-src new">new in v5</td><td class="col-notes">ENUM: PERSONAL / INDUSTRY / SECTOR / CLIENT_ACCOUNT</td></tr>
+      <tr><td class="col-name">sector</td><td class="col-type">TEXT</td><td class="col-null">no</td><td class="col-src">both</td><td class="col-notes">ENERGY / MOBILITY / CHEMICALS / LIFE_SCIENCES / FOOD / MANUFACTURING / CROSS</td></tr>
+      <tr><td class="col-name">system_layer</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">both</td><td class="col-notes">Migration normalises trailing space from live header</td></tr>
+      <tr><td class="col-name">hypothesis_theme</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">both</td><td class="col-notes">CSV <code>title</code> collapsed in</td></tr>
+      <tr><td class="col-name">owner</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">both</td><td class="col-notes">Human persona name</td></tr>
+      <tr><td class="col-name">status</td><td class="col-type">TEXT</td><td class="col-null">no</td><td class="col-src">25 Mar</td><td class="col-notes">Administrative; ENUM ACTIVE / RETIRED / DRAFT</td></tr>
+      <tr><td class="col-name">phase</td><td class="col-type">TEXT</td><td class="col-null">no</td><td class="col-src">28 Apr</td><td class="col-notes">Methodological per Section 3.4 / R6; ENUM DIVERGENT / CONVERGING / TRIGGER_READY / RESOLVED</td></tr>
+      <tr><td class="col-name">schema_version</td><td class="col-type">TEXT</td><td class="col-null">no</td><td class="col-src new">new in v5</td><td class="col-notes">Default 'v5'</td></tr>
+      <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMPTZ</td><td class="col-null">no</td><td class="col-src new">new in v5</td><td class="col-notes">Default now()</td></tr>
+      <tr><td class="col-name">created_by</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src new">new in v5</td><td class="col-notes">Audit trail</td></tr>
+      <tr><td class="col-name">last_updated</td><td class="col-type">TIMESTAMPTZ</td><td class="col-null">yes</td><td class="col-src">both</td><td class="col-notes">Promoted from TEXT (v4)</td></tr>
+      <tr><td class="col-name">last_updated_by</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src new">new in v5</td><td class="col-notes">Audit trail</td></tr>
+      <tr><td class="col-name">resolved_outcome</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">25 Mar</td><td class="col-notes">ENUM TRUE / FALSE / DISPLACED; NULL until phase = RESOLVED</td></tr>
+      <tr><td class="col-name">resolved_date</td><td class="col-type">DATE</td><td class="col-null">yes</td><td class="col-src">25 Mar</td><td class="col-notes">NULL until phase = RESOLVED</td></tr>
+      <tr><td class="col-name">notes</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">both</td><td class="col-notes"></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="section-b">
+  <h2>Section B — decision layer (30 cols)</h2>
+  <p>Outward-facing commercial framing. Probability, confidence, decision identity and ownership, if-true/if-false posture, risk, upside, target accounts, tags, routing geography. Drawn primarily from the 25 March schema.</p>
+  <table>
+    <thead><tr><th>Column</th><th>Type</th><th>NULL</th><th>Source</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="col-name">probability</td><td class="col-type">NUMERIC</td><td class="col-null">yes</td><td class="col-src">both</td><td class="col-notes">0–100</td></tr>
+      <tr><td class="col-name">confidence_score</td><td class="col-type">NUMERIC</td><td class="col-null">yes</td><td class="col-src">both</td><td class="col-notes">0–100</td></tr>
+      <tr><td class="col-name">urgency_score</td><td class="col-type">NUMERIC</td><td class="col-null">yes</td><td class="col-src">both</td><td class="col-notes">0–100</td></tr>
+      <tr><td class="col-name">probability_last_changed</td><td class="col-type">DATE</td><td class="col-null">yes</td><td class="col-src">25 Mar</td><td class="col-notes"></td></tr>
+      <tr><td class="col-name">probability_last_changed_note</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">25 Mar</td><td class="col-notes"></td></tr>
+      <tr><td class="col-name">current_step</td><td class="col-type">INTEGER</td><td class="col-null">yes</td><td class="col-src">both</td><td class="col-notes"></td></tr>
+      <tr><td class="col-name">total_steps</td><td class="col-type">INTEGER</td><td class="col-null">yes</td><td class="col-src">25 Mar</td><td class="col-notes"></td></tr>
+      <tr><td class="col-name">step_conditions</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">both</td><td class="col-notes"></td></tr>
+      <tr><td class="col-name">window_status</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">both, renamed</td><td class="col-notes">Was CSV <code>window</code> + live <code>window_status</code>; ENUM open / closed / pending</td></tr>
+      <tr><td class="col-name">window_closes_at</td><td class="col-type">DATE</td><td class="col-null">yes</td><td class="col-src">both, renamed</td><td class="col-notes">Was CSV <code>window_closes</code> + live <code>window_date</code></td></tr>
+      <tr><td class="col-name">horizon_months</td><td class="col-type">INTEGER</td><td class="col-null">yes</td><td class="col-src">both</td><td class="col-notes"></td></tr>
+      <tr><td class="col-name">decision_window_reason</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">25 Mar</td><td class="col-notes"></td></tr>
+      <tr><td class="col-name">decision_type</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">25 Mar</td><td class="col-notes"></td></tr>
+      <tr><td class="col-name">decision</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">25 Mar</td><td class="col-notes">The actual decision being made</td></tr>
+      <tr><td class="col-name">decision_threshold</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">25 Mar</td><td class="col-notes">Hypothesis-level evidence threshold; distinct from per-metric thresholds (Build L)</td></tr>
+      <tr><td class="col-name">decision_owner_role</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">25 Mar</td><td class="col-notes"></td></tr>
+      <tr><td class="col-name">decision_owner_function</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">25 Mar</td><td class="col-notes"></td></tr>
+      <tr><td class="col-name">decision_owner_name</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">25 Mar</td><td class="col-notes"></td></tr>
+      <tr><td class="col-name">decision_if_true</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">both, renamed</td><td class="col-notes">Live <code>if_true</code> renamed to <code>decision_if_true</code></td></tr>
+      <tr><td class="col-name">decision_if_false</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">both, renamed</td><td class="col-notes">Live <code>if_false</code> renamed to <code>decision_if_false</code></td></tr>
+      <tr><td class="col-name">risk_if_wrong</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">25 Mar</td><td class="col-notes"></td></tr>
+      <tr><td class="col-name">upside_if_right</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">25 Mar</td><td class="col-notes"></td></tr>
+      <tr><td class="col-name">wntbt_next</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">25 Mar</td><td class="col-notes">Hypothesis-level WNTBT narrative; per-bucket WNTBT lives in Section C; per-metric in Build L</td></tr>
+      <tr><td class="col-name">target_accounts</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">25 Mar</td><td class="col-notes">Pipe-delimited</td></tr>
+      <tr><td class="col-name">company_tags</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">both, renamed</td><td class="col-notes">Live <code>companies</code> renamed; pipe-delimited</td></tr>
+      <tr><td class="col-name">topic_tags</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">25 Mar</td><td class="col-notes">Pipe-delimited</td></tr>
+      <tr><td class="col-name">initiative_tags</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">25 Mar</td><td class="col-notes">Pipe-delimited</td></tr>
+      <tr><td class="col-name">persona_tags</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">25 Mar</td><td class="col-notes">Pipe-delimited</td></tr>
+      <tr><td class="col-name">routing_geography</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">25 Mar, renamed</td><td class="col-notes">Was CSV <code>geography_tags</code>; renamed to disambiguate from operational <code>geo_*</code> in Section C; pipe-delimited</td></tr>
+      <tr><td class="col-name">industry_tags</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">25 Mar</td><td class="col-notes">Pipe-delimited</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="section-c">
+  <h2>Section C — bucket layer (30 cols)</h2>
+  <p>Inward-facing operational substrate organised by R16's canonical buckets: technology, cost, regulation, ecosystem, competitive. Plus three legacy <code>geo_*</code> columns capturing analyst commentary on operational geography (documented exception per R16). Plus signal/falsifier/source/dependency metadata.</p>
+
+  <h3>Technology bucket</h3>
+  <table>
+    <thead><tr><th>Column</th><th>Type</th><th>NULL</th><th>Source</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="col-name">tech_critical_pathways</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">28 Apr</td><td class="col-notes"></td></tr>
+      <tr><td class="col-name">tech_bottlenecks</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">28 Apr</td><td class="col-notes"></td></tr>
+      <tr><td class="col-name">tech_credible_actors</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">28 Apr</td><td class="col-notes"></td></tr>
+      <tr><td class="col-name">tech_trajectory_changers</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">28 Apr</td><td class="col-notes"></td></tr>
+      <tr><td class="col-name">tech_displacement_risks</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">28 Apr</td><td class="col-notes"></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Regulation bucket</h3>
+  <table>
+    <thead><tr><th>Column</th><th>Type</th><th>NULL</th><th>Source</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="col-name">reg_load_bearing</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">28 Apr</td><td class="col-notes"></td></tr>
+      <tr><td class="col-name">reg_gaps_blockers</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">28 Apr</td><td class="col-notes"></td></tr>
+      <tr><td class="col-name">reg_decision_makers</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">28 Apr</td><td class="col-notes"></td></tr>
+      <tr><td class="col-name">reg_unlock_delay_kill</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">28 Apr</td><td class="col-notes"></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Cost bucket (renamed from v4 mkt_*)</h3>
+  <table>
+    <thead><tr><th>Column</th><th>Type</th><th>NULL</th><th>Source</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="col-name">cost_critical_conditions</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">28 Apr, renamed</td><td class="col-notes">Was <code>mkt_critical_conditions</code></td></tr>
+      <tr><td class="col-name">cost_economic_gap</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">28 Apr, renamed</td><td class="col-notes">Was <code>mkt_economic_gap</code></td></tr>
+      <tr><td class="col-name">cost_who_commits</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">28 Apr, renamed</td><td class="col-notes">Was <code>mkt_who_commits</code></td></tr>
+      <tr><td class="col-name">cost_deal_structure</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">28 Apr, renamed</td><td class="col-notes">Was <code>mkt_deal_structure</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Ecosystem bucket</h3>
+  <table>
+    <thead><tr><th>Column</th><th>Type</th><th>NULL</th><th>Source</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="col-name">eco_missing_dependencies</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">28 Apr</td><td class="col-notes"></td></tr>
+      <tr><td class="col-name">eco_required_partnerships</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">28 Apr</td><td class="col-notes"></td></tr>
+      <tr><td class="col-name">eco_who_moves_first</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">28 Apr</td><td class="col-notes"></td></tr>
+      <tr><td class="col-name">eco_derisking_commitment</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">28 Apr</td><td class="col-notes"></td></tr>
+    </tbody>
+  </table>
+
+  <h3 class="legacy">Geography (legacy, documented exception per R16)</h3>
+  <p style="color: var(--grey); font-size: 13px;">Geography is a cross-cutting modifier rather than a peer bucket. These three columns capture analyst commentary at hypothesis level; deprecate when the per-metric layer ships with proper geography slicing.</p>
+  <table>
+    <thead><tr><th>Column</th><th>Type</th><th>NULL</th><th>Source</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="col-name">geo_leading</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">28 Apr</td><td class="col-notes legacy">Legacy</td></tr>
+      <tr><td class="col-name">geo_excluded</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">28 Apr</td><td class="col-notes legacy">Legacy</td></tr>
+      <tr><td class="col-name">geo_shift_matters</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">28 Apr</td><td class="col-notes legacy">Legacy</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color: var(--highlight);">Competitive bucket — known register-level gap</h3>
+  <p style="color: var(--grey); font-size: 13px;">R16 names competitive as canonical. Section C has no <code>comp_*</code> columns today. Documented as known-incomplete coverage at register level. Enforced at per-metric level by the future per-metric table — no metric ships without a bucket label, including competitive.</p>
+
+  <h3>Trigger and signal/falsifier/source metadata</h3>
+  <table>
+    <thead><tr><th>Column</th><th>Type</th><th>NULL</th><th>Source</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="col-name">trigger</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">28 Apr</td><td class="col-notes">The event that fires ACT; quoted in SQL as <code>"trigger"</code></td></tr>
+      <tr><td class="col-name">signal_types</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">both</td><td class="col-notes">Pipe-delimited</td></tr>
+      <tr><td class="col-name">signal_priority</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">25 Mar</td><td class="col-notes"></td></tr>
+      <tr><td class="col-name">signal_weighting_rule</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">25 Mar</td><td class="col-notes"></td></tr>
+      <tr><td class="col-name">last_signal_id</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">25 Mar</td><td class="col-notes">Pointer to most recent signal</td></tr>
+      <tr><td class="col-name">falsifiers</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">both</td><td class="col-notes">Pipe-delimited</td></tr>
+      <tr><td class="col-name">primary_sources</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">both, renamed</td><td class="col-notes">Was CSV <code>primary_sources_expected</code>; pipe-delimited</td></tr>
+      <tr><td class="col-name">shared_dependency</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">25 Mar</td><td class="col-notes">Metric/dependency shared with related hypotheses</td></tr>
+      <tr><td class="col-name">related_hyp_ids</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">both</td><td class="col-notes">Pipe-delimited; junction table parked to v6</td></tr>
+      <tr><td class="col-name">rate_limiting_bucket</td><td class="col-type">TEXT</td><td class="col-null">yes</td><td class="col-src">28 Apr</td><td class="col-notes">Which bucket is the bottleneck</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="notes">
+  <h2>Design notes</h2>
+
+  <h3>R14 freeze</h3>
+  <p>v5.0 is frozen. Schema changes require explicit version bump per ARCHITECTURE.md Section 19.8: doc version bump, version-comment note, dependent-tool updates, re-read on next session. Silent edits forbidden.</p>
+
+  <h3>R16 alignment</h3>
+  <p>Five canonical buckets: technology, cost, regulation, ecosystem, competitive. Section C names the four that are present and the one that is gapped. Geography sits as a documented exception, not a peer.</p>
+
+  <h3>Source mix summary</h3>
+  <ul>
+    <li>16 columns appear in both 25 March CSV and 28 April live with the same name</li>
+    <li>5 columns in both, with rename — <code>window</code> / <code>window_closes</code> + <code>window_date</code> → <code>window_status</code> / <code>window_closes_at</code>; <code>if_true</code> / <code>if_false</code> → <code>decision_if_true</code> / <code>decision_if_false</code>; <code>primary_sources_expected</code> → <code>primary_sources</code></li>
+    <li>1 column from 25 March renamed in v5 — <code>geography_tags</code> → <code>routing_geography</code></li>
+    <li>4 columns from 28 April renamed in v5 — <code>mkt_*</code> → <code>cost_*</code></li>
+    <li>25 columns from 25 March only</li>
+    <li>20 columns from 28 April only</li>
+    <li>3 columns from 28 April kept as legacy (<code>geo_*</code>)</li>
+    <li>6 columns new in v5 — <code>register</code>, <code>schema_version</code>, <code>created_at</code>, <code>created_by</code>, <code>last_updated_by</code>, plus type-promotion of <code>last_updated</code></li>
+  </ul>
+
+  <h3>What v5 explicitly does not include</h3>
+  <ul>
+    <li>The per-metric <code>hypothesis_metrics</code> table — that ships with the trajectory layer (Build L) and carries the six R16 fields per metric</li>
+    <li>Junction tables for <code>*_tags</code>, <code>company_tags</code>, <code>related_hyp_ids</code> — parked to v6</li>
+    <li>Signal Tracker schema — Build E phase two</li>
+    <li>Any change to live data, the live Sheet, or n8n workflows</li>
+  </ul>
+</section>
+
+<div class="footer">
+  FutureBridge Advisory · Signal Engine · Hypothesis register schema v5.0 · 28 April 2026 · Confidential<br>
+  Canonical SQL: <code>db/schema/hypothesis_register_v5.sql</code> · Design doc: <code>db/schema/v5_design.md</code>
+</div>
+
+</main>
+</body>
+</html>

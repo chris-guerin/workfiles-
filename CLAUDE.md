@@ -96,7 +96,7 @@ workfiles-/
 The full binding ruleset is **Section 19 of `ARCHITECTURE.md` (R1 through R25)**. Read it before any work that touches classification output, hypothesis register, client copy, or pipeline operation. The items below are session-start reminders, not the authoritative list.
 
 - Do not branch WF-15. Linear execution only.
-- Do not modify the Hypothesis Sheet column schema. v4 final, 49 columns, frozen.
+- Do not modify the hypothesis register schema. **v5.0 frozen** — 76 columns in three sections (A core / B decision / C bucket). See ARCHITECTURE.md Section 8 and R14.
 - Do not abbreviate WNTBT in any client-facing copy. Always written in full.
 - Writing rules for any client copy: short declarative sentences, no em-dashes, no consultant clichés, peer register not vendor register, named companies and specific data points throughout. Body copy under 120 words for emails. No FutureBridge name in email body.
 - FutureBridge brand v1.1 colours only on visuals: black, white, grey #4B4B55, red #F84E5D as highlight only. Secondary palette (purple, yellow, green, light blue, blue) is for charts only.

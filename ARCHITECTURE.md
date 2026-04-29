@@ -1,11 +1,12 @@
 # Signal Engine — Architecture and Product Reference
 
-**Version 5.2 · 28 April 2026 · Supersedes v5.1 (28 April 2026 afternoon) and all prior**
+**Version 5.3 · 28 April 2026 · Supersedes v5.2 (28 April 2026 afternoon) and all prior**
 
 FutureBridge Advisory · Chris Guerin · Confidential
 
-<!-- LAST VERIFIED: 2026-04-28 16:00 BST · By: Chris (manual) -->
+<!-- LAST VERIFIED: 2026-04-28 17:30 BST · By: Chris (chat) + Claude Code (terminal, executing) -->
 <!-- Auto-updateable sections are marked AUTO. Human-curated sections are marked HUMAN. -->
+<!-- v5.3 changes: Hypothesis register schema bumped from v4.0 (49 cols, decision-centric per 25 March) to v5.0 (76 cols, three-section: A core / B decision / C bucket). Section 8 rewritten to describe the unified structure. Section 16 Build E updated to target v5 with merge migration combining both source schemas. R14 updated for the v5 freeze. R16 rationale expanded to clarify geography as a cross-cutting modifier rather than a peer bucket, and to acknowledge the legacy geo_* and missing comp_* in Section C as documented register-level exceptions resolved by Build L per-metric coverage. Section 3.2 gains an explicit note on geography. -->
 <!-- v5.2 changes: added Part 5 — Operating Rules (Section 19) with 25 enforceable rules R1–R25 covering signal classification, trajectory, adjacency, output contracts, hypothesis register, communication, and operational discipline. Reference material (Files, Recovery, Glossary, Document maintenance) shifted to Part 6 (Sections 20–23). Doctrine sections (Parts 1–4) gain pointers to the rules that enforce them. -->
 <!-- v5.1 changes: sharpened ACT definition (3.5), added Trajectory and gap section (3.7), added Cross-domain adjacency section (3.8), rewrote competitive position (13.2) around adjacency as moat, added Build L and Build M to roadmap, added glossary terms. -->
 
@@ -158,6 +159,8 @@ Ecosystem. The supply chains, partners, standards, and adjacent industries on wh
 Competitive. The positions, commitments, and moves of the relevant players.
 
 Each metric carries four properties: current state (where it is now), threshold (where it needs to be for the hypothesis to be proven), rate of change (how fast it is moving), and mechanism (why it moves the way it does). The threshold is what is meant by "what needs to be true." WNTBT is the working language of every metric.
+
+Geography is a cross-cutting modifier, not a sixth bucket. It slices every metric in every bucket — a technology metric in the United States is not the same as the same technology metric in the European Union, a regulatory metric in Texas is not the same as in California. Geography therefore appears as a slicing dimension on metrics rather than as a peer of the five canonical buckets. The hypothesis register currently captures hypothesis-level analyst commentary on operational geography in three legacy `geo_*` columns; these are documented exceptions and will be retired when the per-metric layer ships with proper geography slicing per R5 and R6.
 
 ### 3.3 What needs to be true
 
@@ -392,7 +395,7 @@ n8n is the right choice for orchestration today. It may not be the right choice 
 
 <!-- AUTO partial -->
 
-118 active hypotheses. Schema v4.0 frozen at 49 columns. Hard cap: 150 active.
+118 active hypotheses. **Schema v5.0** frozen at 76 columns, organised in a three-section structure. Hard cap: 150 active.
 
 | Register | IDs | Count | Owner |
 |---|---|---|---|
@@ -402,7 +405,19 @@ n8n is the right choice for orchestration today. It may not be the right choice 
 | Client account | SH-01–03, BP-01–03, VW-01–03, etc. | 48 | Client partners |
 | **Total** | | **118** | |
 
-The four registers serve different functions.
+The four sub-registers carry forward unchanged from v4. v5 adds an explicit `register` column with ENUM CHECK (PERSONAL / INDUSTRY / SECTOR / CLIENT_ACCOUNT) so the sub-register is canonical at the column level, not parsed from the `hyp_id` prefix.
+
+### 8.1 Three-section structure
+
+The v5 schema is organised in three sections that reflect the two functions the register performs simultaneously: **signal filter** (Function 1 per Section 3.5 — the inward, R16-aligned bucket structure that determines which signals matter) and **consulting instrument** (Function 2 per Section 12 — the outward, decision-shaped framing that drives client conversation, outreach, and engagement deliverables).
+
+- **Section A — core identity** (16 cols). The spine that joins the layers. `hyp_id`, `register`, `sector`, `system_layer`, `hypothesis_theme`, `owner`, `status` (administrative), `phase` (methodological per Section 3.4), `schema_version`, audit timestamps and authors, lifecycle resolution fields, `notes`.
+- **Section B — decision layer** (30 cols). Outward-facing commercial framing: probability and confidence scoring, decision identity and ownership, if-true/if-false posture, risk and upside, target accounts, persona/topic/initiative tags, routing geography. Drawn primarily from the 25 March schema; the canonical-source reference for client-facing decision narrative.
+- **Section C — bucket layer** (30 cols). Inward-facing operational substrate organised by R16's canonical buckets (technology, cost, regulation, ecosystem, competitive). 5 `tech_*` cols + 4 `reg_*` cols + 4 `cost_*` cols (renamed from v4 `mkt_*` to align with R16) + 4 `eco_*` cols. Plus three legacy `geo_*` cols carrying hypothesis-level analyst commentary on operational geography (documented exception per R16; deprecated when per-metric layer ships). Section C currently has no `comp_*` cols; competitive coverage is a known register-level gap, enforced at the per-metric level by the future per-metric table (Build L). Section C also includes the `trigger` column (the event that fires ACT) plus signal/falsifier/source/dependency metadata: `signal_types`, `signal_priority`, `signal_weighting_rule`, `last_signal_id`, `falsifiers`, `primary_sources`, `shared_dependency`, `related_hyp_ids`, `rate_limiting_bucket`.
+
+### 8.2 The four registers
+
+The four sub-registers serve different functions.
 
 Personal bets are Chris's own forward calls about the structural shape of the markets the firm operates in. They are the highest-conviction hypotheses and the slowest-moving. They drift only on major structural evidence.
 
@@ -412,7 +427,9 @@ Sector hypotheses are the sector-specific bets, owned by sector leads. They cove
 
 Client account hypotheses are the bets specific to a named client account. SHELL_H3_001 through 007 are an active example, mapped to Shell's H3 horizon engagement. They are the most commercially actionable hypotheses because they are scoped to a buyer with budget.
 
-The single write path is `hypothesis_builder.html` → Apps Script → Google Sheet. The schema is enforced at the write step. No hypothesis enters the register without going through this path.
+### 8.3 Write path
+
+The single write path is `hypothesis_builder.html` → Apps Script → (post-Build E cutover) Postgres → sync job → Sheet (derived view). Pre-cutover the path remains `hypothesis_builder.html` → Apps Script → Google Sheet. The schema is enforced at the write step. No hypothesis enters the register without going through this path.
 
 Seven Shell H3 hypotheses are correctly scoped as client account hypotheses given the active engagement, though noted as potentially scalable across BP, ExxonMobil, Chevron, SLB, and Halliburton. This pattern (an account hypothesis that generalises into an industry hypothesis once tested) is the canonical mechanism for hypothesis evolution in the system.
 
@@ -743,9 +760,13 @@ All ACT signals regardless of hypothesis match, formatted as a structured digest
 
 Pull top 5 MONITOR signals from a clean run, read object statements. If any would have moved a hypothesis, tighten ACT definition to require probability movement rather than certainty.
 
-### Build E — Postgres migration
+### Build E — Postgres migration (target schema v5)
 
 Move the hypothesis store and Signal Tracker from Google Sheets to Postgres on Railway. Sheets stays as a human-readable view via sync. Datasette stays for read-only public access. Migration is hypothesis store first (lower risk), Signal Tracker second.
+
+Build E phase one (28 April 2026) produced the reversible artefacts under `/db/`: schema design (`v5_design.md`), Postgres DDL (`hypothesis_register_v5.sql`, 76 cols / three sections / R16-aligned), HTML schema render (`v5_render.html`), and a stand-down v4-targeted migration script that is superseded by the v5 merge migration.
+
+The v5 merge migration is the next-session task. It combines the 25 March CSV (decision-layer columns not in live) with the 28 April Apps Script `doGet` payload (bucket-layer columns plus shared-name columns), reconciles the renames documented in `/db/schema/v5_design.md`, and writes to the unified `hypothesis_register` table. Same dry-run-by-default discipline as the phase-one script.
 
 ### Build F — Classifier extraction
 
@@ -915,9 +936,9 @@ The acronym WNTBT MUST never appear in client-facing material. The full phrase "
 
 ### 19.5 Hypothesis register integrity (R14 to R16)
 
-**R14. Schema is frozen at v4.0.**
-The hypothesis register schema is frozen at v4.0, 49 columns. Schema changes MUST require explicit approval, a versioned schema bump, and a corresponding update to this document and all dependent tools. Silent schema edits are forbidden.
-*Rationale.* The schema is the contract between the register and every downstream component. Drift breaks the system silently.
+**R14. Schema is frozen at v5.0.**
+The hypothesis register schema is frozen at v5.0, 76 columns, organised in three sections (A core identity, B decision layer, C bucket layer) per Section 8.1. Schema changes MUST require explicit approval, a versioned schema bump, and a corresponding update to this document and all dependent tools. Silent schema edits are forbidden.
+*Rationale.* The schema is the contract between the register and every downstream component. Drift breaks the system silently. v5 supersedes v4 (49 cols, decision-centric per 25 March 2026) and unifies it with the bucket-centric live schema observed 28 April 2026, eliminating the doctrine-vs-reality gap that motivated the bump.
 
 **R15. New hypotheses MUST pass the four tests.**
 A hypothesis being added to the register MUST be falsifiable, directional, business-linked, and time-bound. The write step (`hypothesis_builder.html` → Apps Script → Sheet) MUST reject any candidate that fails any of these four tests. Vague aspirations and unfalsifiable claims do not enter the register.
@@ -926,6 +947,8 @@ A hypothesis being added to the register MUST be falsifiable, directional, busin
 **R16. Metrics MUST belong to the five buckets and carry the six fields.**
 Every system metric MUST belong to one of: technology, cost, regulation, ecosystem, competitive. Every metric MUST carry `current_state`, `threshold`, `required_slope`, `observed_slope`, `gap`, and `mechanism`. Metrics missing any field are not valid for trajectory computation and MUST be flagged for completion before the parent hypothesis enters trigger-ready phase.
 *Rationale.* Trajectory computation is impossible without complete metric data. Half-built metrics produce confident-looking but worthless trajectory estimates.
+
+R16's five buckets (technology, cost, regulation, ecosystem, competitive) are canonical structural drivers. Geography is a cross-cutting modifier rather than a peer bucket — it slices every metric rather than constituting one. The hypothesis register's Section C currently carries three legacy `geo_*` columns capturing analyst commentary on operational geography at hypothesis level; these are documented exceptions and will be deprecated when the per-metric layer ships with proper geography slicing. Section C also currently lacks `comp_*` columns; competitive coverage is a known register-level gap, to be enforced at the per-metric level when the per-metric layer ships (no metric ships without a bucket label, including competitive).
 
 ### 19.6 Communication and conduct (R17 to R20)
 

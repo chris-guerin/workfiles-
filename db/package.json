@@ -1,0 +1,16 @@
+{
+  "name": "db",
+  "version": "1.0.0",
+  "description": "``` db/ ├── README.md                                    ← this file ├── schema/ │   └── hypothesis_register_v4.sql               ← CREATE TABLE for the register, schema v4 ├── migrations/ │   └── 001_hypothesis_initial_load.js           ← initial load from Apps Script doGet ├── backups/                                     ← pg_dump snapshots, one per migration (gitignored) └── .env                                         ← DATABASE_URL, APPS_SCRIPT_URL (gitignored) ```",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "pg": "^8.20.0"
+  }
+}
