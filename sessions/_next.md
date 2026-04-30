@@ -1,72 +1,123 @@
-# Next session — provision Railway Postgres and run v5 merge migration
+# Next session — v1 doc set test, migration 004, second-company population
 
 This note is the brief for the next Claude Code session. Read it before populating SESSION.md for the new session.
 
-## What is already done (28 April 2026, two sessions)
+## What is already done (30 April 2026 afternoon — major architectural pivot)
 
-- **Phase 1 (15:30–18:00):** /db/ artefacts under v4 framing — `schema/hypothesis_register_v4.sql`, `migrations/001_hypothesis_initial_load.js`, `README.md`. These are now superseded by v5 but stay in the repo for archaeological reference.
-- **Phase 2 resumed (15:50–17:30):** v5 unified schema designed and implemented.
-  - `db/schema/v5_design.md` — design doc with mapping table and decision log
-  - `db/schema/hypothesis_register_v5.sql` — Postgres DDL, 76 cols / three sections / R16-aligned
-  - `db/schema/v5_render.html` — canonical HTML schema reference (succeeds `hypothesis_repository_v4_final.html`)
-  - ARCHITECTURE.md bumped v5.2 → v5.3 (R14 schema freeze updated to v5.0; R16 rationale expanded for geography and competitive; Section 3.2 gains geography paragraph; Section 8 rewritten for three-section structure; Section 16 Build E updated to v5 target)
-  - CLAUDE.md hard-rule line updated to v5
-- **Q1–Q9 all resolved** — see `db/schema/v5_design.md` Section 3 and 4.
+Today's session pivoted from the matrix model (observable_layer / HYPOTHESIS_MATRIX_v1.md) to the **initiative model** — a dependency-graph architecture where each hypothesis is an initiative composed of entities (technologies, market conditions, regulations, ecosystem actors) connected by links carrying role/impact/criticality/claim per (initiative, entity) pair.
+
+Persisted state from this afternoon:
+
+- Five-document v1 specification set in `docs/`:
+  - `docs/INITIATIVE_MODEL.md` — data model and behaviour rule
+  - `docs/INITIATIVE_METHODOLOGY.md` — population procedure (10 steps)
+  - `docs/SIGNAL_PIPELINE.md` — news-to-signal procedure (6 steps)
+  - `docs/N8N_IMPLEMENTATION.md` — workflow architecture for the running system
+  - `docs/WORKED_EXAMPLE_SHELL_H3.md` — full procedure walkthrough on Shell H3 hydrogen NW Europe
+- Legacy docs moved to `docs/legacy/` with superseded headers:
+  - `docs/legacy/METHODOLOGY.md`
+  - `docs/legacy/HYPOTHESIS_MATRIX_v1.md`
+  - `docs/legacy/HEAT_MAPS_AND_GESTATION.md`
+- Working visualisation prototype: `SHELL_H3_PORTFOLIO_v3.html` (12 initiatives, 36 entities, 39 links, executing model with signal propagation across initiatives)
+- CLAUDE.md updated to point Claude Code at the v1 doc set
+- ARCHITECTURE.md updated (or pending update) to reflect the architectural pivot
+
+The morning's migration 003 (observable layer in PG) remains committed but is now part of the legacy schema. Migration 004 (the initiative-model schema) is the next schema change.
 
 ## Items in scope for the next session
 
-1. **Provision Postgres on Railway.** Create the service in the existing n8n Railway project. Set `DATABASE_URL` (internal for n8n consumption, public for local migration use). Update `db/.env` (gitignored) with both URLs. Update `n8n/.env` reference if relevant.
+### Lead — rainy Tuesday test on the v1 doc set
 
-2. **Run the v5 schema DDL.** Execute `db/schema/hypothesis_register_v5.sql` against the new Postgres. Verify: `\d hypothesis_register` shows 76 cols; `\dv hypothesis_register_r15_violations` shows the soft-enforcement view; the seven indexes exist.
+Drop `docs/INITIATIVE_MODEL.md` and `docs/INITIATIVE_METHODOLOGY.md` into a fresh AI (Claude or other native model with no other context) and ask it to populate one Shell H3 initiative from public sources following the procedure. Compare the output to `docs/WORKED_EXAMPLE_SHELL_H3.md` and to the relevant section of `SHELL_H3_PORTFOLIO_v3.html`.
 
-3. **Write the v5 merge migration.** New file `db/migrations/002_hypothesis_unified_v5_load.js`. Reads (a) the 25 March CSV at `C:\Users\Admin\Downloads\FutureBridge_Hypothesis_Repository_v4_FINAL.csv` (49 cols, decision-centric, source for the 33 cols not in live), and (b) the 28 April Apps Script doGet endpoint (45 cols, bucket-centric, source for the 29 cols not in CSV plus 16 shared cols). Reconciles the renames per `db/schema/v5_design.md`:
-   - Live `if_true` / `if_false` → `decision_if_true` / `decision_if_false`
-   - Live `companies` → `company_tags`
-   - Live `mkt_*` (4) → `cost_*` (4)
-   - CSV `geography_tags` → `routing_geography`
-   - CSV `primary_sources_expected` → `primary_sources`
-   - CSV `window` / `window_closes` + live `window_status` / `window_date` → unified `window_status` / `window_closes_at`
-   - Live `system_layer ` (trailing space) → `system_layer`
-   Same dry-run-by-default discipline as `001_*` (defaults to ROLLBACK; requires both `--commit` and `--confirm-yes` to persist). Same R15 violations surfacing. Idempotent via ON CONFLICT (hyp_id) DO UPDATE.
+What to look for:
+- Same initiative scope and bounding decisions
+- Same principal entity identification
+- Comparable enabling entity set (some variance is acceptable; structural divergence is not)
+- Same external threat identification
+- Same role/criticality assignments on equivalent links
+- Comparable claim wording and quality
 
-4. **Validate the merge.** After dry-run, confirm: 118 rows loaded; column count 76 in PG matches schema; R15 violations report is reasonable (expected pre-existing rows that miss falsifiers/if/horizon — acceptable for v5 baseline; flag for analyst follow-up); legacy `geo_*` cols populated where live had data; `comp_*` cols absent (Section C structure as designed); `register` ENUM populated correctly from `hyp_id` prefixes.
+What to capture:
+- Where the AI drifts from the worked example, and whether it's variance or contradiction
+- Where the docs left judgment ambiguous enough to produce divergent output
+- Any methodology gaps that surfaced during the test
 
-5. **Decide: commit v5 to PG, or stay on Sheet.** This is a strategic call best taken with chat. Committing means PG becomes canonical; Sheet becomes derived; sync job needed; Apps Script doGet may need rewiring to read from PG. Staying on Sheet means PG is a backup until later. Default if unsure: dry-run only this session; commit decision deferred to a third session.
+Outputs: a feedback note for v1.1 doc revisions; an updated `_next.md` for the session after.
+
+### Plausibly alongside if time permits — migration 004
+
+Per `docs/N8N_IMPLEMENTATION.md` Section 2.1 and Section 6 Phase 1: PG schema migration to add `mv1_*` tables (mv1_initiatives, mv1_entities, mv1_links, mv1_signals, mv1_competitive_events) plus the `mv1_initiative_full` view. Same migration pattern as 003 (Claude Code session, dry-run, commit, runner script).
+
+Migration 004 design notes:
+- New tables prefixed `mv1_` so they coexist with the legacy `hypothesis_observable*` tables during transition
+- Foreign keys: links → initiatives, links → entities, signals → entities, signals → applied_initiatives
+- Named CHECK constraints on enums (role / impact / criticality / state values)
+- View definition per the existing pattern
+
+### Plausibly alongside — Shell portfolio review against methodology
+
+`SHELL_H3_PORTFOLIO_v3.html` was populated by intuition, not by following the methodology. With the methodology now committed, run a review pass on the 12 initiatives and check where the methodology produces tighter or different output. Specifically: claim quality, criticality assignments, entity reuse decisions. Updates feed into the v3 file (or a v4 if the changes are substantive enough to warrant a re-render).
+
+### Own session — second-company population
+
+Once Shell is reviewed and the v1 doc set has passed the rainy-Tuesday test, populate a second company per the methodology. Recommended: BP or Equinor as the natural entity-overlap neighbours.
+
+Goals:
+- Validate that the entity catalogue is reusable (target: 30-50% of entities for second IOC come from Shell catalogue)
+- Identify any methodology gaps that surface only on a second company
+- Produce a comparable initiative count (8-15) for portfolio-level cross-company analysis
+
+This is a session of its own — likely a full day for first-time second-company population.
+
+## Items deferred
+
+- **Credential rotation batch.** Anthropic API key in n8n/workflows/wf15.json (briefly visible in screenshot 27 April), n8n API key (also from 27 April), Postgres password (quarterly rotation), Google Sheets OAuth (re-authorisation). Should be done as one session for cleanness.
+- **Shell £220k Business Case Assessment SOW PO chase.** Real commercial item that's been sitting underneath the system work. Outside the scope of system development sessions but the highest-priority real-world item.
+- **CSV corruption root-cause investigation.** Parked indefinitely; the CSV path is now legacy.
+- **WF-15A signal pipeline rework.** Per `docs/N8N_IMPLEMENTATION.md` Section 6 Phase 3, this happens after migration 004 and after Shell is fully populated against the methodology. Multi-session piece of work.
+- **WF-INIT-1 population assistant build.** Per `docs/N8N_IMPLEMENTATION.md` Section 3 — the n8n workflow that scaffolds methodology population. Built once methodology v1 is stable and after migration 004.
+- **Drift management workflow (WF-INIT-4).** Built once 90 days of signal flow exist.
 
 ## Items NOT in scope for the next session
 
-- Editing Apps Script (`HypothesisRepository.gs`) to read from PG — that's a third session, after PG canonical-status is decided.
-- Switching n8n's WF-15 read path — same.
-- Sheet-derived view sync job — same.
-- Junction-table normalisation of `*_tags`, `company_tags`, `related_hyp_ids` — v6.
-- Per-metric `hypothesis_metrics` table — Build L.
-- Signal Tracker schema migration — Build E phase two, separate dedicated session.
-- Backfilling `comp_*` content — requires methodology work first; not a schema task.
+- Touching the legacy `hypothesis_observable*` tables (they sit unused; deprecation comes with migration 005 once cutover to mv1_* is complete)
+- n8n workflow changes (R22; signal pipeline rework is a future session)
+- Apps Script changes beyond what migration 004 needs for read endpoints
+- Building the population assistant or other WF-INIT workflows (post-methodology-validation)
 
 ## Entry conditions to check at session start
 
-- "Google Sheets account 2" OAuth grant: still revoked unless rotated by hand. Apps Script doGet remains the working read path for the live register; n8n's Sheets node remains broken until R24 rotation happens. R24 is a separate workstream from this session.
-- Railway billing / project limits: confirm a new Postgres service is within plan.
-- `db/.env` does not exist yet. Create it and set `APPS_SCRIPT_URL` and `DATABASE_URL` before running anything.
-- `pg` package not installed in `db/`. `cd db && npm init -y && npm install pg` before running migration.
+- `docs/` folder exists with five v1 docs
+- `docs/legacy/` folder exists with three superseded docs carrying superseded headers
+- CLAUDE.md points to the v1 doc set
+- Git working tree clean (today's commits all pushed)
+- ARCHITECTURE.md reflects the doc-set milestone (pending decision: bump to v5.7 now or wait for migration 004 to land as v6.0)
 
 ## Linked rules to re-read at session start
 
-- **R14** (schema frozen at v5.0; further changes require v6 bump per Section 19.8)
-- **R16** (five canonical buckets; geography cross-cutting; legacy `geo_*` and missing `comp_*` documented exceptions)
-- **R22** (no n8n push without diff; tomorrow's session does not touch n8n until step 5 is decided)
-- **R23** (daily pipeline status check via `morning.js` or `node sync.js status`)
-- **R24** (still pending: rotate `Google Sheets account 2` OAuth grant from 28 April incident)
-- **R25** (doc same-day update if any material change ships)
+- **R14** (schema freeze — currently v5.6 deployed; migration 004 will bump to v6.0 if it lands)
+- **R15** (four-tests; methodology applies these via the build-order procedure)
+- **R22** (no n8n push without diff)
+- **R23** (morning status check)
+- **R25** (doc same-day update)
 
 ## Strategic partner (chat) input expected
 
-Step 5 (commit-or-stay decision) is the strategic call. The merge migration is mechanical. The commit is methodological — it shifts the source of truth. Surface via INBOUND template when ready.
+- Whether the rainy-Tuesday test reveals any methodology gaps requiring v1.1 revision before migration 004 lands
+- Whether Shell portfolio review should be done before second-company population or in parallel
+- Migration 004 scope decisions: which tables, which constraints, naming conventions for FKs
 
 ## Reference paths
 
-- Design: `db/schema/v5_design.md`
-- DDL: `db/schema/hypothesis_register_v5.sql`
-- HTML render: `db/schema/v5_render.html`
-- Prior session log: `sessions/2026-04-28-15.md`
-- This session log: `sessions/2026-04-28-18.md` (after archive at 18:30 BST)
+- `docs/INITIATIVE_MODEL.md` (data model and behaviour rule)
+- `docs/INITIATIVE_METHODOLOGY.md` (population procedure)
+- `docs/SIGNAL_PIPELINE.md` (news-to-signal procedure)
+- `docs/N8N_IMPLEMENTATION.md` (workflow architecture)
+- `docs/WORKED_EXAMPLE_SHELL_H3.md` (full procedure walkthrough)
+- `docs/legacy/METHODOLOGY.md`, `docs/legacy/HYPOTHESIS_MATRIX_v1.md`, `docs/legacy/HEAT_MAPS_AND_GESTATION.md` (superseded; retained for history)
+- `ARCHITECTURE.md` (current schema and architectural state)
+- `SHELL_H3_PORTFOLIO_v3.html` (visualisation prototype, 12 initiatives populated)
+- `db/migrations/003_observable_layer.sql` (legacy schema, deprecated by docs but still in PG)
+- 30 April afternoon session archive: `sessions/2026-04-30-pm.md` (to be created at session end)
+- "Go" scoping memory: `~/.claude/projects/.../memory/go-scoping-discipline.md`

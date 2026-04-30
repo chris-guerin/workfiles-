@@ -100,13 +100,15 @@ CREATE TABLE IF NOT EXISTS hypothesis_register (
 
     window_status                   TEXT,
     -- Was CSV `window` and live `window_status`. Unified to `window_status`.
-    CONSTRAINT window_status_enum CHECK (
-        window_status IS NULL OR window_status IN ('open', 'closed', 'pending')
-    ),
+    -- No CHECK enum: live data has 6 values (open / active / future / closing plus 2 anomalous
+    -- quarter-strings). Standardisation deferred to a v5.x cleanup sweep when canonical values
+    -- are agreed.
 
-    window_closes_at                DATE,
-    -- Was CSV `window_closes` and live `window_date`. Free-form strings ("Q4 2026") need parsing
-    -- in migration; if parse fails, leave NULL and surface in a migration-time report.
+    window_closes_at                TEXT,
+    -- Was CSV `window_closes` and live `window_date`. Free-form text ("Q4 2026", "H2 2027").
+    -- Originally typed DATE in v5.0 draft; changed to TEXT pre-deploy 29 April 09:58 BST when
+    -- pre-flight showed 100% of source values are quarter/half-year strings, not parseable as DATE.
+    -- Promotion to a structured (year, quarter) representation is a v6 question.
 
     horizon_months                  INTEGER,
     decision_window_reason          TEXT,
