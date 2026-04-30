@@ -1,16 +1,17 @@
 # Signal Engine — Architecture and Product Reference
 
-**Version 5.6 · 30 April 2026 · Supersedes v5.4 (29 April 2026) and all prior. v5.5 reserved for the queued methodology + four-layer-model integration; not yet committed.**
+**Version 5.7 · 30 April 2026 evening · Supersedes v5.6 (30 April 2026 morning) and all prior. v5.5 reserved for the queued methodology + four-layer-model integration; not yet committed.**
 
 FutureBridge Advisory · Chris Guerin · Confidential
 
-<!-- LAST VERIFIED: 2026-04-30 morning BST · By: Chris (chat) + Claude Code (terminal, executing) -->
+<!-- LAST VERIFIED: 2026-04-30 evening BST · By: Chris (chat) + Claude (chat) -->
 <!-- Auto-updateable sections are marked AUTO. Human-curated sections are marked HUMAN. -->
-<!-- v5.6 changes: Migration 003 (observable layer) committed to Railway hypothesis-db. Hypothesis register schema bumped from v5.0 to v5.6 (skipping v5.5 which is reserved for the queued methodology + four-layer-model edits to ARCHITECTURE.md). Three column additions to hypothesis_register: appraisal_cadence (TEXT NOT NULL DEFAULT 'weekly', enum daily/twice_weekly/weekly/monthly/on_demand per HYPOTHESIS_MATRIX_v1.md Section 5.5), last_appraisal_at (TIMESTAMPTZ), current_confidence_band (NUMERIC(4,3) DEFAULT 0.500, range 0.000–1.000 per HM Section 4). Three new tables: hypothesis_observable (20 cols, state-based rows for the four continuous lines tech/market/regulation/ecosystem with role unlock/iteration/supporting and velocity_30d/velocity_90d/velocity_status per HM Section 2.2 and HEAT_MAPS_AND_GESTATION.md Section 5), hypothesis_observable_event (10 cols, event-log rows for the competitive line because competitive is event-flow not state per HM Section 2.2), confidence_band_history (17 cols, daily time-series of overall and per-line position+zone with red/amber/green zones and 0.000–1.000 positions per HM Section 4). One new view: hypothesis_matrix_summary (per-hypothesis observable counts per line, competitive event count, total_matrix_size, role counts; LEFT JOIN over the three new tables). 21 named CHECK constraints. 17 verification checks passed in dry-run and on commit. Spec sources: HYPOTHESIS_MATRIX_v1.md (the matrix data model and appraisal contract), HEAT_MAPS_AND_GESTATION.md (the layer above the matrix). All 118 existing rows received default appraisal_cadence='weekly' and current_confidence_band=0.500 on commit; observable tables empty pending Phase B (matrix-construction tool). -->
-<!-- v5.4 changes: Build E phase 2 landed. Postgres on Railway (service `hypothesis-db`, PostgreSQL 18.3) provisioned in the same Railway project as n8n; v5 DDL deployed; 118 hypothesis rows persisted. Mode is LIVE-ONLY (Option A): the 28 April Apps Script doGet is the source of all loaded cols; the 25 decision-layer-only cols (decision_owner_*, target_accounts, decision_threshold, wntbt_next, risk_if_wrong, upside_if_right, *_tags, etc.) ship as NULL across all 118 rows pending a clean CSV re-export. The 25 March "v4 FINAL" CSV was found to be structurally corrupt: 49-col header against 51–53 fields per row (unquoted commas in cell values), [object Object] in numeric fields (JSON serialisation bug), and progressive column-shift visible in misaligned content (e.g. resolved_date holding falsifier text). The CSV is therefore unusable as a source until the export pipeline is repaired and re-run; future sessions reading this changelog need to know why the 25 cols are NULL. Schema edits made pre-deploy 29 April: window_closes_at typed TEXT (was DATE in v5.0 draft; live values are quarter strings like "Q4 2026"), window_status_enum CHECK dropped (live has 6 values open/active/future/closing plus 2 anomalous quarter-strings; standardisation deferred to v5.x). Section 6 system-state table updated to reflect Postgres as canonical for bucket layer + identity (Sheet stays canonical for the 25 decision-layer cols pending re-export). -->
-<!-- v5.3 changes: Hypothesis register schema bumped from v4.0 (49 cols, decision-centric per 25 March) to v5.0 (76 cols, three-section: A core / B decision / C bucket). Section 8 rewritten to describe the unified structure. Section 16 Build E updated to target v5 with merge migration combining both source schemas. R14 updated for the v5 freeze. R16 rationale expanded to clarify geography as a cross-cutting modifier rather than a peer bucket, and to acknowledge the legacy geo_* and missing comp_* in Section C as documented register-level exceptions resolved by Build L per-metric coverage. Section 3.2 gains an explicit note on geography. -->
-<!-- v5.2 changes: added Part 5 — Operating Rules (Section 19) with 25 enforceable rules R1–R25 covering signal classification, trajectory, adjacency, output contracts, hypothesis register, communication, and operational discipline. Reference material (Files, Recovery, Glossary, Document maintenance) shifted to Part 6 (Sections 20–23). Doctrine sections (Parts 1–4) gain pointers to the rules that enforce them. -->
-<!-- v5.1 changes: sharpened ACT definition (3.5), added Trajectory and gap section (3.7), added Cross-domain adjacency section (3.8), rewrote competitive position (13.2) around adjacency as moat, added Build L and Build M to roadmap, added glossary terms. -->
+<!-- v5.7 changes: Major architectural pivot from matrix model (observable_layer) to initiative model (initiatives + entities + links + signals). Five-document v1 specification set committed to /docs/ (INITIATIVE_MODEL.md, INITIATIVE_METHODOLOGY.md, SIGNAL_PIPELINE.md, N8N_IMPLEMENTATION.md, WORKED_EXAMPLE_SHELL_H3.md, total 2,746 lines). Legacy documentation moved to /docs/legacy/ with superseded headers. SHELL_H3_PORTFOLIO_v3.html visualisation prototype committed (12 initiatives, 36 entities, 39 links, executing model). CLAUDE.md updated to point at v1 doc set as canonical. R26 added to Section 19 (end-of-session git hygiene). Build N (initiative model migration phases 1-5) and Build O (rainy-Tuesday test) added to roadmap. Builds L and M retired (superseded by initiative model). Schema state: matrix-model tables (hypothesis_observable, hypothesis_observable_event, confidence_band_history) retained but deprecated; mv1_* tables added via migration 004 (pending) bumping to v6.0. -->
+<!-- v5.6 changes: Migration 003 (observable layer) committed to Railway hypothesis-db. Hypothesis register schema bumped from v5.0 to v5.6 (skipping v5.5). Three column additions to hypothesis_register: appraisal_cadence, last_appraisal_at, current_confidence_band. Three new tables: hypothesis_observable, hypothesis_observable_event, confidence_band_history. View hypothesis_matrix_summary. 21 named CHECK constraints. All 118 rows defaulted appraisal_cadence='weekly' and current_confidence_band=0.500. -->
+<!-- v5.4 changes: Build E phase 2. Postgres hypothesis-db PG 18.3 provisioned, v5 DDL deployed, 118 rows persisted live-only (25 decision-layer cols NULL pending clean CSV re-export). window_closes_at TEXT, window_status_enum CHECK dropped. -->
+<!-- v5.3 changes: Schema bumped v4.0 → v5.0 (76 cols, three sections). Section 8 rewritten. Build E updated. R14 updated. R16 expanded for geography. Section 3.2 geography note. -->
+<!-- v5.2 changes: added Part 5 — Operating Rules (Section 19) with 25 enforceable rules R1–R25. -->
+<!-- v5.1 changes: sharpened ACT definition (3.5), added Trajectory and gap (3.7), Cross-domain adjacency (3.8), Build L and Build M, glossary additions. -->
 
 ---
 
@@ -20,7 +21,7 @@ This is the single canonical reference for the Signal Engine. It is the source o
 
 It is written so that any reader, internal or external, can understand the system from this document alone. New colleagues, partners, investors, acquirers, prospective clients in diligence, or Chris himself returning after a week away. It is also written so that any AI operating on the Signal Engine, including Claude Code in a session and the classifier prompts inside WF-15, treats Part 5 as binding and follows it without exception.
 
-There is no other architecture document. v1 through v5.1 are superseded.
+There is no other architecture document. v1 through v5.6 are superseded. The v1 documentation set in `/docs/` is canonical for the initiative model architecture (post 30 April 2026 afternoon); ARCHITECTURE.md remains canonical for repo-level state and operating rules.
 
 The document has six parts.
 
@@ -32,7 +33,7 @@ Part three covers the commercial model. The engagement structure, the pricing lo
 
 Part four sets out where it is going. The strategic position, the roadmap, the open items, and the risks. This is intent.
 
-Part five is the operating rules. Twenty-five rules, R1 through R25, that govern signal classification, trajectory computation, adjacency handling, output contracts, hypothesis register integrity, communication, and operational discipline. **Anyone or anything operating on the Signal Engine MUST follow these rules. Doctrine in Parts 1–4 explains why. Rules in Part 5 enforce.**
+Part five is the operating rules. Twenty-six rules, R1 through R26, that govern signal classification, trajectory computation, adjacency handling, output contracts, hypothesis register integrity, communication, and operational discipline. **Anyone or anything operating on the Signal Engine MUST follow these rules. Doctrine in Parts 1–4 explains why. Rules in Part 5 enforce.**
 
 Part six is reference material. File inventory, recovery procedures, glossary, and a note on how this document maintains itself.
 
@@ -71,7 +72,7 @@ When doctrine and rules appear to conflict, rules govern. If a rule needs to cha
 18. Risks and dependencies
 
 **Part five — operating rules (binding)**
-19. Operating rules, R1 through R25
+19. Operating rules, R1 through R26
 
 **Part six — reference**
 20. Files
@@ -93,6 +94,8 @@ The Signal Engine is a decision engine disguised as a signal engine. It exists t
 Most market intelligence is rear-view. It tells clients what has happened and produces reports about it. The Signal Engine works the opposite way. It starts from a structured set of forward-looking hypotheses about how a market, technology, regulation, or competitive landscape will evolve. Each hypothesis carries a stack of underlying conditions, expressed as system metrics with explicit thresholds and required slopes. As real-world signals move those metrics, the system computes the trajectory and the gap between observed and required progress. Hypotheses progress through phases until they reach a decision window. The system surfaces the window, assembles the evidence, names the action it enables, and indicates how long it is likely to remain open.
 
 The methodology is hypothesis-driven intelligence, expressed in the working language of "what needs to be true." The structural moat is cross-domain adjacency: the system tracks metric movement in industries upstream of the client's industry and surfaces the transfer before it appears in the client's own sector signals. The technology is the production system that runs both at scale, daily, for multiple clients in parallel.
+
+**Architectural note (30 April 2026 afternoon).** The system underwent a major architectural pivot from the matrix model (hypothesis with metric stack and observable layer) to the initiative model (initiative composed of entities and links, with deterministic behaviour rule converting signals to confidence movement). The v1 documentation set in `/docs/` is the canonical specification of the initiative model. The methodology principles described below remain intact; the data shape that operationalises them is tighter. See Section 16 (Build N) for the migration sequence.
 
 The Signal Engine is currently in late-stage build, crossing into operate mode in late April 2026. It runs against 118 active hypotheses across personal bets, industry structural calls, sector hypotheses, and 48 client account hypotheses. It processes roughly 2,200 signals per day from RSS, Datasette, and other ingestion paths, narrowing them through a pre-score filter and Claude-driven classification to a small number of action-grade signals per day. Those signals trigger persona-shaped outreach to a contact database of 27,473 named individuals across the energy, mobility, chemicals, life sciences, food, and manufacturing sectors.
 
@@ -128,6 +131,8 @@ The clients who feel this gap most acutely are senior strategy, R&D, business de
 
 The methodology is hypothesis-driven intelligence. It has six components.
 
+**Architectural note.** The methodology principles described in 3.1 through 3.8 below are unchanged by the 30 April 2026 architectural pivot. The matrix-model framing (hypothesis with metric stack) is one expression of the methodology; the initiative model framing (initiative with entity-and-link dependency graph) is a tighter expression of the same principles. See `/docs/INITIATIVE_MODEL.md` and `/docs/INITIATIVE_METHODOLOGY.md` for the canonical current architecture.
+
 ### 3.1 The hypothesis as the unit of analysis
 
 A hypothesis in this system is a forward-looking business outcome bet. It has four properties.
@@ -143,6 +148,8 @@ It is time-bound. There is a window in which the hypothesis must resolve, anchor
 A worked example. "Green hydrogen reaches three dollars per kilogram in at least one geography by 2027." Falsifiable. Directional. Linked to capital allocation decisions across electrolyser manufacturers, hydrogen offtakers, and adjacent infrastructure investors. Time-bound to 2027.
 
 This unit replaces the standard unit of consulting analysis (the question) and the standard unit of research (the report). The hypothesis is a position. It can be defended, attacked, or revised. It cannot be neutral.
+
+In the initiative model, the hypothesis is expressed as an initiative — a specific bet a company has committed to that depends on conditions in the world holding or changing in particular ways. See `/docs/INITIATIVE_MODEL.md` section 2.
 
 ### 3.2 The system metrics underneath each hypothesis
 
@@ -162,7 +169,9 @@ Competitive. The positions, commitments, and moves of the relevant players.
 
 Each metric carries four properties: current state (where it is now), threshold (where it needs to be for the hypothesis to be proven), rate of change (how fast it is moving), and mechanism (why it moves the way it does). The threshold is what is meant by "what needs to be true." WNTBT is the working language of every metric.
 
-Geography is a cross-cutting modifier, not a sixth bucket. It slices every metric in every bucket — a technology metric in the United States is not the same as the same technology metric in the European Union, a regulatory metric in Texas is not the same as in California. Geography therefore appears as a slicing dimension on metrics rather than as a peer of the five canonical buckets. The hypothesis register currently captures hypothesis-level analyst commentary on operational geography in three legacy `geo_*` columns; these are documented exceptions and will be retired when the per-metric layer ships with proper geography slicing per R5 and R6.
+Geography is a cross-cutting modifier, not a sixth bucket. It slices every metric in every bucket — a technology metric in the United States is not the same as the same technology metric in the European Union. Geography therefore appears as a slicing dimension on metrics rather than as a peer of the five canonical buckets.
+
+In the initiative model, the equivalent of system metrics is entities (technologies, market conditions, regulations, ecosystem actors) connected to initiatives by links. Each link carries a claim with explicit threshold, time, and context. See `/docs/INITIATIVE_MODEL.md` section 3.
 
 ### 3.3 What needs to be true
 
@@ -180,13 +189,13 @@ Hypotheses do not mature in a single event. They move through phases, each with 
 
 Divergent phase. Multiple futures remain plausible. The evidence is thin or contradictory. The action posture is to watch broadly, capture weak signals, and refine the metric stack.
 
-Converging phase. Evidence accumulates from independent angles. Possibilities narrow. Some metrics move toward thresholds; others remain unresolved. The action posture is to deepen the watch, identify the slowest metric, and prepare the client organisation for the decision window that is approaching.
+Converging phase. Evidence accumulates from independent angles. Possibilities narrow. Some metrics move toward thresholds; others remain unresolved.
 
-Trigger-ready phase. Enough metrics have crossed thresholds that a decision becomes possible. The action posture is to surface the window, name the action it enables, and indicate the time horizon over which the window is likely to remain open.
+Trigger-ready phase. Enough metrics have crossed thresholds that a decision becomes possible.
 
-Resolved phase. The hypothesis settles. Three sub-states are possible. True (the bet has proven out and the action has been taken or missed). False (the bet has been falsified and capital should be redirected). Displaced (the original hypothesis was directionally wrong but the surrounding evidence reveals a sharper hypothesis underneath, which becomes a new hypothesis in its own right).
+Resolved phase. The hypothesis settles. Three sub-states are possible. True (the bet has proven out and the action has been taken or missed). False (the bet has been falsified and capital should be redirected). Displaced (the original hypothesis was directionally wrong but the surrounding evidence reveals a sharper hypothesis underneath).
 
-The phase of every active hypothesis is visible in the system at all times. The transition between phases is the most commercially valuable event the system produces.
+In the initiative model, the equivalent of phase is the entity state (holding/weakening/broken/ambiguous) plus the initiative's confidence band, with state transitions governed by the behaviour rule and signal pipeline. See `/docs/INITIATIVE_MODEL.md` section 4 and `/docs/SIGNAL_PIPELINE.md` section 3.
 
 ### 3.5 Signals as movement, not events
 
@@ -194,13 +203,13 @@ A piece of news is not a signal. A signal is a piece of information that moves o
 
 This definition inverts the standard filtering problem. Instead of asking "is this news interesting," the system asks "does this news change the probability that a specific business outcome is true." The hypothesis register is the filter. Without the register, the system is just RSS.
 
-Signals combine multiplicatively, not additively. One mini-signal moving one metric is weak evidence on its own. Three mini-signals moving three different metrics in the same direction is exponentially stronger evidence, because the conditions for the bet are converging from independent angles. The system's classification logic reflects this. A single dramatic headline carries less weight than a quiet convergence across the metric stack.
+Signals combine multiplicatively, not additively. One mini-signal moving one metric is weak evidence on its own. Three mini-signals moving three different metrics in the same direction is exponentially stronger evidence, because the conditions for the bet are converging from independent angles.
 
 The classification produces three states for each signal. ACT means the daily multi-metric trajectory calculation has produced a material shift in the probability that a hypothesis resolves to its tested outcome. MONITOR means the signal touches a hypothesis and contributes to the metric stack but does not, by itself or in combination with the day's other signals, materially shift decision probability. IGNORE means the signal does not move any hypothesis and is discarded.
 
-This definition is deliberately sharper than "interesting signal." A dramatic headline that moves one metric in isolation does not trigger ACT unless it shifts trajectory across the stack or crosses a threshold that unlocks a phase transition. A quiet convergence of three small signals moving three metrics simultaneously can trigger ACT, because the underlying conditions for the bet have converged from independent angles. The classifier asks "has decision probability materially shifted today" rather than "is anything interesting happening today." Those are different questions and the second one is much easier to answer accidentally.
-
 Enforcement: rules R1 to R4 in Section 19 govern signal classification. The classifier prompts and the output validators MUST implement them.
+
+In the initiative model, signal processing is reorganised as the six-step pipeline per `/docs/SIGNAL_PIPELINE.md`: ingestion, triage, entity routing, claim assessment, state determination, model application. The substantive change is that signals route to specific entities and update specific link claims, rather than being scored against the whole register. The behaviour rule executes deterministically once assessment lands.
 
 ### 3.6 Decision windows
 
@@ -218,35 +227,31 @@ Most consulting tells a client what they should have done. This methodology tell
 
 A hypothesis with metrics, thresholds, and signals is not yet a methodology. Without a way to compute whether the metrics are moving fast enough, "phase" is a descriptive label rather than a computed state. The trajectory math is what turns descriptive into prescriptive.
 
-For each metric on each hypothesis, the system maintains four values. Required slope is the rate at which the metric must move from its current state to reach threshold by the hypothesis time horizon. Observed slope is the rate at which the metric is actually moving, derived from signal history over a defined window (typically the last ninety days, with longer history for slower metrics). Gap is required minus observed. Time-to-miss is the projected date at which the metric will fail to reach threshold if the observed slope continues unchanged.
+For each metric on each hypothesis, the system maintains four values. Required slope is the rate at which the metric must move from its current state to reach threshold by the hypothesis time horizon. Observed slope is the rate at which the metric is actually moving, derived from signal history. Gap is required minus observed. Time-to-miss is the projected date at which the metric will fail to reach threshold if the observed slope continues unchanged.
 
-Negative gap means the metric is on track or ahead. Positive gap means the metric is behind, and time-to-miss is the consequence: at current rate of progress, this metric misses threshold by N months, and the hypothesis cannot resolve favourably without an acceleration in observed slope.
+Negative gap means the metric is on track or ahead. Positive gap means the metric is behind, and time-to-miss is the consequence.
 
-This math determines phase. Divergent phase is when too many metrics are missing slope data or moving in unstable directions for trajectory to be computed reliably. Converging phase is when slopes are computable but multiple metrics are still in positive gap. Trigger-ready phase is when the majority of metrics are in negative gap (on track or ahead) and the slowest remaining metric has a credible path to closure within the hypothesis time horizon. Resolved phase is when all metrics have either crossed threshold (true) or have time-to-miss values that make resolution impossible (false), or when the underlying hypothesis has been displaced by a sharper one.
+The trajectory layer is the sharpest output the system produces. It is the difference between "this is moving" and "this is moving fast enough."
 
-The trajectory layer is the sharpest output the system produces. It is the difference between "this is moving" and "this is moving fast enough." The first is observation. The second is judgement that can be defended in a board meeting.
+In the initiative model, the trajectory equivalent is the deterministic behaviour rule per `/docs/INITIATIVE_MODEL.md` section 4: Δconfidence = base × criticality_weight × impact_weight × direction. Each link carries a claim with explicit threshold and time bound; entity state plus signal flow plus the rule produce computed confidence movement per initiative. The matrix-model trajectory math (required slope, observed slope, gap, time-to-miss) is superseded by this approach. Build L (legacy trajectory layer) is therefore retired.
 
-The trajectory layer is not yet built. Currently the system computes signal movement against metrics but does not maintain required slopes or compute gap values. The required builds are slope estimation per metric, threshold registration per metric per hypothesis, and the daily gap recalculation. See Build L in Section 16.
-
-Enforcement: rules R5 to R7 in Section 19 govern trajectory and phase. Once Build L ships, the classifier and the output validators MUST implement them.
+Enforcement: rules R5 to R7 in Section 19 govern trajectory and phase.
 
 ### 3.8 Cross-domain adjacency
 
 The Signal Engine's distinctive edge is not the hypothesis register, the pipeline, or the classifier. Each of those could be reproduced by a competitor with sufficient time and capital. The distinctive edge is cross-domain adjacency.
 
-Most sector intelligence stays inside its sector. Hydrogen analysts read hydrogen news. Battery analysts read battery news. The signals that matter most arrive at the boundaries between domains, where a metric movement in one industry foreshadows a metric movement in another industry six to eighteen months later. A pharma membrane achieves a permeability gain at a given cost; eighteen months later, the same membrane chemistry shows up in hydrogen electrolysers. A defence material achieves a thermal performance threshold; twelve months later, it appears in EV battery packs. A food thermal management system reaches a cost point; six months later, it shows up in industrial battery cooling.
+Most sector intelligence stays inside its sector. Hydrogen analysts read hydrogen news. Battery analysts read battery news. The signals that matter most arrive at the boundaries between domains, where a metric movement in one industry foreshadows a metric movement in another industry six to eighteen months later.
 
-These transfers happen because the underlying physics, chemistry, and economics are shared across nominally separate industries. Most market intelligence is organised by sector, which structurally prevents the firm tracking it from spotting the transfer until it appears in the destination sector, by which point the lead time advantage is gone.
+These transfers happen because the underlying physics, chemistry, and economics are shared across nominally separate industries. Most market intelligence is organised by sector, which structurally prevents the firm tracking it from spotting the transfer until it appears in the destination sector.
 
-The Signal Engine inverts this by design. Hypotheses are tagged by primary domain (the sector in which they resolve commercially) and by adjacent domains (the upstream sectors whose metric movements forecast the resolution). Signals are tagged by domain of origin. The classifier explicitly tracks cross-domain metric transfer: when a metric crosses threshold in an adjacent domain, the system surfaces it against the destination hypothesis even before signals appear in the destination domain itself.
+The Signal Engine inverts this by design. Hypotheses are tagged by primary domain (the sector in which they resolve commercially) and by adjacent domains (the upstream sectors whose metric movements forecast the resolution). Signals are tagged by domain of origin.
 
-This is the firm's structural moat. A sector specialist competitor cannot replicate it without abandoning the sector specialism that defines them. A horizontal research firm could attempt it, but lacks the sector depth that turns adjacency into commercial conviction. FutureBridge's six-sector coverage (energy, mobility, chemicals, life sciences, food and nutrition, manufacturing) is not a breadth claim. It is the substrate on which adjacency operates.
+This is the firm's structural moat. A sector specialist competitor cannot replicate it without abandoning the sector specialism that defines them.
 
-The implication for positioning is significant. The standard line "we cover six sectors and look at structural connections between them" is descriptive and weak. The sharper line is "we see metric movement in your industry before it appears in your industry, by tracking the upstream signals in adjacent industries that have already crossed the same thresholds." That is a forecasting advantage no sector specialist can match.
+In the initiative model, adjacency operates at the entity layer: the same entity (e.g. PEM_ELECTROLYSIS, EU_HYDROGEN_BACKBONE) is referenced by initiatives across multiple companies and sectors. A signal hitting that entity propagates to all linked initiatives. Cross-domain transfer becomes a query against the entity catalogue rather than a separate workflow. Build M (legacy adjacency tagging and transfer log) is therefore retired in favour of the entity-catalogue mechanism.
 
-Adjacency is currently implicit in the hypothesis register (industry structural hypotheses do some of this work) and partially in the classifier prompts. It is not yet first-class infrastructure. The required builds are domain tagging on every signal, adjacency tagging on every hypothesis, and a cross-domain transfer log that surfaces imported signals as a distinct output stream. See Build M in Section 16.
-
-Enforcement: rules R8 to R10 in Section 19 govern adjacency and transfer logging. Once Build M ships, the ingestion layer and the classifier MUST implement them.
+Enforcement: rules R8 to R10 in Section 19 govern adjacency.
 
 ---
 
@@ -258,39 +263,31 @@ The methodology runs on a daily cycle.
 
 ### 4.1 The daily loop
 
-Every weekday at 06:00 UTC, the system wakes. It fetches the current state of all 118 hypotheses from the master register. It pulls the latest signals from RSS feeds, Datasette ingestion, and Apps Script bridges. It applies a pre-score filter that removes obvious noise (sport, celebrity, weather, fluff) without filtering out weak industrial, scientific, or economic signals.
+Every weekday at 06:00 UTC, the system wakes. It fetches the current state of all 118 hypotheses from the master register. It pulls the latest signals from RSS feeds, Datasette ingestion, and Apps Script bridges. It applies a pre-score filter that removes obvious noise without filtering out weak industrial, scientific, or economic signals.
 
-The remaining signals (typically 80 to 100 per day from an initial pool of about 2,200) are passed to Claude with the full hypothesis context. Claude returns a classification for each signal: ACT, MONITOR, or IGNORE, with the specific hypothesis or hypotheses the signal touches and the direction and magnitude of the movement.
+The remaining signals are passed to Claude with the full hypothesis context. Claude returns a classification for each signal: ACT, MONITOR, or IGNORE, with the specific hypothesis or hypotheses the signal touches and the direction and magnitude of the movement.
 
-ACT signals trigger the next phase of the loop. The system selects the most material signal of the day, drafts persona-shaped emails for that signal, queries the contact database for the relevant audience (filtered by sector, tier, persona, and entity), assembles a YAMM CSV for outreach, and writes the campaign record to the master sheet.
+ACT signals trigger the next phase of the loop. The system selects the most material signal of the day, drafts persona-shaped emails for that signal, queries the contact database for the relevant audience, assembles a YAMM CSV for outreach, and writes the campaign record to the master sheet.
 
-MONITOR signals are recorded against their hypotheses for the heat map view. They contribute to the convergence picture even if they do not warrant outreach.
+MONITOR signals are recorded against their hypotheses for the heat map view.
 
 IGNORE signals are discarded.
 
-The output of a clean run is a daily intelligence digest, a short list of action-grade signals, and a ready-to-send outreach campaign for the most material signal.
+In the initiative model architecture, the daily loop is reorganised as the six-step signal pipeline per `/docs/SIGNAL_PIPELINE.md`: ingestion → triage → entity routing → claim assessment → state determination → model application. Signals route to specific entities and update specific link claims, producing audit trails that link source article to claim assessment to confidence movement.
 
 ### 4.2 The weekly loop
 
-Once a week, the system runs a hypothesis review cycle. It looks at the movement across all hypotheses, identifies those that have transitioned phase, surfaces hypotheses that have stalled (no movement in the underlying metrics for an extended period), and flags hypotheses that show signs of needing reframing.
+Once a week, the system runs a hypothesis review cycle. It looks at the movement across all hypotheses, identifies those that have transitioned phase, surfaces hypotheses that have stalled, and flags hypotheses that show signs of needing reframing.
 
-The weekly loop also processes the embryo hypothesis feed. ACT signals that touch no existing hypothesis represent register gaps. The system found a threshold-crossing event for which there is no current bet. These are the most valuable inputs to the methodology because they either reveal a hypothesis that should have existed or a structural shift that no one had anticipated.
+The weekly loop also processes the embryo hypothesis feed. ACT signals that touch no existing hypothesis represent register gaps.
 
 ### 4.3 The monthly loop
 
-Once a month, the system runs a calibration pass. It checks whether ACT classifications are correlating with actual hypothesis movement (the classifier should not be over-firing). It checks whether MONITOR signals are revealing missed ACT opportunities (the classifier should not be under-firing). It surfaces hypotheses that need retiring.
-
-This is the analyst-in-the-loop step. The system flags candidates for action. Chris or a colleague reviews and confirms.
+Once a month, the system runs a calibration pass. Analyst-in-the-loop step.
 
 ### 4.4 The client-facing layer
 
-The output of the daily, weekly, and monthly loops feeds three client-facing surfaces.
-
-The first is direct outreach. Persona-shaped emails sent to named individuals at the moment a hypothesis they care about moves. Short, declarative, evidence-based, with one pointed question and a soft call to action.
-
-The second is the live hypothesis dashboard. Each client sees the current state of every hypothesis in their portfolio: phase, metric movements, recent signals, and the time to the next likely decision window. This replaces the quarterly research report with a live view.
-
-The third is the structured engagement. When a client is in active engagement, the Signal Engine output feeds directly into the engagement deliverables. Hypothesis validation sessions, gap maps, and gate frameworks are populated with current data from the system, not stale data from a one-off research pass.
+The output of the daily, weekly, and monthly loops feeds three client-facing surfaces: direct outreach (persona-shaped emails), the live hypothesis dashboard, and the structured engagement.
 
 ---
 
@@ -298,37 +295,9 @@ The third is the structured engagement. When a client is in active engagement, t
 
 <!-- HUMAN -->
 
-Five user groups interact with the Signal Engine. Each uses it differently.
+Five user groups: clients (senior decision-makers consuming intelligence and outreach), Chris (sense-making and editorial layer), FutureBridge colleagues (sharing register and substrate), engagement teams (live intelligence inside structured engagements), external readers (investors, partners, prospective acquirers).
 
-### 5.1 Clients
-
-Senior decision-makers in client organisations are the ultimate consumers of the system's output. They do not see the technical layer. They see structured intelligence, persona-shaped emails, and live dashboards.
-
-Their use case is hypothesis maintenance. They have placed strategic bets (capital allocations, partnerships, market entries, technology choices). They need to know whether those bets remain credible, what is moving the underlying conditions, and when a decision window is opening or closing.
-
-Specific personas: SVP and VP Strategy, Heads of R&D, Innovation directors, Business Development leads in capital-intensive sectors. Plus board members and investment committee members who consume distilled outputs.
-
-### 5.2 Chris
-
-Chris uses the system as a sense-making layer. His expertise is in synthesis, framing, and client conversation. The system removes the manual labour of signal aggregation, hypothesis scoring, and persona-shaped drafting. His role becomes editorial.
-
-In a normal working day, Chris reviews the morning intelligence digest in under ten minutes, approves or revises the day's outreach, and spends the remaining time on client conversations, hypothesis curation, and engagement design. The system's output becomes the raw material for those activities, not the bottleneck.
-
-### 5.3 FutureBridge colleagues
-
-Other client partners and analysts share the same hypothesis register and signal substrate. This removes duplicated research effort across accounts. A signal that moves a hypothesis relevant to BP also moves the hypothesis relevant to ConocoPhillips, ExxonMobil, and Eni. One classification feeds many client conversations.
-
-The colleague-facing surface is the hypothesis register itself, plus tools that turn hypothesis state into account-specific intelligence briefs (the account_plans tool, the meeting_prep tool, sector-specific dashboards).
-
-### 5.4 Engagement teams
-
-When the Signal Engine is sold as part of a structured engagement (see Section 12), an engagement team is assembled around it. The team uses the system's output as the live intelligence layer underneath the engagement, populating gap maps, gate decisions, and validation reports with current data.
-
-The Signal Engine does not replace the engagement team. It changes what the team works on. Less time on data gathering, more time on framing, debate, and decision support.
-
-### 5.5 External readers
-
-The Signal Engine is also a strategic asset in its own right. Investors, partners, prospective clients in diligence, and potential acquirers read this document to understand the system. The methodology is defensible IP. The technology is the proof of operating capability. The combination is a productisable consulting offering, which is a different category from project-based consulting.
+The Signal Engine is also a strategic asset in its own right. Investors, partners, prospective clients in diligence, and potential acquirers read this document plus the v1 documentation set in `/docs/` to understand the system. The methodology is defensible IP. The technology is the proof of operating capability.
 
 ---
 
@@ -340,18 +309,23 @@ The Signal Engine is also a strategic asset in its own right. Investors, partner
 
 | Metric | Value | Notes |
 |---|---|---|
-| Pipeline status | Partially recovered | OAuth grant `Google Sheets account 2` reauthed 28 April evening; WF-15A succeeded 29 April morning; WF-15 still failing on a downstream issue (out of scope for Build E phase 2). |
+| Pipeline status | Partially recovered | OAuth grant `Google Sheets account 2` reauthed 28 April evening; WF-15A succeeded 29 April morning; WF-15 still failing on a downstream issue. |
 | Last successful daily run | 29 April morning (WF-15A) | WF-15 itself last green pre-28 April. |
-| Hypothesis store | **Postgres on Railway (`hypothesis-db`) + Google Sheet** | v5.6 schema, 79 cols on `hypothesis_register` (76 base + 3 observable-layer additions). Postgres canonical for bucket layer + identity. Sheet still canonical for the 25 decision-layer cols pending clean CSV re-export. PG read path not yet wired into n8n; cutover is a future session. |
-| Observable matrix | **Postgres `hypothesis-db`, schema v5.6** | Three new tables in PG as of 30 April: `hypothesis_observable` (continuous-line state, 20 cols), `hypothesis_observable_event` (competitive event-log, 10 cols), `confidence_band_history` (daily time-series, 17 cols). Empty on creation; populated via Phase B matrix-construction tool. View `hypothesis_matrix_summary` aggregates per hypothesis. Spec source: HYPOTHESIS_MATRIX_v1.md Section 2.2; velocity infrastructure per HEAT_MAPS_AND_GESTATION.md Section 5. |
-| Hypothesis count | 118 | Schema v5.6, 79 columns on register + observable layer. Frozen per R14. All 118 hypotheses default to `appraisal_cadence='weekly'` and `current_confidence_band=0.500` on the v5.6 deploy. |
+| Hypothesis store (legacy) | **Postgres on Railway (`hypothesis-db`) + Google Sheet** | v5.6 schema, 79 cols on `hypothesis_register` (76 base + 3 observable-layer additions). Postgres canonical for bucket layer + identity. |
+| Initiative model store | **Pending migration 004** | Will add mv1_* tables (mv1_initiatives, mv1_entities, mv1_links, mv1_signals, mv1_competitive_events) per /docs/N8N_IMPLEMENTATION.md. Bumps schema to v6.0 on commit. |
+| Observable matrix (legacy) | **Postgres `hypothesis-db`, schema v5.6** | hypothesis_observable, hypothesis_observable_event, confidence_band_history committed 30 April morning via migration 003. Empty on creation. Deprecated by initiative model; cutover via migration 005. |
+| Hypothesis count | 118 | Schema v5.6, 79 columns. Will be re-expressed as initiatives in mv1_* schema following methodology. |
+| v1 documentation set | `/docs/` (committed 30 April evening) | INITIATIVE_MODEL.md, INITIATIVE_METHODOLOGY.md, SIGNAL_PIPELINE.md, N8N_IMPLEMENTATION.md, WORKED_EXAMPLE_SHELL_H3.md. 2,746 lines. Canonical for initiative model. |
+| Legacy documentation | `/docs/legacy/` | METHODOLOGY.md, HYPOTHESIS_MATRIX_v1.md, HEAT_MAPS_AND_GESTATION.md with superseded headers. Retained for history. |
+| Visualisation prototype | `SHELL_H3_PORTFOLIO_v3.html` | 12 Shell H3 initiatives, 36 entities, 39 links. Built by intuition; due for review against /docs/INITIATIVE_METHODOLOGY.md. |
 | Contact database | 27,473 | SQLite via Datasette |
 | Active workflows on n8n | 13 of 17 | Audit incomplete; two duplicate WF-15 instances flagged |
-| WF-15 node count | 22 | Was 19 at 1 April green status; three nodes added since |
+| WF-15 node count | 22 | Was 19 at 1 April green status |
 | Daily signal volume (input) | ~2,205 | Pre-score reduces to ~85 |
-| Daily ACT classifications | ~9 (illustrative) | From 2 April production run; needs current data |
 
-The Signal Engine reached full end-to-end production operation on 2 April 2026. It ran reliably through April with intermittent silent failures during build mode. On 28 April, all Sheets-touching workflows broke when the shared OAuth credential was revoked. The break was discovered the same day because we built a status command that surfaces failures.
+The Signal Engine reached full end-to-end production operation on 2 April 2026. It ran reliably through April with intermittent silent failures during build mode. On 28 April, Sheets-touching workflows broke when the shared OAuth credential was revoked.
+
+The 30 April afternoon architectural pivot moves the system from matrix model to initiative model. The transition is staged: documentation (complete), schema (migration 004 pending), n8n rework (Phase 3 of N8N_IMPLEMENTATION.md), legacy cutover (migration 005). Operate mode discipline (per R23, R26) applies throughout.
 
 This is the day the system crosses from build mode to operate mode (see Section 15).
 
@@ -361,37 +335,37 @@ This is the day the system crosses from build mode to operate mode (see Section 
 
 <!-- HUMAN -->
 
-The system has three layers, each with a single job, connected by clean data contracts.
+The system has three layers: ingestion and storage, classification and reasoning, and action. Connected by clean data contracts.
 
 ### 7.1 Layer one — ingestion and storage
 
-This is the river. Raw signals land in a single source-of-truth substrate. Currently this is split across Google Sheets (hypothesis register, Signal Tracker, Campaigns) and SQLite via Datasette on Render (contacts, signals planned). The target architecture moves the source-of-truth to Postgres on Railway, with Sheets becoming a human-readable view via sync rather than the backbone, and Datasette retained for read-only public access.
+Raw signals land in a single source-of-truth substrate. Currently split across Google Sheets and SQLite via Datasette on Render. Target: Postgres on Railway as source-of-truth, with Sheets as human-readable view via sync.
 
-Why the migration matters. Sheets is fine for human review and collaboration. It is the wrong substrate for a pipeline that runs daily and needs joins, indexes, history, and rate limits beyond what Google permits. Most of the operational fragility in the current system traces back to Sheets API quirks, column offset bugs, OAuth invalidation, and quota limits. Postgres removes all of that.
+In the initiative model, the storage layer additionally supports the mv1_* tables per `/docs/N8N_IMPLEMENTATION.md` section 2.1. PG remains system-of-record, Sheets is analyst-facing read/write surface, Datasette is public read-only contact directory.
 
 ### 7.2 Layer two — classification and reasoning
 
-This is where Claude lives. Every signal that enters the system gets a Claude classification pass. The current implementation embeds the classification logic inside n8n HTTP Request nodes, which makes it hard to test, version, or improve. The target architecture extracts the classification logic into a standalone module (`classifier/`) that lives in the repository. n8n keeps the schedule and orchestration. The reasoning lives in code that Claude Code can read, refactor, and improve.
+This is where Claude lives. The current implementation embeds classification logic inside n8n HTTP Request nodes. Target: standalone `classifier/` module in the repo.
 
-This separation matters because the classification logic is the single most valuable piece of code in the system. It is the place where the methodology meets the technology. It needs to be testable against historical signals to ensure the classifier is calibrated, version-controlled so improvements compound, and editable directly by Claude Code without round-tripping through the n8n web editor.
+In the initiative model, classification is reorganised as the six-step signal pipeline (`/docs/SIGNAL_PIPELINE.md`): triage (Haiku), entity routing (Sonnet), claim assessment (Sonnet, the substantive judgement work), state determination, model application via the deterministic behaviour rule. Judgement is bounded — Claude assesses against specific claims with structured direction/magnitude/confidence calls, rather than producing free-form classifications.
 
 ### 7.3 Layer three — action
 
-This is the cup. Output flows to whatever channel matters per use case. Current channels: outreach via YAMM CSV (deprecated due to spam quarantine, replacement pending), the Campaigns tab in the master sheet, the campaign manager HTML tool (currently localStorage-based, needs wiring to the live Campaigns tab), client-specific intelligence briefs in HTML, and account plan tools.
+Output flows to outreach (YAMM, deprecated due to spam), Campaigns tab in master sheet, campaign manager HTML tool, client briefs, account plan tools.
 
-The target architecture adds a Daily Intelligence Report that is generated automatically every weekday and pushed to GitHub Pages and a LinkedIn post draft. This makes the system's output visible without a client having to be inside an active engagement, which serves the GTM motion (see Section 14).
+In the initiative model, the action layer additionally exposes per-initiative confidence bands, biggest-risk queries, and signal audit trails. SHELL_H3_PORTFOLIO_v3.html shows the visualisation surface.
 
 ### 7.4 The data contracts that connect the layers
 
-Three frozen data shapes connect the layers. A signal has a fixed schema (id, source, date, object_statement, novelty_type, sector_tags, hypothesis_impacts, classification, magnitude, mechanism). A hypothesis has a fixed schema (49 columns, v4, frozen). A campaign has a fixed schema (campaign_id, date, hypothesis_ids, signal_summary, topic, persona-specific subject and body fields, status, best_hyp_id, probability_delta).
+In the matrix model: signal schema, hypothesis schema (v5.6), campaign schema.
 
-Once these are frozen, every component becomes swappable. The ingestion layer can change without breaking the classifier. The classifier can be rewritten without breaking the action layer. Components can be added (a new email channel, a new dashboard surface) without touching the core.
+In the initiative model: initiative, entity, link, competitive event, signal — all v1.0 paired with the v1 doc set per `/docs/INITIATIVE_MODEL.md`.
 
 ### 7.5 The orchestration layer
 
-n8n on Railway runs the orchestration. It schedules workflows, handles retries, manages credentials, and provides the visual debugging surface. The current production workflow is WF-15, supported by WF-15A (Signal Extraction), WF-12 (Contacts API), and a number of utility workflows whose status is being audited.
+n8n on Railway. WF-15 (legacy), supported by WF-15A and utility workflows.
 
-n8n is the right choice for orchestration today. It may not be the right choice forever; the long-term answer is probably a small Python or Node service that owns the pipeline and uses n8n only for human-facing edits. But that migration is years away.
+In the initiative model, n8n hosts five workflows per `/docs/N8N_IMPLEMENTATION.md`: WF-INIT-1 (population assistant), WF-INIT-2 (Sheets-PG sync), WF-15A (signal pipeline, reworked), WF-INIT-3 (absence detection), WF-INIT-4 (drift management).
 
 ---
 
@@ -399,7 +373,7 @@ n8n is the right choice for orchestration today. It may not be the right choice 
 
 <!-- AUTO partial -->
 
-118 active hypotheses. **Schema v5.0** frozen at 76 columns, organised in a three-section structure. Hard cap: 150 active.
+118 active hypotheses. **Schema v5.6** in PG (legacy); **target v6.0** with migration 004 (mv1_* tables for initiative model). Hard cap: 150 active.
 
 | Register | IDs | Count | Owner |
 |---|---|---|---|
@@ -409,33 +383,23 @@ n8n is the right choice for orchestration today. It may not be the right choice 
 | Client account | SH-01–03, BP-01–03, VW-01–03, etc. | 48 | Client partners |
 | **Total** | | **118** | |
 
-The four sub-registers carry forward unchanged from v4. v5 adds an explicit `register` column with ENUM CHECK (PERSONAL / INDUSTRY / SECTOR / CLIENT_ACCOUNT) so the sub-register is canonical at the column level, not parsed from the `hyp_id` prefix.
+### 8.1 Three-section structure (v5.6, legacy)
 
-### 8.1 Three-section structure
+The v5.6 schema has three sections: Section A core identity (16 cols), Section B decision layer (30 cols), Section C bucket layer (30 cols, R16-aligned).
 
-The v5 schema is organised in three sections that reflect the two functions the register performs simultaneously: **signal filter** (Function 1 per Section 3.5 — the inward, R16-aligned bucket structure that determines which signals matter) and **consulting instrument** (Function 2 per Section 12 — the outward, decision-shaped framing that drives client conversation, outreach, and engagement deliverables).
+### 8.2 Initiative model structure (v6.0, target)
 
-- **Section A — core identity** (16 cols). The spine that joins the layers. `hyp_id`, `register`, `sector`, `system_layer`, `hypothesis_theme`, `owner`, `status` (administrative), `phase` (methodological per Section 3.4), `schema_version`, audit timestamps and authors, lifecycle resolution fields, `notes`.
-- **Section B — decision layer** (30 cols). Outward-facing commercial framing: probability and confidence scoring, decision identity and ownership, if-true/if-false posture, risk and upside, target accounts, persona/topic/initiative tags, routing geography. Drawn primarily from the 25 March schema; the canonical-source reference for client-facing decision narrative.
-- **Section C — bucket layer** (30 cols). Inward-facing operational substrate organised by R16's canonical buckets (technology, cost, regulation, ecosystem, competitive). 5 `tech_*` cols + 4 `reg_*` cols + 4 `cost_*` cols (renamed from v4 `mkt_*` to align with R16) + 4 `eco_*` cols. Plus three legacy `geo_*` cols carrying hypothesis-level analyst commentary on operational geography (documented exception per R16; deprecated when per-metric layer ships). Section C currently has no `comp_*` cols; competitive coverage is a known register-level gap, enforced at the per-metric level by the future per-metric table (Build L). Section C also includes the `trigger` column (the event that fires ACT) plus signal/falsifier/source/dependency metadata: `signal_types`, `signal_priority`, `signal_weighting_rule`, `last_signal_id`, `falsifiers`, `primary_sources`, `shared_dependency`, `related_hyp_ids`, `rate_limiting_bucket`.
+In the initiative model, each hypothesis becomes an initiative composed of entities and links per `/docs/INITIATIVE_MODEL.md`. The four registers (PERSONAL/INDUSTRY/SECTOR/CLIENT_ACCOUNT) preserved as `register` field on `mv1_initiatives`.
 
-### 8.2 The four registers
+Tables: mv1_initiatives, mv1_entities, mv1_links, mv1_signals, mv1_competitive_events.
 
-The four sub-registers serve different functions.
-
-Personal bets are Chris's own forward calls about the structural shape of the markets the firm operates in. They are the highest-conviction hypotheses and the slowest-moving. They drift only on major structural evidence.
-
-Industry structural hypotheses are the cross-sector calls about how the broader economy is reorganising. They are the connective tissue between sector hypotheses and provide the cross-domain adjacencies that are the firm's edge.
-
-Sector hypotheses are the sector-specific bets, owned by sector leads. They cover energy, mobility, chemicals, life sciences, food and nutrition, and manufacturing.
-
-Client account hypotheses are the bets specific to a named client account. SHELL_H3_001 through 007 are an active example, mapped to Shell's H3 horizon engagement. They are the most commercially actionable hypotheses because they are scoped to a buyer with budget.
+Migration 004 creates these. Existing 118 hypotheses re-expressed by walking `/docs/INITIATIVE_METHODOLOGY.md` against each. Multi-week effort; not all 118 move at once.
 
 ### 8.3 Write path
 
-The single write path is `hypothesis_builder.html` → Apps Script → (post-Build E cutover) Postgres → sync job → Sheet (derived view). Pre-cutover the path remains `hypothesis_builder.html` → Apps Script → Google Sheet. The schema is enforced at the write step. No hypothesis enters the register without going through this path.
+Legacy: `hypothesis_builder.html` → Apps Script → Postgres → sync → Sheet view.
 
-Seven Shell H3 hypotheses are correctly scoped as client account hypotheses given the active engagement, though noted as potentially scalable across BP, ExxonMobil, Chevron, SLB, and Halliburton. This pattern (an account hypothesis that generalises into an industry hypothesis once tested) is the canonical mechanism for hypothesis evolution in the system.
+Initiative model: Sheets analyst tabs (mv1_*) → Apps Script doPost → Postgres mv1_* tables. WF-INIT-1 (population assistant) supports the analyst running INITIATIVE_METHODOLOGY procedure per `/docs/N8N_IMPLEMENTATION.md` section 3.
 
 ---
 
@@ -449,10 +413,10 @@ Seven Shell H3 hypotheses are correctly scoped as client account hypotheses give
 06:00 Trigger
   → Prepare Today
   → Fetch Hypothesis Repository (118 hyps)
-  → Build Classification Context (hyp_count: 118)
+  → Build Classification Context
   → Map Signals to WF-15 Schema
   → Pre-Score Signals (~2,205 → ~85)
-  → Combine Payload for Claude (~85 items)
+  → Combine Payload for Claude
   → Claude Classify Signals (P1)
   → Parse Classification
   → Prepare Sheet Updates
@@ -460,7 +424,7 @@ Seven Shell H3 hypotheses are correctly scoped as client account hypotheses give
   → Score and Select Best Signal       [⚠ architecture concern, see Build A]
   → Build YAMM Prompt
   → Claude Generate YAMM Emails (P2)
-  → Wait (cold start buffer)
+  → Wait
   → Get Energy Contacts
   → Parse YAMM Response
   → Write to Campaigns Tab              [⚠ needs Append Row fix]
@@ -468,39 +432,21 @@ Seven Shell H3 hypotheses are correctly scoped as client account hypotheses give
   → Output Summary
 ```
 
-22 nodes total, 10 of which are Code nodes. Pipeline must run linearly; branching causes execution failures.
+22 nodes total. Pipeline must run linearly; branching causes execution failures.
 
-### 9.2 WF-15A — Signal Extraction (upstream of WF-15)
+In the initiative model architecture, WF-15 is reorganised as the six-step signal pipeline per `/docs/SIGNAL_PIPELINE.md`. Reorganisation is Phase 3 of the migration (per `/docs/N8N_IMPLEMENTATION.md` section 6); current WF-15 continues against legacy schema until then.
 
-```
-Schedule Trigger
-  → Wake Datasette
-  → Get News Feeds
-  → Map to Canonical Schema
-  → Noise Blocklist + Deduplicate
-  → Build Extraction Payload
-  → Claude Haiku Extract
-  → Parse + Validate Mini-Signal
-  → Split Rows
-  → Write to Mini-Signals
-  → Collect + Write to Datasette
-  → Datasette Write
-  → WF-15A Summary
-```
+### 9.2 WF-15A — Signal Extraction
 
-WF-15A populates the Signal Tracker that WF-15 reads. Both touch Google Sheets through the same OAuth credential, which is why the 28 April OAuth break cascaded across both.
+Schedule Trigger → Wake Datasette → Get News Feeds → Map → Noise Blocklist + Deduplicate → Build Extraction Payload → Claude Haiku Extract → Parse + Validate → Split Rows → Write to Mini-Signals → Collect + Write to Datasette → WF-15A Summary.
 
 ### 9.3 Other live workflows
 
-13 active workflows on n8n. Audit pending. Known active alongside WF-15 and WF-15A:
-
-- WF-07 through WF-15 (variable), purpose audit pending
-- Weekly Scan, purpose audit pending
-- A second active workflow named "WF-15 Signal Classification Engine" (ID NdzqfLjxVWozoyzo, last updated 24 March), suspected duplicate of canonical WF-15. Do not touch until audit confirms its status.
+13 active. Audit pending. Suspected duplicate WF-15 (ID NdzqfLjxVWozoyzo) — do not touch until audit confirms.
 
 ### 9.4 Architecture concern — Score and Select Best Signal
 
-This node currently acts as a gate. Only the highest-scoring ACT signal flows downstream. All other ACT signals are discarded before the write nodes. On 2 April, 8 of 9 ACT signals generated no database record. This is wrong. Capture must be decoupled from email generation. See Section 16, Build A.
+This node currently acts as a gate. Only the highest-scoring ACT signal flows downstream. All other ACT signals are discarded. See Build A.
 
 ---
 
@@ -508,33 +454,21 @@ This node currently acts as a gate. Only the highest-scoring ACT signal flows do
 
 <!-- AUTO partial -->
 
-**n8n Workflow Engine** — Live
-Hosts WF-15 and 12 other active workflows. Runs on Railway. Trigger schedule varies per workflow.
-`https://n8n-production-86279.up.railway.app`
+**n8n Workflow Engine** — `https://n8n-production-86279.up.railway.app`
 
-**Google Sheet — Master Data** — Live
-Single source of truth for hypothesis register and campaign tracking. Tabs: Hypothesis Repository (118 rows), Audit Log, Heat Map, Campaign Master (unpopulated), Campaigns (write target).
-`https://docs.google.com/spreadsheets/d/1DUlVxb66yIgrd7borMm8NSeJHnvkDEBU4jciSKvvdyM`
+**Postgres on Railway** — Service `hypothesis-db`, PostgreSQL 18.3. Schema v5.6. Migration 004 pending.
 
-**Apps Script — Read/Write Endpoint** — Live (Version 3, deployed 2 April 2026)
-Deployed from `signal engine p2` → `HypothesisRepository.gs`. doGet returns all hypotheses unconditionally.
-`https://script.google.com/macros/s/AKfycbxmpsUIgouSfPp38yVSC-y2aZ3utsOU3je3xGICc0fe6vKGaVinc7_sWVF88cbkgsSY-w/exec`
+**Google Sheet — Master Data** — `https://docs.google.com/spreadsheets/d/1DUlVxb66yIgrd7borMm8NSeJHnvkDEBU4jciSKvvdyM`. Existing tabs plus new tabs pending for initiative model.
 
-**Render — Contact and Signal Database** — Live
-SQLite via Datasette. Database name `signal_engine_pe`. 27,473 contacts. 60-second cold start on free tier; pipeline has 2× retry at 60s. Rows return as arrays, not objects.
-`https://futurbridge-signals.onrender.com/signal_engine_pe.json?sql=SELECT...`
+**Apps Script — Read/Write Endpoint** — Live (Version 3, deployed 2 April 2026). New endpoints pending.
 
-**Anthropic API** — Live
-Used in WF-15 Code nodes for classification and YAMM email generation. Model: `claude-sonnet-4-20250514`. Header `x-api-key`. Version `anthropic-version: 2023-06-01`.
-`https://api.anthropic.com/v1/messages`
+**Render — Contact Database** — `https://futurbridge-signals.onrender.com`. 27,473 contacts. 60-second cold start.
 
-**GitHub Pages** — Live
-Static file hosting for tools and intelligence outputs.
-`https://chris-guerin.github.io/workfiles-/`
+**Anthropic API** — `https://api.anthropic.com/v1/messages`. Model: `claude-sonnet-4-20250514` (legacy WF-15); `claude-sonnet-4-6` (initiative model assessment) and `claude-haiku-4-5-20251001` (triage) per /docs/N8N_IMPLEMENTATION.md.
 
-**Local repository** — Live
-Working copy on Chris's personal Windows machine.
-`C:\Users\Admin\workfiles-`
+**GitHub Pages** — `https://chris-guerin.github.io/workfiles-/`
+
+**Local repository** — `C:\Users\Admin\workfiles-`
 
 ---
 
@@ -542,37 +476,21 @@ Working copy on Chris's personal Windows machine.
 
 <!-- HUMAN -->
 
-This section was added in v4 and consolidated in v5. It documents the local environment built on Chris's personal Windows machine on 27–28 April 2026.
+**Repository.** `C:\Users\Admin\workfiles-`. Public GitHub Pages site at `chris-guerin.github.io/workfiles-/`. Deploy: `git add . && git commit -m "update" && git push`.
 
-**Repository.** `C:\Users\Admin\workfiles-`. Public GitHub Pages site at `chris-guerin.github.io/workfiles-/`. Deploy: `git add . && git commit -m "update" && git push`. Token is set in the remote URL.
+**Claude Code.** v2.1.119 installed at `C:\Users\Admin\.local\bin\claude.exe`. Authenticated via Pro/Max OAuth.
 
-**Claude Code.** v2.1.119 installed at `C:\Users\Admin\.local\bin\claude.exe`. Authenticated via Pro/Max OAuth, not API billing. Run with `claude` from any directory.
+**CLAUDE.md primer.** Lives at repo root. Read on every Claude Code session start. Updated 30 April evening to point at v1 doc set in /docs/ as canonical.
 
-**CLAUDE.md primer.** Lives at repo root. Read on every Claude Code session start. Contains repo structure, hard rules, and current state pointers.
+**ARCHITECTURE.md.** This document. Lives at repo root. Read alongside CLAUDE.md on every session start.
 
-**ARCHITECTURE.md.** This document. Lives at repo root. Read alongside CLAUDE.md on every session start. Contains the full system reference.
+**v1 documentation set.** `/docs/` folder. Five documents totalling 2,746 lines specifying the initiative model architecture. Canonical for the post-30 April system.
 
-**Local n8n bridge (`sync.js`).** `C:\Users\Admin\workfiles-\n8n\sync.js`. Bidirectional sync between local files and n8n via the REST API. Commands:
+**Legacy documentation.** `/docs/legacy/` folder. Three superseded docs retained for history.
 
-- `node sync.js list` — every workflow on n8n with active state and tracked status
-- `node sync.js status [--since 24h]` — execution history per active workflow with FAIL, STALE, WARN flags
-- `node sync.js pull <alias|id>` — fetch one workflow, explode Code nodes to editable .js files
-- `node sync.js pull --all-tracked` — fetch every workflow listed in tracked.json
-- `node sync.js diff <alias|id>` — show pending Code-node changes vs remote
-- `node sync.js push <alias|id>` — backup remote to /backups/, push if confirmed
+**Local n8n bridge (`sync.js`).** `C:\Users\Admin\workfiles-\n8n\sync.js`. Bidirectional sync via REST API. Commands: list, status, pull, diff, push.
 
-Folder layout under `n8n/`:
-```
-sync.js
-package.json (ESM)
-.env (gitignored: N8N_BASE_URL, N8N_API_KEY)
-tracked.json (alias → workflow ID map)
-workflows/<alias>.json
-code-nodes/<alias>/<slug>--<id>.js
-backups/<alias>-<timestamp>.json
-```
-
-**Open issue: API key rotation.** The n8n API key generated 27 April was briefly visible in a screenshot. Should be rotated and `.env` updated.
+**Open issue: credential rotation batch.** Anthropic API key visible in n8n/workflows/wf15.json screenshot 27 April. n8n API key from same screenshot. Postgres password (quarterly rotation). Google Sheets OAuth (re-authorise). Treat as one batched rotation session per R24.
 
 ---
 
@@ -582,47 +500,29 @@ backups/<alias>-<timestamp>.json
 
 <!-- HUMAN -->
 
-The Signal Engine sells the methodology, not the platform. Clients buy structured engagements that use the Signal Engine to validate their hypotheses, surface gaps, and close those gaps with named actions.
+The Signal Engine sells the methodology, not the platform.
 
 ### 12.1 The three-track engagement structure
 
-Every commercial engagement maps to one or more of three tracks.
+**Track 1 — Validate hypotheses.** £50k to £150k. Four to eight weeks.
+**Track 2 — Map the gap.** £150k to £350k. Eight to twelve weeks.
+**Track 3 — Close the gap.** £300k to £1m+. Six to twelve months.
 
-**Track 1 — Validate hypotheses.** The client believes certain things about their market, technology, regulation, or competition. Track 1 articulates those beliefs as formal hypotheses with WNTBT conditions, runs them through the Signal Engine, and produces a validation report. Output: a clear statement of which hypotheses are supported by current evidence, which are contradicted, and which are neutral. Typical duration: four to eight weeks. Typical price: £50k to £150k depending on scope.
-
-**Track 2 — Map the gap.** Once hypotheses are articulated, Track 2 maps the gap between current state and the conditions that need to be true for the hypothesis to resolve favourably. Output: a structured gap analysis with named owners, intervention paths, and time horizons. Typical duration: eight to twelve weeks. Typical price: £150k to £350k.
-
-**Track 3 — Close the gap.** The most ambitious track. The client commits to closing specific gaps, and FutureBridge supports the closure with continuous Signal Engine monitoring, partner identification, and gate-based decision support. Output: a programme of action with the Signal Engine as the live intelligence layer underneath. Typical duration: six to twelve months. Typical price: £300k to £1m+.
-
-The Shell H3 engagement at £330k is a Track 2-into-Track 3 engagement. The VW India IMP work was a Track 1-into-Track 2 engagement.
+The Shell H3 engagement at £330k is a Track 2-into-Track 3.
 
 ### 12.2 What the client buys
 
-The client does not buy the Signal Engine as software. They buy four things.
-
-The methodology, applied to their specific situation. WNTBT articulation, hypothesis structuring, decision window framing.
-
-The output of the engine, scoped to their hypotheses. Daily and weekly intelligence specific to the bets they have asked the system to track.
-
-The synthesis layer. Chris and engagement teams who turn the system's raw output into client-shaped narratives, board materials, and decision support.
-
-The relationship. Standing access to FutureBridge thinking outside formal engagements, with the Signal Engine as the connective tissue.
+The methodology applied to their situation. The output of the engine scoped to their hypotheses. The synthesis layer (Chris and engagement teams). The relationship.
 
 ### 12.3 The pricing logic
 
-Pricing is not based on platform cost. The marginal cost of running the Signal Engine for one additional hypothesis is small. Pricing is based on the value of the decision the methodology supports.
-
-A hypothesis that supports a £100m capital allocation decision is worth more to track than a hypothesis that supports a £5m R&D budget question. The pricing reflects the size of the decision, not the volume of signals or hypotheses.
-
-Standard engagement prices anchor at £50k (single Track 1, narrow scope) and scale to £1m+ (multi-year Track 3 with continuous monitoring across a portfolio of hypotheses).
+Pricing is based on the value of the decision the methodology supports. Standard prices anchor at £50k and scale to £1m+.
 
 ### 12.4 The repeatability advantage
 
-Most consulting engagements are project-shaped. They have a start, a middle, and an end. After the engagement, the client returns to whatever intelligence they had before, which is now stale.
+Once a client's hypotheses are in the system, the system continues to track them whether or not there is an active engagement. This creates a natural progression from project to retainer to multi-year programmes.
 
-The Signal Engine inverts this. Once a client's hypotheses are in the system, the system continues to track them whether or not there is an active engagement. This creates a natural progression from project work into retainer work, and from retainer work into multi-year programmes. The cost of leaving FutureBridge increases with every month a client's hypotheses remain in the register, because the institutional memory of the bet sits in the system.
-
-This is the structural commercial advantage. It is also the structural commercial obligation. The system must run reliably, daily, for years.
+The cost of leaving FutureBridge increases with every month a client's hypotheses remain in the register.
 
 ---
 
@@ -630,41 +530,27 @@ This is the structural commercial advantage. It is also the structural commercia
 
 <!-- HUMAN -->
 
-The Signal Engine sits in a category that is currently under-served, and the competitive question is which incumbent moves into the gap first.
-
 ### 13.1 What it competes with
 
-It does not compete with research firms (Wood Mackenzie, IHS Markit, Gartner). They produce reports. The Signal Engine produces decision windows. Different category.
-
-It does not compete with news platforms (Bloomberg Terminal, Reuters Eikon, Mineral Intelligence). They produce data. The Signal Engine produces hypothesis-mapped intelligence. Different category.
-
-It does compete, indirectly, with the strategy practices of McKinsey, Bain, BCG, and the sector specialists at Deloitte, EY, KPMG, and PwC. When a senior strategy executive needs a forward-looking view of the conditions underneath a major bet, they currently have two options: hire a tier-one consulting firm for a six-figure engagement, or read research and synthesise themselves. The Signal Engine offers a third option that is faster, more continuous, and methodologically sharper than either.
+It does not compete with research firms, news platforms, or consulting firms directly. It competes with the strategy practices of those firms when senior strategy executives need a forward-looking view.
 
 ### 13.2 The defensibility of the position
 
-The structural moat is cross-domain adjacency. See Section 3.8 for the methodology treatment. The commercial implication is that FutureBridge sees metric movement in a client's industry before it appears in that industry, by tracking the upstream signals in adjacent industries that have already crossed the same thresholds. A sector specialist competitor cannot replicate this without abandoning the sector specialism that defines them. A horizontal research firm could attempt it but lacks the sector depth that turns adjacency into commercial conviction. The six-sector coverage (energy, mobility, chemicals, life sciences, food and nutrition, manufacturing) is not a breadth claim. It is the substrate on which adjacency operates.
+The structural moat is cross-domain adjacency. See Section 3.8.
 
-Three further moats sit alongside the adjacency moat.
+In the initiative model, the moat operates more visibly through the entity catalogue. The same entity referenced by initiatives across companies and sectors makes adjacency queryable rather than narrative.
 
-The methodology. Hypothesis-driven intelligence with WNTBT framing and trajectory math is not commodity consulting practice. It is a deliberate inversion of how strategy work is normally done. Building the institutional muscle to run engagements this way takes years and creates a methodological moat that compounds with every engagement.
+Three further moats: methodology, hypothesis register, technology.
 
-The hypothesis register. 118 hypotheses across four registers, with 49-column schema, phase tracking, metric stacks, and adjacency tags, is a substantial knowledge asset in its own right. Reproducing it would take a competitor years. Each engagement adds to the register, compounding the asset further.
-
-The technology. The Signal Engine pipeline, the contact database, the classifier, the trajectory layer, the cross-domain transfer log, the integrated tooling. Not unique in any single component, but unique in the combination, and unique in the maturity of integration with the methodology and the adjacency engine.
+The v1 documentation set in `/docs/` codifies the methodology to a level where it can be operated by analysts other than Chris.
 
 ### 13.3 The vulnerability
 
-The position is vulnerable in two ways.
-
-A tier-one consulting firm could build a comparable system, and would have the brand and the client roster to outsell FutureBridge if they did. McKinsey's Solutions practice and BCG's Gamma have built productised consulting offerings before. They could build this one.
-
-A specialist intelligence firm (CB Insights, PitchBook in the venture space, or a sector specialist like Wood Mackenzie) could acquire the methodology by hiring the right team and copying the architecture. They have data assets that FutureBridge does not, which would make the resulting product more comprehensive.
-
-The defence against both is speed and depth. Get the methodology productised, the technology mature, and the client relationships locked in before the incumbents notice the gap.
+Tier-one consulting firms could build this. Specialist intelligence firms could acquire the methodology. Defence is speed and depth.
 
 ### 13.4 The acquisition target profile
 
-If FutureBridge is ever acquired, the most natural buyers are: a tier-one consulting firm wanting to add a productised forward-intelligence offering, a research house wanting to move from rear-view to forward-view, or a strategic acquirer in one of the served sectors (an oil major, a chemicals major, an automotive major) wanting captive forward-looking intelligence. Each pays for a different version of the asset. The methodology and register are the most valuable to a consulting acquirer. The technology and contact database are the most valuable to a research house. The client relationships and sector depth are the most valuable to a strategic acquirer.
+Consulting acquirer values methodology and register. Research house values technology and contact database. Strategic acquirer values client relationships and sector depth.
 
 ---
 
@@ -674,43 +560,23 @@ If FutureBridge is ever acquired, the most natural buyers are: a tier-one consul
 
 ### 14.1 The buyer
 
-The buyer is a senior decision-maker in a capital-intensive sector who has placed a strategic bet that they need to defend or revise. Job titles vary: Chief Strategy Officer, SVP Innovation, Head of New Energies, VP R&D, Chief Technology Officer, Head of Corporate Development. Sectors: energy (super-majors, midstream, utilities, renewables), mobility (OEMs, tier-one suppliers, charging networks), chemicals (commodity, specialty, formulation), life sciences (pharma, medtech, agritech), food and nutrition (manufacturers, ingredients, consumer brands), manufacturing (industrial automation, advanced materials, defence-adjacent).
-
-The buyer's pain is recognisable. They have a board that expects conviction. They have an existing intelligence stack that does not give them confidence. They have made decisions in the last twelve months that they would have made differently with better information. They are looking for an alternative.
+Senior decision-maker in capital-intensive sectors with a strategic bet to defend or revise.
 
 ### 14.2 The first conversation
 
-The first conversation never starts with the Signal Engine. It starts with the buyer's specific bet. "What is the biggest decision you are going to make in the next eighteen months, and what would have to be true for that decision to be correct?"
-
-That question is the commercial entry point. It is also the methodology entry point. If the buyer can answer it crisply, they are sophisticated enough to be a customer. If they cannot, the engagement begins by helping them articulate it.
-
-From the answer, FutureBridge proposes a Track 1 validation engagement scoped to their named hypotheses. The engagement uses the Signal Engine to test those hypotheses against current evidence and produces a verdict. This is the entry-level offer.
+"What is the biggest decision you are going to make in the next eighteen months, and what would have to be true for that decision to be correct?"
 
 ### 14.3 The expansion path
 
-Track 1 leads to Track 2 leads to Track 3. The progression is natural because each track produces outputs that beg the next track's question. Track 1 surfaces hypotheses with evidence gaps; Track 2 maps those gaps; Track 3 closes them.
-
-A successful engagement also surfaces adjacent hypotheses. A Shell H3 engagement reveals BP-relevant hypotheses, which reveals Chevron-relevant hypotheses, which reveals SLB-relevant hypotheses. The hypothesis register becomes a cross-account asset, and the GTM motion follows the register.
+Track 1 → Track 2 → Track 3. A successful engagement also surfaces adjacent hypotheses, making the register a cross-account asset.
 
 ### 14.4 The marketing surface
 
-The Signal Engine is currently sold through direct relationships. Chris's network, partner introductions, sector conferences. There is no marketing programme. This is appropriate at current scale but constrains growth.
-
-The most natural marketing surfaces, in order of fit:
-
-A weekly LinkedIn post built from the daily intelligence digest. Short, declarative, evidence-based, with one pointed question and a soft call to action. The same voice as the outreach emails. The audience is the buyer profile in Section 14.1.
-
-A monthly methodology essay. Long-form, slightly opinionated, written in the FT Alphaville or Bloomberg Intelligence register. Each essay takes a hypothesis from the register and works through the WNTBT analysis publicly. This positions the methodology and creates inbound interest from sophisticated buyers.
-
-A quarterly closed-door briefing. Invite-only, twelve to twenty senior executives, structured around three or four current hypotheses with named decision windows. The Signal Engine produces the underlying material. The briefing produces the relationships.
-
-None of these are running yet. They are the next phase of the GTM build.
+Currently sold through direct relationships. Future: weekly LinkedIn post, monthly methodology essay, quarterly closed-door briefing.
 
 ### 14.5 The delivery model
 
-Engagements are delivered by Chris plus a small support team (currently Jaideep on energy super-majors and Technip Energies, Neeraj on European utilities). The Signal Engine handles the labour-intensive intelligence layer. The team handles synthesis, framing, and client conversation. This ratio of system to people is the structural commercial advantage. It means a small team can deliver engagements that would require a much larger team in a traditional consulting model.
-
-The delivery model breaks at scale (above roughly twenty parallel active engagements, the team is bottlenecked on synthesis). The fix is either to grow the team or to mature the system enough that synthesis can be partially delegated to the system. Both are roadmap items.
+Chris plus a small support team. The Signal Engine handles labour-intensive intelligence; the team handles synthesis.
 
 ---
 
@@ -720,15 +586,13 @@ The delivery model breaks at scale (above roughly twenty parallel active engagem
 
 <!-- HUMAN -->
 
-The system is crossing from build mode to operate mode in late April 2026.
+The system is crossing from build mode to operate mode in late April 2026. Major architectural pivot 30 April afternoon to the initiative model.
 
-In build mode, pipelines run, sometimes fail, but output isn't yet wired to anything that creates revenue or risk. Failures are silent. Token spend is sunk cost.
+In build mode, pipelines run, sometimes fail, but output isn't yet wired to anything that creates revenue or risk. Failures are silent.
 
-In operate mode, pipeline output drives outreach, outreach drives client conversations, conversations drive engagements. Every silent failure is now a real cost. Every successful run compounds.
+In operate mode, pipeline output drives outreach, conversations drive engagements. Every silent failure is now a real cost.
 
-The shift reframes everything. Reliability is non-negotiable. The architecture must serve the loop, not the build. Every decision is anchored to whether it strengthens or risks the daily run.
-
-The 28 April OAuth break is the inaugural event of operate mode. It exposed the gap between "we have a pipeline" and "we have a reliable pipeline." That gap is closed by the work in Section 16.
+The 28 April OAuth break was the inaugural event of operate mode. The 30 April architectural pivot is the second-stage maturation. The matrix model was operationally heavy and analytically partial. The initiative model is tighter, more queryable, and more defensible to clients. The pivot is the right work even though it postpones some operational items.
 
 ---
 
@@ -736,111 +600,107 @@ The 28 April OAuth break is the inaugural event of operate mode. It exposed the 
 
 <!-- HUMAN -->
 
-### Build 0 — Restore daily reliability (gate before all else)
+### Build 0 — Restore daily reliability
 
-The pipeline must run clean every day before any other build is attempted. Specifically:
+Resolve recurring Google Sheets OAuth break. Build morning.js. Audit 17 workflows on n8n.
 
-1. Resolve the recurring Google Sheets OAuth break. Repeated reauths suggest the root cause is not a stale token. Likely candidates: OAuth client type wrong (Desktop vs Web), redirect URI mismatch, consent screen still in Testing mode (7-day refresh expiry), or multiple Sheets credentials competing on the same Google account.
+### Build A — Write all ACT signals
 
-2. Build `morning.js` as the first action of every working day. Wraps `sync.js status` in a 10-second readable summary.
+Move write nodes upstream of Score and Select Best.
 
-3. Audit the 17 workflows on n8n. Deactivate dead ones. Resolve the duplicate WF-15 question. Add survivors to `tracked.json`.
+### Build B — Embryo hypothesis feed
 
-This is the gate before A through H.
-
-### Build A — Write all ACT signals, not just the winner
-
-Score and Select Best Signal currently gates all writes. Move write nodes upstream of the scorer. New flow: Parse Classification → Prepare Sheet Updates → Write ALL ACT → Score and Select Best → YAMM flow. All ACT signals must write to Signal Tracker and update the Heat Map regardless of whether they generate an email.
-
-### Build B — Embryo hypothesis feed from no-match ACT signals
-
-ACT signals where `hypothesis_impacts` is empty represent register gaps. These are the most valuable output the system can produce. After Parse Classification, branch on ACT plus no hypothesis match. Write to `hypothesis_embryos` table in Datasette. WF-17 (Monday 7am) reads from this table to draft embryo hypotheses for analyst review via embryo_review.html.
+ACT signals with no hypothesis match → `hypothesis_embryos`.
 
 ### Build C — Daily Intelligence Report
 
-All ACT signals regardless of hypothesis match, formatted as a structured digest. Three outputs: Daily Intelligence tab in Google Sheet, HTML file pushed to GitHub Pages, LinkedIn post drafts. `so_what` and `what_next` derive from existing classification output. No additional Claude call needed.
+Three outputs: Daily Intelligence tab, HTML to GitHub Pages, LinkedIn post drafts.
 
 ### Build D — Review P1 ACT classification threshold
 
-Pull top 5 MONITOR signals from a clean run, read object statements. If any would have moved a hypothesis, tighten ACT definition to require probability movement rather than certainty.
+Tighten ACT definition.
 
-### Build E — Postgres migration (target schema v5)
+### Build E — Postgres migration
 
-Move the hypothesis store and Signal Tracker from Google Sheets to Postgres on Railway. Sheets stays as a human-readable view via sync. Datasette stays for read-only public access. Migration is hypothesis store first (lower risk), Signal Tracker second.
-
-Build E phase one (28 April 2026) produced the reversible artefacts under `/db/`: schema design (`v5_design.md`), Postgres DDL (`hypothesis_register_v5.sql`, 76 cols / three sections / R16-aligned), HTML schema render (`v5_render.html`), and a stand-down v4-targeted migration script that is superseded by the v5 merge migration.
-
-The v5 merge migration is the next-session task. It combines the 25 March CSV (decision-layer columns not in live) with the 28 April Apps Script `doGet` payload (bucket-layer columns plus shared-name columns), reconciles the renames documented in `/db/schema/v5_design.md`, and writes to the unified `hypothesis_register` table. Same dry-run-by-default discipline as the phase-one script.
+DELIVERED. v5 schema deployed; 118 hypotheses persisted; observable layer added via migration 003 (v5.6).
 
 ### Build F — Classifier extraction
 
-Move the Claude classification logic out of n8n's HTTP nodes into a standalone `classifier/` module in the repo. Same logic, same prompts, but testable, version-controlled, improvable by Claude Code without touching n8n.
+Standalone `classifier/` module. In initiative model, reorganised as six-step signal pipeline.
 
 ### Build G — ARCHITECTURE.md auto-update
 
-Build `update-architecture.js`. Reads ARCHITECTURE.md, hits live sources (n8n, Sheets, Datasette, git), replaces AUTO sections with fresh content, leaves HUMAN sections alone, writes back, re-renders the HTML version, commits. Run manually, daily as part of morning.js, and after every n8n push.
+Build `update-architecture.js`.
 
 ### Build H — MCP integration
 
-Wire Claude Code to n8n, Google Sheets, Postgres, and persistent memory via Model Context Protocol servers. Removes the sync.js bridge, removes the chat-to-terminal copy-paste, makes Claude Code first-class operator of the system.
+Wire Claude Code via MCP servers.
 
 ### Build I — New email sender stack
 
-YAMM is dead because of spam quarantine. Choose between Instantly.ai and Smartlead, set up dedicated sending domain, wire into n8n. This is the gate before any large-volume outreach campaign.
+Instantly.ai or Smartlead with dedicated sending domain.
 
 ### Build J — Action layer specification
 
-Add to each hypothesis: who owns closing each metric gap inside the client organisation, what intervention moves it, what the cost of not acting now is. This is the gap surfaced by external review of the methodology. Currently the system identifies windows but does not name owners or interventions.
+In initiative model, captured at link level via claim_basis.
 
 ### Build K — Marketing surface
 
-Weekly LinkedIn post built from the daily intelligence digest. Monthly methodology essay. Quarterly closed-door briefing. None are running yet. Sequence: LinkedIn first (lowest cost, highest frequency), essay second (positions methodology), briefing third (converts relationships).
+LinkedIn first, essay second, briefing third.
 
-### Build L — Trajectory layer
+### Build L — Trajectory layer (RETIRED)
 
-The methodology in Section 3.7 requires infrastructure that does not yet exist. Build the trajectory math: required slope, observed slope, gap, and time-to-miss, computed daily for every metric on every active hypothesis. The classifier consumes these values to determine phase (divergent, converging, trigger-ready, resolved) rather than relying on judgement. ACT classification is recomputed against trajectory shift rather than single-signal magnitude, per the revised Section 3.5 definition.
+Superseded by initiative model behaviour rule per `/docs/INITIATIVE_MODEL.md` section 4.
 
-Specific components: a `slopes` table or extension to the hypothesis register that holds required and observed slopes per metric per hypothesis. A daily slope recalculation job (probably a new workflow or an extension to WF-15) that updates slopes from the past 90 days of signal history. A trajectory output surface in the daily intelligence digest and the live hypothesis dashboard. A revised classifier prompt that references trajectory state rather than single-signal interest.
+### Build M — Adjacency tagging (RETIRED)
 
-This is a substantial build. It touches the schema, the classifier, and the output layer. It is the most important methodology build on the roadmap, and it should be sequenced after Postgres migration (Build E) because the slope tables are easier to maintain in Postgres than in Sheets.
+Superseded by entity-catalogue adjacency in initiative model per `/docs/INITIATIVE_MODEL.md` section 8.
 
-### Build M — Adjacency tagging and cross-domain transfer log
+### Build N — Initiative model migration (NEW, post 30 April)
 
-The methodology in Section 3.8 requires explicit adjacency infrastructure. Add domain tags to every signal at ingestion (energy, mobility, chemicals, life sciences, food and nutrition, manufacturing, with sub-tags where relevant). Add adjacency tags to every hypothesis, declaring the adjacent domains whose metrics inform the hypothesis. Build a cross-domain transfer log: when a metric crosses threshold in domain A and the same metric is declared adjacent for a hypothesis in domain B, the system surfaces the transfer as a distinct output stream alongside the standard daily digest.
+Five-phase sequence per `/docs/N8N_IMPLEMENTATION.md` section 6:
 
-The transfer log is the thing that makes adjacency commercially visible. It produces outputs of the form "polymer membrane permeability crossed N in pharma domain six months ago; this is the upstream signal for hypothesis BET_E007 (green hydrogen electrolyser cost); current trajectory in hydrogen electrolysers shows the signal arriving in roughly twelve months." That output is what the firm sells. It is the moat made legible.
+**Phase 1 (immediate):** Migration 004 deployed (mv1_* tables). Apps Script extended. Sheets master sheet gets new tabs.
 
-This build can run in parallel with Build L. Both are methodology builds. Both depend on Postgres migration (Build E) for clean implementation.
+**Phase 2 (1-2 weeks):** WF-INIT-1 (population assistant) built. First company (Shell) populated end-to-end via methodology. WF-INIT-2 (Sheets-PG sync) operational.
+
+**Phase 3 (2-4 weeks):** WF-15A reworked to target mv1_* schema. Triage/routing/assessment prompts tuned. Live signal flow on Shell.
+
+**Phase 4 (4-8 weeks):** Second and third companies populated (BP, Equinor). Cross-company queries enabled. WF-INIT-3 deployed. Legacy WF-15 deprecated; observable_layer marked for removal via migration 005.
+
+**Phase 5 (3-6 months):** WF-INIT-4 operational. Methodology v1.x revisions based on operational learning.
+
+### Build O — Native AI rainy-Tuesday test (immediate next, P0)
+
+Drop /docs/INITIATIVE_MODEL.md and /docs/INITIATIVE_METHODOLOGY.md into a fresh AI. Ask it to populate one Shell H3 initiative from public sources. Compare to /docs/WORKED_EXAMPLE_SHELL_H3.md. Use comparison to identify methodology v1.1 revisions.
 
 ---
 
 ## 17. Open items queue
 
-<!-- HUMAN: hand-curated, partially derivable from sync.js status -->
+<!-- HUMAN -->
 
 | # | Item | Priority |
 |---|---|---|
-| 1 | Resolve recurring Google Sheets OAuth break (root cause) | P0 |
-| 2 | Build morning.js — daily 10-second status check | High |
-| 3 | Workflow audit — deactivate dead, resolve duplicate WF-15 | High |
-| 4 | Rotate n8n API key briefly visible in screenshot | High |
-| 5 | Write all ACT signals to Signal Tracker and Heat Map (Build A) | High |
-| 6 | Fix Write to Campaigns Tab — change to Append Row | High |
-| 7 | Trajectory layer (Build L) — required slope, observed slope, gap, time-to-miss per metric per hypothesis | High |
-| 8 | Adjacency tagging and cross-domain transfer log (Build M) | High |
-| 9 | Bulk-set Signal Tracker rows older than 7 days to HISTORICAL; add status=NEW filter to Get News Feeds in WF-15A | Medium |
-| 10 | Mark Signals Processed node at pipeline end | Medium |
-| 11 | Wire campaign_manager_v2.html to read from Campaigns tab in Google Sheets | Medium |
-| 12 | Embryo hypothesis feed (Build B) | Medium |
-| 13 | Daily Intelligence Report (Build C) | Medium |
-| 14 | New email sender stack — choose Instantly.ai vs Smartlead (Build I) | Medium |
-| 15 | Build update-architecture.js (Build G) | Medium |
-| 16 | Action layer specification (Build J) | Medium |
-| 17 | Campaign Master tab — 52-week topic calendar (CCS, H2, BATT, EV, SAF, DIG, IND, NUC) | Low |
-| 18 | Datasette contact count query: `SELECT count(*) FROM contacts WHERE sector = 'ENERGY' AND tier = 1 AND email != ''` | Low |
-| 19 | Add Render wake-up node before Get Energy Contacts | Low |
-| 20 | Update architecture URL in hypothesis_audit.html | Low |
-| 21 | LinkedIn weekly post (Build K, phase 1) | Low |
+| 1 | Native AI rainy-Tuesday test on v1 doc set (Build O) | P0 |
+| 2 | Migration 004 deployment (mv1_* tables; schema v6.0) | P0 |
+| 3 | Shell portfolio review against methodology (v3 vs methodology output) | High |
+| 4 | Resolve recurring Google Sheets OAuth break (root cause) | High |
+| 5 | Credential rotation batch (Anthropic, n8n, PG, Sheets OAuth) | High |
+| 6 | Shell £220k Business Case Assessment SOW PO chase | High (commercial) |
+| 7 | Build morning.js — daily 10-second status check | High |
+| 8 | Workflow audit — deactivate dead, resolve duplicate WF-15 | High |
+| 9 | Second-company population (BP or Equinor; Build N Phase 4) | Medium |
+| 10 | WF-INIT-1 (population assistant) build | Medium |
+| 11 | WF-INIT-2 (Sheets-PG sync) build | Medium |
+| 12 | Fix Write to Campaigns Tab — change to Append Row (legacy WF-15) | Medium |
+| 13 | New email sender stack (Build I) | Medium |
+| 14 | Build update-architecture.js (Build G) | Medium |
+| 15 | Bulk-set Signal Tracker rows older than 7 days to HISTORICAL (legacy) | Low |
+| 16 | Wire campaign_manager_v2.html to Campaigns tab | Low |
+| 17 | LinkedIn weekly post (Build K, phase 1) | Low |
+| 18 | WF-15A signal pipeline rework to mv1_* (Build N Phase 3) | Medium-Low until Phase 2 done |
+| 19 | Migration 005 — legacy observable_layer cutover | Low until Build N Phase 4 done |
 
 ---
 
@@ -848,161 +708,173 @@ This build can run in parallel with Build L. Both are methodology builds. Both d
 
 <!-- HUMAN -->
 
-The Signal Engine carries five categories of risk.
+**Operational risk.** Pipeline can break and remain broken without anyone noticing. Mitigation: morning.js, status command, R23 daily check, R26 end-of-session git hygiene.
 
-**Operational risk.** The pipeline can break and remain broken without anyone noticing, which destroys client trust if it happens during an active engagement. Mitigation: morning.js, status command, automated alerting. Currently partial.
+**Methodological risk.** Hypothesis poorly framed. Mitigation in initiative model: claim format rule (4 components required), entity creation discipline, methodology section 3 step 10 review.
 
-**Methodological risk.** A hypothesis may be poorly framed (unfalsifiable, too broad, missing key metrics). The system will treat it as valid and produce confident-looking output that is actually noise. Mitigation: monthly hypothesis calibration cycle, analyst-in-the-loop on register changes, hypothesis review at engagement start.
+**Commercial risk.** Shell H3 engagement (£330k) plus Business Case Assessment SOW (£220k, no PO). Concentration risk plus active commercial item.
 
-**Commercial risk.** A single client engagement (currently Shell H3 at £330k) represents disproportionate revenue concentration. The Business Case Assessment SOW (£220k) within H3 has no PO despite substantial work complete, which is an active commercial risk. Mitigation: pipeline diversification, formal SOW management, payment milestones.
+**Technology risk.** Single points of failure: n8n on Railway, Anthropic API, Google Sheets OAuth, Render free tier cold start.
 
-**Technology risk.** Single points of failure exist at multiple layers. n8n on Railway is one. Anthropic API access is another. Google Sheets OAuth is a third. The Render free tier with 60-second cold start is a fourth. Mitigation: Postgres migration, classifier extraction, sender redundancy, eventually self-hosted alternatives where the cost-benefit makes sense.
+**Reputational risk.** ACT signal sent to client contact that is wrong. Mitigation: human review on day's outreach. In initiative model: assessment confidence dimension plus material/structural review thresholds.
 
-**Reputational risk.** A signal that classifies as ACT and is sent to a senior client contact, but is wrong (factually inaccurate, badly framed, or insensitive to context), damages the relationship and the methodology. Mitigation: human review on the day's outreach before send, voice and tone rules embedded in the classifier prompts, quality gates on email generation.
+**Documentation risk (new, 30 April 2026).** v1 doc set in /docs/ codifies the system at a level where it can be rebuilt. Valuable but creates leak vector. Mitigation: docs in private GitHub repo, access discipline, treat as commercially sensitive IP.
 
-The single largest dependency is on Anthropic. The classification and email generation steps both depend on continued access to the Claude API at usable cost and latency. Mitigation paths exist (Bedrock, Vertex, alternative model providers) but would require rework of the classifier prompts. This is a structural risk to manage rather than to eliminate.
+The single largest dependency is Anthropic.
 
 ---
 
 # Part five — operating rules (binding)
 
-## 19. Operating rules — R1 through R25
+## 19. Operating rules — R1 through R26
 
 <!-- RULE: this section is binding. Changes require explicit version bump and review. -->
 
 This section is the enforcement layer. Doctrine in Parts 1 to 4 describes the system. The rules in this section govern behaviour. They apply to every actor that touches the Signal Engine: Chris, colleagues, engagement teams, the classifier prompts inside WF-15, and any AI session (including Claude Code) operating on the system.
 
-When doctrine and a rule appear to conflict, the rule governs. If a rule needs to change because doctrine has evolved, change the rule explicitly and bump the document version. Do not interpret around it.
+When doctrine and a rule appear to conflict, the rule governs. If a rule needs to change because doctrine has evolved, change the rule explicitly and bump the document version.
 
-Rules are numbered R1 through R25. They are grouped into seven categories. Where a rule references a build that does not yet exist, the rule applies as soon as the build ships. Until then, the doctrine still holds and the rule documents the target behaviour.
-
-Format. Each rule has an identifier, a binding statement, and a brief rationale. The binding statement uses YOU MUST, YOU MUST NOT, or MUST be in capitalised form so the eye finds it.
+Rules are numbered R1 through R26. Where a rule references a build that does not yet exist, the rule applies as soon as the build ships.
 
 ### 19.1 Signal classification (R1 to R4)
 
 **R1. Signal must move a metric.**
-A signal MUST move at least one named system metric on at least one active hypothesis. If no metric movement is identifiable, classification MUST be IGNORE. No exceptions for source prestige, novelty, or surface drama.
-*Rationale.* Without this, the system reverts to a news summariser. The hypothesis register is the filter; without the filter, there is no Signal Engine.
+A signal MUST move at least one named system metric on at least one active hypothesis (or, in the initiative model, must update a specific link claim per `/docs/SIGNAL_PIPELINE.md`). If no metric movement or claim assessment is identifiable, classification MUST be IGNORE. No exceptions for source prestige, novelty, or surface drama.
+*Rationale.* Without this, the system reverts to a news summariser.
 
 **R2. ACT requires more than single-signal magnitude.**
-YOU MUST NOT classify a signal as ACT unless one of the following is true: (a) it contributes to trajectory shift across two or more metrics on the same hypothesis, (b) it crosses a registered threshold on a single metric, or (c) it triggers a phase transition for a hypothesis. Single-metric movement that does none of these is MONITOR, not ACT.
-*Rationale.* ACT is a probability-shift signal, not an interest signal. The multiplicative-not-additive principle (Section 3.5) is enforced here.
+YOU MUST NOT classify a signal as ACT unless: (a) it contributes to trajectory shift across two or more metrics on the same hypothesis, (b) it crosses a registered threshold on a single metric, or (c) it triggers a phase transition. In the initiative model, the equivalent is signal magnitude and assessment confidence per `/docs/SIGNAL_PIPELINE.md` section 5.
+*Rationale.* ACT is a probability-shift signal, not an interest signal.
 
 **R3. No-match ACT goes to embryo, not to forced-fit.**
-A signal that meets ACT criteria but touches no active hypothesis MUST be written to `hypothesis_embryos` with status `pending_review`. YOU MUST NOT force-fit such a signal against an existing hypothesis to avoid the embryo path.
-*Rationale.* Embryo signals are the most valuable input to the methodology because they reveal register gaps. Force-fitting destroys this signal.
+A signal that meets ACT criteria but touches no active hypothesis MUST be written to `hypothesis_embryos` (or, in initiative model, surfaced for new-initiative consideration). YOU MUST NOT force-fit such a signal.
+*Rationale.* Embryo signals reveal register gaps. Force-fitting destroys this signal.
 
 **R4. Source prestige is irrelevant to classification.**
-News volume, source prestige, virality, or surface drama MUST NOT influence classification. The classifier evaluates metric movement only.
-*Rationale.* Prestige bias is the most common failure mode in human-curated intelligence systems. The Signal Engine exists in part to remove it.
+News volume, source prestige, virality, or surface drama MUST NOT influence classification.
+*Rationale.* Prestige bias is the most common failure mode in human-curated intelligence systems.
 
 ### 19.2 Trajectory and phase (R5 to R7)
 
 **R5. ACT outputs MUST include trajectory data.**
-Every ACT classification MUST include `trajectory_delta` as a structured field showing required slope, observed slope, gap, and time-to-miss for each affected metric. Outputs missing this field fail validation and are re-prompted.
-*Rationale.* "This signal moves a metric" is observation. "This signal shifts trajectory by X months" is judgement that can be defended.
+Every ACT classification MUST include `trajectory_delta` as a structured field. In the initiative model, the equivalent is the structured signal object with direction, magnitude, assessment_confidence, reasoning per `/docs/SIGNAL_PIPELINE.md` section 2.
+*Rationale.* Defensible judgement requires structured data.
 
 **R6. Phase transitions MUST be triggered by trajectory state.**
-Phase transitions (Divergent → Converging, Converging → Trigger-ready, Trigger-ready → Resolved) MUST be triggered by computed trajectory state, not by single events or human judgement applied directly. Specifically: Divergent → Converging requires slope data to become computable across the metric stack; Converging → Trigger-ready requires the majority of metrics to be in negative gap with a credible path to closure within the time horizon; Trigger-ready → Resolved requires either all metrics crossed (true), all time-to-miss values exceeded (false), or formal displacement by a sharper hypothesis.
-*Rationale.* Phase is the most commercially valuable output the system produces. It must be defensible and reproducible, not dependent on operator mood.
+Phase transitions (matrix model) or state transitions (initiative model: holding → weakening → broken or ambiguous) MUST be triggered by computed state, not single events or human judgement applied directly. State machine rules per `/docs/SIGNAL_PIPELINE.md` section 3 step 5.
+*Rationale.* Phase/state must be reproducible.
 
 **R7. Stale hypotheses MUST be flagged.**
-Any hypothesis with no observed slope movement on any metric for more than thirty consecutive days MUST be flagged as stale, regardless of perceived activity in news flow. Stale hypotheses surface in the weekly review for retire, reframe, or revisit decisions.
-*Rationale.* A hypothesis that nothing moves is either resolved silently (true or false) or no longer interesting. Either way it does not belong in the active register.
+Any hypothesis or initiative with no observed movement for >30 days (or, for initiatives, all entities in `holding` state for >90 days with no recent signals) MUST be flagged as stale.
+*Rationale.* Stale items don't belong in the active register at full attention.
 
 ### 19.3 Adjacency (R8 to R10)
 
 **R8. Every signal MUST be domain-tagged.**
-Every signal entering the system MUST be tagged with domain of origin from the controlled list: energy, mobility, chemicals, life sciences, food and nutrition, manufacturing. Sub-tags (for example, electrolysis within energy, or membranes within chemicals) are added where relevant. Signals without a domain tag MUST NOT enter classification.
-*Rationale.* Adjacency cannot be detected without origin data. Tagging is the entry condition.
+Every signal entering the system MUST be tagged with domain of origin from the controlled list. Signals without a domain tag MUST NOT enter classification.
+*Rationale.* Adjacency cannot be detected without origin data.
 
-**R9. Cross-domain transfer MUST be evaluated for every signal.**
-For every signal classified as ACT or MONITOR, the classifier MUST evaluate whether the signal originates in a domain adjacent to the primary domain of the affected hypothesis. If so, the signal MUST be logged in the cross-domain transfer log with origin domain, destination domain, the metric in question, and the magnitude of the transfer signal.
-*Rationale.* The structural moat (Section 3.8) only operates if adjacency is checked systematically. Sporadic adjacency detection produces sporadic moat.
+**R9. Cross-domain transfer MUST be evaluated.**
+For every signal classified as ACT or MONITOR, evaluate whether origin is adjacent to the affected hypothesis's primary domain. In the initiative model, this is automatic — the entity catalogue is global, so signals propagate to all linked initiatives.
+*Rationale.* The structural moat only operates if adjacency is checked systematically.
 
 **R10. Transfer log is a distinct output stream.**
-Cross-domain transfers MUST be surfaced in the daily intelligence digest as a distinct stream alongside same-domain ACT signals. They MUST NOT be silently merged into the standard ACT list. Clients see the transfer log marked as such.
-*Rationale.* The commercial value of adjacency comes from its visibility. Hiding it inside the standard digest hides the moat.
+Cross-domain transfers MUST be surfaced in the daily intelligence digest as a distinct stream.
+*Rationale.* The commercial value of adjacency comes from its visibility.
 
 ### 19.4 Output contracts (R11 to R13)
 
 **R11. ACT output schema is binding.**
-Every ACT output MUST include the following fields in the structured form: `hypothesis_ids` (array, non-empty), `affected_metrics` (array of metric IDs with movement direction and magnitude), `trajectory_delta` (per R5), `decision_implication` (free text under fifty words, naming the action the window enables), and `transfer_origin` (where the signal is a cross-domain transfer per R9). Outputs missing any required field fail validation and are re-prompted.
-*Rationale.* Output schema is the contract between the classifier and every downstream consumer. Without it, the action layer cannot be built reliably.
+Every ACT output MUST include: hypothesis_ids, affected_metrics, trajectory_delta, decision_implication, transfer_origin. In the initiative model, equivalent contracts apply per `/docs/SIGNAL_PIPELINE.md` section 2.
+*Rationale.* Schema is the contract between classifier and downstream consumers.
 
 **R12. Client-facing output MUST cite source and movement.**
-Every client-facing email, brief, or dashboard entry MUST cite the specific hypothesis it serves, the named metric movement that triggered the output, and the time horizon of the relevant decision window. Generic "we noticed this signal" framing is forbidden.
-*Rationale.* Specificity is the methodology in operation. Generic framing reverts to news summarisation.
+Every client-facing email, brief, or dashboard entry MUST cite the specific hypothesis (or initiative), named metric movement (or claim assessment), and time horizon.
+*Rationale.* Specificity is the methodology in operation.
 
 **R13. WNTBT MUST be written in full in client-facing material.**
-The acronym WNTBT MUST never appear in client-facing material. The full phrase "what needs to be true" MUST be used in every client-facing context. The acronym is internal-only, used in this document, the codebase, and internal communication.
-*Rationale.* The methodology is the product. Abbreviating it in front of the client cheapens it.
+The acronym WNTBT MUST never appear in client-facing material. The full phrase "what needs to be true" MUST be used.
+*Rationale.* Abbreviating in front of the client cheapens the methodology.
 
-### 19.5 Hypothesis register integrity (R14 to R16)
+### 19.5 Hypothesis register / initiative model integrity (R14 to R16)
 
-**R14. Schema is frozen at v5.0.**
-The hypothesis register schema is frozen at v5.0, 76 columns, organised in three sections (A core identity, B decision layer, C bucket layer) per Section 8.1. Schema changes MUST require explicit approval, a versioned schema bump, and a corresponding update to this document and all dependent tools. Silent schema edits are forbidden.
-*Rationale.* The schema is the contract between the register and every downstream component. Drift breaks the system silently. v5 supersedes v4 (49 cols, decision-centric per 25 March 2026) and unifies it with the bucket-centric live schema observed 28 April 2026, eliminating the doctrine-vs-reality gap that motivated the bump.
+**R14. Schema is frozen.**
+Hypothesis register schema is frozen at v5.6 (legacy). Initiative model schema (mv1_* tables) lands as v6.0 via migration 004. Schema changes MUST require explicit approval, versioned bump, document update.
+*Rationale.* Schema is the contract; drift breaks the system silently.
 
-**R15. New hypotheses MUST pass the four tests.**
-A hypothesis being added to the register MUST be falsifiable, directional, business-linked, and time-bound. The write step (`hypothesis_builder.html` → Apps Script → Sheet) MUST reject any candidate that fails any of these four tests. Vague aspirations and unfalsifiable claims do not enter the register.
-*Rationale.* The register is the firm's IP. Diluting it with weak hypotheses degrades every downstream output.
+**R15. New hypotheses / initiatives MUST pass the four tests.**
+A hypothesis or initiative MUST be falsifiable, directional, business-linked, time-bound. In the initiative model, additional discipline of verifiable-commitment anchor and failure-must-be-definable test per `/docs/INITIATIVE_METHODOLOGY.md` section 3 step 1.
+*Rationale.* The register is the firm's IP. Diluting it degrades every downstream output.
 
-**R16. Metrics MUST belong to the five buckets and carry the six fields.**
-Every system metric MUST belong to one of: technology, cost, regulation, ecosystem, competitive. Every metric MUST carry `current_state`, `threshold`, `required_slope`, `observed_slope`, `gap`, and `mechanism`. Metrics missing any field are not valid for trajectory computation and MUST be flagged for completion before the parent hypothesis enters trigger-ready phase.
-*Rationale.* Trajectory computation is impossible without complete metric data. Half-built metrics produce confident-looking but worthless trajectory estimates.
-
-R16's five buckets (technology, cost, regulation, ecosystem, competitive) are canonical structural drivers. Geography is a cross-cutting modifier rather than a peer bucket — it slices every metric rather than constituting one. The hypothesis register's Section C currently carries three legacy `geo_*` columns capturing analyst commentary on operational geography at hypothesis level; these are documented exceptions and will be deprecated when the per-metric layer ships with proper geography slicing. Section C also currently lacks `comp_*` columns; competitive coverage is a known register-level gap, to be enforced at the per-metric level when the per-metric layer ships (no metric ships without a bucket label, including competitive).
+**R16. Metrics / entities MUST belong to canonical structures.**
+Matrix model: metrics belong to technology / cost / regulation / ecosystem / competitive; carry current_state, threshold, required_slope, observed_slope, gap, mechanism. Initiative model: entities are tech / market / regulation / ecosystem; links carry role / impact / criticality / claim / claim_basis; claims satisfy four-component format (metric + threshold + context + time) per `/docs/INITIATIVE_MODEL.md` section 3.3.
+*Rationale.* Trajectory computation (matrix) and behaviour rule (initiative) require complete data.
 
 ### 19.6 Communication and conduct (R17 to R20)
 
 **R17. Voice rules in client-facing material.**
-Client-facing material (emails, briefs, dashboards, presentations, LinkedIn posts) MUST follow these voice rules: short declarative sentences, ten to eighteen words target; peer register, not vendor register; no consultant clichés (specifically forbidden: leverage, operationalise, ecosystem as buzzword, framework solves, contextualise, synergies, holistic); no em-dashes in prose (use commas, full stops, semi-colons, parentheses); no AI-sounding symmetrical rhetoric ("every X leads to Y" patterns); no all caps; sentence case throughout.
-*Rationale.* Voice is the methodology audible. Drift in voice signals drift in thinking.
+Short declarative sentences (10-18 word target). Peer register. No consultant clichés (forbidden: leverage, operationalise, ecosystem as buzzword, framework solves, contextualise, synergies, holistic). No em-dashes in prose. No AI-sounding symmetrical rhetoric. Sentence case.
+*Rationale.* Voice is the methodology audible.
 
 **R18. FutureBridge name MUST NOT appear in email body.**
-Outreach email bodies MUST NOT contain the FutureBridge name. The signal speaks for itself. The sender's name and signature carry the affiliation; the body carries the intelligence.
-*Rationale.* Naming the firm in the body shifts the email from peer intelligence to vendor pitch. The first survives a senior inbox; the second does not.
+Outreach email bodies MUST NOT contain the FutureBridge name.
+*Rationale.* Naming the firm shifts email from peer intelligence to vendor pitch.
 
 **R19. Email body MUST be under 120 words.**
-Outreach email bodies MUST be under 120 words. The structure is: signal with real numbers, company strategic posture, business implication, one pointed question, soft call to action.
-*Rationale.* Senior recipients read in eight to fifteen seconds. Anything longer fails to land.
+Structure: signal with real numbers, company strategic posture, business implication, one pointed question, soft call to action.
+*Rationale.* Senior recipients read in 8-15 seconds.
 
 **R20. Brand colours and typography are binding.**
-Visual outputs (briefs, dashboards, slides, posters, infographics) MUST follow the FutureBridge brand v1.1: primary palette black, white, grey #4B4B55, with red #F84E5D as a sparing highlight only; secondary palette (purple #9D7AD2, yellow #FDCF41, green #22AE8A, light blue #48B8E7, blue #3F43AD) reserved exclusively for charts, graphs, and infographics; typography Circular Std primary, Arial fallback; sentence case throughout; left-aligned or centred only, never right-aligned or justified; no decorated or outlined type.
-*Rationale.* Brand is the methodology visible. The same discipline that governs voice governs visual output.
+Primary palette black, white, grey #4B4B55, red #F84E5D as sparing highlight only. Secondary palette (purple, yellow, green, light blue, blue) for charts only. Circular Std primary, Arial fallback. Sentence case. Left-aligned or centred.
+*Rationale.* Brand is the methodology visible.
 
-### 19.7 Operational discipline (R21 to R25)
+### 19.7 Operational discipline (R21 to R26)
 
 **R21. WF-15 MUST run linearly.**
-WF-15 and its companion workflows MUST run as linear pipelines. Branching causes node execution failures and is forbidden. Any proposed branch requires explicit architectural review and a workflow split (a separate workflow with its own trigger and contract).
-*Rationale.* Linear execution is the operational pattern that has been tested. Branches introduce silent failure modes.
+WF-15 and companion workflows MUST run as linear pipelines. Branching is forbidden.
+*Rationale.* Linear execution is the tested pattern.
 
 **R22. No push to n8n without diff and confirmation.**
-Changes to any n8n workflow MUST go through `sync.js diff` (review the change), `sync.js push` (which backs up the remote first and asks for explicit y/N confirmation), and the post-push re-pull (which confirms the round-trip). YOU MUST NOT edit production workflows directly in the n8n web editor for any change that is not a one-line credential update.
-*Rationale.* The web editor produces silent state changes that defeat the bridge. Discipline at this point preserves recoverability.
+Changes MUST go through `sync.js diff`, `sync.js push` (with backup and y/N confirmation), and post-push re-pull. YOU MUST NOT edit production workflows directly in the n8n web editor for non-trivial changes.
+*Rationale.* The web editor produces silent state changes that defeat the bridge.
 
 **R23. Pipeline status MUST be checked daily.**
-Every working day MUST begin with a pipeline status check via `morning.js` (or, until that ships, `node sync.js status --since 24h`). Failures discovered more than twenty-four hours after the fact are unacceptable in operate mode.
-*Rationale.* Operate mode (Section 15) means failures cost money and trust. Silent failure is the largest operational risk.
+Every working day MUST begin with a pipeline status check via `morning.js` or `node sync.js status --since 24h`.
+*Rationale.* Operate mode means failures cost money and trust.
 
 **R24. Exposed credentials MUST be rotated immediately.**
-API keys, OAuth tokens, and any other credential MUST be rotated immediately when known to be exposed. Triggers for immediate rotation include: visible in a screenshot, accidentally committed to a public repo, included in a conversation transcript outside Chris's machine, or shared with anyone outside the operating circle. Rotation includes revoking the old credential and updating `.env` and any other credential store.
-*Rationale.* Exposure plus delay equals breach. The window to act is short.
+API keys, OAuth tokens, any credential MUST be rotated when known to be exposed. Triggers: visible in screenshot, committed to public repo, included in conversation transcript outside Chris's machine, shared outside operating circle.
+*Rationale.* Exposure plus delay equals breach.
 
 **R25. Document drift is forbidden.**
-When the system changes materially, ARCHITECTURE.md MUST be updated the same day. Material changes include: new build shipped, hypothesis added that requires schema discussion, methodology refinement, new failure mode discovered, infrastructure URL changed, new tool added to the local environment. The Last Verified date at the top of this document is the staleness indicator. If it is more than seven days old for AUTO sections or thirty days old for HUMAN sections, the document is suspect and the suspect parts MUST be flagged in the morning.js summary.
-*Rationale.* The bible only works if it is current. A stale bible is worse than no bible because it teaches confidently wrong information.
+When the system changes materially, ARCHITECTURE.md and the v1 doc set in `/docs/` MUST be updated the same day. The Last Verified date is the staleness indicator.
+*Rationale.* A stale bible teaches confidently wrong information.
+
+**R26. End-of-session git hygiene.**
+Before closing any working session, all changed and new files MUST be committed and pushed. Procedure:
+1. `git status` to confirm understanding of changes
+2. `git add` everything intended to persist
+3. `git status` again to confirm nothing red remains
+4. `git commit` with descriptive message naming the work done
+5. `git push` to origin
+6. Confirm push succeeded ("main -> main" line shows)
+
+Migration scripts, methodology docs, session archives, code changes, and visualisation prototypes are treated identically — if it is on disk and intended to persist, it goes in the commit. SESSION.md should be archived to `sessions/YYYY-MM-DD-HH.md` and `_next.md` updated for the next session, with both committed in the same end-of-session push.
+
+Uncommitted work is unsaved work; loss of the local machine means loss of anything not pushed.
+*Rationale.* The cost of running this discipline is 5 minutes; the cost of not running it can be days of lost work. The 30 April session surfaced the failure mode — yesterday's migration 003 sat uncommitted on the local machine for over 24 hours despite being a material schema change that ran against the live database. Without R26, the same gap will recur whenever sessions are intense.
 
 ### 19.8 Rule maintenance
 
-Rules R1 through R25 are the current ruleset. Adding, removing, or materially changing a rule requires:
-1. An explicit document version bump (e.g. v5.2 → v5.3 for rule-level changes; minor wording changes do not require a bump).
-2. A note in the version comment at the top of the document describing the rule change.
-3. Where the rule references a build that ships or changes, an update to the relevant build entry in Section 16.
-4. A re-read by anyone operating on the system in the next session, with explicit acknowledgement of the change.
+Rules R1 through R26 are the current ruleset. Adding, removing, or materially changing a rule requires:
+1. Document version bump (e.g. v5.6 → v5.7 for rule-level changes).
+2. Note in version comment at top of document.
+3. Update to relevant build entry in Section 16 if the rule references a build.
+4. Re-read by anyone operating on the system, with explicit acknowledgement.
 
-Rules MUST NOT be added casually. Each rule is a constraint on the system and the operators. The bar for adding a rule is "this would prevent a real failure mode that has occurred or is plausibly imminent." The bar for removing a rule is "this rule has stopped serving the system and is now generating cost without benefit." Both bars are deliberately high.
+Rules MUST NOT be added casually. Bar for adding: "this would prevent a real failure mode that has occurred or is plausibly imminent." Bar for removing: "this rule has stopped serving the system."
+
+R26 was added in v5.7 (30 April 2026 evening) after the failure mode surfaced during the day's session — yesterday's migration 003 work had remained uncommitted for >24 hours despite being a material schema change.
 
 ---
 
@@ -1016,140 +888,144 @@ Rules MUST NOT be added casually. Each rule is a constraint on the system and th
 
 | File | Purpose | Status |
 |---|---|---|
-| ARCHITECTURE.md | This document. Single source of truth. | Live — v5 28 Apr 2026 |
-| CLAUDE.md | Session primer for Claude Code. | Live |
-| index.html | Landing page for GitHub Pages site. Four tabs: Tools, Energy, Mobility, Client Work. | Live |
+| ARCHITECTURE.md | This document. | Live — v5.7 30 Apr 2026 evening |
+| CLAUDE.md | Session primer for Claude Code. | Live — updated 30 Apr 2026 evening |
+| SESSION.md | Live session scratchpad. | Live |
+| HANDOFF.md | Handoff protocol. | Live |
+| index.html | Landing page for GitHub Pages. | Live |
+| SHELL_H3_PORTFOLIO_v3.html | Visualisation prototype: 12 Shell H3 initiatives. | Live |
 
-### Tools (HTML, served from GitHub Pages)
+### v1 documentation set (/docs/)
 
 | File | Purpose | Status |
 |---|---|---|
-| hypothesis_repository_v4_final.html | Master hypothesis repository. 118 hypotheses. CSV/JSON export. | Live |
-| hypothesis_builder.html | 5-step wizard to build new hypotheses. | Live |
-| hypothesis_audit.html | Monthly audit tool. Apps Script URL needs updating. | Live — URL stale |
-| account_plans_v4.html | Account intelligence with Claude API, contact tracker, meeting intelligence. | Live |
-| meeting_prep_v8.html | Meeting prep with DB/Manual toggle, persona objects, three-call pipeline. | Live |
-| signal_engine_v16.html | Manual email generation. Browser-based fallback. | Live |
-| campaign_manager_v2.html | Campaign trigger tool. Currently localStorage; needs wiring. | Live — needs wiring |
-| war_heatmap_v3.html | Geopolitical intelligence dashboard. | Live |
-| signal_engine_pipeline_spec.html | Pipeline specification v1.4. | Live |
-| signal_engine_architecture_v3.html | Previous architecture reference. Superseded. | Superseded |
-| lifecycle_review.html | Analyst reviews WF-16 retirement flags. | Planned |
-| embryo_review.html | Analyst reviews WF-17 embryo hypotheses. | Planned |
+| docs/INITIATIVE_MODEL.md | Data model and behaviour rule. | Live — v1.0 |
+| docs/INITIATIVE_METHODOLOGY.md | Population procedure. | Live — v1.0 |
+| docs/SIGNAL_PIPELINE.md | News-to-signal procedure. | Live — v1.0 |
+| docs/N8N_IMPLEMENTATION.md | Workflow architecture. | Live — v1.0 |
+| docs/WORKED_EXAMPLE_SHELL_H3.md | Procedure walkthrough on Shell H3 hydrogen NW Europe. | Live — v1.0 |
+
+### Legacy documentation (/docs/legacy/)
+
+| File | Purpose | Status |
+|---|---|---|
+| docs/legacy/METHODOLOGY.md | Matrix model methodology. | Superseded |
+| docs/legacy/HYPOTHESIS_MATRIX_v1.md | Matrix model data spec. | Superseded |
+| docs/legacy/HEAT_MAPS_AND_GESTATION.md | Layer above the matrix. | Superseded |
+
+### Tools
+
+hypothesis_repository_v4_final.html, hypothesis_builder.html, hypothesis_audit.html, account_plans_v4.html, meeting_prep_v8.html, signal_engine_v16.html, campaign_manager_v2.html, war_heatmap_v3.html.
 
 ### n8n bridge
 
-| File | Purpose | Status |
-|---|---|---|
-| n8n/sync.js | Local-to-n8n bridge. Pull, diff, push, list, status. | Live |
-| n8n/package.json | ESM package config. | Live |
-| n8n/.env | Secrets (gitignored). | Live |
-| n8n/.gitignore | Excludes .env, backups/, node_modules/. | Live |
-| n8n/tracked.json | Alias → workflow ID map. | Live |
-| n8n/workflows/wf15.json | Local mirror of WF-15. | Live |
-| n8n/code-nodes/wf15/*.js | Editable Code-node files for WF-15. | Live |
-| n8n/backups/ | Timestamped remote snapshots before each push. | Live |
-
-### Apps Script
-
-| File | Purpose | Status |
-|---|---|---|
-| HypothesisRepository.gs | Deployed in `signal engine p2`. Version 3, deployed 2 April 2026. | Live |
+n8n/sync.js, n8n/package.json, n8n/.env, n8n/tracked.json, n8n/workflows/wf15.json, n8n/code-nodes/wf15/*.js, n8n/backups/.
 
 ### Database
 
-| File | Purpose | Status |
-|---|---|---|
-| signal_engine_final.db | SQLite local copy. Back up to Google Drive monthly. | Live |
-| signal_engine_pe.db | Render-hosted Datasette. 27,473 contacts. | Live |
+db/schema/hypothesis_register_v5.sql (v5.6), db/migrations/002_hypothesis_unified_v5_load.js (29 April), db/migrations/003_observable_layer.sql (30 April morning), db/migrations/003_observable_layer_runner.js, signal_engine_pe.db (Datasette).
 
-### Workflow exports
+### Sessions
 
-| File | Purpose | Status |
-|---|---|---|
-| WF-15_Claude_Hypothesis_Classification.json | Rebuild WF-15 if lost. | Live |
+sessions/_next.md (live, 30 Apr evening), sessions/2026-04-29-08.md, sessions/2026-04-30-am.md, sessions/2026-04-30-pm.md (to be created at session end).
 
 ---
 
 ## 21. Recovery
 
-### 1. WF-15 is broken or deleted
+### 1. WF-15 broken or deleted
 
-Import `WF-15_Claude_Hypothesis_Classification.json` into n8n. Re-enter the Anthropic API key in both Claude nodes (`x-api-key` header). Update the Apps Script URL to the current v3 deployment. Test with trigger button before reactivating. Alternatively use sync.js: `node sync.js push wf15` after restoring `workflows/wf15.json` from `backups/`.
+Import `WF-15_Claude_Hypothesis_Classification.json` to n8n. Re-enter Anthropic API key. Update Apps Script URL. Test before reactivating. Or `node sync.js push wf15` from local backup.
 
 ### 2. Apps Script stops responding
 
-Go to script.google.com → `signal engine p2` → `HypothesisRepository.gs` → Deploy → Manage deployments → Edit → New version → Deploy. Copy the new URL. Update in the WF-15 Fetch Hypothesis Repository node and hypothesis_audit.html.
+script.google.com → `signal engine p2` → `HypothesisRepository.gs` → Deploy → Manage deployments → Edit → New version → Deploy. Update URL in WF-15 and hypothesis_audit.html.
 
 ### 3. hyp_count returns 0
 
-Two checks. First: does the Apps Script URL return a hypotheses array with 118 items when called bare in a browser? Second: does the Hypothesis Repository tab have headers in row 1, specifically `hyp_id` in A1? If A1 is blank, every row is filtered out by `doGet`.
+Check Apps Script URL returns 118 hypotheses. Check Hypothesis Repository tab has `hyp_id` in A1.
 
-### 4. Datasette contact query fails
+### 4. Datasette query fails
 
-Visit `https://futurbridge-signals.onrender.com` in a browser. Allow 60 seconds for cold start. If responding, test the SQL query directly. If query works in browser but fails in n8n, check the Get Energy Contacts node configuration: method GET, URL `signal_engine_pe.json`, query param mode "Using Fields Below", Name `sql`, Value SELECT statement.
+Visit `https://futurbridge-signals.onrender.com` for cold start. Test SQL directly. If browser works but n8n fails, check Get Energy Contacts node config.
 
-### 5. Anthropic API key needs replacing
+### 5. Anthropic API key replacement
 
-New key from `console.anthropic.com`. In WF-15: Claude Classify Signals → Headers → `x-api-key` → replace. Repeat for Claude Generate YAMM Emails. Save.
+New key from console.anthropic.com. Update WF-15 Claude Classify Signals and Claude Generate YAMM Emails Headers `x-api-key`.
 
 ### 6. Google Sheets OAuth refresh token revoked
 
-Symptom: every Sheets-touching workflow fails on first contact with EAUTH error. Cascade across WF-07, WF-09, WF-15, WF-15A, etc. Fix: n8n → Credentials → Google Sheets account 2 → Reconnect → approve in OAuth popup → Save. Run a manual WF-15 execution to confirm. If the break recurs within days, root cause is not a stale token. Investigate OAuth client type (must be Web application, not Desktop), redirect URI match, and OAuth consent screen status (must be Published, not Testing).
+n8n → Credentials → Google Sheets account 2 → Reconnect → approve in OAuth popup → Save. If recurring, investigate OAuth client type, redirect URI, consent screen status.
 
 ### 7. n8n API key compromised
 
-Settings → n8n API → revoke compromised key → create new key. Update `n8n/.env` locally with new key.
+Settings → n8n API → revoke → create new. Update n8n/.env.
 
-### 8. Need to rebuild from scratch
+### 8. v1 documentation set lost
 
-Three files contain the complete rebuild documentation: `signal_engine_pipeline_spec.html` (every prompt, schema, rule), `ARCHITECTURE.md` (this document, every URL and recovery path), and `hypothesis_repository_v4_final.html` (all 118 hypotheses). Plus the n8n JSON exports under `n8n/workflows/`.
+Five docs in `/docs/` and three in `/docs/legacy/` committed to GitHub. Restore via `git checkout HEAD -- docs/`.
+
+### 9. Need to rebuild from scratch
+
+v1 doc set in `/docs/`, this document, hypothesis content (hypothesis_repository_v4_final.html legacy + SHELL_H3_PORTFOLIO_v3.html prototype), n8n JSON exports, migration scripts.
 
 ---
 
 ## 22. Glossary
 
-**ACT** — A signal classification meaning the daily multi-metric trajectory calculation has produced a material shift in the probability that a hypothesis resolves to its tested outcome. Single dramatic signals do not trigger ACT in isolation; convergence across the metric stack does.
+**ACT** — Signal classification: material shift in probability that a hypothesis resolves to its tested outcome. In initiative model: signal triggering state transition or moving confidence by >0.10 on gating link.
 
-**Adjacency / Cross-domain adjacency** — The methodology principle that metric movement in one industry forecasts metric movement in another industry. The Signal Engine's structural moat. See Section 3.8.
+**Adjacency / Cross-domain adjacency** — Methodology principle that metric movement in one industry forecasts metric movement in another. Structural moat. See Section 3.8. In initiative model: captured at the entity layer.
 
-**Decision window** — A moment in which a client can act on a hypothesis with confidence proportional to the available evidence. Each window has a specific action, a body of supporting evidence, and a time horizon.
+**Behaviour rule** — In initiative model: deterministic formula converting signal to confidence band update. Δconfidence = base × criticality_weight × impact_weight × direction. See `/docs/INITIATIVE_MODEL.md` section 4.
 
-**Embryo hypothesis** — A signal that classifies as ACT but touches no existing hypothesis. Represents a register gap and a candidate for a new hypothesis.
+**Claim** — In initiative model: testable proposition each link asserts about an entity in initiative context. Required four components: metric + threshold + context + time. See `/docs/INITIATIVE_MODEL.md` section 3.3.
 
-**Gap (trajectory gap)** — The difference between required slope and observed slope for a given metric. Negative gap means on track or ahead. Positive gap means behind, with time-to-miss as the consequence.
+**Criticality** — In initiative model: how much initiative success depends on a given link. Three values: gating, enabling, non-critical.
 
-**Hypothesis** — A forward-looking, falsifiable, directional, business-linked, time-bound bet about how a market, technology, regulation, or competitive landscape will evolve. The unit of analysis in this system.
+**Decision window** — Moment when client can act on hypothesis with confidence proportional to evidence.
 
-**Hypothesis register** — The structured collection of all active hypotheses, currently 118 across four sub-registers (personal, industry, sector, client account). Schema v4.0, 49 columns, frozen.
+**Embryo hypothesis** — Signal classifying as ACT but touching no existing hypothesis (matrix) or initiative (initiative model).
 
-**IGNORE** — A signal classification meaning the signal does not move any hypothesis and is discarded.
+**Entity** — In initiative model: thing in the world that initiatives depend on. Types: tech, market, regulation, ecosystem.
 
-**Mini-signal** — The atomic unit produced by Stage 2 of the pipeline. A single piece of structured information (event type, entities, direction, magnitude, confidence) that can be tested against the hypothesis register.
+**Gap (trajectory gap)** — Matrix model: required slope minus observed slope.
 
-**MONITOR** — A signal classification meaning the signal touches a hypothesis and contributes to its metric stack but does not, alone or in combination with the day's other signals, materially shift decision probability.
+**Hypothesis** — Forward-looking, falsifiable, directional, business-linked, time-bound bet. Unit of analysis in matrix model.
 
-**Observed slope** — The rate at which a metric is actually moving, derived from signal history over a defined window. Combined with required slope to compute gap.
+**Hypothesis register** — Structured collection of all active hypotheses (matrix model). 118 across four sub-registers.
 
-**Phase** — The current state of a hypothesis. Divergent (multiple futures plausible, slope data unstable), Converging (slopes computable, multiple metrics still in positive gap), Trigger-ready (majority of metrics in negative gap, decision window open), or Resolved (true, false, or displaced).
+**IGNORE** — Signal classification: doesn't move any hypothesis or update any claim.
 
-**Required slope** — The rate at which a metric must move from its current state to reach threshold by the hypothesis time horizon. The benchmark against which observed slope is measured.
+**Impact** — In initiative model: kind of force a link exerts. Three values: neutral, amplifying, threatening.
 
-**Signal** — A piece of information that moves one or more system metrics for one or more hypotheses. Not a synonym for news.
+**Initiative** — In initiative model: unit of analysis. Specific bet a company has committed to.
 
-**System metric** — One of three to five underlying observables that determine whether a hypothesis remains credible. Each carries current state, threshold, required slope, observed slope, gap, and mechanism. Falls into technology, cost, regulation, ecosystem, or competitive buckets.
+**Link** — In initiative model: relationship between initiative and entity. Carries role, impact, criticality, claim, claim_basis.
 
-**Threshold** — The value a system metric must reach for a hypothesis condition to be satisfied. Expressed in WNTBT terms.
+**MONITOR** — Signal classification: touches hypothesis but doesn't shift decision probability materially.
 
-**Time-to-miss** — The projected date at which a metric will fail to reach threshold if observed slope continues unchanged. Computed only for metrics in positive gap.
+**Phase** — Matrix model: hypothesis state (Divergent/Converging/Trigger-ready/Resolved). In initiative model: equivalent is entity state plus initiative confidence band.
 
-**Track 1 / Track 2 / Track 3** — The three engagement structures. Validate hypotheses, map the gap, close the gap.
+**Role** — In initiative model: structural relationship. Four values: principal, enabling, optional, external.
 
-**Trajectory** — The combination of required slope, observed slope, gap, and time-to-miss for a given metric on a given hypothesis. Recomputed daily.
+**Signal** — Information that moves system metrics (matrix) or updates link claims (initiative model). Not a synonym for news.
 
-**Transfer log** — The system output that surfaces cross-domain metric transfers. When a metric crosses threshold in domain A and is declared adjacent for a hypothesis in domain B, the transfer is logged and surfaced as a distinct output stream.
+**State (entity state)** — In initiative model: assessment relative to threshold. Four values: holding, weakening, broken, ambiguous.
 
-**WNTBT** — What Needs To Be True. The working language of the methodology. Always written in full in client-facing material; never abbreviated.
+**System metric** — Matrix model: underlying observable determining hypothesis credibility. Replaced in initiative model by entity-and-link structure.
+
+**Threshold** — Value metric must reach (matrix) or that an entity claim asserts (initiative). WNTBT terms.
+
+**Time-to-miss** — Matrix model: projected date metric fails threshold at observed slope.
+
+**Track 1 / Track 2 / Track 3** — Three engagement structures: validate, map, close.
+
+**Trajectory** — Matrix model: required + observed + gap + time-to-miss. Initiative model: link state plus signal history.
+
+**Transfer log** — Matrix model: cross-domain transfers as distinct output stream. Initiative model: queryable via entity catalogue.
+
+**WNTBT** — What Needs To Be True. Always written in full in client-facing material.
 
 ---
 
@@ -1159,105 +1035,83 @@ Three files contain the complete rebuild documentation: `signal_engine_pipeline_
 
 This document maintains itself partially through automation and partially through discipline.
 
-The AUTO sections (system state, pipeline flow, infrastructure URLs, file inventory) should be regenerated by `update-architecture.js` (Build G) when that build is complete. Until then, they are maintained by hand and the Last Verified date at the top of the document indicates how stale they are.
+AUTO sections regenerated by `update-architecture.js` (Build G) when complete. Until then, maintained by hand. Last Verified date indicates staleness.
 
-The HUMAN sections (the methodology, the commercial model, the strategic position, the roadmap) are written by Chris and updated when the underlying thinking shifts. They should not change frequently. Frequent change in HUMAN sections suggests the underlying position has not yet stabilised.
+HUMAN sections written by Chris and updated when underlying thinking shifts.
 
-The RULE section (Section 19, the operating rules) is binding. Changes to rules require a document version bump, an explicit note in the version comment at the top of the document, and a rule-maintenance protocol per Section 19.8. Casual rule edits are forbidden.
+RULE section (Section 19) is binding. Changes require document version bump, version comment update, rule-maintenance protocol per Section 19.8.
 
-The document is versioned by date at the top. Major revisions (changes to methodology, architecture, commercial model, or the ruleset) increment the major version. Minor revisions (refreshes of state, file lists, infrastructure) increment the minor version. The git history is the audit trail.
+Document versioned by date at top. Major revisions increment major version; minor revisions increment minor.
 
-This document supersedes all prior versions. Any other document claiming to describe the Signal Engine is wrong, stale, or out of scope.
+This document supersedes all prior versions.
 
-When the document is materially out of date (more than seven days since Last Verified for AUTO sections, or more than thirty days for HUMAN sections without explicit confirmation), it MUST be flagged as stale in the morning.js summary, per R25.
+When materially out of date (>7 days for AUTO, >30 days for HUMAN), MUST be flagged as stale per R25. End-of-session updates per R26 should keep this document current as part of every push.
 
 ---
 
 # Appendix A — Gap analysis vs McKinsey-equivalent product documentation
 
-<!-- HUMAN: this is the stress test of whether this document is fit for purpose at the level Chris asked for -->
+<!-- HUMAN -->
 
-If McKinsey were building this product internally, or were producing this document for a client of equivalent sophistication, what would be present that this document currently lacks. The honest answer in twelve gaps.
+If McKinsey were producing this document, twelve gaps would close.
 
 ### Gap 1 — Quantified market opportunity
 
-McKinsey would open with a TAM, SAM, and SOM analysis. Total addressable market (every senior strategy executive in capital-intensive sectors globally), serviceable addressable market (those reachable by FutureBridge through current channels and language), and serviceable obtainable market (realistic three-year capture). Numbers, ranges, sources.
-
-This document has none of that. It describes the buyer in qualitative terms. Adding the quantification would sharpen the commercial conversation and is a prerequisite for any meaningful capital raise or acquisition discussion.
+TAM, SAM, SOM analysis with numbers and sources. Currently qualitative. Prerequisite for any meaningful capital raise.
 
 ### Gap 2 — Named buyer personas with named buyers
 
-McKinsey would name specific buyers within target accounts. Not "SVP Strategy at an oil major" but "Susan Mills, SVP Strategy at Shell, who reports to Wael Sawan, who has authority to commission engagements up to £500k without board approval, whose current bets include H3 portfolio and CCS scale-up."
-
-The Signal Engine has 27,473 contacts. The buyer specificity exists. It is not in this document. It probably belongs in a confidential annex (commercial sensitivity) but the absence here is a real gap.
+Specific buyers within target accounts (e.g. "Susan Mills, SVP Strategy at Shell, who reports to Wael Sawan, who has authority to commission engagements up to £500k without board approval"). Belongs in confidential annex.
 
 ### Gap 3 — Pricing strategy with margin analysis
 
-This document gives price ranges for the three tracks. McKinsey would give a fully built pricing model: bottom-up cost of delivery per engagement (people days, system cost, third-party tooling), gross margin per engagement, customer acquisition cost, lifetime value, payback period. Plus competitive price benchmarks.
-
-The absence makes it impossible to answer "is this business viable at scale" or "what should we charge for the next engagement." That is a meaningful operational gap, not just a documentation gap.
+Bottom-up cost of delivery, gross margin per engagement, CAC, LTV, payback period. Plus competitive price benchmarks. Operational gap, not just documentation.
 
 ### Gap 4 — Sales motion playbook
 
-McKinsey would document the exact sales motion. Discovery questions in order, qualification criteria, objection handling, contract templates, pricing negotiation framework, closing techniques. A new partner could read it and run a sales call.
-
-This document gestures at the sales motion (Section 14) but does not codify it. The sales motion currently lives in Chris's head, which is a single-point-of-failure for the firm's growth.
+Discovery questions in order, qualification criteria, objection handling, contract templates, pricing negotiation framework. Currently lives in Chris's head — single point of failure for growth.
 
 ### Gap 5 — Account expansion strategy
 
-McKinsey calls this "land and expand." Document the path from a £50k Track 1 engagement into a £1m+ multi-year programme. Specifically, what triggers the expansion conversation, who is involved on the client side, what the second engagement looks like, what the third looks like.
-
-Section 12.4 ("repeatability advantage") gestures at this. It is not a playbook. It is an observation. The playbook is missing.
+Land and expand playbook from £50k Track 1 to £1m+ multi-year programme. Section 12.4 gestures; the playbook is missing.
 
 ### Gap 6 — Competitive moat analysis with threat assessment
 
-Section 13 covers the competitive position. McKinsey would go further. For each named competitor (McKinsey itself, BCG Gamma, Wood Mackenzie, CB Insights, sector specialists), specifically what would it take for them to build this, how long would it take, and what is FutureBridge's defence in the interim. Plus threat probability estimates (P(McKinsey enters this space in the next 24 months) = ?).
+For each named competitor: what would it take to build, how long, what is FutureBridge's defence. Plus threat probability estimates. Gap for investor and acquirer conversations.
 
-The absence is fine for an internal working document. It is a gap for a document used in any conversation with potential investors or acquirers.
+### Gap 7 — Build versus buy on every component
 
-### Gap 7 — Build versus buy analysis on every component
-
-The system uses n8n, Anthropic, Render, Google Sheets, Apps Script, GitHub Pages. Every one of these is a build versus buy decision that should be revisited as the firm scales. McKinsey would have a structured analysis: what does each component cost today, what would it cost to replace, what is the risk of staying versus migrating.
-
-The document discusses some of this in Section 7 (the Postgres migration). It is not a systematic build versus buy review.
+n8n, Anthropic, Render, Sheets, Apps Script, GitHub Pages — each is a build/buy decision.
 
 ### Gap 8 — Capital efficiency and unit economics
 
-How much capital has been deployed to build the system to date. How much would be required to reach the next inflection point (say, £5m ARR). What is the cash burn rate. What is the runway. What is the required investor return at various exit valuations.
-
-This document has none of it. It is a strategic gap, not just a documentation gap.
+Capital deployed, capital required to next inflection, runway, required investor return. Strategic gap.
 
 ### Gap 9 — Talent plan
 
-If the firm is to grow, who needs to be hired. Specifically. Roles, levels, responsibilities, ramp time, base salary range, equity. The bottleneck identified in Section 14.5 (synthesis cannot scale beyond ~20 active engagements) requires a named hiring plan to address.
+Specific roles, levels, ramp time, salary, equity. Bottleneck at ~20 active engagements requires named hiring plan.
 
 ### Gap 10 — Partnership strategy
 
-The Signal Engine could be sold through partnership channels (large accounting firms, specialist consultancies, software vendors with adjacent products). Which partnerships matter, what the partnership economics look like, what FutureBridge gives up versus gains.
-
-The document does not address this. McKinsey would have a tiered partner strategy with named targets.
+Tiered partner strategy with named targets.
 
 ### Gap 11 — Brand positioning architecture
 
-McKinsey distinguishes between brand (what FutureBridge stands for in the market generally), product positioning (how the Signal Engine is positioned within the FutureBridge brand), and offer positioning (how each track is positioned within the Signal Engine). The architecture forces consistency across all three.
-
-This document discusses the methodology positioning. It does not address the broader brand context. For an internal working document this is acceptable. For a document used in branding or marketing conversations, it is a gap.
+Brand vs product positioning vs offer positioning. Forces consistency.
 
 ### Gap 12 — Customer success and retention model
 
-Once a client has bought a Track 1 engagement, what is the customer success motion that converts them to Track 2? What is the retention rate at twelve, twenty-four, thirty-six months? What are the leading indicators of churn?
+NRR target. CS playbook. Leading churn indicators.
 
-The Signal Engine has structural retention advantages (Section 12.4) but no documented success motion. McKinsey would have a Net Revenue Retention target and a customer success playbook.
+### Net assessment
 
-### Net assessment of the gap
+This document is fit for: internal alignment, partner conversations, prospective client diligence at current FutureBridge level, first-meeting acquirer conversations.
 
-This document is fit for the purpose Chris asked for: a single canonical reference that explains what the Signal Engine is, how it works, who uses it, and where it is going. It is sufficient for internal alignment, partner conversations, prospective client diligence at the level FutureBridge currently operates, and acquirer conversations at first-meeting level.
+Not sufficient for: Series A capital raise, formal acquirer diligence, deep partnership negotiation, McKinsey-equivalent product investment committee.
 
-It is not sufficient for: a Series A capital raise, an acquirer in formal diligence, a deep partnership negotiation with a large incumbent, or a McKinsey-equivalent product investment committee.
-
-The twelve gaps above are the road from "fit for purpose now" to "fit for the next stage of the firm." They are not all equally urgent. The order of priority would be: pricing model and unit economics (Gap 3 and 8), sales playbook (Gap 4), named buyer personas (Gap 2), and account expansion (Gap 5). The remainder can wait until the firm has a clearer view of which growth path it is taking.
+Priority order to close the gaps: 3 and 8 (pricing and unit economics), 4 (sales playbook), 2 (named buyer personas), 5 (account expansion). Remainder waits for clearer growth path.
 
 ---
 
-*FutureBridge Advisory · Signal Engine Architecture and Product Reference · v5.2 · 28 April 2026*
+*FutureBridge Advisory · Signal Engine Architecture and Product Reference · v5.7 · 30 April 2026 evening*
 *Chris Guerin · Confidential · Supersedes all prior versions*
