@@ -1,11 +1,12 @@
 # Signal Engine — Architecture and Product Reference
 
-**Version 5.7 · 30 April 2026 evening · Supersedes v5.6 (30 April 2026 morning) and all prior. v5.5 reserved for the queued methodology + four-layer-model integration; not yet committed.**
+**Version 5.8 · 1 May 2026 · Supersedes v5.7 (30 April 2026 evening). v5.8 lands migration 004 (initiative-model substrate; PG schema v5.6 → v6.0). v5.5 reserved for the queued methodology + four-layer-model integration; not yet committed.**
 
 FutureBridge Advisory · Chris Guerin · Confidential
 
-<!-- LAST VERIFIED: 2026-04-30 evening BST · By: Chris (chat) + Claude (chat) -->
+<!-- LAST VERIFIED: 2026-05-01 BST · By: Chris (chat) + Claude (Code) -->
 <!-- Auto-updateable sections are marked AUTO. Human-curated sections are marked HUMAN. -->
+<!-- v5.8 changes: Migration 004 committed to Railway hypothesis-db. PG schema bumped v5.6 → v6.0. Eight new tables (initiatives, entities, links, competitive_events, mini_signals, news, signals, heat_map_aggregates) plus parked recommendations table. 4 FKs (links→initiatives, links→entities, signals→entities, signals→mini_signals). 14 named CHECK constraints, 12 named indexes. Tables created without mv1_ prefix per /docs/INITIATIVE_MODEL.md naming (the mv1_* prefix referenced in v5.7 was dropped during spec finalisation 1 May; legacy observable_layer tables remain in place pending migration 005 cutover). All 14 runner verification checks passed. -->
 <!-- v5.7 changes: Major architectural pivot from matrix model (observable_layer) to initiative model (initiatives + entities + links + signals). Five-document v1 specification set committed to /docs/ (INITIATIVE_MODEL.md, INITIATIVE_METHODOLOGY.md, SIGNAL_PIPELINE.md, N8N_IMPLEMENTATION.md, WORKED_EXAMPLE_SHELL_H3.md, total 2,746 lines). Legacy documentation moved to /docs/legacy/ with superseded headers. SHELL_H3_PORTFOLIO_v3.html visualisation prototype committed (12 initiatives, 36 entities, 39 links, executing model). CLAUDE.md updated to point at v1 doc set as canonical. R26 added to Section 19 (end-of-session git hygiene). Build N (initiative model migration phases 1-5) and Build O (rainy-Tuesday test) added to roadmap. Builds L and M retired (superseded by initiative model). Schema state: matrix-model tables (hypothesis_observable, hypothesis_observable_event, confidence_band_history) retained but deprecated; mv1_* tables added via migration 004 (pending) bumping to v6.0. -->
 <!-- v5.6 changes: Migration 003 (observable layer) committed to Railway hypothesis-db. Hypothesis register schema bumped from v5.0 to v5.6 (skipping v5.5). Three column additions to hypothesis_register: appraisal_cadence, last_appraisal_at, current_confidence_band. Three new tables: hypothesis_observable, hypothesis_observable_event, confidence_band_history. View hypothesis_matrix_summary. 21 named CHECK constraints. All 118 rows defaulted appraisal_cadence='weekly' and current_confidence_band=0.500. -->
 <!-- v5.4 changes: Build E phase 2. Postgres hypothesis-db PG 18.3 provisioned, v5 DDL deployed, 118 rows persisted live-only (25 decision-layer cols NULL pending clean CSV re-export). window_closes_at TEXT, window_status_enum CHECK dropped. -->
@@ -456,7 +457,7 @@ This node currently acts as a gate. Only the highest-scoring ACT signal flows do
 
 **n8n Workflow Engine** — `https://n8n-production-86279.up.railway.app`
 
-**Postgres on Railway** — Service `hypothesis-db`, PostgreSQL 18.3. Schema v5.6. Migration 004 pending.
+**Postgres on Railway** — Service `hypothesis-db`, PostgreSQL 18.3. Schema v6.0. Migration 004 committed 1 May 2026 (initiative-model substrate live).
 
 **Google Sheet — Master Data** — `https://docs.google.com/spreadsheets/d/1DUlVxb66yIgrd7borMm8NSeJHnvkDEBU4jciSKvvdyM`. Existing tabs plus new tabs pending for initiative model.
 
@@ -888,7 +889,7 @@ R26 was added in v5.7 (30 April 2026 evening) after the failure mode surfaced du
 
 | File | Purpose | Status |
 |---|---|---|
-| ARCHITECTURE.md | This document. | Live — v5.7 30 Apr 2026 evening |
+| ARCHITECTURE.md | This document. | Live — v5.8 1 May 2026 |
 | CLAUDE.md | Session primer for Claude Code. | Live — updated 30 Apr 2026 evening |
 | SESSION.md | Live session scratchpad. | Live |
 | HANDOFF.md | Handoff protocol. | Live |
@@ -1113,5 +1114,5 @@ Priority order to close the gaps: 3 and 8 (pricing and unit economics), 4 (sales
 
 ---
 
-*FutureBridge Advisory · Signal Engine Architecture and Product Reference · v5.7 · 30 April 2026 evening*
+*FutureBridge Advisory · Signal Engine Architecture and Product Reference · v5.8 · 1 May 2026*
 *Chris Guerin · Confidential · Supersedes all prior versions*
