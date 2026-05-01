@@ -175,16 +175,18 @@ app.post('/mini_signals', requireApiKey, async (req, res) => {
     });
   }
 
-  // Build the INSERT dynamically over the canonical column list
-  const values = MINI_SIGNAL_COLS.map((c) => (b[c] === undefined ? null : b[c]));
-  const placeholders = MINI_SIGNAL_COLS.map((_, i) => `$${i + 1}`).join(', ');
+  // Build the INSERT only over columns the body actually provides.
+  // Omitted columns fall through to their DDL DEFAULT (e.g. extracted_at = NOW()).
+  const providedCols = MINI_SIGNAL_COLS.filter((c) => b[c] !== undefined);
+  const values = providedCols.map((c) => b[c]);
+  const placeholders = providedCols.map((_, i) => `$${i + 1}`).join(', ');
 
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
 
     const insert = await client.query(
-      `INSERT INTO mini_signals (${MINI_SIGNAL_COLS.join(', ')})
+      `INSERT INTO mini_signals (${providedCols.join(', ')})
        VALUES (${placeholders})
        RETURNING id`,
       values
