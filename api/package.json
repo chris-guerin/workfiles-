@@ -1,0 +1,18 @@
+{
+  "name": "signal-engine-api",
+  "version": "0.1.0",
+  "description": "Thin API service for n8n workflows. POST /news, GET /news, DELETE /news/:id, POST /mini_signals.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "pg": "^8.13.1"
+  }
+}
