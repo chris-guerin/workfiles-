@@ -1,123 +1,105 @@
-# Next session — v1 doc set test, migration 004, second-company population
+# Next session — gate 5 diagnosis and prompt rewrite
 
-This note is the brief for the next Claude Code session. Read it before populating SESSION.md for the new session.
+**Status at session close (2026-05-02):** Substrate landed. Gate 5 not closed. Three Haiku runs today all failed the same way. Filter not applying as observed; root cause undiagnosed.
 
-## What is already done (30 April 2026 afternoon — major architectural pivot)
+---
 
-Today's session pivoted from the matrix model (observable_layer / HYPOTHESIS_MATRIX_v1.md) to the **initiative model** — a dependency-graph architecture where each hypothesis is an initiative composed of entities (technologies, market conditions, regulations, ecosystem actors) connected by links carrying role/impact/criticality/claim per (initiative, entity) pair.
+## What is live and working
 
-Persisted state from this afternoon:
+- **PG `hypothesis-db`** at schema v6.0. Migration 004 committed. All eight initiative-model tables plus the four pipeline tables (news, mini_signals, signals, heat_map_aggregates) exist with correct FKs, CHECKs, indexes.
+- **API service** `signal-engine-api-production-0cf1.up.railway.app` healthy. Bearer auth working. POST /news, GET /news, DELETE /news/:id, POST /mini_signals all verified by smoke test.
+- **WF-WeeklyNews-PG** (`gOwTXiGfkZm5vFTO`) running end-to-end. RSS pull → Detect Companies & Tag → Remove Duplicates → POST /news → Fire WF-15A-PG webhook. Confirmed today: 1469 news rows in PG from gate 5 trigger runs. The workflow exits in red because `Email Alert to Chris` Gmail OAuth is expired (deferred re-auth, pre-existing issue), but the data path completes cleanly before that.
+- **WF-15A-PG** (`KtFda6LGUSfbYNDQ`) running end-to-end at the structural level — webhook receives, GET /news fetches, code nodes execute in order, POST /mini_signals + DELETE /news/:id wire correctly. The pipeline mechanics are sound. The Haiku-side decision logic is not producing useful output.
 
-- Five-document v1 specification set in `docs/`:
-  - `docs/INITIATIVE_MODEL.md` — data model and behaviour rule
-  - `docs/INITIATIVE_METHODOLOGY.md` — population procedure (10 steps)
-  - `docs/SIGNAL_PIPELINE.md` — news-to-signal procedure (6 steps)
-  - `docs/N8N_IMPLEMENTATION.md` — workflow architecture for the running system
-  - `docs/WORKED_EXAMPLE_SHELL_H3.md` — full procedure walkthrough on Shell H3 hydrogen NW Europe
-- Legacy docs moved to `docs/legacy/` with superseded headers:
-  - `docs/legacy/METHODOLOGY.md`
-  - `docs/legacy/HYPOTHESIS_MATRIX_v1.md`
-  - `docs/legacy/HEAT_MAPS_AND_GESTATION.md`
-- Working visualisation prototype: `SHELL_H3_PORTFOLIO_v3.html` (12 initiatives, 36 entities, 39 links, executing model with signal propagation across initiatives)
-- CLAUDE.md updated to point Claude Code at the v1 doc set
-- ARCHITECTURE.md updated (or pending update) to reflect the architectural pivot
+Gates 1–4 closed. Gate 3 verified by 1088 successful POST /news calls in the gate 3 trigger window after credential and body-expression bugs were fixed.
 
-The morning's migration 003 (observable layer in PG) remains committed but is now part of the legacy schema. Migration 004 (the initiative-model schema) is the next schema change.
+---
 
-## Items in scope for the next session
+## Gate 5 — not closed today
 
-### Lead — rainy Tuesday test on the v1 doc set
+Three Haiku runs today produced 84 → 0/3/3 → 0 mini_signals across four executions, none of which hit the 20–50 target. Across all three runs, the per-node output count from `Parse + Validate Mini-Signal` matched its input count (1102 → 1102 in the most recent run), prompting the user's diagnostic claim:
 
-Drop `docs/INITIATIVE_MODEL.md` and `docs/INITIATIVE_METHODOLOGY.md` into a fresh AI (Claude or other native model with no other context) and ask it to populate one Shell H3 initiative from public sources following the procedure. Compare the output to `docs/WORKED_EXAMPLE_SHELL_H3.md` and to the relevant section of `SHELL_H3_PORTFOLIO_v3.html`.
+> *"The filter is not being applied, regardless of which prompt is in the system prompt."*
 
-What to look for:
-- Same initiative scope and bounding decisions
-- Same principal entity identification
-- Comparable enabling entity set (some variance is acceptable; structural divergence is not)
-- Same external threat identification
-- Same role/criticality assignments on equivalent links
-- Comparable claim wording and quality
+**Specific next-session task: read `/n8n/wf-15a-pg-current-state.md`** (committed today). It contains the byte-exact verbatim live state of the deployed `Build Extraction Payload` and `Parse + Validate Mini-Signal` nodes, captured from the n8n public API at session close. Local files match live exactly — no divergence.
 
-What to capture:
-- Where the AI drifts from the worked example, and whether it's variance or contradiction
-- Where the docs left judgment ambiguous enough to produce divergent output
-- Any methodology gaps that surfaced during the test
+The file also walks through:
+- Why a 1102-in / 1102-out at Parse + Validate is consistent with the validator working as designed (it tags rather than drops; the drop happens at `Collect + Write to Datasette`).
+- Why the observed mini_signals=0 outcome rules out the "filter not firing" hypothesis and points to "every Haiku response is skip:true."
+- Three candidate causes for the universal-skip pattern.
+- The diagnostic sequence to run before any further prompt patch.
 
-Outputs: a feedback note for v1.1 doc revisions; an updated `_next.md` for the session after.
+**Start here — diagnose before any further trigger.** Per user instruction at session close: hierarchical three-step prompt rewrite is the planned approach (each step conditional on the previous, explicit "Stop" instructions on skip paths) — final form to be written by Chris after diagnosis. Do not iterate-and-trigger blindly.
 
-### Plausibly alongside if time permits — migration 004
+### Suspected mechanism (working hypothesis — verify before acting)
 
-Per `docs/N8N_IMPLEMENTATION.md` Section 2.1 and Section 6 Phase 1: PG schema migration to add `mv1_*` tables (mv1_initiatives, mv1_entities, mv1_links, mv1_signals, mv1_competitive_events) plus the `mv1_initiative_full` view. Same migration pattern as 003 (Claude Code session, dry-run, commit, runner script).
+Either:
 
-Migration 004 design notes:
-- New tables prefixed `mv1_` so they coexist with the legacy `hypothesis_observable*` tables during transition
-- Foreign keys: links → initiatives, links → entities, signals → entities, signals → applied_initiatives
-- Named CHECK constraints on enums (role / impact / criticality / state values)
-- View definition per the existing pattern
+- **(p1)** the `centrally about` criterion in the v3 system prompt is being interpreted too literally by Haiku, causing it to return `skip:true` on items where the story is about a *company* in energy/mobility rather than about energy/mobility *as subjects*, OR
+- **(p2)** the title-only RSS input shape is causing Haiku to default to skip even though the prompt explicitly allows substantive titles, OR
+- **(p3)** something about how Haiku is structuring its response is triggering the `PARSE_FAILED` branch in Parse + Validate before the explicit `skip:true` branch is reached.
 
-### Plausibly alongside — Shell portfolio review against methodology
+Diagnostic step 1 in the state file (sample raw `Claude Haiku Extract` output for ~10 random items from the last execution) discriminates between these.
 
-`SHELL_H3_PORTFOLIO_v3.html` was populated by intuition, not by following the methodology. With the methodology now committed, run a review pass on the 12 initiatives and check where the methodology produces tighter or different output. Specifically: claim quality, criticality assignments, entity reuse decisions. Updates feed into the v3 file (or a v4 if the changes are substantive enough to warrant a re-render).
+---
 
-### Own session — second-company population
+## Captured design decisions from today
 
-Once Shell is reviewed and the v1 doc set has passed the rainy-Tuesday test, populate a second company per the methodology. Recommended: BP or Equinor as the natural entity-overlap neighbours.
+These were agreed during the session and need to land in `ARCHITECTURE.md` and `/docs/N8N_IMPLEMENTATION.md` next session:
 
-Goals:
-- Validate that the entity catalogue is reusable (target: 30-50% of entities for second IOC come from Shell catalogue)
-- Identify any methodology gaps that surface only on a second company
-- Produce a comparable initiative count (8-15) for portfolio-level cross-company analysis
+- **WF-15A v0 is direct-relevance-only.** Adjacency reasoning is deferred. Stories about pharma, aerospace, defence, packaging, chemicals are explicitly out of scope until a later version. Haiku is instructed to drop them even if a clever connection could be made. This is a deliberate v0 recall trade for precision.
+- **WF-WeeklyNews-PG cadence is weekly v0.** Schedule trigger is `Weekly Monday 7am`. Active flag is currently `true` on the workflow but Test workflow was used for all gate 5 triggers today.
+- **WF-15C cross-domain enrichment is the planned home for adjacency reasoning.** Position in pipeline: after WF-15B routing, before WF-15D claim assessment. WF-15C does not exist yet — design intent only. Once methodology v1's entity catalogue is populated, WF-15C is where adjacency-aware enrichment lives so WF-15A can stay tight.
 
-This is a session of its own — likely a full day for first-time second-company population.
+---
 
-## Items deferred
+## Open operational issues
 
-- **Credential rotation batch.** Anthropic API key in n8n/workflows/wf15.json (briefly visible in screenshot 27 April), n8n API key (also from 27 April), Postgres password (quarterly rotation), Google Sheets OAuth (re-authorisation). Should be done as one session for cleanness.
-- **Shell £220k Business Case Assessment SOW PO chase.** Real commercial item that's been sitting underneath the system work. Outside the scope of system development sessions but the highest-priority real-world item.
-- **CSV corruption root-cause investigation.** Parked indefinitely; the CSV path is now legacy.
-- **WF-15A signal pipeline rework.** Per `docs/N8N_IMPLEMENTATION.md` Section 6 Phase 3, this happens after migration 004 and after Shell is fully populated against the methodology. Multi-session piece of work.
-- **WF-INIT-1 population assistant build.** Per `docs/N8N_IMPLEMENTATION.md` Section 3 — the n8n workflow that scaffolds methodology population. Built once methodology v1 is stable and after migration 004.
-- **Drift management workflow (WF-INIT-4).** Built once 90 days of signal flow exist.
+- **Gmail OAuth on `Email Alert to Chris` node expired.** WF-WeeklyNews-PG ends in error on every run due to this, even though the data path (POST /news + Fire WF-15A-PG webhook) completes cleanly before the email node. Pre-existing item from earlier `_next.md`. Fix: re-authorise Google OAuth in n8n credentials. Not gate-5-blocking but visually noisy in the executions list.
+- **Anthropic API key in plaintext in WF-15A-PG `Claude Haiku Extract` node `headerParameters`.** Carried over from legacy WF-15A. Per R24, this counts as exposed (it appeared in the workflow JSON the user pasted into chat transcript today). Rotate next session — generate new key in Anthropic console, update n8n node, retire old key.
+- **Smoke-test residue cleanup script left at `db/_cleanup-smoke-test-residue.mjs`.** Already used. Disposable, safe to delete in cleanup gate.
+- **Multiple disposable diagnostic scripts** under `db/` and `n8n/` (prefix `_`) left behind from gate 5 work. List in `n8n/wf-15a-pg-current-state.md` and the gate 5 commit message. Clean up at the start of next session or on close.
 
-## Items NOT in scope for the next session
+---
 
-- Touching the legacy `hypothesis_observable*` tables (they sit unused; deprecation comes with migration 005 once cutover to mv1_* is complete)
-- n8n workflow changes (R22; signal pipeline rework is a future session)
-- Apps Script changes beyond what migration 004 needs for read endpoints
-- Building the population assistant or other WF-INIT workflows (post-methodology-validation)
+## What is in scope for next session
 
-## Entry conditions to check at session start
+1. Read `/n8n/wf-15a-pg-current-state.md` in full.
+2. Run the diagnostic sequence in section "Recommended next-session diagnostic sequence" of that file. **Step 1 first** (sample raw Haiku outputs). Do not edit anything before that produces concrete data.
+3. Once the cause is identified, implement the hierarchical three-step prompt rewrite per Chris's design intent. Final prompt text to be written by Chris.
+4. After re-deploy via sync.js (with R22 diff confirmation), re-run gate 5 verification per the close criteria specified in the gate 5 trigger sequence (clean PG baseline, fresh WF-WeeklyNews-PG trigger, count + 15-sample analysis).
+5. Update ARCHITECTURE.md and `/docs/N8N_IMPLEMENTATION.md` with the captured design decisions (direct-relevance-only v0, weekly cadence, WF-15C as home for adjacency).
+6. Address operational issues batch (Gmail OAuth + Anthropic key rotation) — possibly a separate session if it expands.
+7. Tidy disposable `_*` scripts.
 
-- `docs/` folder exists with five v1 docs
-- `docs/legacy/` folder exists with three superseded docs carrying superseded headers
-- CLAUDE.md points to the v1 doc set
-- Git working tree clean (today's commits all pushed)
-- ARCHITECTURE.md reflects the doc-set milestone (pending decision: bump to v5.7 now or wait for migration 004 to land as v6.0)
+---
+
+## What is NOT in scope for next session
+
+- Modifying gates 1–4 (substrate is good).
+- Touching `WF-WeeklyNews-PG` workflow shape (it works; only the email node is broken, and that's a credential issue).
+- Methodology-v1 entity-catalogue population (still queued for after gate 5 is closed; it depends on a working signal pipeline).
+- Building WF-15B / WF-15C / WF-15D (these are sequenced after gate 5 close per `MIGRATION_004_AND_WORKFLOWS_SPEC.md`).
+
+---
+
+## Reference paths (this session)
+
+- `MIGRATION_004_AND_WORKFLOWS_SPEC.md` — the executable spec for gates 1–5
+- `n8n/wf-15a-pg-current-state.md` — live deployed state of WF-15A-PG's two key code nodes
+- `db/migrations/004_substrate.sql` + `_runner.js` — committed migration
+- `api/index.js` — the deployed API service
+- `n8n/code-nodes/wf15apg/build-extraction-payload--4ba2c2.js` — local copy of the v3 prompt code
+- `n8n/code-nodes/wf15apg/parse-validate-mini-signal--1a760a.js` — local copy of the validator (skip:true gated, confidence retired)
+- Session executions of interest (n8n): WF-WeeklyNews-PG `gOwTXiGfkZm5vFTO` exec ids 906/908/916/919/922; WF-15A-PG `KtFda6LGUSfbYNDQ` exec ids 907/909/911/915/917/920/921/923.
+
+---
 
 ## Linked rules to re-read at session start
 
-- **R14** (schema freeze — currently v5.6 deployed; migration 004 will bump to v6.0 if it lands)
-- **R15** (four-tests; methodology applies these via the build-order procedure)
-- **R22** (no n8n push without diff)
-- **R23** (morning status check)
-- **R25** (doc same-day update)
-
-## Strategic partner (chat) input expected
-
-- Whether the rainy-Tuesday test reveals any methodology gaps requiring v1.1 revision before migration 004 lands
-- Whether Shell portfolio review should be done before second-company population or in parallel
-- Migration 004 scope decisions: which tables, which constraints, naming conventions for FKs
-
-## Reference paths
-
-- `docs/INITIATIVE_MODEL.md` (data model and behaviour rule)
-- `docs/INITIATIVE_METHODOLOGY.md` (population procedure)
-- `docs/SIGNAL_PIPELINE.md` (news-to-signal procedure)
-- `docs/N8N_IMPLEMENTATION.md` (workflow architecture)
-- `docs/WORKED_EXAMPLE_SHELL_H3.md` (full procedure walkthrough)
-- `docs/legacy/METHODOLOGY.md`, `docs/legacy/HYPOTHESIS_MATRIX_v1.md`, `docs/legacy/HEAT_MAPS_AND_GESTATION.md` (superseded; retained for history)
-- `ARCHITECTURE.md` (current schema and architectural state)
-- `SHELL_H3_PORTFOLIO_v3.html` (visualisation prototype, 12 initiatives populated)
-- `db/migrations/003_observable_layer.sql` (legacy schema, deprecated by docs but still in PG)
-- 30 April afternoon session archive: `sessions/2026-04-30-pm.md` (to be created at session end)
-- "Go" scoping memory: `~/.claude/projects/.../memory/go-scoping-discipline.md`
+- **R14** (schema freeze — currently v6.0 deployed; migration 004 committed today)
+- **R22** (no n8n push without diff and confirmation — sync.js patched today to sanitise settings on PUT)
+- **R23** (morning status check via `node sync.js status --since 24h`)
+- **R24** (rotate exposed credentials immediately — Anthropic key noted above)
+- **R25** (doc same-day update — design decisions to land in ARCHITECTURE.md tomorrow)
+- **R26** (end-of-session git hygiene — applied this session per gate boundary)

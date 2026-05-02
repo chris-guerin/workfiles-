@@ -10,7 +10,8 @@ import { fileURLToPath } from 'node:url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const SRC = join(__dirname, 'workflows', 'uOMs2wVL0oGZM29X.json');
-const OUT = join(__dirname, 'workflows', 'wf-weeklynews-pg.json');
+// Write to the alias-matching filename so sync.js push picks it up directly.
+const OUT = join(__dirname, 'workflows', 'wfweeklynewspg.json');
 
 const API_BASE = 'https://signal-engine-api-production-0cf1.up.railway.app';
 const WF15A_WEBHOOK_PLACEHOLDER = 'https://n8n-production-86279.up.railway.app/webhook/wf-15a-trigger';
@@ -49,6 +50,23 @@ const credentialBlock = CRED_ID
   ? { httpHeaderAuth: { id: CRED_ID, name: CRED_NAME } }
   : undefined;
 
+// Body is a single n8n expression returning a JSON string at runtime.
+// Per-field placeholders inside JSON.stringify(...) wouldn't be evaluated;
+// wrapping the whole body in ={{ ... }} forces n8n to evaluate as an expression.
+const postNewsBody = `={{ JSON.stringify({
+  signal_id: $json.signal_id,
+  source: $json.source,
+  signal_type: $json.signal_type,
+  title: $json.title,
+  sector_tags: $json.sector_tags,
+  tech_tags: $json.tech_tags,
+  geography: $json.geography,
+  companies_mentioned: $json.companies_mentioned,
+  relevance_score: $json.relevance_score,
+  url: $json.url,
+  pub_date: $json.pub_date
+}) }}`;
+
 const postNewsNode = {
   parameters: {
     method: 'POST',
@@ -58,23 +76,7 @@ const postNewsNode = {
     sendBody: true,
     contentType: 'json',
     specifyBody: 'json',
-    jsonBody: JSON.stringify(
-      {
-        signal_id: '={{ $json.signal_id }}',
-        source: '={{ $json.source }}',
-        signal_type: '={{ $json.signal_type }}',
-        title: '={{ $json.title }}',
-        sector_tags: '={{ $json.sector_tags }}',
-        tech_tags: '={{ $json.tech_tags }}',
-        geography: '={{ $json.geography }}',
-        companies_mentioned: '={{ $json.companies_mentioned }}',
-        relevance_score: '={{ $json.relevance_score }}',
-        url: '={{ $json.url }}',
-        pub_date: '={{ $json.pub_date }}',
-      },
-      null,
-      2
-    ),
+    jsonBody: postNewsBody,
     options: {},
   },
   type: 'n8n-nodes-base.httpRequest',

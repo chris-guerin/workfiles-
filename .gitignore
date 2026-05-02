@@ -9,3 +9,6 @@ n8n/backups/
 
 # Diagnostic log captures (contain deployment IDs / source IPs; disposable)
 .railway-*.json
+.exec-*.json
+.live-*.json
+.wf15apg-*.json

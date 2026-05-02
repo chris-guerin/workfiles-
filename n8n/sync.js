@@ -392,11 +392,19 @@ async function push(target) {
   await writeFile(backupPath, JSON.stringify(remote, null, 2), 'utf8');
   console.log(`  backup -> backups/${alias}-${stamp}.json`);
 
+  // n8n public API rejects extra settings properties on PUT — strip to known-valid subset.
+  const ALLOWED_SETTINGS_KEYS = ['executionOrder', 'saveDataSuccessExecution', 'saveDataErrorExecution', 'saveManualExecutions', 'saveExecutionProgress', 'timezone', 'errorWorkflow'];
+  const cleanSettings = {};
+  for (const k of ALLOWED_SETTINGS_KEYS) {
+    if (local.settings?.[k] !== undefined) cleanSettings[k] = local.settings[k];
+  }
+  if (cleanSettings.executionOrder === undefined) cleanSettings.executionOrder = 'v1';
+
   const payload = {
     name: local.name,
     nodes: local.nodes,
     connections: local.connections,
-    settings: local.settings ?? {},
+    settings: cleanSettings,
     staticData: local.staticData ?? null,
   };
 

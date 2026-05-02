@@ -13,7 +13,8 @@ import { fileURLToPath } from 'node:url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const SRC = join(__dirname, 'workflows', '1288FlFDvYB3pMXO.json');
-const OUT = join(__dirname, 'workflows', 'wf-15a-pg.json');
+// Write to alias-matching filename so sync.js / _put-workflow.mjs picks it up.
+const OUT = join(__dirname, 'workflows', 'wf15apg.json');
 
 const API_BASE = 'https://signal-engine-api-production-0cf1.up.railway.app';
 const WEBHOOK_PATH = 'wf-15a-trigger';
@@ -133,6 +134,7 @@ collectNode.parameters.jsCode = collectNode.parameters.jsCode.replace(
 const splitRows = findNode('Split Rows');
 const buildBodyNode = {
   parameters: {
+    mode: 'runOnceForEachItem',
     jsCode: `// Build POST Body — assemble heat_map_increments and strip carriers
 // Mode: Run Once for Each Item
 const item = $input.item.json || {};

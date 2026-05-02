@@ -33,8 +33,11 @@ if (input.error || input.statusCode === 429) {
 const extracted = extractJson(extractText(input));
 if (!extracted) return { json: { skip: true, skip_reason: 'PARSE_FAILED', signal_id: signal.signal_id } };
 
-const confidence = Number(extracted.confidence || 0);
-if (confidence < 0.5) return { json: { skip: true, skip_reason: 'LOW_CONFIDENCE', confidence, signal_id: signal.signal_id } };
+// v1 prompt contract: skip:true → drop with model-supplied reason; otherwise pass.
+// Confidence-threshold gate retired alongside the v0 prompt.
+if (extracted.skip === true) {
+  return { json: { skip: true, skip_reason: extracted.reason || 'PROMPT_SKIP', signal_id: signal.signal_id } };
+}
 
 return {
   json: {
@@ -52,8 +55,8 @@ return {
     value_chain_position: extracted.value_chain_position || 'UNKNOWN',
     short_summary: extracted.short_summary || '',
     evidence_snippet: extracted.evidence_snippet || '',
-    content_density: Number(extracted.content_density || 3),
-    confidence,
+    content_density: null,
+    confidence: null,
     extraction_model: 'claude-haiku-4-5-20251001',
     reasoning_classification: null,
     reasoning_at: null,
