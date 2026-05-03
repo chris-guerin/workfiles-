@@ -12,3 +12,10 @@ n8n/backups/
 .exec-*.json
 .live-*.json
 .wf15apg-*.json
+
+# Per-machine Claude Code permission allowlist. Local-only by design:
+# entries can include literal command patterns with credentials embedded
+# (Bearer tokens, API keys) approved interactively during a session, and
+# committing those to git history is unrecoverable. Track team-wide
+# Claude config in .claude/settings.json instead, never .local.json.
+.claude/settings.local.json
