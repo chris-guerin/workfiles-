@@ -1,0 +1,1882 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ontology — EV Charging Infrastructure (v0.1)</title>
+<style>
+  :root {
+    --bg: #fafafa;
+    --panel-bg: #ffffff;
+    --ink: #1a1a1a;
+    --ink-muted: #4a4a4a;
+    --ink-faint: #707070;
+    --rule: #e2e2e2;
+    --accent: #2c5282;
+    --accent-soft: #ebf3fb;
+    --xc-bg: #fff4e6;
+    --xc-ink: #8a4a00;
+    --leaf-bg: #f5f5f5;
+    --leaf-bg-hover: #ecf3fb;
+    --code-bg: #f0f0f0;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.55;
+    font-size: 15px;
+  }
+  header {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 28px 32px 12px;
+  }
+  h1 { font-size: 26px; font-weight: 600; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .subtitle { color: var(--ink-muted); margin: 0 0 20px; font-size: 14px; }
+  h2 { font-size: 16px; font-weight: 600; margin: 24px 0 8px; letter-spacing: 0; }
+  h3 { font-size: 14px; font-weight: 600; margin: 18px 0 6px; }
+  .decisions {
+    background: var(--panel-bg);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 18px 22px;
+    margin: 14px 0 14px;
+  }
+  .decisions ol { margin: 6px 0 0; padding-left: 22px; }
+  .decisions li { margin-bottom: 7px; color: var(--ink-muted); font-size: 13.5px; }
+  .decisions li strong { color: var(--ink); }
+  .counts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin: 8px 0 14px;
+    padding: 14px 18px;
+    background: var(--accent-soft);
+    border-radius: 6px;
+    border: 1px solid #d6e6f5;
+  }
+  .counts .item { display: flex; flex-direction: column; min-width: 80px; }
+  .counts .num { font-size: 22px; font-weight: 600; color: var(--accent); line-height: 1; }
+  .counts .lbl { font-size: 11.5px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
+  .layout {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 32px 32px;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 24px;
+    align-items: start;
+  }
+  .tree-wrap {
+    background: var(--panel-bg);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 18px 22px;
+  }
+  .tree-tools {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .tree-tools button {
+    font: inherit;
+    font-size: 12.5px;
+    padding: 5px 11px;
+    background: var(--bg);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--ink-muted);
+  }
+  .tree-tools button:hover { background: var(--leaf-bg-hover); color: var(--accent); border-color: #c5d6eb; }
+  .tree details {
+    margin: 1px 0;
+    padding-left: 0;
+  }
+  .tree summary {
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 3px;
+    list-style: none;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    user-select: none;
+  }
+  .tree summary::-webkit-details-marker { display: none; }
+  .tree summary::before {
+    content: "▸";
+    color: var(--ink-faint);
+    font-size: 10px;
+    width: 12px;
+    flex-shrink: 0;
+    transition: transform 0.12s ease;
+    display: inline-block;
+  }
+  .tree details[open] > summary::before {
+    transform: rotate(90deg);
+  }
+  .tree summary:hover { background: var(--leaf-bg); }
+  .tree summary .name { font-weight: 500; color: var(--ink); }
+  .tree summary .desc { color: var(--ink-faint); font-size: 12.5px; font-weight: 400; }
+  .tree details details summary .name { font-weight: 400; }
+  .tree details details details summary .name { font-weight: 400; font-size: 14px; }
+  .tree > details > summary .name { font-weight: 600; font-size: 16px; }
+  .tree > details > details > summary .name { font-weight: 600; font-size: 15px; }
+  .tree details > * { margin-left: 18px; border-left: 1px dotted #d8d8d8; padding-left: 12px; }
+  .tree details > summary { margin-left: 0; border-left: none; padding-left: 6px; }
+  .tree .leaves {
+    list-style: none;
+    margin: 2px 0 4px;
+    padding: 0 0 0 0;
+  }
+  .tree .leaf-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    font: inherit;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    padding: 4px 8px;
+    margin: 1px 0;
+    cursor: pointer;
+    color: var(--ink);
+    font-size: 14px;
+  }
+  .tree .leaf-item:hover { background: var(--leaf-bg-hover); border-color: #c5d6eb; }
+  .tree .leaf-item.selected { background: var(--accent-soft); border-color: var(--accent); }
+  .tree .leaf-item .leaf-name { display: inline; }
+  .tree .leaf-item .leaf-arrow { color: var(--accent); margin-right: 6px; font-size: 10px; }
+  .tree .xcs { display: inline-flex; flex-wrap: wrap; gap: 4px; margin-left: 6px; vertical-align: baseline; }
+  .tree .xc {
+    display: inline-block;
+    background: var(--xc-bg);
+    color: var(--xc-ink);
+    font-size: 10.5px;
+    padding: 1px 6px;
+    border-radius: 8px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+  .detail {
+    background: var(--panel-bg);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 20px 22px;
+    position: sticky;
+    top: 20px;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    font-size: 14px;
+  }
+  .detail .empty { color: var(--ink-faint); font-size: 13.5px; }
+  .detail h2 { margin: 0 0 4px; font-size: 18px; color: var(--ink); }
+  .detail .path { color: var(--ink-faint); font-size: 12px; margin: 0 0 14px; word-break: break-word; }
+  .detail .desc { margin: 0 0 14px; color: var(--ink); }
+  .detail h3 { font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-muted); margin: 16px 0 6px; }
+  .detail ul { margin: 4px 0 0; padding-left: 18px; }
+  .detail li { margin-bottom: 5px; font-size: 13.5px; }
+  .detail .src-label { color: var(--ink); }
+  .detail .src-id { color: var(--ink-faint); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; }
+  .detail a { color: var(--accent); text-decoration: none; }
+  .detail a:hover { text-decoration: underline; }
+  .detail .xcs { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+  .detail .xc {
+    background: var(--xc-bg);
+    color: var(--xc-ink);
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+  footer {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 16px 32px 32px;
+    color: var(--ink-faint);
+    font-size: 12px;
+    border-top: 1px solid var(--rule);
+    margin-top: 8px;
+  }
+  footer details { margin-top: 8px; }
+  footer summary { cursor: pointer; color: var(--ink-muted); font-size: 12.5px; }
+  footer .src-table {
+    margin-top: 10px;
+    border-collapse: collapse;
+    font-size: 12px;
+    width: 100%;
+  }
+  footer .src-table td { padding: 4px 8px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  footer .src-table td:first-child { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--ink-faint); white-space: nowrap; }
+  footer a { color: var(--accent); text-decoration: none; }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .detail { position: static; max-height: none; }
+    header { padding: 18px 18px 8px; }
+    .layout { padding: 0 18px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>EV charging infrastructure — structural ontology</h1>
+  <p class="subtitle">Hierarchical taxonomy for signal matching. v0.1, 2026-05-03. Companion: <code>ev_charging_decisions.md</code>.</p>
+
+  <section class="decisions">
+    <h2>Structural decisions made (read first)</h2>
+    <ol>
+      <li><strong>Lifecycle phasing.</strong> Kept user's MAKE / BUILD / BUY / USE / MAINTAIN. <strong>BUY redefined</strong> as "commercial structures, capital flow, ownership models" rather than transactional procurement moments — procurement happens at every phase, so BUY-as-transactions fragments. As capital-and-commercial-structure it has a distinct shape.</li>
+      <li><strong>End-of-life folded into MAINTAIN (5.6)</strong>, not a sixth phase. Decommissioning, recycling, second-life all live there — keeps user's 5-phase shape.</li>
+      <li><strong>Software is split across phases.</strong> Firmware + CSMS development under MAKE (1.4, 1.5); protocol operation under USE (4.5 OCPP, 4.3 ISO 15118); OTA under MAINTAIN (5.2). Same protocol appears in two places — leaves are different.</li>
+      <li><strong>AC/DC and public/private/depot/home are sub-axes</strong>, not top-level. They surface where they bite (connectors 1.2, grid connection 2.2), not as parallel branches.</li>
+      <li><strong>V2G / V2H / V2L sit under USE 4.3</strong> alongside unidirectional energy delivery, with hardware enabler under MAKE 1.1.2. Deliberately scattered — V2G is multi-phase technology. Uncertain call (see decisions doc U2).</li>
+      <li><strong>Cross-cutting tags only.</strong> 10 axes flagged as <span class="xc" style="display:inline-block">xc:battery_storage</span> etc.; parallel ontologies not built out per user instruction. Biggest cluster is power electronics 1.1 — almost every leaf shared with battery storage / grid mod / solar PV / motor drives.</li>
+      <li><strong>Depth target — bottoms out where the next level adds no signal-matching specificity.</strong> Power electronics → chip family with named vendors. Connectors → specific standard. Software → specific protocol version. Grid connection → kV class. Regulatory → specific instrument.</li>
+      <li><strong>Library — vanilla <code>&lt;details&gt;</code> + custom CSS</strong>, no CDN. Chosen over treant.js / d3 / jsTree because: zero dependencies (works offline), native semantics (keyboard + screen-reader), cannot break on JS error, mobile-friendly without responsive lib. JS only renders the tree, computes counts, populates leaf detail panel. ~120 lines.</li>
+    </ol>
+  </section>
+
+  <section class="counts" id="counts" aria-live="polite"></section>
+</header>
+
+<main>
+  <div class="layout">
+    <section class="tree-wrap">
+      <div class="tree-tools">
+        <button id="expand-all" type="button">Expand all</button>
+        <button id="collapse-all" type="button">Collapse all</button>
+        <button id="expand-l2" type="button">Expand to phases only</button>
+        <button id="expand-l3" type="button">Expand to sub-systems</button>
+      </div>
+      <div class="tree" id="tree" role="tree"></div>
+    </section>
+    <aside class="detail" id="detail" aria-live="polite">
+      <div class="empty">Click a leaf node to see its description and sources. Branch nodes have brief inline descriptions in the tree.</div>
+    </aside>
+  </div>
+</main>
+
+<footer>
+  <div>EV charging infrastructure ontology v0.1 · 2026-05-03 · structural skeleton only · no analysis. See <code>ev_charging_decisions.md</code> for structural rationale and uncertainties.</div>
+  <details>
+    <summary>Citation registry (full source list)</summary>
+    <table class="src-table" id="src-table"></table>
+  </details>
+  <details>
+    <summary>Cross-cutting axes (10 — for later population)</summary>
+    <table class="src-table" id="xc-table"></table>
+  </details>
+</footer>
+
+<script>
+"use strict";
+
+// ============================================================================
+// CITATION REGISTRY
+// ============================================================================
+const SOURCES = {
+  // Standards bodies
+  "IEC-61851":   {label: "IEC 61851 — Electric vehicle conductive charging system", url: "https://webstore.iec.ch/publication/33644"},
+  "IEC-62196":   {label: "IEC 62196 — EV plugs, socket-outlets, vehicle connectors and inlets", url: "https://webstore.iec.ch/publication/64364"},
+  "IEC-63110":   {label: "IEC 63110 — Management of EV charging and discharging infrastructure", url: "https://www.iec.ch/"},
+  "IEC-63119":   {label: "IEC 63119 — Information exchange for EV roaming", url: "https://www.iec.ch/"},
+  "IEC-61980":   {label: "IEC 61980 — Wireless power transfer for EVs", url: "https://www.iec.ch/"},
+  "IEC-63379":   {label: "IEC 63379 — Megawatt charging system (MCS)", url: "https://www.iec.ch/"},
+  "IEC-61000":   {label: "IEC 61000 — Electromagnetic compatibility (EMC)", url: "https://www.iec.ch/"},
+  "ISO-15118":   {label: "ISO 15118 series — Vehicle-to-grid communication interface", url: "https://www.iso.org/standard/77845.html"},
+  "ISO-15118-2": {label: "ISO 15118-2 — Network and application protocol (Plug & Charge v1)", url: "https://www.iso.org/standard/55366.html"},
+  "ISO-15118-20":{label: "ISO 15118-20 — Network and application protocol (V2G + Plug & Charge v2)", url: "https://www.iso.org/standard/77845.html"},
+  "ISO-17409":   {label: "ISO 17409 — EV connection requirements", url: "https://www.iso.org/standard/72880.html"},
+  "ISO-6469":    {label: "ISO 6469 — Electric road vehicles, safety specifications", url: "https://www.iso.org/standard/77321.html"},
+  "ISO-14443":   {label: "ISO/IEC 14443 — Proximity contactless cards (RFID auth)", url: "https://www.iso.org/standard/73598.html"},
+  "DIN-70121":   {label: "DIN SPEC 70121 — Digital communication for DC charging", url: "https://www.din.de/"},
+  "SAE-J1772":   {label: "SAE J1772 — AC EV conductive charge coupler (Type 1)", url: "https://www.sae.org/standards/content/j1772_201710/"},
+  "SAE-J3068":   {label: "SAE J3068 — 3-phase AC EV charging coupler (NA)", url: "https://www.sae.org/standards/content/j3068_202304/"},
+  "SAE-J3271":   {label: "SAE J3271 — Megawatt charging system", url: "https://www.sae.org/standards/content/j3271/"},
+  "SAE-J3400":   {label: "SAE J3400 — North American Charging Standard (NACS)", url: "https://www.sae.org/standards/content/j3400"},
+  "SAE-J2954":   {label: "SAE J2954 — Wireless power transfer for light-duty EVs", url: "https://www.sae.org/standards/content/j2954_202010/"},
+  "SAE-J3072":   {label: "SAE J3072 — Interconnection requirements for V2G operation", url: "https://www.sae.org/standards/content/j3072_202106/"},
+  "OCPP":        {label: "Open Charge Alliance — Open Charge Point Protocol (OCPP)", url: "https://www.openchargealliance.org/"},
+  "OCPP-1.6":    {label: "OCPP 1.6J (Open Charge Alliance)", url: "https://www.openchargealliance.org/protocols/ocpp-16/"},
+  "OCPP-2.0.1":  {label: "OCPP 2.0.1 (Open Charge Alliance)", url: "https://www.openchargealliance.org/protocols/ocpp-201/"},
+  "OCPP-2.1":    {label: "OCPP 2.1 (Open Charge Alliance)", url: "https://www.openchargealliance.org/protocols/ocpp-21/"},
+  "OCPI":        {label: "EVRoaming Foundation — Open Charge Point Interface (OCPI)", url: "https://evroaming.org/"},
+  "OCPI-2.2.1":  {label: "OCPI 2.2.1 (EVRoaming Foundation)", url: "https://evroaming.org/ocpi-versions/"},
+  "OICP":        {label: "Hubject — Open InterCharge Protocol (OICP)", url: "https://hubject.com/"},
+  "OCHP":        {label: "Open Clearing House Protocol (legacy roaming)", url: "https://www.ochp.eu/"},
+  "IEEE-2030.5": {label: "IEEE 2030.5 — Smart Energy Profile 2.0", url: "https://standards.ieee.org/ieee/2030.5/"},
+  "IEEE-1547":   {label: "IEEE 1547 — DER interconnection and interoperability", url: "https://standards.ieee.org/ieee/1547/"},
+  "OpenADR":     {label: "OpenADR Alliance — OpenADR 3.0", url: "https://www.openadr.org/"},
+  "CharIN-CCS":  {label: "CharIN — Combined Charging System (CCS)", url: "https://www.charin.global/"},
+  "CharIN-MCS":  {label: "CharIN — Megawatt Charging System (MCS)", url: "https://www.charin.global/technology/mcs/"},
+  "CHAdeMO":     {label: "CHAdeMO Association", url: "https://www.chademo.com/"},
+  "ChaoJi":      {label: "ChaoJi (CHAdeMO 3.0 / GB/T 20234.4)", url: "https://www.chademo.com/"},
+  "GBT-20234":   {label: "GB/T 20234 — China EV connectors", url: "http://www.gb688.cn/"},
+  "GBT-27930":   {label: "GB/T 27930 — China EV charging communication", url: "http://www.gb688.cn/"},
+  "GBT-18487":   {label: "GB/T 18487 — China EV charging system", url: "http://www.gb688.cn/"},
+
+  // Cybersecurity
+  "NIST-IR-8473":  {label: "NIST IR 8473 — EV extreme fast-charging cybersecurity", url: "https://csrc.nist.gov/publications/detail/nistir/8473/final"},
+  "NIST-SP-800-82":{label: "NIST SP 800-82 — Industrial control systems security", url: "https://csrc.nist.gov/publications/detail/sp/800-82/rev-3/final"},
+  "ENISA-EVSE":    {label: "ENISA — EV charging cybersecurity guidance", url: "https://www.enisa.europa.eu/"},
+
+  // Industry data
+  "DOE-AFDC":  {label: "US DOE Alt Fuels Data Center — Electricity Infrastructure", url: "https://afdc.energy.gov/fuels/electricity_infrastructure.html"},
+  "IEA-GEVO":  {label: "IEA — Global EV Outlook", url: "https://www.iea.org/reports/global-ev-outlook-2025"},
+  "BNEF-EV":   {label: "BloombergNEF — Electric Vehicle Outlook", url: "https://about.bnef.com/electric-vehicle-outlook/"},
+  "IRENA-EV":  {label: "IRENA — EV transition reports", url: "https://www.irena.org/"},
+
+  // Regulatory
+  "AFIR":      {label: "EU Alternative Fuels Infrastructure Regulation 2023/1804", url: "https://eur-lex.europa.eu/eli/reg/2023/1804/oj"},
+  "AFIR-Art5": {label: "EU AFIR Article 5 — payment, pricing transparency", url: "https://eur-lex.europa.eu/eli/reg/2023/1804/oj"},
+  "NEVI":      {label: "US NEVI Formula Program / 23 CFR Part 680", url: "https://driveelectric.gov/nevi"},
+  "US-30C":    {label: "IRC §30C — Alternative Fuel Vehicle Refueling Property Credit", url: "https://www.irs.gov/"},
+  "US-45W":    {label: "IRC §45W — Commercial clean vehicle credit (IRA)", url: "https://www.irs.gov/"},
+  "BIL":       {label: "US Bipartisan Infrastructure Law (Pub. L. 117-58) — CFI grants", url: "https://www.congress.gov/"},
+  "IRA":       {label: "US Inflation Reduction Act EV provisions", url: "https://www.energy.gov/"},
+  "PCPR-2023": {label: "UK Public Charge Point Regulations 2023 (SI 2023/1168)", url: "https://www.legislation.gov.uk/uksi/2023/1168"},
+  "LEVI":      {label: "UK Local EV Infrastructure Fund (LEVI)", url: "https://www.gov.uk/government/publications/local-electric-vehicle-infrastructure-levi-fund"},
+  "RCF":       {label: "UK Rapid Charging Fund (RCF)", url: "https://www.gov.uk/"},
+  "CEF-AFIF":  {label: "EU Connecting Europe Facility — Alternative Fuels Infrastructure Facility (CEF AFIF)", url: "https://cinea.ec.europa.eu/programmes/connecting-europe-facility/transport-infrastructure/alternative-fuels-infrastructure-facility-afif_en"},
+  "ENA-G99":   {label: "UK ENA Engineering Recommendation G99 — connection of generators >16 A", url: "https://www.energynetworks.org/industry-hub/resource-library/engineering-recommendation-g99-issue-1-amendment-9-2022.pdf"},
+  "ENA-G98":   {label: "UK ENA Engineering Recommendation G98 — micro-generation ≤16 A", url: "https://www.energynetworks.org/"},
+  "FERC-2222": {label: "FERC Order 2222 — DER aggregation participation in wholesale markets", url: "https://www.ferc.gov/media/ferc-order-no-2222"},
+  "FERC-845":  {label: "FERC Order 845 — generator interconnection reform", url: "https://www.ferc.gov/"},
+  "LCFS":      {label: "California / Oregon / Washington Low Carbon Fuel Standard programs", url: "https://ww2.arb.ca.gov/our-work/programs/low-carbon-fuel-standard"},
+  "RTFO":      {label: "UK Renewable Transport Fuel Obligation (RTFO)", url: "https://www.gov.uk/government/collections/renewable-transport-fuels-obligation-rtfo"},
+
+  // Patent classification
+  "CPC-B60L53":     {label: "CPC B60L 53/00 — Methods of charging EVs / charging stations for EVs", url: "https://www.cooperativepatentclassification.org/"},
+  "CPC-H02J7":      {label: "CPC H02J 7/00 — Circuit arrangements for charging or depolarising batteries", url: "https://www.cooperativepatentclassification.org/"},
+  "CPC-H02J50":     {label: "CPC H02J 50/00 — Circuit arrangements or systems for wireless power transfer", url: "https://www.cooperativepatentclassification.org/"},
+  "CPC-G06Q50-06":  {label: "CPC G06Q 50/06 — Energy/utility services systems and methods", url: "https://www.cooperativepatentclassification.org/"},
+
+  // Safety / electrical codes
+  "UL-2202":   {label: "UL 2202 — EV charging system equipment", url: "https://www.ul.com/"},
+  "UL-2231":   {label: "UL 2231 — Personnel protection systems for EV charging", url: "https://www.ul.com/"},
+  "UL-2594":   {label: "UL 2594 — EV supply equipment", url: "https://www.ul.com/"},
+  "NFPA-70":   {label: "NFPA 70 / NEC Article 625 — EV power transfer system", url: "https://www.nfpa.org/codes-and-standards/all-codes-and-standards/list-of-codes-and-standards/detail?code=70"},
+  "NFPA-855":  {label: "NFPA 855 — Stationary energy storage systems", url: "https://www.nfpa.org/codes-and-standards/all-codes-and-standards/list-of-codes-and-standards/detail?code=855"},
+  "BS-7671":   {label: "BS 7671 — UK IET Wiring Regulations", url: "https://electrical.theiet.org/bs-7671/"},
+  "IET-COP":   {label: "IET Code of Practice for EV Charging Equipment Installation (5th edn)", url: "https://electrical.theiet.org/"},
+  "DIN-VDE":   {label: "DIN VDE 0100-722 — German installation rules for EV charging", url: "https://www.din.de/"},
+
+  // Accessibility / metering
+  "ADA":       {label: "US Americans with Disabilities Act — Standards for Accessible Design", url: "https://www.ada.gov/"},
+  "EU-EAA":    {label: "EU European Accessibility Act (Directive 2019/882)", url: "https://eur-lex.europa.eu/eli/dir/2019/882/oj"},
+  "MID":       {label: "EU Measuring Instruments Directive 2014/32/EU (Annex VI active electrical energy meters)", url: "https://eur-lex.europa.eu/eli/dir/2014/32/oj"},
+  "OIML-R46":  {label: "OIML R 46 — Active electrical energy meters", url: "https://www.oiml.org/en/files/pdf_r/r046-1-2-e12.pdf"},
+  "NIST-HB44": {label: "NIST Handbook 44 — Specifications for weighing and measuring devices (EV fuelling devices)", url: "https://www.nist.gov/pml/owm/publications/nist-handbook-44"},
+
+  // E-waste
+  "WEEE":      {label: "EU WEEE Directive 2012/19/EU — Waste electrical and electronic equipment", url: "https://eur-lex.europa.eu/eli/dir/2012/19/oj"},
+  "R2v3":      {label: "R2v3 — Responsible Recycling certification (SERI)", url: "https://sustainableelectronics.org/r2v3/"},
+
+  // EMVCo
+  "EMVCo":     {label: "EMVCo specifications (contactless EMV terminals)", url: "https://www.emvco.com/"},
+};
+
+// ============================================================================
+// CROSS-CUTTING AXES — flagged here, parallel ontologies built later
+// ============================================================================
+const XCUTS = {
+  battery_storage:      "Stationary battery storage / BESS technology stack — power electronics, cells, BMS, EMS, grid interface",
+  grid_modernisation:   "Grid modernisation / DSO / TSO infrastructure — capacity, flexibility, DERMS, ADMS",
+  solar_pv:             "Solar PV / on-site renewables stack — modules, inverters, mounting, interconnection",
+  motor_drives:         "Industrial motor drives / variable-frequency drives — same SiC/GaN/IGBT supply chain",
+  traction_drives:      "Vehicle traction inverters / motor drives — same semiconductor supply chain",
+  ot_cybersecurity:     "OT / industrial control systems cybersecurity — IEC 62443, NIST SP 800-82",
+  e_waste:              "E-waste / WEEE / circular economy / battery recycling",
+  retail_payments:      "Retail payment systems — EMV terminals, mobile wallets, PCI DSS",
+  clean_energy_finance: "Clean energy finance / public infrastructure programmes / tax credits / carbon markets",
+  data_telecoms:        "Connectivity / telecoms infrastructure — cellular, fibre, IoT, edge compute",
+};
+
+// ============================================================================
+// ONTOLOGY DATA
+// ============================================================================
+// Convention:
+//   - Branch nodes have `children: [...]` (array of child nodes)
+//   - Leaf nodes have NO `children` key. They MUST have `sources: [...]` and `desc`.
+//   - All nodes must have unique `id` and `name`.
+//   - `xcuts: [...]` is optional, list of XCUTS keys.
+// ============================================================================
+
+const ONTOLOGY = {
+  id: "root",
+  name: "EV charging infrastructure",
+  desc: "The physical, digital, and commercial systems that deliver electrical energy to electric vehicles — from semiconductor manufacture through site deployment, charging operations, and end-of-life.",
+  children: [
+
+    // ========================================================================
+    // 1. MAKE
+    // ========================================================================
+    {
+      id: "make",
+      name: "1. MAKE",
+      desc: "Design, R&D, component sourcing, hardware manufacture, and software development of the charging product itself.",
+      children: [
+
+        // 1.1 Power electronics
+        {
+          id: "make-pe",
+          name: "1.1 Power electronics",
+          desc: "Conversion of grid AC to controlled DC (or controlled AC) for the EV battery. The semiconductor stack defines efficiency, density, and cost ceilings.",
+          xcuts: ["battery_storage","grid_modernisation","motor_drives","solar_pv","traction_drives"],
+          children: [
+            {
+              id: "make-pe-switches",
+              name: "1.1.1 Semiconductor power switches",
+              desc: "The active switches that convert and regulate power. Determines switching frequency, conduction losses, and module size.",
+              children: [
+                {id:"pe-sic-mosfet", name:"SiC MOSFETs (650–1700 V)",
+                 desc:"Silicon carbide MOSFETs. Dominant in DC fast / HPC / MCS for switching frequency and efficiency. Vendors: Wolfspeed (C3M, C2M), Infineon CoolSiC, ON Semi (onsemi) EliteSiC, ROHM Gen4, STMicro SCT3xxx, Mitsubishi.",
+                 sources:["CPC-H02J7","IEC-61851"], xcuts:["battery_storage","grid_modernisation","motor_drives","solar_pv","traction_drives"]},
+                {id:"pe-si-igbt", name:"Si IGBTs (1200–3300 V)",
+                 desc:"Silicon IGBT modules at 1200–3300 V. Used in lower-frequency, higher-voltage DC chargers and substation-class converters. Vendors: Infineon EconoDUAL/PrimePACK, Mitsubishi NX/HV, Hitachi, Fuji Electric, Semikron Danfoss.",
+                 sources:["CPC-H02J7","IEC-61851"], xcuts:["battery_storage","grid_modernisation","motor_drives","traction_drives"]},
+                {id:"pe-gan-hemt", name:"GaN HEMTs (≤650 V)",
+                 desc:"Gallium nitride HEMTs at 100–650 V, very high switching frequency. Mostly residential/AC chargers and on-board chargers; emerging in DC. Vendors: Navitas, GaN Systems (Infineon), Transphorm, EPC, Power Integrations.",
+                 sources:["CPC-H02J7"], xcuts:["motor_drives","solar_pv","traction_drives"]},
+                {id:"pe-diodes", name:"SiC Schottky / fast-recovery Si diodes",
+                 desc:"Companion diodes for power switches. SiC Schottky for higher-frequency PFC and DC stages; fast-recovery Si elsewhere. Same vendor base as MOSFETs.",
+                 sources:["CPC-H02J7"], xcuts:["motor_drives","solar_pv"]},
+              ]
+            },
+            {
+              id: "make-pe-topologies",
+              name: "1.1.2 Power converter topologies",
+              desc: "How the active switches are arranged into a converter. Determines voltage class served, efficiency profile, and bidirectionality.",
+              children: [
+                {id:"top-pfc-llc", name:"PFC + LLC / DAB (AC chargers, ≤22 kW)",
+                 desc:"Power-factor-correction front end + LLC resonant or dual-active-bridge isolated DC-DC. Standard for AC chargers and on-board chargers.",
+                 sources:["CPC-H02J7","IEC-61851"]},
+                {id:"top-vienna", name:"Vienna rectifier (DC fast, 50–150 kW)",
+                 desc:"Three-phase, three-level boost PFC topology. Common front end for DC fast chargers in the 50–150 kW class.",
+                 sources:["CPC-H02J7"]},
+                {id:"top-tnpc", name:"T-type / NPC three-level converter (DC, 50–350 kW)",
+                 desc:"Three-level neutral-point-clamped or T-type topology. Reduces voltage stress per switch, used in mid-to-high-power DC chargers.",
+                 sources:["CPC-H02J7"], xcuts:["solar_pv","grid_modernisation"]},
+                {id:"top-dab-ps", name:"Modular DAB / phase-shift full bridge (DC isolation)",
+                 desc:"Isolated DC-DC stage between PFC and EV battery. Multiple modules paralleled for high-power DC.",
+                 sources:["CPC-H02J7"], xcuts:["battery_storage"]},
+                {id:"top-sst", name:"Solid-state transformer (SST, MV-direct HPC)",
+                 desc:"MV-input solid-state transformer eliminating the line-frequency transformer. Emerging in HPC / megawatt and depot installations.",
+                 sources:["CPC-H02J7","CPC-B60L53"], xcuts:["grid_modernisation"]},
+                {id:"top-mmc", name:"Modular Multilevel Converter (MMC)",
+                 desc:"Cascaded H-bridge / half-bridge cells in series for MV-direct interconnection. Used in HVDC, finding application in megawatt charging hubs.",
+                 sources:["CPC-H02J7"], xcuts:["grid_modernisation"]},
+                {id:"top-bidir", name:"Bidirectional V2G inverter topologies (totem-pole, DAB)",
+                 desc:"Topology variants with controlled bidirectional power flow. Required for V2G / V2H / V2L. Active research area.",
+                 sources:["CPC-H02J7","SAE-J3072","ISO-15118-20"], xcuts:["battery_storage","grid_modernisation"]},
+              ]
+            },
+            {
+              id: "make-pe-magnetics",
+              name: "1.1.3 Magnetics",
+              desc: "Transformers, inductors, and chokes — physical limit on power density and frequency.",
+              children: [
+                {id:"mag-hf-transformer", name:"High-frequency planar transformers",
+                 desc:"PCB-embedded planar transformers for isolated DC-DC at 50–500 kHz. Vendors: Payton, ICE Components, Premo.",
+                 sources:["CPC-H02J7"], xcuts:["solar_pv","battery_storage"]},
+                {id:"mag-cores", name:"Ferrite / nanocrystalline cores",
+                 desc:"Magnetic core materials. Ferrite (TDK, Magnetics, Ferroxcube) for general HF; nanocrystalline (Hitachi Metals, VAC) for higher flux density and low loss.",
+                 sources:["CPC-H02J7"], xcuts:["motor_drives","solar_pv"]},
+                {id:"mag-pfc-inductors", name:"PFC inductors / boost chokes",
+                 desc:"Single-phase or three-phase boost inductors for PFC stage. Power density driver.",
+                 sources:["CPC-H02J7"]},
+                {id:"mag-emi", name:"EMI filter chokes (CM/DM)",
+                 desc:"Common-mode and differential-mode chokes for EMC compliance to IEC 61000 / EN 55011 conducted emissions limits.",
+                 sources:["IEC-61000"]},
+              ]
+            },
+            {
+              id: "make-pe-passives",
+              name: "1.1.4 Capacitors & passives",
+              desc: "DC-link, snubbers, HF filtering — usually a meaningful BoM share at high power.",
+              children: [
+                {id:"cap-dclink-film", name:"DC-link film capacitors",
+                 desc:"Polypropylene metallised film caps on the high-voltage DC bus. Self-healing, high ripple-current capability. Vendors: TDK, KEMET, Vishay, Cornell Dubilier.",
+                 sources:["CPC-H02J7"], xcuts:["battery_storage","solar_pv","traction_drives"]},
+                {id:"cap-mlcc-hf", name:"High-frequency MLCC / film",
+                 desc:"Multi-layer ceramic and HF film caps for resonant tanks and snubbers in DAB / LLC stages.",
+                 sources:["CPC-H02J7"]},
+                {id:"cap-snubbers", name:"Snubbers (RC / RCD)",
+                 desc:"Voltage-spike clamping across switches, especially in fast-switching SiC topologies.",
+                 sources:["CPC-H02J7"]},
+              ]
+            },
+            {
+              id: "make-pe-cooling",
+              name: "1.1.5 Cooling",
+              desc: "Thermal management defines the achievable continuous power and the duty cycle at high ambient.",
+              children: [
+                {id:"cool-air", name:"Forced-air cooling (≤50 kW typical)",
+                 desc:"Heat sinks + fans, lower cost, used in AC chargers and lower-power DC.",
+                 sources:["IEC-61851"]},
+                {id:"cool-liquid", name:"Liquid cooling (water-glycol, 50 kW – 1 MW)",
+                 desc:"Cold-plate liquid cooling with water-glycol loop. Standard for HPC ≥150 kW. Cooled cables also liquid in HPC/MCS.",
+                 sources:["CPC-H02J7","CharIN-MCS"], xcuts:["battery_storage","traction_drives"]},
+                {id:"cool-immersion", name:"Direct-to-chip / immersion cooling (emerging)",
+                 desc:"Two-phase or single-phase fluorochemical immersion. Emerging in megawatt charging, borrowed from data-centre cooling.",
+                 sources:["CharIN-MCS"], xcuts:["battery_storage"]},
+              ]
+            },
+            {
+              id: "make-pe-control",
+              name: "1.1.6 Control electronics",
+              desc: "Digital control, gate drive, sensing, protection. Sets the bandwidth and stability of the converter.",
+              children: [
+                {id:"ctrl-mcu", name:"Microcontrollers / DSPs / FPGAs",
+                 desc:"Digital control silicon. Texas Instruments C2000, STM32, Infineon AURIX/XMC, Microchip dsPIC, Xilinx/AMD FPGAs for high-speed DAB control.",
+                 sources:["CPC-H02J7"], xcuts:["motor_drives","solar_pv","traction_drives"]},
+                {id:"ctrl-gatedriver", name:"Isolated gate drivers",
+                 desc:"Isolated drive ICs for SiC/IGBT/GaN switches. Vendors: Texas Instruments UCC, Infineon EiceDRIVER, Analog Devices LTM, Power Integrations SCALE-iDriver.",
+                 sources:["CPC-H02J7"], xcuts:["motor_drives","solar_pv","traction_drives"]},
+                {id:"ctrl-sensing", name:"Sensing (Hall, shunt, voltage divider, NTC)",
+                 desc:"Current sensing (Hall ICs from Allegro/Melexis/LEM, isolated shunts), voltage sensing, and thermistors for thermal protection.",
+                 sources:["CPC-H02J7"]},
+                {id:"ctrl-protect", name:"Protection ICs (OCP / OVP / OTP / DC RCD)",
+                 desc:"Fast over-current, over-voltage, over-temperature, and DC residual-current monitors mandated by IEC 61851-1.",
+                 sources:["IEC-61851","UL-2231"]},
+              ]
+            },
+          ]
+        },
+
+        // 1.2 Connector & cable assemblies
+        {
+          id: "make-connectors",
+          name: "1.2 Connector & cable assemblies",
+          desc: "The mechanical and electrical interface to the vehicle. Standards-defined, region-fragmented, slowly converging on CCS / NACS / MCS.",
+          children: [
+            {
+              id: "conn-ac",
+              name: "1.2.1 AC connector standards",
+              desc: "Conductive AC charging coupler standards by region.",
+              children: [
+                {id:"ac-iec62196-t1", name:"IEC 62196 Type 1 / SAE J1772 (NA AC)",
+                 desc:"Single-phase AC coupler used in North America and Japan up to ~19.2 kW.",
+                 sources:["IEC-62196","SAE-J1772"]},
+                {id:"ac-iec62196-t2", name:"IEC 62196 Type 2 / Mennekes (EU AC)",
+                 desc:"Three-phase AC coupler used in Europe, up to ~22 kW (mode 3) AC.",
+                 sources:["IEC-62196"]},
+                {id:"ac-gbt-20234-2", name:"GB/T 20234.2 (China AC)",
+                 desc:"Chinese AC coupler standard, three-phase, distinct pin arrangement.",
+                 sources:["GBT-20234"]},
+                {id:"ac-nacs-ac", name:"NACS / SAE J3400 AC mode",
+                 desc:"NACS coupler in single-phase AC mode (Tesla legacy + adopted by NA OEMs).",
+                 sources:["SAE-J3400"]},
+              ]
+            },
+            {
+              id: "conn-dc",
+              name: "1.2.2 DC connector standards",
+              desc: "Conductive DC fast-charging coupler standards.",
+              children: [
+                {id:"dc-ccs1", name:"CCS Combo 1 (NA DC)",
+                 desc:"CCS Type 1 + DC pins, used in North America at up to ~350 kW. Single-phase AC + DC.",
+                 sources:["IEC-62196","CharIN-CCS","SAE-J1772"]},
+                {id:"dc-ccs2", name:"CCS Combo 2 (EU/UK DC)",
+                 desc:"CCS Type 2 + DC pins, dominant DC fast standard in Europe up to ~400 kW.",
+                 sources:["IEC-62196","CharIN-CCS"]},
+                {id:"dc-chademo", name:"CHAdeMO (legacy / Japan)",
+                 desc:"Original DC fast standard from Japan, 50–100 kW class. Declining install base outside Japan; succeeded by ChaoJi.",
+                 sources:["CHAdeMO"]},
+                {id:"dc-gbt-20234-3", name:"GB/T 20234.3 (China DC)",
+                 desc:"Chinese DC fast standard, dominant in mainland China. Used with GB/T 27930 communications.",
+                 sources:["GBT-20234","GBT-27930"]},
+                {id:"dc-nacs", name:"NACS / SAE J3400 (DC, North America)",
+                 desc:"Tesla-derived North American Charging Standard. Standardised as SAE J3400; rapid adoption by Ford, GM, Rivian, etc. since 2023.",
+                 sources:["SAE-J3400"]},
+                {id:"dc-mcs", name:"MCS / SAE J3271 / IEC 63379 (megawatt, HD truck)",
+                 desc:"Megawatt Charging System for heavy-duty trucks and aviation, up to 3.75 MW. CharIN-led; SAE J3271 ratified, IEC 63379 in process.",
+                 sources:["SAE-J3271","IEC-63379","CharIN-MCS"], xcuts:["battery_storage"]},
+                {id:"dc-chaoji", name:"ChaoJi (CHAdeMO 3.0 / GB/T 20234.4)",
+                 desc:"Joint Sino-Japanese successor to CHAdeMO and GB/T DC, up to ~900 kW. Conductive contacts in liquid-cooled housing.",
+                 sources:["ChaoJi","GBT-20234"]},
+              ]
+            },
+            {
+              id: "conn-cable",
+              name: "1.2.3 Cable assemblies",
+              desc: "The physical cord that carries current from charger to vehicle.",
+              children: [
+                {id:"cable-liquid", name:"Liquid-cooled cables (HPC ≥150 kW, MCS)",
+                 desc:"Conductors run inside a coolant loop to allow >500 A continuous without unmanageable cable mass. Standard for HPC. Vendors: Phoenix Contact, Huber+Suhner, ITT Cannon.",
+                 sources:["CharIN-CCS","CharIN-MCS"], xcuts:["battery_storage"]},
+                {id:"cable-mgmt", name:"Cable management (overhead retractors, booms)",
+                 desc:"Spring retractors, gantry booms, and cable buckets for ergonomics with heavy liquid-cooled cables.",
+                 sources:["CharIN-CCS"]},
+                {id:"cable-copper-ac", name:"Conventional copper AC cables",
+                 desc:"Multi-core copper for Mode 2 / Mode 3 AC charging up to 22 kW.",
+                 sources:["IEC-61851"]},
+                {id:"cable-al", name:"Aluminium-conductor variants",
+                 desc:"Aluminium core for cost and weight reduction, mostly in MV feeder cables; emerging in some EV cable concepts.",
+                 sources:["BS-7671"]},
+              ]
+            },
+            {
+              id: "conn-wireless",
+              name: "1.2.4 Wireless / inductive charging",
+              desc: "Non-contact alternative to a connector. Currently low deployment, watched.",
+              children: [
+                {id:"wpt-j2954", name:"SAE J2954 (light-duty wireless WPT)",
+                 desc:"Standardised WPT classes for passenger EVs at 3.7 / 7.7 / 11 / 22 kW.",
+                 sources:["SAE-J2954","CPC-H02J50"]},
+                {id:"wpt-iec61980", name:"IEC 61980 (general wireless EV power transfer)",
+                 desc:"Generic IEC standard for wireless EV power transfer including light-duty.",
+                 sources:["IEC-61980","CPC-H02J50"]},
+                {id:"wpt-commercial", name:"Commercial WPT systems (WiTricity, Electreon)",
+                 desc:"Commercial deployments: WiTricity (static), Electreon (dynamic in-road), Plugless. Fleet-bus pilots in EU and Israel.",
+                 sources:["SAE-J2954","CPC-H02J50"]},
+              ]
+            },
+            {
+              id: "conn-mech",
+              name: "1.2.5 Connector mechanical",
+              desc: "Latching, signalling pins, locking — mechanical safety layer.",
+              children: [
+                {id:"mech-latch", name:"Latching / locking solenoid",
+                 desc:"Electromechanical latch holding the connector during charging; required by IEC 61851-1 to prevent live disconnect.",
+                 sources:["IEC-61851"]},
+                {id:"mech-pilot", name:"Pilot pins (CP / PP / proximity)",
+                 desc:"Control Pilot (CP) and Proximity Pilot (PP) signalling per IEC 61851-1 / SAE J1772 — basic communication and current capability.",
+                 sources:["IEC-61851","SAE-J1772"]},
+              ]
+            },
+          ]
+        },
+
+        // 1.3 Enclosure & UX hardware
+        {
+          id: "make-enclosure",
+          name: "1.3 Charger enclosure & UX hardware",
+          desc: "The physical box and its driver-facing interfaces.",
+          children: [
+            {id:"enc-cabinet", name:"1.3.1 Cabinet (IP / IK / NEMA rating)",
+             desc:"Outdoor enclosure rated for ingress (typ. IP54–IP65) and impact (IK10) per IEC 60529 / IEC 62262, or NEMA 3R/4 in NA.",
+             sources:["IEC-61851","UL-2202"]},
+            {
+              id: "enc-display",
+              name: "1.3.2 Display & UX hardware",
+              desc: "Driver-facing inputs and outputs.",
+              children: [
+                {id:"ux-touchscreen", name:"Touchscreen (capacitive / resistive)",
+                 desc:"Outdoor-readable touch displays, typ. 7–22 inch.",
+                 sources:["UL-2202"]},
+                {id:"ux-led", name:"LED status / pictogram indicators",
+                 desc:"Required by AFIR Annex II Part C (status visibility) and PCPR for accessibility.",
+                 sources:["AFIR","PCPR-2023"]},
+                {id:"ux-rfid", name:"RFID card readers (ISO/IEC 14443)",
+                 desc:"Contactless reader for eMSP membership tokens.",
+                 sources:["ISO-14443"]},
+                {id:"ux-emv", name:"Contactless EMV terminal",
+                 desc:"Card-and-phone payment terminal — mandatory on AFIR/PCPR-regulated public chargers ≥50 kW.",
+                 sources:["EMVCo","AFIR-Art5","PCPR-2023"], xcuts:["retail_payments"]},
+                {id:"ux-qr", name:"QR scanner / camera",
+                 desc:"Scan-to-pay and ad-hoc charging on AFIR-style public chargers.",
+                 sources:["AFIR-Art5"]},
+                {id:"ux-keypad", name:"Keypad",
+                 desc:"PIN entry for stored RFID accounts.",
+                 sources:["UL-2202"]},
+                {id:"ux-audio", name:"Audio prompts (accessibility)",
+                 desc:"Required by ADA / EAA for visually-impaired users.",
+                 sources:["ADA","EU-EAA"]},
+              ]
+            },
+            {id:"enc-holster", name:"1.3.3 Cable carriage / holster / boom",
+             desc:"Mechanical cradle for the connector and overhead boom support for HPC cables.",
+             sources:["CharIN-CCS"]},
+            {id:"enc-vandal", name:"1.3.4 Vandalism resistance / cable retention",
+             desc:"Anti-cable-cut sensors and tamper switches; emerging concern post copper-theft incidents.",
+             sources:["UL-2231"]},
+            {id:"enc-lighting", name:"1.3.5 Integrated lighting",
+             desc:"Site lighting integrated into the charger pedestal for safety and accessibility.",
+             sources:["ADA","PCPR-2023"]},
+          ]
+        },
+
+        // 1.4 Embedded firmware
+        {
+          id: "make-firmware",
+          name: "1.4 Embedded firmware (on-charger software)",
+          desc: "Software running inside the charger CPU. Talks to the vehicle, the CSMS, and the local UX.",
+          children: [
+            {id:"fw-rtos", name:"1.4.1 RTOS / Linux build",
+             desc:"Embedded OS — typ. Yocto-based Linux on ARM Cortex-A; FreeRTOS on Cortex-M for control plane.",
+             sources:["NIST-IR-8473"]},
+            {id:"fw-statemachine", name:"1.4.2 Charging-control state machine",
+             desc:"Implements IEC 61851-1 mode 2/3/4 state transitions: A (no vehicle), B (connected), C (charging), D (with ventilation), E (error), F (charger fault).",
+             sources:["IEC-61851"]},
+            {
+              id: "fw-protocols",
+              name: "1.4.3 Charger-side protocol stacks",
+              desc: "Protocol implementations on the charger side.",
+              children: [
+                {id:"fw-plc", name:"PLC HomePlug Green PHY (ISO 15118 transport)",
+                 desc:"Powerline communication over the CP pin; physical layer for ISO 15118-2 / 15118-20 high-level comm.",
+                 sources:["ISO-15118","ISO-15118-2"]},
+                {id:"fw-can", name:"CAN bus (internal + diagnostic)",
+                 desc:"Internal CAN between charger control modules; diagnostic interface.",
+                 sources:["IEC-61851"]},
+                {id:"fw-modbus", name:"Modbus RTU / TCP (DERMS / submetering)",
+                 desc:"Industrial protocol used to integrate with site EMS or DERMS controllers.",
+                 sources:["IEEE-2030.5"], xcuts:["grid_modernisation"]},
+              ]
+            },
+            {
+              id: "fw-cyber",
+              name: "1.4.4 Cybersecurity primitives",
+              desc: "Crypto, identity, secure boot — primitives baked into firmware.",
+              xcuts: ["ot_cybersecurity"],
+              children: [
+                {id:"sec-pki-pnc", name:"PKI / Plug & Charge contract certificates",
+                 desc:"X.509 hierarchy per ISO 15118-2 / -20 — V2G root CAs (Hubject, IRENA, OEM roots), provisioning, contract certs.",
+                 sources:["ISO-15118-2","ISO-15118-20"], xcuts:["ot_cybersecurity"]},
+                {id:"sec-secureboot", name:"Secure boot / verified firmware",
+                 desc:"Chain-of-trust from boot ROM through OS — required by NIST IR 8473 / OCPP 2.0.1 security profile 3.",
+                 sources:["NIST-IR-8473","OCPP-2.0.1"], xcuts:["ot_cybersecurity"]},
+                {id:"sec-hsm", name:"HSM / TPM / secure element",
+                 desc:"Hardware-rooted key storage. Vendors: Infineon Optiga, NXP A71CH, STMicro STSAFE.",
+                 sources:["NIST-IR-8473"], xcuts:["ot_cybersecurity"]},
+              ]
+            },
+          ]
+        },
+
+        // 1.5 CSMS / back-office
+        {
+          id: "make-csms",
+          name: "1.5 CSMS & back-office software",
+          desc: "Charge Station Management System — the cloud-side platform that runs the network.",
+          children: [
+            {id:"csms-oss", name:"1.5.1 Open-source CSMS (StEVe, MaeveCSMS, OCPP.js)",
+             desc:"OSS implementations used in pilots and as reference: StEVe (RWTH Aachen), MaeveCSMS (Pionix), OCPP.js, EVerest (LF Energy).",
+             sources:["OCPP","OCPP-2.0.1"]},
+            {id:"csms-commercial", name:"1.5.2 Commercial CSMS platforms (Driivz, AMPECO, Greenflux, ChargePoint, EV.energy, EV-Box)",
+             desc:"Commercial back-end platforms — Volvo Driivz, AMPECO, Greenflux (DKV Mobility), ChargePoint network, ev.energy, EV-Box.",
+             sources:["OCPP","DOE-AFDC"]},
+            {id:"csms-apis", name:"1.5.3 Integration APIs (billing, mapping, fleet, eMSP)",
+             desc:"REST/GraphQL APIs to billing engines, mapping providers, fleet TMS, eMSP roaming hubs.",
+             sources:["OCPI-2.2.1","OCPI"]},
+            {id:"csms-dwh", name:"1.5.4 Data warehouse / analytics",
+             desc:"Session telemetry, uptime, energy delivered, reliability — feeds NEVI / PCPR reporting.",
+             sources:["NEVI","PCPR-2023"]},
+            {id:"csms-versionmatrix", name:"1.5.5 OCPP version-support matrix",
+             desc:"Charge points typically support a subset of OCPP versions; CSMS must adapt. Reflects fleet composition.",
+             sources:["OCPP-1.6","OCPP-2.0.1","OCPP-2.1"]},
+          ]
+        },
+
+        // 1.6 Manufacturing
+        {
+          id: "make-manuf",
+          name: "1.6 Manufacturing & certification",
+          desc: "Physical assembly + the regional certifications required to ship.",
+          children: [
+            {id:"mfg-pcb", name:"1.6.1 PCB / SMT manufacture",
+             desc:"PCB fabrication and surface-mount assembly of control boards. Geographically concentrated in Asia for low-end, distributed for power-stage boards.",
+             sources:["IEC-61851"]},
+            {id:"mfg-power", name:"1.6.2 Power module assembly",
+             desc:"Bonding of bare-die SiC/IGBT into modules. Vendor-captive (Infineon, Wolfspeed) or contract (Semikron, Vincotech).",
+             sources:["CPC-H02J7"], xcuts:["motor_drives","traction_drives"]},
+            {id:"mfg-test", name:"1.6.3 HV/HiPot test + EMC chamber",
+             desc:"High-voltage isolation test, hi-pot test, EMC chamber to IEC 61000-6-2 / EN 55011.",
+             sources:["IEC-61000","IEC-61851"]},
+            {
+              id: "mfg-cert",
+              name: "1.6.4 Compliance certification",
+              desc: "Regional certifications required to sell.",
+              children: [
+                {id:"cert-ul", name:"UL listing (UL 2202, UL 2231, UL 2594) — North America",
+                 desc:"UL 2202 (charging system equipment), UL 2231 (personnel protection), UL 2594 (EVSE).",
+                 sources:["UL-2202","UL-2231","UL-2594"]},
+                {id:"cert-ce", name:"CE marking + EN 61851 + EN 61000 — EU/UK",
+                 desc:"CE mark plus harmonised EN standards.",
+                 sources:["IEC-61851","IEC-61000"]},
+                {id:"cert-ccc", name:"CCC — China Compulsory Certification",
+                 desc:"Chinese mandatory certification including GB/T 18487.",
+                 sources:["GBT-18487","GBT-20234"]},
+                {id:"cert-kc", name:"KC — Korea",
+                 desc:"Korean certification scheme.",
+                 sources:["IEC-61851"]},
+                {id:"cert-cb", name:"CB scheme",
+                 desc:"IECEE CB scheme — multilateral test-result acceptance, reduces duplicate testing.",
+                 sources:["IEC-61851"]},
+              ]
+            },
+          ]
+        },
+
+      ]
+    },
+
+    // ========================================================================
+    // 2. BUILD
+    // ========================================================================
+    {
+      id: "build",
+      name: "2. BUILD",
+      desc: "Site selection, grid connection, civil / electrical works, hardware install, and commissioning. Where physical infrastructure goes into the ground.",
+      children: [
+
+        {
+          id: "build-site",
+          name: "2.1 Site selection & permitting",
+          desc: "Where to build, what land/lease, what permits.",
+          children: [
+            {id:"site-demand", name:"2.1.1 Demand modelling (utilization, dwell, arrival rates)",
+             desc:"Utilisation forecasting from traffic, EV penetration, dwell, queue tolerance. Drives port count and power-class sizing.",
+             sources:["DOE-AFDC","IEA-GEVO"]},
+            {id:"site-realestate", name:"2.1.2 Real-estate (lease, easement, fee simple)",
+             desc:"Land control: lease, easement, fee-simple acquisition, access agreements.",
+             sources:["NEVI"]},
+            {
+              id: "site-zoning",
+              name: "2.1.3 Zoning & permitting",
+              desc: "Local approval to build.",
+              children: [
+                {id:"zoning-us-ahj", name:"US — AHJ permitting + fire marshal",
+                 desc:"Local AHJ (Authority Having Jurisdiction) permits, fire-marshal review per NFPA 70 Article 625.",
+                 sources:["NFPA-70"]},
+                {id:"zoning-uk-planning", name:"UK — planning permission (PD rights for lower power)",
+                 desc:"Permitted Development rights apply to many <22 kW residential and workplace installs; >22 kW or wayleave-requiring sites need planning consent.",
+                 sources:["PCPR-2023"]},
+                {id:"zoning-eu-afir", name:"EU — AFIR-mandated TEN-T site density",
+                 desc:"AFIR Article 3 sets 60 km TEN-T core / 100 km comprehensive site spacing for ≥150 kW pools by end-2025.",
+                 sources:["AFIR"]},
+              ]
+            },
+            {
+              id: "site-eia",
+              name: "2.1.4 Environmental impact",
+              desc: "Federal/national environmental review where triggered.",
+              children: [
+                {id:"eia-us-nepa", name:"US NEPA review",
+                 desc:"Required for federally-funded NEVI sites (categorical exclusion or EA typical).",
+                 sources:["NEVI"]},
+                {id:"eia-uk", name:"UK EIA / habitat regs",
+                 desc:"Project EIA where thresholds are met; habitats regs for sensitive sites.",
+                 sources:["PCPR-2023"]},
+              ]
+            },
+            {
+              id: "site-access",
+              name: "2.1.5 Accessibility",
+              desc: "Mandatory accessibility requirements.",
+              children: [
+                {id:"access-us-ada", name:"US ADA Standards (Title III)",
+                 desc:"Public-accommodation accessibility — clearance, reach range, audible/visual cues.",
+                 sources:["ADA"]},
+                {id:"access-eu-eaa", name:"EU European Accessibility Act (Directive 2019/882)",
+                 desc:"Applies to charging-station UI from June 2025.",
+                 sources:["EU-EAA"]},
+                {id:"access-uk-equality", name:"UK Equality Act / PCPR-mandated reasonable adjustments",
+                 desc:"PCPR 2023 explicitly requires reasonable accessibility on chargers ≥8 kW.",
+                 sources:["PCPR-2023"]},
+              ]
+            },
+            {
+              id: "site-fire",
+              name: "2.1.6 Fire & electrical code",
+              desc: "Local installation codes.",
+              children: [
+                {id:"code-nec", name:"NFPA 70 / NEC Article 625",
+                 desc:"US National Electrical Code Article 625 — EV power transfer system.",
+                 sources:["NFPA-70"]},
+                {id:"code-nfpa855", name:"NFPA 855 (BESS-adjacent installs)",
+                 desc:"Triggered when on-site BESS is co-located.",
+                 sources:["NFPA-855"], xcuts:["battery_storage"]},
+                {id:"code-bs7671", name:"BS 7671 / IET Wiring Regs / IET COP",
+                 desc:"UK 18th Edition Wiring Regs incl. Section 722 + IET Code of Practice for EV Charging Equipment Installation (5th edn).",
+                 sources:["BS-7671","IET-COP"]},
+                {id:"code-din-vde", name:"DIN VDE 0100-722 (DE installation)",
+                 desc:"German installation rules for EV charging.",
+                 sources:["DIN-VDE"]},
+              ]
+            },
+          ]
+        },
+
+        {
+          id: "build-grid",
+          name: "2.2 Grid connection",
+          desc: "Where the site meets the network. Power class drives transformer / switchgear / civils / lead-time.",
+          xcuts: ["grid_modernisation"],
+          children: [
+            {id:"grid-lv", name:"2.2.1 LV connection (≤1 kV)",
+             desc:"Standard 230/400 V three-phase or 120/240 V split-phase. Suits AC chargers and DC up to ~150 kW per site.",
+             sources:["BS-7671","NFPA-70"]},
+            {id:"grid-mv", name:"2.2.2 MV connection (1–35 kV)",
+             desc:"Medium-voltage (typ. 11 kV / 13.2 kV / 33 kV). Required for HPC hubs ≥350 kW aggregate, depots, fleet sites.",
+             sources:["ENA-G99","FERC-845"], xcuts:["grid_modernisation"]},
+            {id:"grid-hv", name:"2.2.3 HV connection (>35 kV)",
+             desc:"High-voltage transmission-class connection for megawatt charging corridors / large depots / port electrification.",
+             sources:["FERC-845"], xcuts:["grid_modernisation","battery_storage"]},
+            {
+              id: "grid-substation",
+              name: "2.2.4 Substation / transformer",
+              desc: "MV→LV step-down hardware where required.",
+              children: [
+                {id:"sub-padxfmr", name:"Pad-mount distribution transformer",
+                 desc:"Outdoor MV→LV step-down transformer, typ. 750–2500 kVA. Dry or oil-filled.",
+                 sources:["NFPA-70"], xcuts:["grid_modernisation"]},
+                {id:"sub-mvswitch", name:"MV switchgear",
+                 desc:"Ring-main units, vacuum or SF6 breakers for MV interconnection.",
+                 sources:["FERC-845"], xcuts:["grid_modernisation"]},
+                {id:"sub-relays", name:"Protection relays (overcurrent, ground fault)",
+                 desc:"Numerical protection relays per IEEE C37 / IEC 60255. Vendors: SEL, ABB, Siemens, GE.",
+                 sources:["FERC-845"], xcuts:["grid_modernisation"]},
+              ]
+            },
+            {
+              id: "grid-process",
+              name: "2.2.5 Capacity studies & utility process",
+              desc: "Regulator/utility-side connection process. Often the lead-time bottleneck.",
+              children: [
+                {id:"proc-uk-g99", name:"UK ENA G99 (>16 A/phase generation/import)",
+                 desc:"DNO connection process for chargers above microgen threshold; can take 6–18 months for HPC sites.",
+                 sources:["ENA-G99"]},
+                {id:"proc-uk-g98", name:"UK ENA G98 (≤16 A/phase)",
+                 desc:"Notification-only fast track for small loads.",
+                 sources:["ENA-G98"]},
+                {id:"proc-us-ica", name:"US Integration Capacity Analysis (ICA)",
+                 desc:"Utility-published hosting-capacity maps in CA, NY, HI; informs site screening.",
+                 sources:["FERC-845"]},
+                {id:"proc-us-ferc-sgip", name:"US FERC interconnection (SGIP / LGIP path)",
+                 desc:"Federal interconnection procedures for >20 MW (LGIP) and small-gen (SGIP). Order 845 reform applies.",
+                 sources:["FERC-845","FERC-2222"]},
+              ]
+            },
+            {
+              id: "grid-der",
+              name: "2.2.6 DER co-location",
+              desc: "On-site generation/storage paired with charging to reduce demand-charge exposure or boost on-site clean energy.",
+              xcuts: ["battery_storage","solar_pv","grid_modernisation"],
+              children: [
+                {id:"der-solar", name:"On-site solar PV",
+                 desc:"Solar canopy or rooftop providing daytime energy offset. Common at workplace and depot sites.",
+                 sources:["IEEE-1547"], xcuts:["solar_pv"]},
+                {id:"der-bess", name:"On-site BESS (battery energy storage)",
+                 desc:"Behind-the-meter BESS to clip peak demand or for grid services. Lithium dominant; LFP for stationary.",
+                 sources:["IEEE-1547","NFPA-855"], xcuts:["battery_storage"]},
+                {id:"der-microgrid", name:"Microgrid controller integration",
+                 desc:"Site EMS / microgrid controller coordinating PV + BESS + chargers + grid.",
+                 sources:["IEEE-1547","IEEE-2030.5"], xcuts:["grid_modernisation","battery_storage"]},
+                {id:"der-backup", name:"On-site fuel cell / NG genset (backup)",
+                 desc:"Fuel cell or natural-gas genset for backup at NEVI 97%-uptime sites in poor grid areas.",
+                 sources:["NEVI"]},
+              ]
+            },
+          ]
+        },
+
+        {
+          id: "build-civil",
+          name: "2.3 Civil & electrical works",
+          desc: "The dirt-and-conduit phase.",
+          children: [
+            {id:"civ-trench", name:"2.3.1 Civil works (trenching, foundations, ducting, bollards)",
+             desc:"Excavation, concrete pads, conduit, protective bollards. Often the largest cost line on retrofit sites.",
+             sources:["NFPA-70"]},
+            {id:"civ-elec", name:"2.3.2 Electrical (LV switchgear, distribution, cable pulling)",
+             desc:"LV switchboards, distribution boards, cable pulling, terminations.",
+             sources:["BS-7671","NFPA-70"]},
+            {id:"civ-earth", name:"2.3.3 Earthing / grounding (TT, TN-S, TN-C-S)",
+             desc:"Earthing system selection per BS 7671 / NEC. TT often required for outdoor EV at sites with TN-C-S supply due to PEN-fault risk.",
+             sources:["BS-7671","IET-COP"]},
+            {id:"civ-signage", name:"2.3.4 Lighting / signage / line marking",
+             desc:"Site lighting, statutory accessibility signage, parking-bay marking.",
+             sources:["ADA","PCPR-2023"]},
+            {id:"civ-network", name:"2.3.5 Network cabinets / segmentation",
+             desc:"Network rack with cellular gateway, switch, firewall — segmented from charger control plane.",
+             sources:["NIST-IR-8473"], xcuts:["ot_cybersecurity","data_telecoms"]},
+          ]
+        },
+
+        {
+          id: "build-install",
+          name: "2.4 Hardware install",
+          desc: "Setting and connecting the chargers.",
+          children: [
+            {id:"inst-place", name:"2.4.1 Charger placement (pad / wall / pedestal / gantry)",
+             desc:"Mounting type and orientation; gantry for HD truck depots and MCS.",
+             sources:["IET-COP","CharIN-MCS"]},
+            {id:"inst-cableroute", name:"2.4.2 Cable routing (overhead, ground)",
+             desc:"Overhead boom for HPC, ground-routed for AC; trip-hazard mitigation for accessibility.",
+             sources:["ADA","CharIN-CCS"]},
+            {
+              id: "inst-backhaul",
+              name: "2.4.3 Backhaul connectivity",
+              desc: "Network from charger to CSMS.",
+              xcuts: ["data_telecoms"],
+              children: [
+                {id:"net-cell", name:"Cellular (4G / 5G / LTE-M)",
+                 desc:"Most common backhaul; M2M SIMs from operators or specialist providers (KORE, EMnify, 1NCE).",
+                 sources:["NIST-IR-8473"], xcuts:["data_telecoms"]},
+                {id:"net-fibre", name:"Fibre / Ethernet",
+                 desc:"Site fibre at depot and large hub installs; lower latency for grid-services participation.",
+                 sources:["NIST-IR-8473"], xcuts:["data_telecoms"]},
+                {id:"net-wifi", name:"Wi-Fi (residential, workplace fallback)",
+                 desc:"Wi-Fi backhaul on residential and small workplace chargers.",
+                 sources:["NIST-IR-8473"], xcuts:["data_telecoms"]},
+                {id:"net-lora", name:"LoRaWAN (telemetry-only edge cases)",
+                 desc:"Low-bandwidth telemetry backhaul on sites with poor cellular.",
+                 sources:["NIST-IR-8473"], xcuts:["data_telecoms"]},
+              ]
+            },
+            {id:"inst-submeter", name:"2.4.4 Submetering hardware",
+             desc:"MID-approved energy meters per port for billing accuracy.",
+             sources:["MID","OIML-R46"]},
+            {id:"inst-telemetry", name:"2.4.5 Telemetry sensors",
+             desc:"Per-port current/voltage/temperature/availability sensors feeding CSMS.",
+             sources:["OCPP-2.0.1"]},
+          ]
+        },
+
+        {
+          id: "build-commission",
+          name: "2.5 Commissioning",
+          desc: "Validate that the install behaves as specified before handover.",
+          children: [
+            {
+              id: "comm-functional",
+              name: "2.5.1 Functional tests",
+              desc: "End-to-end behaviour validated.",
+              children: [
+                {id:"comm-simulator", name:"Charging session simulator (Comemso, Conexio)",
+                 desc:"Bench tooling that emulates a vehicle: pilots, ISO 15118 sessions, abnormal-state injection.",
+                 sources:["IEC-61851","ISO-15118"]},
+                {id:"comm-pnc", name:"ISO 15118 / Plug & Charge conformance",
+                 desc:"Conformance test suites from ECQV / Vector / Comemso for ISO 15118-2 / -20.",
+                 sources:["ISO-15118-2","ISO-15118-20"]},
+                {id:"comm-ocpp-conf", name:"OCPP conformance test",
+                 desc:"OCA-validated test suites against the CSMS-charger interface for the relevant OCPP version.",
+                 sources:["OCPP-2.0.1","OCPP-1.6"]},
+              ]
+            },
+            {id:"comm-emc", name:"2.5.2 EMC compliance test",
+             desc:"On-site EMC where required (mostly self-declared from factory data).",
+             sources:["IEC-61000"]},
+            {id:"comm-witness", name:"2.5.3 Witness testing (DNO / utility)",
+             desc:"DNO-witnessed energisation and protection-trip tests at MV-connected sites.",
+             sources:["ENA-G99"]},
+            {id:"comm-handover", name:"2.5.4 Acceptance + handover documentation",
+             desc:"Final acceptance, as-built drawings, test results, warranty packs.",
+             sources:["IET-COP"]},
+          ]
+        },
+
+      ]
+    },
+
+    // ========================================================================
+    // 3. BUY
+    // ========================================================================
+    {
+      id: "buy",
+      name: "3. BUY",
+      desc: "Capital structures, ownership models, energy procurement, roaming/clearing economics, and end-customer commercial offers. The capital-and-commercial-structure phase, NOT transactional procurement (those happen at MAKE / BUILD / MAINTAIN).",
+      children: [
+
+        {
+          id: "buy-capital",
+          name: "3.1 Capital structures",
+          desc: "How the asset is funded and owned.",
+          xcuts: ["clean_energy_finance"],
+          children: [
+            {id:"cap-capex", name:"3.1.1 CapEx — CPO-owned",
+             desc:"CPO buys and owns the asset outright; balance-sheet investment.",
+             sources:["BNEF-EV"]},
+            {id:"cap-caas", name:"3.1.2 OpEx / Charging-as-a-Service (CaaS)",
+             desc:"Site host pays a monthly per-port subscription; CPO retains ownership and ops. Common in commercial fleet.",
+             sources:["BNEF-EV","DOE-AFDC"]},
+            {id:"cap-host-owned", name:"3.1.3 Site-host owned + CPO operated",
+             desc:"Host owns the hardware (capex on host balance sheet), CPO does ops via O&M contract.",
+             sources:["DOE-AFDC"]},
+            {
+              id: "cap-public",
+              name: "3.1.4 PPP / public co-funding",
+              desc: "Government grant and tax-credit programmes.",
+              xcuts: ["clean_energy_finance"],
+              children: [
+                {id:"pub-nevi", name:"US NEVI Formula Program (23 CFR Part 680)",
+                 desc:"$5 bn formula grants for state-led DC-fast deployment along Alternative Fuel Corridors.",
+                 sources:["NEVI"], xcuts:["clean_energy_finance"]},
+                {id:"pub-cfi", name:"US BIL Charging and Fueling Infrastructure (CFI) grants",
+                 desc:"$2.5 bn discretionary CFI grants — community + corridor.",
+                 sources:["BIL"], xcuts:["clean_energy_finance"]},
+                {id:"pub-30c", name:"US 30C tax credit (Alternative Fuel Vehicle Refueling Property)",
+                 desc:"30% of cost up to $100k per item for commercial; applies to sites in low-income/non-urban areas post-IRA.",
+                 sources:["US-30C","IRA"], xcuts:["clean_energy_finance"]},
+                {id:"pub-uk-levi", name:"UK LEVI — Local EV Infrastructure Fund",
+                 desc:"£381m allocated to local authorities for on-street + destination charging.",
+                 sources:["LEVI"], xcuts:["clean_energy_finance"]},
+                {id:"pub-uk-rcf", name:"UK Rapid Charging Fund (RCF)",
+                 desc:"£950m for grid-connection upgrades at motorway service areas.",
+                 sources:["RCF"], xcuts:["clean_energy_finance","grid_modernisation"]},
+                {id:"pub-eu-afif", name:"EU CEF-T Alternative Fuels Infrastructure Facility (AFIF)",
+                 desc:"EU blending facility for AFIR-aligned charging on TEN-T, ~€1.5 bn through 2027.",
+                 sources:["CEF-AFIF","AFIR"], xcuts:["clean_energy_finance"]},
+              ]
+            },
+            {
+              id: "cap-credits",
+              name: "3.1.5 Carbon credits / LCFS / RTFO / IRA",
+              desc: "Tradable environmental credits attached to electricity dispensed to EVs.",
+              xcuts: ["clean_energy_finance"],
+              children: [
+                {id:"cr-lcfs", name:"US LCFS (CA / OR / WA)",
+                 desc:"Low-Carbon Fuel Standard credits for low-CI electricity dispensed to EVs. Material revenue line for CA CPOs.",
+                 sources:["LCFS"], xcuts:["clean_energy_finance"]},
+                {id:"cr-rtfo", name:"UK RTFO Renewable Electricity credits",
+                 desc:"UK RTFO development fuel / renewable electricity credits.",
+                 sources:["RTFO"], xcuts:["clean_energy_finance"]},
+                {id:"cr-ira-45w", name:"US IRA §45W commercial vehicle credit",
+                 desc:"Credit (up to $7.5k or $40k for HD) on commercial vehicle purchase; alters fleet adoption economics.",
+                 sources:["US-45W","IRA"], xcuts:["clean_energy_finance"]},
+              ]
+            },
+          ]
+        },
+
+        {
+          id: "buy-procurement",
+          name: "3.2 Procurement contracts",
+          desc: "B2B contracts that structure the build and operation.",
+          children: [
+            {id:"proc-supply", name:"3.2.1 Charger supply agreement (CPO–OEM)",
+             desc:"Multi-year supply with volume commitments, version lock, warranty terms.",
+             sources:["BNEF-EV"]},
+            {id:"proc-host", name:"3.2.2 Site-host lease / revenue-share / wholesale",
+             desc:"Range from fixed-rent lease to revenue share to wholesale-energy resale models.",
+             sources:["DOE-AFDC"]},
+            {id:"proc-epc", name:"3.2.3 EPC contract",
+             desc:"Engineer-procure-construct turnkey contract; common in NEVI corridor builds.",
+             sources:["NEVI"]},
+            {id:"proc-om", name:"3.2.4 O&M contract",
+             desc:"Operations & maintenance contract with uptime SLA; ties to NEVI 97% / PCPR 99% obligations.",
+             sources:["NEVI","PCPR-2023"]},
+            {id:"proc-turnkey", name:"3.2.5 Bundled turnkey install + operate",
+             desc:"Bundled CaaS variant — single contract for build, operate, maintain.",
+             sources:["DOE-AFDC"]},
+          ]
+        },
+
+        {
+          id: "buy-energy",
+          name: "3.3 Energy procurement",
+          desc: "How the electrons that flow through the chargers are bought.",
+          xcuts: ["clean_energy_finance"],
+          children: [
+            {id:"en-ppa", name:"3.3.1 Wholesale PPA (CPO direct)",
+             desc:"Power purchase agreement directly with a generator — physical or virtual; mostly large CPOs / depot operators.",
+             sources:["IEA-GEVO"], xcuts:["clean_energy_finance"]},
+            {id:"en-retail", name:"3.3.2 Retail tariff (TOU, demand-charge mitigation)",
+             desc:"Retail supply with TOU tariffs; demand-charge mitigation via BESS or scheduling.",
+             sources:["IEA-GEVO"]},
+            {id:"en-recs", name:"3.3.3 RECs / GOs / REGOs (renewable certificates)",
+             desc:"Tradable certificates: US REC, EU GO, UK REGO. Used to substantiate '100% renewable' claims.",
+             sources:["IEA-GEVO"], xcuts:["clean_energy_finance"]},
+            {id:"en-dr", name:"3.3.4 Demand-response participation",
+             desc:"Revenue from participating in DR programmes (curtailment, load-shifting).",
+             sources:["FERC-2222","OpenADR"], xcuts:["grid_modernisation","clean_energy_finance"]},
+            {id:"en-cm", name:"3.3.5 Capacity market participation",
+             desc:"UK Capacity Market, US ISO-NE FCM, etc. — capacity payments for derated firm capability.",
+             sources:["FERC-2222"], xcuts:["grid_modernisation","clean_energy_finance"]},
+          ]
+        },
+
+        {
+          id: "buy-roaming",
+          name: "3.4 Roaming & interoperability commercial",
+          desc: "Commercial layer that lets one driver charge across many networks.",
+          children: [
+            {id:"rm-emsp-cpo", name:"3.4.1 eMSP–CPO bilateral contracts",
+             desc:"Direct bilateral roaming agreements; historically the dominant model in EU.",
+             sources:["OCPI"]},
+            {id:"rm-hubs", name:"3.4.2 Roaming hubs (Hubject, Gireve, e-clearing.net)",
+             desc:"Many-to-many clearing hubs. Hubject (DE) dominant in EU; Gireve (FR), e-clearing.net (NL).",
+             sources:["OICP","OCPI"]},
+            {id:"rm-tariffs", name:"3.4.3 Tariff agreements (idle fees, per-kWh, per-min)",
+             desc:"Commercial unit-pricing terms; transparency requirements set by AFIR Art 5 / PCPR.",
+             sources:["AFIR-Art5","PCPR-2023"]},
+            {id:"rm-pnc-pki", name:"3.4.4 Plug & Charge V2G PKI roots",
+             desc:"Commercial root-CA position controls who can issue contract certificates. Hubject V2G root, IRENA, OEM roots.",
+             sources:["ISO-15118-2","ISO-15118-20"]},
+          ]
+        },
+
+        {
+          id: "buy-customer",
+          name: "3.5 End-customer commercial",
+          desc: "Driver- and fleet-facing commercial offers.",
+          children: [
+            {id:"cust-sub", name:"3.5.1 Subscription / membership",
+             desc:"Monthly fee for discounted per-kWh rate; varies in popularity by network.",
+             sources:["BNEF-EV"]},
+            {id:"cust-payg", name:"3.5.2 Pay-per-session / per-kWh / per-min",
+             desc:"Ad-hoc charging — required by AFIR Art 5 to be non-discriminatory.",
+             sources:["AFIR-Art5","PCPR-2023"]},
+            {id:"cust-fleet", name:"3.5.3 Fleet / B2B contracts",
+             desc:"Volume-discount fleet billing; multi-network access via fuel-card-like products (e.g. DKV, WEX, Shell Recharge).",
+             sources:["DOE-AFDC"]},
+            {id:"cust-workplace", name:"3.5.4 Workplace charging",
+             desc:"Employer-funded; sometimes offered as a tax-advantaged benefit.",
+             sources:["IEA-GEVO"]},
+            {id:"cust-mfh", name:"3.5.5 Multi-family residential",
+             desc:"MUD / apartment-block charging; structurally hardest deployment context.",
+             sources:["DOE-AFDC"]},
+            {id:"cust-home", name:"3.5.6 Home charger purchase / lease",
+             desc:"Single-family residential charger sale or lease; often bundled with energy supplier.",
+             sources:["BNEF-EV"]},
+          ]
+        },
+
+      ]
+    },
+
+    // ========================================================================
+    // 4. USE
+    // ========================================================================
+    {
+      id: "use",
+      name: "4. USE",
+      desc: "Operating the asset through a charging session — discovery, auth, energy delivery, payment, comms — plus grid-services participation when those run during a session.",
+      children: [
+
+        {
+          id: "use-discovery",
+          name: "4.1 Discovery & navigation",
+          desc: "How the driver finds the charger before plugging in.",
+          children: [
+            {id:"disc-invehicle", name:"4.1.1 In-vehicle navigation (OEM, embedded Google Maps, CarPlay)",
+             desc:"OEM nav, embedded Android Automotive / Google Maps, Apple CarPlay routing.",
+             sources:["IEA-GEVO"]},
+            {id:"disc-3rdparty", name:"4.1.2 Third-party apps (PlugShare, ABRP, Chargemap, ZapMap)",
+             desc:"PlugShare (NA-leaning), A Better Routeplanner / ABRP (route planning), Chargemap (EU), ZapMap (UK).",
+             sources:["IEA-GEVO"]},
+            {id:"disc-oem", name:"4.1.3 OEM apps (Tesla, FordPass, MyAudi, MyBMW)",
+             desc:"OEM-branded apps with brand-curated network access and route planning.",
+             sources:["IEA-GEVO"]},
+            {id:"disc-realtime", name:"4.1.4 Real-time availability protocols (OCPI 2.2.1, OICP)",
+             desc:"OCPI EVSE/Connector status; OICP CPO query.",
+             sources:["OCPI-2.2.1","OICP"]},
+          ]
+        },
+
+        {
+          id: "use-auth",
+          name: "4.2 Authentication & authorisation",
+          desc: "Identifying the driver and authorising the session.",
+          children: [
+            {id:"auth-rfid", name:"4.2.1 RFID / eMSP token (ISO/IEC 14443)",
+             desc:"Contactless card or fob tokenised against an eMSP account.",
+             sources:["ISO-14443","OCPI-2.2.1"]},
+            {id:"auth-app", name:"4.2.2 App start (OCPI RemoteStart)",
+             desc:"Remote start initiated from app via OCPI 2.2.1 commands.RemoteStart.",
+             sources:["OCPI-2.2.1"]},
+            {
+              id: "auth-pnc",
+              name: "4.2.3 Plug & Charge",
+              desc: "Vehicle-resident contract certificate authorises automatically.",
+              children: [
+                {id:"pnc-15118-2", name:"ISO 15118-2 (PnC v1)",
+                 desc:"First-gen PnC — TLS 1.2 + X.509 contract certs over PLC.",
+                 sources:["ISO-15118-2"]},
+                {id:"pnc-15118-20", name:"ISO 15118-20 (PnC v2 + V2G)",
+                 desc:"Second-gen — TLS 1.3, V2G energy services, scheduled charging.",
+                 sources:["ISO-15118-20"]},
+                {id:"pnc-din-70121", name:"DIN 70121 (DC-only legacy)",
+                 desc:"Pre-15118 DC charging comm, still common on older CCS hardware.",
+                 sources:["DIN-70121"]},
+              ]
+            },
+            {id:"auth-autocharge", name:"4.2.4 Autocharge (MAC-based)",
+             desc:"Non-standard auto-auth using vehicle MAC over DIN 70121. Tesla Supercharger / IONITY use variants.",
+             sources:["DIN-70121"]},
+            {id:"auth-emv", name:"4.2.5 Contactless EMV (regulatory-mandated)",
+             desc:"AFIR Art 5 / PCPR 2023 mandate contactless EMV on chargers ≥50 kW (EU) / ≥8 kW public (UK).",
+             sources:["AFIR-Art5","PCPR-2023","EMVCo"], xcuts:["retail_payments"]},
+          ]
+        },
+
+        {
+          id: "use-energy",
+          name: "4.3 Energy delivery — control & comms",
+          desc: "What flows during the session, controlled how.",
+          children: [
+            {id:"ed-pwm", name:"4.3.1 PWM control pilot (IEC 61851-1)",
+             desc:"PWM duty-cycle on the CP pin signals available current, basic state machine.",
+             sources:["IEC-61851"]},
+            {id:"ed-15118", name:"4.3.2 ISO 15118 high-level comm",
+             desc:"Application-layer messaging — ChargingProfile, ScheduleExchange.",
+             sources:["ISO-15118","ISO-15118-2"]},
+            {id:"ed-dc-neg", name:"4.3.3 DC charging power negotiation",
+             desc:"DC PreCharge → CurrentDemand sequence per DIN 70121 / ISO 15118-2 / -20.",
+             sources:["ISO-15118-2","DIN-70121"]},
+            {id:"ed-v1g", name:"4.3.4 Smart charging V1G (flex profiles, OCPP SmartChargingProfile)",
+             desc:"Unidirectional flex — modulating delivered power to grid/site signals via OCPP 2.0.1 SmartChargingProfile.",
+             sources:["OCPP-2.0.1","OpenADR"], xcuts:["grid_modernisation"]},
+            {id:"ed-v2g", name:"4.3.5 V2G energy flow (ISO 15118-20)",
+             desc:"Bidirectional energy from EV battery to grid; protocol mature, deployments still pilot.",
+             sources:["ISO-15118-20","SAE-J3072"], xcuts:["battery_storage","grid_modernisation"]},
+            {id:"ed-v2h-v2l", name:"4.3.6 V2H / V2L (SAE J3072, IEEE 1547)",
+             desc:"V2H (vehicle-to-home backup) and V2L (vehicle-to-load standalone). Ford Lightning, Hyundai E-GMP early.",
+             sources:["SAE-J3072","IEEE-1547"], xcuts:["battery_storage"]},
+          ]
+        },
+
+        {
+          id: "use-payment",
+          name: "4.4 Payment & billing",
+          desc: "Money flow at the session.",
+          xcuts: ["retail_payments"],
+          children: [
+            {id:"pay-emv", name:"4.4.1 EMV contactless terminal",
+             desc:"Card and phone tap; PCI-DSS scope.",
+             sources:["EMVCo","AFIR-Art5"], xcuts:["retail_payments"]},
+            {id:"pay-app", name:"4.4.2 In-app payment (Apple Pay, Google Pay, Stripe)",
+             desc:"Wallet-funded session; AFIR Art 5 explicitly allows non-EMV digital payment with QR.",
+             sources:["AFIR-Art5"], xcuts:["retail_payments"]},
+            {id:"pay-roam", name:"4.4.3 Roaming clearing (OCPI CDR)",
+             desc:"Charge Detail Record clearing between CPO and eMSP via OCPI 2.2.1.",
+             sources:["OCPI-2.2.1","IEC-63119"]},
+            {id:"pay-token", name:"4.4.4 Subscription token settlement",
+             desc:"Token-based billing on subscription plans.",
+             sources:["OCPI-2.2.1"]},
+            {id:"pay-tariff", name:"4.4.5 Tariff display & disclosure",
+             desc:"Pre-charge price display in €/kWh or £/kWh, idle fees, taxes — AFIR/PCPR transparency rules.",
+             sources:["AFIR-Art5","PCPR-2023"]},
+          ]
+        },
+
+        {
+          id: "use-protocol",
+          name: "4.5 Charging-session protocol stack",
+          desc: "Wire-level protocols that operate the session.",
+          children: [
+            {
+              id: "use-ocpp",
+              name: "4.5.1 OCPP charge point ↔ CSMS",
+              desc: "Charge-station-to-back-office protocol.",
+              children: [
+                {id:"ocpp-16j", name:"OCPP 1.6J (legacy, dominant install base)",
+                 desc:"JSON over WebSocket; the workhorse — most chargers in the field still speak this.",
+                 sources:["OCPP-1.6"]},
+                {id:"ocpp-201", name:"OCPP 2.0.1 (security, ISO 15118 support, smart charging)",
+                 desc:"Adds security profiles 1/2/3, ISO 15118 hooks, native SmartChargingProfile, signed firmware.",
+                 sources:["OCPP-2.0.1"]},
+                {id:"ocpp-21", name:"OCPP 2.1 (V2G, megawatt charging hooks)",
+                 desc:"V2G energy services, MCS support.",
+                 sources:["OCPP-2.1"]},
+              ]
+            },
+            {
+              id: "use-ocpi",
+              name: "4.5.2 OCPI CPO ↔ eMSP",
+              desc: "Open Charge Point Interface — back-office-to-back-office.",
+              children: [
+                {id:"ocpi-211", name:"OCPI 2.1.1",
+                 desc:"Earlier widely-deployed version.",
+                 sources:["OCPI"]},
+                {id:"ocpi-221", name:"OCPI 2.2.1",
+                 desc:"Current widely-supported — modules: Locations, Sessions, CDRs, Tariffs, Tokens, Commands.",
+                 sources:["OCPI-2.2.1"]},
+                {id:"ocpi-30", name:"OCPI 3.0 (in development)",
+                 desc:"Next iteration — smart charging signals, hub-by-hub clearing improvements.",
+                 sources:["OCPI"]},
+              ]
+            },
+            {id:"use-oicp", name:"4.5.3 OICP (Hubject)",
+             desc:"Hubject's proprietary roaming protocol — hub-mediated.",
+             sources:["OICP"]},
+            {id:"use-ochp", name:"4.5.4 OCHP (legacy)",
+             desc:"Earlier roaming clearing protocol; declining.",
+             sources:["OCHP"]},
+            {id:"use-iec63110", name:"4.5.5 IEC 63110 (CSMS-eMSP, emerging)",
+             desc:"IEC's CSMS-eMSP-roaming standard — slow uptake.",
+             sources:["IEC-63110","IEC-63119"]},
+          ]
+        },
+
+        {
+          id: "use-driver-ux",
+          name: "4.6 Driver UX & fleet ops",
+          desc: "What the driver and the fleet manager actually experience.",
+          children: [
+            {id:"ux-startstop", name:"4.6.1 Session start / stop / progress",
+             desc:"End-user trigger paths; combined with auth method (RFID/app/EMV/PnC).",
+             sources:["OCPI-2.2.1"]},
+            {id:"ux-reservation", name:"4.6.2 Reservation / booking",
+             desc:"Pre-arrival reservation; controversial UX (no-show fees, fairness).",
+             sources:["OCPI-2.2.1"]},
+            {id:"ux-receipts", name:"4.6.3 Receipts & expense reporting (fleet)",
+             desc:"Per-vehicle reporting export, integration with fleet TMS / fuel-card systems.",
+             sources:["OCPI-2.2.1"]},
+            {id:"ux-support", name:"4.6.4 Customer support / helpdesk",
+             desc:"Phone/chat helpdesk, on-charger 'Call for help' button (PCPR 2023).",
+             sources:["PCPR-2023"]},
+            {id:"ux-loyalty", name:"4.6.5 Loyalty / rewards programmes",
+             desc:"Points, tiered rates, partnership rewards.",
+             sources:["BNEF-EV"]},
+          ]
+        },
+
+        {
+          id: "use-grid",
+          name: "4.7 Grid services (during session)",
+          desc: "Revenue / participation in grid markets while a session is running.",
+          xcuts: ["grid_modernisation","battery_storage"],
+          children: [
+            {id:"gs-dr", name:"4.7.1 Demand response (OpenADR 3.0, IEEE 2030.5)",
+             desc:"Curtailable load programmes — utility issues DR signal, charger throttles.",
+             sources:["OpenADR","IEEE-2030.5"], xcuts:["grid_modernisation"]},
+            {id:"gs-ffr", name:"4.7.2 Frequency response (UK Dynamic Containment, US PJM RegD)",
+             desc:"Sub-second active power response to frequency signals — fleet of bidirectional chargers acts as fast reserve.",
+             sources:["FERC-2222"], xcuts:["grid_modernisation","battery_storage"]},
+            {id:"gs-agg", name:"4.7.3 Aggregator participation (FERC Order 2222)",
+             desc:"Aggregated fleet bids into wholesale markets via certified aggregators.",
+             sources:["FERC-2222"], xcuts:["grid_modernisation"]},
+            {id:"gs-cm", name:"4.7.4 Capacity market participation",
+             desc:"UK CM, ISO-NE FCM, PJM RPM — derated firm capacity payments.",
+             sources:["FERC-2222"], xcuts:["grid_modernisation"]},
+            {id:"gs-arb", name:"4.7.5 Wholesale energy arbitrage (V2G)",
+             desc:"Charge cheap, discharge expensive across day-ahead / real-time. V2G-only.",
+             sources:["ISO-15118-20","FERC-2222"], xcuts:["battery_storage","grid_modernisation"]},
+          ]
+        },
+
+      ]
+    },
+
+    // ========================================================================
+    // 5. MAINTAIN
+    // ========================================================================
+    {
+      id: "maintain",
+      name: "5. MAINTAIN",
+      desc: "Operations, monitoring, repair, OTA, security ops, regulatory reporting, and end-of-life. Where the asset earns its keep over a 10–15 year service life.",
+      children: [
+
+        {
+          id: "maint-monitor",
+          name: "5.1 Monitoring & telematics",
+          desc: "Visibility into the operating fleet.",
+          children: [
+            {id:"mon-uptime", name:"5.1.1 Uptime / SLA reporting",
+             desc:"Per-port uptime per regulatory definition. NEVI 97% per CFR Part 680, PCPR 99% on UK rapid sites.",
+             sources:["NEVI","PCPR-2023"]},
+            {id:"mon-fault", name:"5.1.2 Fault detection & alerts",
+             desc:"OCPP StatusNotification + custom telemetry feeding alerting + paging.",
+             sources:["OCPP-2.0.1"]},
+            {id:"mon-pdm", name:"5.1.3 Predictive maintenance ML",
+             desc:"ML on fleet telemetry to predict module failures, connector wear; competitive differentiator for CSMS vendors.",
+             sources:["BNEF-EV"]},
+            {id:"mon-dispatch", name:"5.1.4 Field service dispatch",
+             desc:"Ticket → engineer → on-site repair workflow; key cost line.",
+             sources:["DOE-AFDC"]},
+          ]
+        },
+
+        {
+          id: "maint-ota",
+          name: "5.2 OTA software updates",
+          desc: "Software at distance.",
+          children: [
+            {id:"ota-firmware", name:"5.2.1 Firmware OTA (OCPP UpdateFirmware / SignedUpdateFirmware)",
+             desc:"Charger firmware push from CSMS; signed firmware required by OCPP 2.0.1 security profile 3.",
+             sources:["OCPP-2.0.1","NIST-IR-8473"], xcuts:["ot_cybersecurity"]},
+            {id:"ota-patch", name:"5.2.2 Security patching cadence",
+             desc:"Coordinated disclosure + patch turnaround; benchmarked against IT norms.",
+             sources:["NIST-IR-8473"], xcuts:["ot_cybersecurity"]},
+            {id:"ota-csms", name:"5.2.3 CSMS rollouts",
+             desc:"Back-office CSMS releases; blue/green deployment, schema migrations.",
+             sources:["OCPP-2.0.1"]},
+          ]
+        },
+
+        {
+          id: "maint-repair",
+          name: "5.3 Hardware repair",
+          desc: "Physical interventions.",
+          children: [
+            {id:"rep-conn", name:"5.3.1 Connector / gun replacement",
+             desc:"Connector wear-out is dominant DC fast-charger field failure mode.",
+             sources:["IEC-62196","CharIN-CCS"]},
+            {id:"rep-power", name:"5.3.2 Power module swap",
+             desc:"Field-replaceable power modules — swap design now standard on most modern HPC.",
+             sources:["CharIN-CCS"]},
+            {id:"rep-display", name:"5.3.3 Display / payment terminal repair",
+             desc:"Touchscreen / EMV terminal / RFID reader replacement.",
+             sources:["UL-2202"]},
+            {id:"rep-vandal", name:"5.3.4 Vandalism / theft / cable-cut remediation",
+             desc:"Cable theft and vandalism remediation — escalated since 2023.",
+             sources:["UL-2231"]},
+          ]
+        },
+
+        {
+          id: "maint-cyber",
+          name: "5.4 Cybersecurity operations",
+          desc: "Running the security posture, not designing it.",
+          xcuts: ["ot_cybersecurity"],
+          children: [
+            {id:"cy-vuln", name:"5.4.1 Vulnerability management (NIST IR 8473, ENISA EVSE)",
+             desc:"CVE tracking, patch prioritisation, attack-surface management.",
+             sources:["NIST-IR-8473","ENISA-EVSE"], xcuts:["ot_cybersecurity"]},
+            {id:"cy-iam", name:"5.4.2 Identity & access (PKI rotation)",
+             desc:"V2G / Plug & Charge contract certificate rotation, root CA rollovers, eMSP token revocation.",
+             sources:["ISO-15118-2","ISO-15118-20"], xcuts:["ot_cybersecurity"]},
+            {id:"cy-net", name:"5.4.3 Network monitoring (IDS/IPS in OT)",
+             desc:"OT-specific intrusion detection, charger-fleet anomaly detection.",
+             sources:["NIST-SP-800-82","ENISA-EVSE"], xcuts:["ot_cybersecurity"]},
+            {id:"cy-ir", name:"5.4.4 Incident response",
+             desc:"OT IR playbooks, regulator notification (NIS2 in EU).",
+             sources:["NIST-SP-800-82","ENISA-EVSE"], xcuts:["ot_cybersecurity"]},
+          ]
+        },
+
+        {
+          id: "maint-reg",
+          name: "5.5 Regulatory compliance ongoing",
+          desc: "Continuous obligations once the asset is live.",
+          children: [
+            {
+              id: "reg-tariff",
+              name: "5.5.1 Tariff transparency reporting",
+              desc: "Continuous price-transparency obligations.",
+              children: [
+                {id:"reg-uk-pcpr", name:"UK PCPR 2023 (transparency rules)",
+                 desc:"Pre-purchase pricing display, ad-hoc availability without subscription.",
+                 sources:["PCPR-2023"]},
+                {id:"reg-eu-afir-5", name:"EU AFIR Article 5",
+                 desc:"AFIR transparency + pricing-display obligations.",
+                 sources:["AFIR-Art5"]},
+              ]
+            },
+            {
+              id: "reg-reliability",
+              name: "5.5.2 Reliability reporting",
+              desc: "Statutory reliability/uptime obligations.",
+              children: [
+                {id:"reg-nevi-97", name:"US NEVI 97% per-port uptime (23 CFR §680.116)",
+                 desc:"Annual per-port uptime calculation; data submission to FHWA.",
+                 sources:["NEVI"]},
+                {id:"reg-uk-pcpr-99", name:"UK PCPR 99% reliability",
+                 desc:"99% reliability across the UK network of any operator >100 charge points.",
+                 sources:["PCPR-2023"]},
+              ]
+            },
+            {id:"reg-access-audits", name:"5.5.3 Accessibility audits",
+             desc:"Periodic audits against ADA / EAA / PCPR requirements.",
+             sources:["ADA","EU-EAA","PCPR-2023"]},
+            {
+              id: "reg-meter",
+              name: "5.5.4 Metering accuracy",
+              desc: "Statutory meter accuracy obligations.",
+              children: [
+                {id:"meter-mid", name:"EU MID Annex VI / OIML R46",
+                 desc:"MID-approved meters mandatory for billing in EU; OIML R46 accuracy classes.",
+                 sources:["MID","OIML-R46"]},
+                {id:"meter-us-nist44", name:"US NIST Handbook 44",
+                 desc:"NIST HB 44 type approval for retail energy fuelling devices.",
+                 sources:["NIST-HB44"]},
+              ]
+            },
+          ]
+        },
+
+        {
+          id: "maint-eol",
+          name: "5.6 End-of-life",
+          desc: "Decommissioning, recycling, second-life. Folded into MAINTAIN, not a separate phase (decision D2).",
+          xcuts: ["e_waste"],
+          children: [
+            {id:"eol-decom", name:"5.6.1 Charger decommissioning",
+             desc:"De-energisation, removal, scrapping, asset-register update.",
+             sources:["WEEE"], xcuts:["e_waste"]},
+            {id:"eol-cable-recycle", name:"5.6.2 Cable & connector recycling",
+             desc:"Copper recovery; high copper content makes cables a lucrative scrap target.",
+             sources:["WEEE","R2v3"], xcuts:["e_waste"]},
+            {id:"eol-pe-weee", name:"5.6.3 Power electronics e-waste (WEEE / R2v3)",
+             desc:"WEEE-stream disposal of power-electronics modules; R2v3 for North American recyclers.",
+             sources:["WEEE","R2v3"], xcuts:["e_waste"]},
+            {id:"eol-site", name:"5.6.4 Site remediation",
+             desc:"Foundation removal, conduit reinstatement, lease-end restoration obligations.",
+             sources:["WEEE"]},
+            {id:"eol-second-life", name:"5.6.5 Second-life redeployment",
+             desc:"Refurbished older AC / DC chargers redeployed in lower-utilisation contexts.",
+             sources:["IEA-GEVO","BNEF-EV"]},
+          ]
+        },
+
+      ]
+    },
+
+  ]
+};
+
+// ============================================================================
+// RENDER
+// ============================================================================
+
+function isLeaf(node) {
+  return !Array.isArray(node.children) || node.children.length === 0;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, function(c) {
+    return ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[c];
+  });
+}
+
+function xcBadgesHtml(xcs) {
+  if (!xcs || xcs.length === 0) return "";
+  const badges = xcs.map(function(x) {
+    return '<span class="xc" title="' + escapeHtml(XCUTS[x] || x) + '">xc:' + escapeHtml(x) + '</span>';
+  }).join("");
+  return '<span class="xcs">' + badges + '</span>';
+}
+
+function renderNode(node, depth, parentPath) {
+  const pathArr = parentPath.concat([node.name]);
+  if (isLeaf(node)) {
+    // Render as a button leaf. Description shown only in side panel on click.
+    const xcAttr = (node.xcuts || []).join(",");
+    const srcAttr = (node.sources || []).join(",");
+    return '<button class="leaf-item" type="button"' +
+      ' data-id="' + escapeHtml(node.id) + '"' +
+      ' data-name="' + escapeHtml(node.name) + '"' +
+      ' data-desc="' + escapeHtml(node.desc || "") + '"' +
+      ' data-sources="' + escapeHtml(srcAttr) + '"' +
+      ' data-xcuts="' + escapeHtml(xcAttr) + '"' +
+      ' data-path="' + escapeHtml(pathArr.join(" › ")) + '"' +
+      '>' +
+      '<span class="leaf-arrow">●</span>' +
+      '<span class="leaf-name">' + escapeHtml(node.name) + '</span>' +
+      xcBadgesHtml(node.xcuts) +
+      '</button>';
+  }
+  // Branch
+  const kids = node.children.map(function(child) {
+    return renderNode(child, depth + 1, pathArr);
+  }).join("");
+  const descHtml = node.desc ? ' <span class="desc">— ' + escapeHtml(node.desc) + '</span>' : "";
+  // Top-level (root + phase) open by default
+  const openAttr = depth <= 1 ? " open" : "";
+  return (
+    '<details data-id="' + escapeHtml(node.id) + '" data-depth="' + depth + '"' + openAttr + '>' +
+      '<summary>' +
+        '<span class="name">' + escapeHtml(node.name) + '</span>' +
+        descHtml +
+        xcBadgesHtml(node.xcuts) +
+      '</summary>' +
+      kids +
+    '</details>'
+  );
+}
+
+function renderTree() {
+  const root = document.getElementById("tree");
+  root.innerHTML = renderNode(ONTOLOGY, 0, []);
+}
+
+// ============================================================================
+// COUNTS
+// ============================================================================
+
+function walk(node, fn, depth, parents) {
+  fn(node, depth || 0, parents || []);
+  if (!isLeaf(node)) {
+    const newParents = (parents || []).concat([node]);
+    node.children.forEach(function(c) { walk(c, fn, (depth || 0) + 1, newParents); });
+  }
+}
+
+function computeCounts() {
+  let nodes = 0;
+  let leaves = 0;
+  let deepest = 0;
+  let deepestPath = "";
+  const xcSet = new Set();
+  let xcAppearances = 0;
+  walk(ONTOLOGY, function(node, depth, parents) {
+    nodes++;
+    if (isLeaf(node)) {
+      leaves++;
+      if (depth > deepest) {
+        deepest = depth;
+        deepestPath = parents.concat([node]).map(function(n) { return n.name; }).join(" › ");
+      }
+    }
+    if (node.xcuts && node.xcuts.length) {
+      xcAppearances += node.xcuts.length;
+      node.xcuts.forEach(function(x) { xcSet.add(x); });
+    }
+  });
+  return { nodes: nodes, leaves: leaves, deepest: deepest, deepestPath: deepestPath, xcAppearances: xcAppearances, xcDistinct: xcSet.size };
+}
+
+function renderCounts() {
+  const c = computeCounts();
+  const el = document.getElementById("counts");
+  el.innerHTML =
+    '<div class="item"><span class="num">' + c.nodes + '</span><span class="lbl">Total nodes</span></div>' +
+    '<div class="item"><span class="num">' + c.leaves + '</span><span class="lbl">Leaf nodes</span></div>' +
+    '<div class="item"><span class="num">' + (c.nodes - c.leaves) + '</span><span class="lbl">Branch nodes</span></div>' +
+    '<div class="item"><span class="num">' + c.deepest + '</span><span class="lbl">Deepest path (depth)</span></div>' +
+    '<div class="item"><span class="num">' + c.xcAppearances + '</span><span class="lbl">Cross-cutting tag uses</span></div>' +
+    '<div class="item"><span class="num">' + c.xcDistinct + '</span><span class="lbl">Distinct XC axes</span></div>' +
+    '<div class="item" style="flex-basis:100%;font-size:11.5px;color:var(--ink-muted);"><strong>Deepest path example:</strong> ' + escapeHtml(c.deepestPath) + '</div>';
+}
+
+// ============================================================================
+// LEAF DETAIL PANEL
+// ============================================================================
+
+function renderDetailFromButton(btn) {
+  const id      = btn.dataset.id;
+  const name    = btn.dataset.name;
+  const desc    = btn.dataset.desc;
+  const sources = (btn.dataset.sources || "").split(",").filter(Boolean);
+  const xcuts   = (btn.dataset.xcuts || "").split(",").filter(Boolean);
+  const path    = btn.dataset.path;
+
+  const sourcesHtml = sources.length === 0
+    ? "<li><em>(no sources cited — please flag, this is a build error)</em></li>"
+    : sources.map(function(s) {
+        const meta = SOURCES[s];
+        if (!meta) return '<li><span class="src-id">' + escapeHtml(s) + '</span> <em>(unknown source ID — please flag)</em></li>';
+        const url = meta.url ? ' · <a href="' + escapeHtml(meta.url) + '" target="_blank" rel="noopener noreferrer">link</a>' : "";
+        return '<li><span class="src-label">' + escapeHtml(meta.label) + '</span> <span class="src-id">[' + escapeHtml(s) + ']</span>' + url + '</li>';
+      }).join("");
+
+  const xcsHtml = xcuts.length === 0
+    ? '<p style="color:var(--ink-faint);font-size:13px;margin:4px 0 0;">(none)</p>'
+    : '<div class="xcs">' + xcuts.map(function(x) {
+        return '<span class="xc" title="' + escapeHtml(XCUTS[x] || x) + '">xc:' + escapeHtml(x) + '</span>';
+      }).join("") + '</div>' +
+      '<ul style="margin-top:8px;">' + xcuts.map(function(x) {
+        return '<li><span class="src-id">' + escapeHtml(x) + '</span> — ' + escapeHtml(XCUTS[x] || "(no description)") + '</li>';
+      }).join("") + '</ul>';
+
+  const detail = document.getElementById("detail");
+  detail.innerHTML =
+    '<div class="path">' + escapeHtml(path) + '</div>' +
+    '<h2>' + escapeHtml(name) + '</h2>' +
+    '<p class="desc">' + escapeHtml(desc) + '</p>' +
+    '<h3>Sources</h3><ul>' + sourcesHtml + '</ul>' +
+    '<h3>Cross-cutting</h3>' + xcsHtml +
+    '<h3>Node ID</h3><p class="src-id">' + escapeHtml(id) + '</p>';
+}
+
+function attachLeafHandlers() {
+  document.querySelectorAll(".leaf-item").forEach(function(btn) {
+    btn.addEventListener("click", function(e) {
+      document.querySelectorAll(".leaf-item.selected").forEach(function(x) { x.classList.remove("selected"); });
+      btn.classList.add("selected");
+      renderDetailFromButton(btn);
+    });
+  });
+}
+
+// ============================================================================
+// TOOLBAR
+// ============================================================================
+
+function setAllOpen(open) {
+  document.querySelectorAll("#tree details").forEach(function(d) { d.open = open; });
+}
+function setOpenToDepth(maxDepth) {
+  document.querySelectorAll("#tree details").forEach(function(d) {
+    const depth = parseInt(d.dataset.depth || "0", 10);
+    d.open = depth <= maxDepth;
+  });
+}
+function attachToolbar() {
+  document.getElementById("expand-all").addEventListener("click", function() { setAllOpen(true); });
+  document.getElementById("collapse-all").addEventListener("click", function() { setAllOpen(false); });
+  document.getElementById("expand-l2").addEventListener("click", function() { setOpenToDepth(0); });
+  document.getElementById("expand-l3").addEventListener("click", function() { setOpenToDepth(1); });
+}
+
+// ============================================================================
+// SOURCE / XC TABLES IN FOOTER
+// ============================================================================
+
+function renderSrcTable() {
+  const t = document.getElementById("src-table");
+  const rows = Object.keys(SOURCES).sort().map(function(k) {
+    const v = SOURCES[k];
+    const link = v.url ? '<a href="' + escapeHtml(v.url) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(v.url) + '</a>' : "";
+    return '<tr><td>' + escapeHtml(k) + '</td><td>' + escapeHtml(v.label) + '</td><td>' + link + '</td></tr>';
+  }).join("");
+  t.innerHTML = rows;
+}
+
+function renderXcTable() {
+  const t = document.getElementById("xc-table");
+  const rows = Object.keys(XCUTS).sort().map(function(k) {
+    return '<tr><td>' + escapeHtml(k) + '</td><td>' + escapeHtml(XCUTS[k]) + '</td></tr>';
+  }).join("");
+  t.innerHTML = rows;
+}
+
+// ============================================================================
+// INTEGRITY CHECK (logs to console — no UI; helps catch build errors)
+// ============================================================================
+
+function integrityCheck() {
+  const ids = new Set();
+  const dupes = [];
+  const leavesWithoutSources = [];
+  const unknownSourceRefs = [];
+  const unknownXcRefs = [];
+  walk(ONTOLOGY, function(node) {
+    if (ids.has(node.id)) dupes.push(node.id);
+    ids.add(node.id);
+    if (isLeaf(node)) {
+      if (!node.sources || node.sources.length === 0) leavesWithoutSources.push(node.id);
+      (node.sources || []).forEach(function(s) {
+        if (!SOURCES[s]) unknownSourceRefs.push(node.id + " → " + s);
+      });
+    }
+    (node.xcuts || []).forEach(function(x) {
+      if (!XCUTS[x]) unknownXcRefs.push(node.id + " → " + x);
+    });
+  });
+  if (dupes.length || leavesWithoutSources.length || unknownSourceRefs.length || unknownXcRefs.length) {
+    console.warn("ONTOLOGY INTEGRITY CHECK FAILURES:", {
+      duplicateIds: dupes,
+      leavesWithoutSources: leavesWithoutSources,
+      unknownSourceRefs: unknownSourceRefs,
+      unknownXcRefs: unknownXcRefs,
+    });
+  } else {
+    console.info("Ontology integrity OK: " + ids.size + " unique IDs, all leaves cite sources, all XC refs valid.");
+  }
+}
+
+// ============================================================================
+// BOOT
+// ============================================================================
+
+renderTree();
+renderCounts();
+attachLeafHandlers();
+attachToolbar();
+renderSrcTable();
+renderXcTable();
+integrityCheck();
+</script>
+
+</body>
+</html>
