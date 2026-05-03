@@ -59,6 +59,7 @@ These were agreed during the session and need to land in `ARCHITECTURE.md` and `
 - **Anthropic API key in plaintext in WF-15A-PG `Claude Haiku Extract` node `headerParameters`.** Carried over from legacy WF-15A. Per R24, this counts as exposed (it appeared in the workflow JSON the user pasted into chat transcript today). Rotate next session — generate new key in Anthropic console, update n8n node, retire old key.
 - **Smoke-test residue cleanup script left at `db/_cleanup-smoke-test-residue.mjs`.** Already used. Disposable, safe to delete in cleanup gate.
 - **Multiple disposable diagnostic scripts** under `db/` and `n8n/` (prefix `_`) left behind from gate 5 work. List in `n8n/wf-15a-pg-current-state.md` and the gate 5 commit message. Clean up at the start of next session or on close.
+- **PG has no `schema_migrations` ledger table.** Surfaced 2026-05-03 morning status check: migrations 001-005 are all applied but there is no first-class record in PG of which migrations have run. Currently inferred from column / table existence. Not urgent — Monday item, not a today fix. Add a `schema_migrations(version, name, applied_at)` table and backfill 001-005 entries before any further migration. Without this, a future migration runner cannot do an idempotency check against PG itself.
 
 ---
 
