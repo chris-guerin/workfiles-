@@ -115,16 +115,37 @@ const SYSTEM_PROMPT = `You read a news item and output STRICT JSON conforming to
   "extracted_geographic_scope": [array of ISO country codes or named regions],
   "extracted_temporal_scope_start": "YYYY-MM-DD" | null,
   "extracted_temporal_scope_end": "YYYY-MM-DD" | null,
-  "confidence": number 0-1
+  "confidence": number 0-1,
+
+  "soft_signal_type": "assumption_evidence" | "tension_evidence" | "reframe_evidence" | "none",
+  "soft_signal_subject": "<short text describing the assumption/tension/reframe being affected; empty string if none>",
+  "soft_signal_direction": "reinforcing" | "contradicting" | "clarifying" | null,
+  "soft_signal_reasoning": "<2-3 sentences if soft signal present; empty string if none>"
 }
 
 If is_signal=false, return {"is_signal": false, "reason": "string"} only.
 
-The contract:
+Hard-signal contract:
 - extracted_attribute_types ONLY contains values from the provided controlled list
 - extracted_entities are matched at SQL time against components / tech_functions / regulations / companies — names should be specific (e.g. "EU Hydrogen Bank", "Shell Recharge", "Holland Hydrogen 1"), not generic categories
 - extracted_geographic_scope uses ISO country codes (US, GB, DE, FR, NL, etc) or named regions (EU, NW Europe, Asia-Pacific, North Sea, MENA)
-- extracted_values: when prose names a number, extract it; when it names a unit, extract that; when it names a direction (rising/falling/stable/volatile), extract that. Don't invent.`;
+- extracted_values: when prose names a number, extract it; when it names a unit, extract that; when it names a direction (rising/falling/stable/volatile), extract that. Don't invent.
+
+Soft-signal contract (per spec section 13.6):
+
+Beyond the structured hard-signal extraction, does this news item carry soft-signal content? Soft signals are interpretive content that doesn't reduce to structured attribute movements. Three categories:
+
+ASSUMPTION_EVIDENCE: the signal provides evidence for or against something a strategy bet assumes (often unstated). Examples: a regulatory change that calls into question whether 'EU funding remains stable'; a competitor announcement that supports 'specialty chemicals pricing power persists.'
+
+TENSION_EVIDENCE: the signal reinforces or contradicts a structural tension that crosses initiatives or industries. Examples: a hiring pattern across majors signalling a capital allocation shift; a substitution event signalling regime change.
+
+REFRAME_EVIDENCE: the signal suggests industry framing of a topic is shifting. Examples: an analyst report reframing EV charging from utilisation-driven to demand-shape-driven; an industry conference reframing CCUS economics from policy-dependent to commercially viable.
+
+If the signal carries soft content, set soft_signal_type to one of the three values, fill soft_signal_subject (short text describing what's affected), set soft_signal_direction, and write soft_signal_reasoning (2-3 sentences).
+
+If no soft content, set soft_signal_type='none', soft_signal_subject='', soft_signal_direction=null, soft_signal_reasoning=''.
+
+A signal can have BOTH hard-signal extraction AND soft-signal content. Output both. Hard-signal extraction is unaffected by soft-signal presence.`;
 
 async function callHaiku(news) {
   if (!COMMIT) return JSON.stringify({ __dryrun: true });
@@ -216,7 +237,10 @@ for (const news of newsItems) {
   }
 
   totals.signals++;
-  console.log(`  signal_type=${extracted.signal_type}, entities=${(extracted.extracted_entities || []).length}, attrs=${(extracted.extracted_attribute_types || []).length}, conf=${extracted.confidence}`);
+  const softTag = (extracted.soft_signal_type && extracted.soft_signal_type !== 'none')
+    ? ` SOFT=${extracted.soft_signal_type}/${extracted.soft_signal_direction || '?'}: "${(extracted.soft_signal_subject || '').slice(0, 80)}"`
+    : '';
+  console.log(`  signal_type=${extracted.signal_type}, entities=${(extracted.extracted_entities || []).length}, attrs=${(extracted.extracted_attribute_types || []).length}, conf=${extracted.confidence}${softTag}`);
 
   if (!COMMIT) continue;
 
@@ -236,6 +260,12 @@ for (const news of newsItems) {
     extraction_model: 'claude-haiku-4-5',
     source_url: news.url,
     pub_date: news.pub_date instanceof Date ? news.pub_date.toISOString().slice(0, 10) : (news.pub_date ? String(news.pub_date).slice(0, 10) : null),
+    // Migration 011 soft-signal fields. Pass through whatever Haiku returned;
+    // the API CHECK constraints will validate enum values.
+    soft_signal_type: ['assumption_evidence','tension_evidence','reframe_evidence','none'].includes(extracted.soft_signal_type) ? extracted.soft_signal_type : null,
+    soft_signal_subject: typeof extracted.soft_signal_subject === 'string' && extracted.soft_signal_subject.trim().length > 0 ? extracted.soft_signal_subject.trim() : null,
+    soft_signal_direction: ['reinforcing','contradicting','clarifying'].includes(extracted.soft_signal_direction) ? extracted.soft_signal_direction : null,
+    soft_signal_reasoning: typeof extracted.soft_signal_reasoning === 'string' && extracted.soft_signal_reasoning.trim().length > 0 ? extracted.soft_signal_reasoning.trim() : null,
   };
 
   try {

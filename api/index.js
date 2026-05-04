@@ -756,6 +756,8 @@ const MINI_SIGNALS_V3_COLS = [
   'extracted_values','extracted_geographic_scope','extracted_temporal_scope_start',
   'extracted_temporal_scope_end','extracted_at','extraction_confidence','extraction_model',
   'source_url','pub_date',
+  // Migration 011 soft-signal columns
+  'soft_signal_type','soft_signal_subject','soft_signal_direction','soft_signal_reasoning',
 ];
 const VALID_SIGNAL_TYPES = ['announcement','decision','data_release','commitment','commentary','regulatory_change','financial_filing','other'];
 
