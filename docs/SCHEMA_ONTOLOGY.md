@@ -125,6 +125,7 @@ CREATE TABLE technology_application_pairs (
   is_flagged_for_review    BOOLEAN NOT NULL DEFAULT FALSE,
   flag_reason              TEXT,
   last_reclassified_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  hard_evidence_count      INTEGER NOT NULL DEFAULT 0,  -- v10.1 (migration 013); maintained by trigger on pair_evidence
   draft_status             TEXT NOT NULL DEFAULT 'draft_unreviewed',
   created_at               TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   last_updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),

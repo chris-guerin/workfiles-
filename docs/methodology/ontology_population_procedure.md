@@ -1,11 +1,13 @@
 # Ontology population procedure
 
-**Version:** 1.1
+**Version:** 1.2
 **Status:** Binding procedure for populating the technology × application ontology layer (`/docs/SCHEMA_ONTOLOGY.md`).
 **Audience:** Claude Code, analysts, anyone running an ontology population pass against a client initiative.
 **Companion:** `/docs/SCHEMA_ONTOLOGY.md` (the schema spec); `/docs/draft_review/ontology_ccus_worked_example.md` (the first worked example, Industrial CCUS, populated 2026-05-04).
 
 **Changelog**
+
+- **v1.2 (2026-05-04 night).** Migration 013 introduces `technology_application_pairs.hard_evidence_count` — a denormalised `INTEGER NOT NULL DEFAULT 0` column maintained by trigger on `pair_evidence`. The column counts evidence rows where `evidence_type IN ('peer_reviewed','company_filing','government_data')` OR `(evidence_type='operator_disclosure' AND evidence_strength='high')` — the v1.1 hard-evidence definition. The confidence_band vocabulary stays high/medium/low; this column makes the medium band queryable by surfacing the difference between "medium with 0 hard evidence rows" and "medium with 2+ hard evidence rows." Step 2 updated: hard_evidence_count populates automatically via trigger, but the analyst writing the population script MUST mention the resulting count in the confidence_reasoning so the audit trail captures both the count and the call. Step 7 self-marking output extended to include `medium-band breakdown by hard_evidence_count`.
 
 - **v1.1 (2026-05-04 evening).** Step 2 hard-evidence rule clarified: `operator_disclosure` at `evidence_strength='high'` counts as hard evidence when the operator is the only authoritative source for the fact in question (project operating data, throughput, FID date, financial parameters that operators publish but governments do not aggregate). The original rule had bracketed only `peer_reviewed`, `company_filing`, and `government_data` as hard evidence; this excluded fact patterns where operator self-disclosure is structurally the deepest available source. The clarification is enforced at population time by the analyst (procedure-level), not at schema-level CHECK. Section "Step 2 — source classification" updated; Section "Confidence band assignment from evidence" updated. Retroactive review applied to the Industrial CCUS worked example: both `Post-combustion amine × industrial point-source decarbonisation` and `Pre-combustion × industrial gas processing` remain correctly at `confidence='high'` because their operator_disclosure rows (Northern Lights consortium technical disclosures; Equinor Sleipner historical disclosure) qualify as hard evidence under v1.1.
 
@@ -74,6 +76,8 @@ Seven steps. Each step has explicit inputs, outputs, and acceptance criteria. Th
 Where these three conditions hold, an `operator_disclosure` row at `evidence_strength='high'` is structurally equivalent to a `company_filing` for confidence-band purposes. Where any one fails, do not invoke the carve-out — fall back to the strict reading.
 
 **Output:** for each pair, a list of evidence items typed and strength-assigned. At least one item per pair is required; absence of any evidence MUST stop the pair from being created — the pair is dropped or held for additional research.
+
+**v1.2 addition: hard_evidence_count.** The schema now denormalises a count of hard-evidence rows per pair on `technology_application_pairs.hard_evidence_count` (maintained by trigger). The analyst does not write to this column directly — it is computed from `pair_evidence` rows. The analyst MUST mention the resulting count in `confidence_reasoning` so the audit trail captures both the count and the confidence-band call. A medium-confidence pair with hard_evidence_count=2 is structurally different from a medium-confidence pair with hard_evidence_count=0; both are valid medium calls but the queryable surfacing distinguishes them.
 
 **For Industrial CCUS, this looked like:** evidence for `post_combustion_amine_capture × industrial_point_source_decarbonisation` came from IEAGHG cost network 2024 (industry_body, high), Global CCS Institute Status Report 2024 (industry_body, high), Equinor + Shell Quest annual disclosures (company_filing, high), Northern Lights operator updates (operator_disclosure, high). Mix of types let confidence land at **high** without controversy. Evidence for `direct_air_capture × cdr_voluntary_market` came from Carbon Engineering / Climeworks operator disclosures (operator_disclosure, medium) and IEA CCUS Roadmap 2024 (industry_body, medium); confidence landed at **medium** because peer-reviewed cost trajectories disagree materially with operator-claimed trajectories.
 
@@ -222,6 +226,7 @@ Flagging rules:
 - **Components linked count.** Total rows added to `component_pair_links`. Plus components-from-the-initiative-that-remained-unlinked count (should be zero except in explicit edge cases).
 - **Adjacencies identified.** Total rows in `pair_adjacencies` involving the new pairs. Per-pair count (verify the ≥2-per-pair rule).
 - **Source citation quality.** Per-pair: count of evidence rows, count of evidence rows with `source_url` populated, count of evidence rows by type. The "no industry-knowledge placeholders" check runs as: every evidence row has `source_citation` not in {'industry knowledge', 'general knowledge', 'common knowledge'} (literal match check).
+- **Medium-band breakdown by hard_evidence_count (v1.2).** For pairs at `confidence_band='medium'`, partition by `hard_evidence_count`: 0 / 1 / ≥2 buckets. A medium band where all pairs sit at 0 hard rows is weak. A medium band where most pairs sit at ≥2 is robust — those pairs are essentially "would-be-high pending one more hard source." Surface the distribution in every population's self-marking output.
 - **Acceptance query results.** Run Q1-Q5 from `/docs/SCHEMA_ONTOLOGY.md` Section 6 and report row counts plus a 1-row sample from each.
 - **Open questions.** Any methodology gaps or schema gaps surfaced during population. These feed back into the procedure document for v1.1.
 - **Self-assessment.** Where the population was confident; where analyst review is most needed. Honest about uncertainty — do not smooth weak evidence.
@@ -244,6 +249,7 @@ The procedure does not change between populations. The discipline is the procedu
 
 ## Versioning
 
+- **v1.2** — 2026-05-04 night, `hard_evidence_count` denormalised column on `technology_application_pairs`, maintained by trigger on `pair_evidence`. Makes medium-band heterogeneity queryable. First applied to Shell green H2, BP blue H2, Equinor (overnight batch 2).
 - **v1.1** — 2026-05-04 evening, hard-evidence rule clarified to include high-strength `operator_disclosure` when the operator is the only authoritative source. Applied retroactively to the CCUS worked example with no pair reclassifications. First applied as written to Shell blue hydrogen, Shell SAF, and Vattenfall offshore wind.
 - **v1.0** — 2026-05-04, first version. Applied to Shell Industrial CCUS.
 
