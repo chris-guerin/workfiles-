@@ -750,6 +750,61 @@ app.get('/components_incomplete', requireApiKey, async (_req, res) => {
   }
 });
 
+// ---------- /mini_signals_v3 (v3 framework — Haiku-extracted structured signal) ----------
+const MINI_SIGNALS_V3_COLS = [
+  'source_news_id','signal_text','signal_type','extracted_entities','extracted_attribute_types',
+  'extracted_values','extracted_geographic_scope','extracted_temporal_scope_start',
+  'extracted_temporal_scope_end','extracted_at','extraction_confidence','extraction_model',
+  'source_url','pub_date',
+];
+const VALID_SIGNAL_TYPES = ['announcement','decision','data_release','commitment','commentary','regulatory_change','financial_filing','other'];
+
+app.post('/mini_signals_v3', requireApiKey, async (req, res) => {
+  const b = req.body || {};
+  if (!b.signal_text || !b.signal_type) {
+    return res.status(400).json({ status: 'invalid', error: 'signal_text and signal_type required' });
+  }
+  if (!VALID_SIGNAL_TYPES.includes(b.signal_type)) {
+    return res.status(400).json({ status: 'invalid', error: `signal_type must be one of ${VALID_SIGNAL_TYPES.join(', ')}` });
+  }
+  // Coerce JSONB-shaped fields
+  const fields = {};
+  for (const c of MINI_SIGNALS_V3_COLS) if (b[c] !== undefined) fields[c] = b[c];
+  if (!fields.extracted_at) fields.extracted_at = new Date().toISOString();
+  if (!fields.extraction_model) fields.extraction_model = 'claude-haiku-4-5';
+  // JSONB fields must be sent as JSON-encoded strings to PG
+  for (const j of ['extracted_entities','extracted_attribute_types','extracted_values','extracted_geographic_scope']) {
+    if (fields[j] !== undefined && typeof fields[j] !== 'string') {
+      fields[j] = JSON.stringify(fields[j]);
+    }
+  }
+  try {
+    const cols = Object.keys(fields);
+    const placeholders = cols.map((_, i) => `$${i + 1}`).join(', ');
+    const vals = cols.map((c) => fields[c]);
+    const { rows } = await pool.query(
+      `INSERT INTO mini_signals_v3 (${cols.join(', ')}) VALUES (${placeholders}) RETURNING *`,
+      vals
+    );
+    res.status(201).json({ status: 'inserted', row: rows[0] });
+  } catch (err) {
+    if (err.code === '23514') return res.status(400).json({ status: 'invalid', error: `CHECK constraint violation: ${err.message}` });
+    if (err.code === '23503') return res.status(400).json({ status: 'invalid', error: `FK violation: ${err.detail || err.message}` });
+    console.error('[POST /mini_signals_v3]', err);
+    res.status(500).json({ status: 'error', error: err.message });
+  }
+});
+
+app.get('/mini_signals_v3', requireApiKey, async (req, res) => {
+  const limit = Math.min(parseInt(req.query.limit) || 100, 500);
+  try {
+    const { rows } = await pool.query(
+      `SELECT * FROM mini_signals_v3 ORDER BY id DESC LIMIT $1`, [limit]
+    );
+    res.json(rows);
+  } catch (err) { console.error('[GET /mini_signals_v3]', err); res.status(500).json({ status: 'error', error: err.message }); }
+});
+
 // ---------- /components_with_full_record (worksheet view) ----------
 // Filters via JOIN against components + initiatives_v2 since the view itself
 // doesn't expose company_id / initiative_id columns directly.
@@ -779,6 +834,459 @@ app.get('/components_with_full_record', requireApiKey, async (req, res) => {
     res.json(rows);
   } catch (err) {
     console.error('[GET /components_with_full_record]', err);
+    res.status(500).json({ status: 'error', error: err.message });
+  }
+});
+
+// ============================================================================
+// /signal_route/* — v3 matching framework operational pipeline
+// ============================================================================
+
+// Matching SQL bodies per /docs/SCHEMA_V3.md section 6.
+const SQL_MATCH_DIRECT_NAME = `
+  INSERT INTO signal_candidate_matches
+    (mini_signal_id, component_id, match_method, match_strength, match_basis_text)
+  SELECT DISTINCT
+    ms.id,
+    cn.reference_id,
+    'direct_name',
+    0.95,
+    'extracted_entity matched component name: ' || entity.value
+  FROM mini_signals_v3 ms
+  CROSS JOIN LATERAL jsonb_array_elements_text(ms.extracted_entities) AS entity(value)
+  JOIN catalogue_names cn ON (
+    LOWER(cn.entity_name) = LOWER(entity.value)
+    OR LOWER(entity.value) = ANY(SELECT LOWER(unnest(cn.aliases)))
+  )
+  WHERE cn.entity_type = 'component'
+    AND cn.reference_table = 'components'
+    AND ms.id = $1
+  RETURNING id`;
+
+const SQL_MATCH_ATTRIBUTE_REFERENCE = `
+  INSERT INTO signal_candidate_matches
+    (mini_signal_id, component_id, match_method, match_strength, match_basis_text)
+  SELECT DISTINCT
+    ms.id, c.id, 'attribute_reference', 0.7,
+    'extracted_attribute_types overlapped with populated attributes on component'
+  FROM mini_signals_v3 ms
+  CROSS JOIN LATERAL jsonb_array_elements_text(ms.extracted_attribute_types) AS attr_type(value)
+  JOIN attribute_definitions ad ON ad.attribute_name = attr_type.value
+  JOIN component_attributes ca ON ca.attribute_def_id = ad.id AND ca.value_status = 'populated'
+  JOIN components c ON c.id = ca.component_id
+  WHERE ms.id = $1
+  RETURNING id`;
+
+const SQL_MATCH_TECH_FUNCTION = `
+  INSERT INTO signal_candidate_matches
+    (mini_signal_id, component_id, tech_function_id, match_method, match_strength, match_basis_text)
+  SELECT DISTINCT
+    ms.id, c.id, tf.id, 'tech_function', 0.6,
+    'extracted_entity matched tech_function shared by this component'
+  FROM mini_signals_v3 ms
+  CROSS JOIN LATERAL jsonb_array_elements_text(ms.extracted_entities) AS entity(value)
+  JOIN tech_functions tf ON LOWER(tf.function_name) = LOWER(entity.value)
+  JOIN component_attributes ca ON ca.value_controlled_vocab_id = tf.id
+  JOIN components c ON c.id = ca.component_id
+  WHERE ms.id = $1
+  RETURNING id`;
+
+const SQL_MATCH_DEPENDENCY_CHAIN = `
+  INSERT INTO signal_candidate_matches
+    (mini_signal_id, component_id, match_method, match_strength, match_basis_text)
+  SELECT DISTINCT
+    scm.mini_signal_id,
+    cd.target_component_id,
+    'dependency_chain',
+    CASE cd.dependency_strength
+      WHEN 'critical' THEN 0.5
+      WHEN 'high'     THEN 0.4
+      WHEN 'medium'   THEN 0.3
+      ELSE 0.2
+    END,
+    'matched via dependency_type=' || cd.dependency_type || ' from already-matched component'
+  FROM signal_candidate_matches scm
+  JOIN component_dependencies cd ON cd.source_component_id = scm.component_id
+  WHERE scm.mini_signal_id = $1
+    AND scm.match_method != 'dependency_chain'
+    AND NOT EXISTS (
+      SELECT 1 FROM signal_candidate_matches existing
+      WHERE existing.mini_signal_id = scm.mini_signal_id
+        AND existing.component_id = cd.target_component_id
+    )
+  RETURNING id`;
+
+app.post('/signal_route/match', requireApiKey, async (req, res) => {
+  const id = parsePositiveInt(req.body?.mini_signal_id);
+  if (id === null) return res.status(400).json({ status: 'invalid', error: 'mini_signal_id required (positive integer)' });
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const direct = await client.query(SQL_MATCH_DIRECT_NAME, [id]);
+    const attrRef = await client.query(SQL_MATCH_ATTRIBUTE_REFERENCE, [id]);
+    const techFn = await client.query(SQL_MATCH_TECH_FUNCTION, [id]);
+    const depChain = await client.query(SQL_MATCH_DEPENDENCY_CHAIN, [id]);
+    await client.query('COMMIT');
+    res.status(201).json({
+      status: 'matched',
+      mini_signal_id: id,
+      counts: {
+        direct_name: direct.rowCount,
+        attribute_reference: attrRef.rowCount,
+        tech_function: techFn.rowCount,
+        dependency_chain: depChain.rowCount,
+        total: direct.rowCount + attrRef.rowCount + techFn.rowCount + depChain.rowCount,
+      },
+    });
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
+    console.error('[POST /signal_route/match]', err);
+    res.status(500).json({ status: 'error', error: err.message });
+  } finally { client.release(); }
+});
+
+// ===== Anthropic helper for Sonnet calls =====
+async function callSonnet(systemPrompt, userPrompt, maxTokens = 1500) {
+  const key = process.env.ANTHROPIC_API_KEY;
+  if (!key) throw new Error('ANTHROPIC_API_KEY env var not set on Railway');
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: maxTokens,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userPrompt }],
+    }),
+  });
+  if (!r.ok) {
+    const t = await r.text();
+    throw new Error(`Anthropic ${r.status}: ${t.slice(0, 300)}`);
+  }
+  const j = await r.json();
+  return j.content?.[0]?.text || '';
+}
+
+function tryExtractJson(text) {
+  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+  const s = fenced ? fenced[1] : text;
+  const start = s.indexOf('{');
+  if (start < 0) return null;
+  let depth = 0, end = -1;
+  for (let i = start; i < s.length; i++) {
+    if (s[i] === '{') depth++;
+    else if (s[i] === '}') { depth--; if (depth === 0) { end = i; break; } }
+  }
+  if (end < 0) return null;
+  try { return JSON.parse(s.slice(start, end + 1)); } catch { return null; }
+}
+
+// POST /signal_route/assess_impact — Sonnet evaluates whether the candidate
+// match's component's claims are moved by the signal; writes signal_claim_impacts.
+app.post('/signal_route/assess_impact', requireApiKey, async (req, res) => {
+  const candidateId = parsePositiveInt(req.body?.candidate_match_id);
+  if (candidateId === null) return res.status(400).json({ status: 'invalid', error: 'candidate_match_id required' });
+  try {
+    // Load context: candidate match + signal + component + claims + populated attributes
+    const { rows: ctxRows } = await pool.query(`
+      SELECT
+        scm.id AS match_id, scm.mini_signal_id, scm.component_id, scm.match_method, scm.match_strength,
+        scm.match_basis_text,
+        ms.signal_text, ms.signal_type, ms.extracted_values,
+        c.name AS component_name, c.vector, c.state AS component_state,
+        i.name AS initiative_name, i.persona, i.current_confidence
+      FROM signal_candidate_matches scm
+      JOIN mini_signals_v3 ms ON ms.id = scm.mini_signal_id
+      LEFT JOIN components c ON c.id = scm.component_id
+      LEFT JOIN initiatives_v2 i ON i.id = c.initiative_id
+      WHERE scm.id = $1
+    `, [candidateId]);
+    if (ctxRows.length === 0) return res.status(404).json({ status: 'not_found', candidate_match_id: candidateId });
+    const ctx = ctxRows[0];
+    if (ctx.component_id == null) return res.json({ status: 'skipped', reason: 'tech_function-only match has no component to assess claims against', impacts: [] });
+
+    const { rows: claims } = await pool.query(`
+      SELECT id, claim_text, role, criticality, threshold_op, threshold_value_numeric,
+             threshold_value_text, threshold_unit, deadline_date, threshold_direction
+      FROM claims_v2 WHERE component_id = $1`, [ctx.component_id]);
+
+    if (claims.length === 0) return res.json({ status: 'no_claims', candidate_match_id: candidateId, impacts: [] });
+
+    const SYSTEM = `You are a senior energy/mobility analyst. Given a market signal and a component-claim assessment context, output STRICT JSON. For each claim, decide: does this signal move the claim? Output:
+{
+  "impacts": [
+    {
+      "claim_id": <int>,
+      "impact_direction": "toward_threshold" | "away_from_threshold" | "crossed_threshold" | "no_change",
+      "impact_magnitude": <number 0-1>,
+      "is_material": <boolean>,
+      "reasoning_text": "<2-3 sentences, analyst voice, FT Alphaville register>"
+    }
+  ]
+}
+Be honest. Most signals don't materially move most claims. is_material=true only when the signal moves a claim direction with magnitude >=0.3 OR crosses a threshold OR materially changes assessment confidence. No fabrication; if signal doesn't bear on a claim, say no_change with magnitude 0.`;
+
+    const userPrompt = `Component: ${ctx.component_name} (vector=${ctx.vector}, state=${ctx.component_state || '—'})
+Initiative: ${ctx.initiative_name} (persona=${ctx.persona || '—'}, current_confidence=${ctx.current_confidence || '—'})
+Match method: ${ctx.match_method} (strength=${ctx.match_strength})
+Match basis: ${ctx.match_basis_text}
+
+Signal:
+"""${ctx.signal_text}"""
+Signal type: ${ctx.signal_type}
+Extracted values: ${JSON.stringify(ctx.extracted_values).slice(0, 800)}
+
+Claims to assess:
+${claims.map((c) => JSON.stringify({id: c.id, claim_text: c.claim_text, role: c.role, criticality: c.criticality, threshold_op: c.threshold_op, threshold_value: c.threshold_value_numeric ?? c.threshold_value_text, threshold_unit: c.threshold_unit, deadline_date: c.deadline_date, threshold_direction: c.threshold_direction})).join('\n')}
+
+Output the impacts JSON.`;
+
+    const text = await callSonnet(SYSTEM, userPrompt, 2000);
+    const parsed = tryExtractJson(text);
+    if (!parsed || !Array.isArray(parsed.impacts)) {
+      return res.status(500).json({ status: 'sonnet_parse_failed', raw: text.slice(0, 400) });
+    }
+
+    const inserted = [];
+    for (const imp of parsed.impacts) {
+      const cId = parseInt(imp.claim_id);
+      if (!claims.find((c) => c.id === cId)) continue;
+      const ins = await pool.query(`
+        INSERT INTO signal_claim_impacts
+          (mini_signal_id, candidate_match_id, claim_id, impact_direction,
+           impact_magnitude, is_material, reasoning_text, assessment_model)
+        VALUES ($1,$2,$3,$4,$5,$6,$7,'claude-sonnet-4-6')
+        RETURNING *`,
+        [ctx.mini_signal_id, ctx.match_id, cId,
+         imp.impact_direction || 'no_change',
+         Math.max(0, Math.min(1, Number(imp.impact_magnitude) || 0)),
+         Boolean(imp.is_material),
+         imp.reasoning_text || '(no reasoning)',
+        ]
+      );
+      inserted.push(ins.rows[0]);
+    }
+    res.status(201).json({ status: 'assessed', candidate_match_id: candidateId, impacts: inserted });
+  } catch (err) {
+    console.error('[POST /signal_route/assess_impact]', err);
+    res.status(500).json({ status: 'error', error: err.message });
+  }
+});
+
+// POST /signal_route/generate_signal — for material claim impacts, generate
+// the operational signal row with severity + persona + framing_text.
+app.post('/signal_route/generate_signal', requireApiKey, async (req, res) => {
+  const impactId = parsePositiveInt(req.body?.claim_impact_id);
+  if (impactId === null) return res.status(400).json({ status: 'invalid', error: 'claim_impact_id required' });
+  try {
+    const { rows: ctxRows } = await pool.query(`
+      SELECT sci.id AS impact_id, sci.mini_signal_id, sci.claim_id, sci.impact_direction,
+             sci.impact_magnitude, sci.is_material, sci.reasoning_text,
+             ms.signal_text, ms.signal_type,
+             cl.claim_text, cl.role, cl.criticality, cl.deadline_date,
+             c.name AS component_name, c.vector,
+             i.id AS initiative_id, i.name AS initiative_name, i.persona,
+             co.id AS company_id, co.name AS company_name
+      FROM signal_claim_impacts sci
+      JOIN claims_v2 cl ON cl.id = sci.claim_id
+      JOIN components c ON c.id = cl.component_id
+      JOIN initiatives_v2 i ON i.id = cl.initiative_id
+      JOIN companies co ON co.id = i.company_id
+      JOIN mini_signals_v3 ms ON ms.id = sci.mini_signal_id
+      WHERE sci.id = $1
+    `, [impactId]);
+    if (ctxRows.length === 0) return res.status(404).json({ status: 'not_found', claim_impact_id: impactId });
+    const x = ctxRows[0];
+    if (!x.is_material) return res.json({ status: 'skipped_immaterial', claim_impact_id: impactId });
+
+    // Severity rules per spec
+    let severity;
+    if (x.impact_direction === 'crossed_threshold' && x.criticality === 'critical') severity = 'alert';
+    else if (x.impact_direction === 'toward_threshold' && (x.criticality === 'critical' || x.criticality === 'high')) severity = 'brief';
+    else severity = 'watch';
+
+    const persona = x.persona || 'strategy';
+
+    const SYSTEM = `You are a senior FutureBridge analyst. Write a single short paragraph (60-120 words) framing a market signal for an executive. Voice: FT Alphaville / Bloomberg Intelligence register, sentence target 10-18 words, no consultant clichés ("leverage", "operationalise", "ecosystem", "framework"). Name the signal, name the component impact, name the deadline if there is one, name what to watch next. Defensible, terse, high-density.`;
+    const userPrompt = `Company: ${x.company_name}
+Initiative: ${x.initiative_name}
+Component: ${x.component_name} (vector=${x.vector})
+Severity: ${severity}; Persona: ${persona}
+
+Signal: "${x.signal_text}"
+Signal type: ${x.signal_type}
+
+Claim that moved: "${x.claim_text}" (role=${x.role}, criticality=${x.criticality}${x.deadline_date ? ', deadline=' + x.deadline_date : ''})
+Impact direction: ${x.impact_direction}; magnitude=${x.impact_magnitude}
+Reasoning from impact assessment: ${x.reasoning_text}
+
+Write the framing paragraph.`;
+
+    const framing = await callSonnet(SYSTEM, userPrompt, 400);
+    const framingText = framing.trim();
+
+    const ins = await pool.query(`
+      INSERT INTO generated_signals
+        (mini_signal_id, claim_impact_id, initiative_id, company_id, severity, persona_target, framing_text, status)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,'draft')
+      RETURNING *`,
+      [x.mini_signal_id, x.impact_id, x.initiative_id, x.company_id, severity, persona, framingText]
+    );
+    res.status(201).json({ status: 'generated', signal: ins.rows[0] });
+  } catch (err) {
+    console.error('[POST /signal_route/generate_signal]', err);
+    res.status(500).json({ status: 'error', error: err.message });
+  }
+});
+
+// POST /signal_route/generate_emails — for a signal, find matching contacts
+// (via contact_initiative_interests) and Sonnet-generate one email per contact.
+app.post('/signal_route/generate_emails', requireApiKey, async (req, res) => {
+  const signalId = parsePositiveInt(req.body?.signal_id);
+  if (signalId === null) return res.status(400).json({ status: 'invalid', error: 'signal_id required' });
+  try {
+    const { rows: sigRows } = await pool.query(`
+      SELECT gs.*, i.name AS initiative_name, co.name AS company_name
+      FROM generated_signals gs
+      JOIN initiatives_v2 i ON i.id = gs.initiative_id
+      JOIN companies co ON co.id = gs.company_id
+      WHERE gs.id = $1`, [signalId]);
+    if (sigRows.length === 0) return res.status(404).json({ status: 'not_found', signal_id: signalId });
+    const sig = sigRows[0];
+
+    const { rows: contacts } = await pool.query(`
+      SELECT c.id, c.full_name, c.email, c.role_title, c.responsibility_area, c.persona_match,
+             cii.interest_strength
+      FROM contacts c
+      JOIN contact_initiative_interests cii ON cii.contact_id = c.id
+      WHERE cii.initiative_id = $1 AND c.active = TRUE
+      ORDER BY CASE cii.interest_strength WHEN 'primary' THEN 1 WHEN 'secondary' THEN 2 ELSE 3 END
+    `, [sig.initiative_id]);
+
+    if (contacts.length === 0) return res.json({ status: 'no_contacts', signal_id: signalId, emails: [] });
+
+    const SYSTEM = `You are a senior FutureBridge analyst writing a personalised market signal email to a named contact at a client. Voice: senior analyst, FT Alphaville register, 10-18 word sentences, no consultant clichés, no obsequious openers ("I hope this finds you well"). 80-150 words. Output STRICT JSON: {"subject": "...", "body": "..."}. Subject is terse and specific (under 70 chars, names the catalogue impact). Body opens with the signal, names the catalogue impact specifically, ties to the recipient's responsibility area, closes with what to watch.`;
+
+    const inserted = [];
+    for (const ct of contacts) {
+      const userPrompt = `Recipient: ${ct.full_name} (${ct.role_title || 'role unknown'}); responsibility area: ${ct.responsibility_area || '—'}; persona: ${ct.persona_match || '—'}; interest strength: ${ct.interest_strength}.
+
+Company: ${sig.company_name}
+Initiative: ${sig.initiative_name}
+Severity: ${sig.severity}
+Persona target: ${sig.persona_target}
+
+Signal framing (already drafted):
+"""${sig.framing_text}"""
+
+Generate a personalised email JSON.`;
+
+      try {
+        const out = await callSonnet(SYSTEM, userPrompt, 800);
+        const parsed = tryExtractJson(out);
+        if (!parsed || !parsed.subject || !parsed.body) continue;
+        const ins = await pool.query(`
+          INSERT INTO generated_emails (signal_id, contact_id, email_subject, email_body, generation_model)
+          VALUES ($1, $2, $3, $4, 'claude-sonnet-4-6')
+          ON CONFLICT (signal_id, contact_id) DO NOTHING
+          RETURNING *`,
+          [signalId, ct.id, parsed.subject, parsed.body]
+        );
+        if (ins.rows[0]) inserted.push(ins.rows[0]);
+      } catch (e) {
+        console.error(`[email gen failed for contact ${ct.id}]`, e.message);
+      }
+    }
+    res.status(201).json({ status: 'generated', signal_id: signalId, emails: inserted });
+  } catch (err) {
+    console.error('[POST /signal_route/generate_emails]', err);
+    res.status(500).json({ status: 'error', error: err.message });
+  }
+});
+
+// GET /signal_route/pipeline/run — orchestrator for any ?days=7 window of mini_signals
+// not yet matched. Runs match → assess_impact (per match) → generate_signal (per
+// material impact) → generate_emails (per signal). Returns summary.
+app.get('/signal_route/pipeline/run', requireApiKey, async (req, res) => {
+  const days = Math.min(Math.max(parseInt(req.query.days) || 7, 1), 90);
+  try {
+    const { rows: pending } = await pool.query(`
+      SELECT ms.id FROM mini_signals_v3 ms
+      WHERE ms.created_at > NOW() - ($1 || ' days')::interval
+        AND NOT EXISTS (SELECT 1 FROM signal_candidate_matches scm WHERE scm.mini_signal_id = ms.id)
+      ORDER BY ms.id`, [String(days)]);
+
+    const totals = { mini_signals_processed: 0, matches_created: 0, material_impacts: 0, signals_generated: 0, emails_generated: 0, errors: [] };
+
+    for (const { id: msId } of pending) {
+      totals.mini_signals_processed++;
+      // match
+      const matchClient = await pool.connect();
+      let candidateIds = [];
+      try {
+        await matchClient.query('BEGIN');
+        const direct = await matchClient.query(SQL_MATCH_DIRECT_NAME, [msId]);
+        const attrRef = await matchClient.query(SQL_MATCH_ATTRIBUTE_REFERENCE, [msId]);
+        const techFn = await matchClient.query(SQL_MATCH_TECH_FUNCTION, [msId]);
+        const depChain = await matchClient.query(SQL_MATCH_DEPENDENCY_CHAIN, [msId]);
+        const created = direct.rowCount + attrRef.rowCount + techFn.rowCount + depChain.rowCount;
+        totals.matches_created += created;
+        const { rows: cm } = await matchClient.query(`SELECT id FROM signal_candidate_matches WHERE mini_signal_id = $1`, [msId]);
+        candidateIds = cm.map((r) => r.id);
+        await matchClient.query('COMMIT');
+      } catch (e) {
+        await matchClient.query('ROLLBACK').catch(() => {});
+        totals.errors.push({ stage: 'match', mini_signal_id: msId, message: e.message.slice(0, 200) });
+        continue;
+      } finally { matchClient.release(); }
+
+      // assess each candidate (best-effort; don't break the run on individual failures)
+      for (const candId of candidateIds) {
+        try {
+          const r = await fetch(`http://localhost:${PORT}/signal_route/assess_impact`, {
+            method: 'POST',
+            headers: { 'content-type': 'application/json', authorization: `Bearer ${API_KEY}` },
+            body: JSON.stringify({ candidate_match_id: candId }),
+          });
+          if (!r.ok) continue;
+          const j = await r.json();
+          for (const impact of (j.impacts || [])) {
+            if (impact.is_material) {
+              totals.material_impacts++;
+              try {
+                const sg = await fetch(`http://localhost:${PORT}/signal_route/generate_signal`, {
+                  method: 'POST',
+                  headers: { 'content-type': 'application/json', authorization: `Bearer ${API_KEY}` },
+                  body: JSON.stringify({ claim_impact_id: impact.id }),
+                });
+                if (!sg.ok) continue;
+                const sgj = await sg.json();
+                if (sgj.signal?.id) {
+                  totals.signals_generated++;
+                  const em = await fetch(`http://localhost:${PORT}/signal_route/generate_emails`, {
+                    method: 'POST',
+                    headers: { 'content-type': 'application/json', authorization: `Bearer ${API_KEY}` },
+                    body: JSON.stringify({ signal_id: sgj.signal.id }),
+                  });
+                  if (em.ok) {
+                    const emj = await em.json();
+                    totals.emails_generated += (emj.emails || []).length;
+                  }
+                }
+              } catch (e) { totals.errors.push({ stage: 'generate_signal', message: e.message.slice(0, 200) }); }
+            }
+          }
+        } catch (e) { totals.errors.push({ stage: 'assess_impact', message: e.message.slice(0, 200) }); }
+      }
+    }
+
+    res.json({ status: 'pipeline_complete', window_days: days, totals });
+  } catch (err) {
+    console.error('[GET /signal_route/pipeline/run]', err);
     res.status(500).json({ status: 'error', error: err.message });
   }
 });
