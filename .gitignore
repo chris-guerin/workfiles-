@@ -18,4 +18,4 @@ n8n/backups/
 # (Bearer tokens, API keys) approved interactively during a session, and
 # committing those to git history is unrecoverable. Track team-wide
 # Claude config in .claude/settings.json instead, never .local.json.
-.claude/settings.local.json
+.claude/settings.local.jsondocs/draft_review/datasette_contacts_raw.json
