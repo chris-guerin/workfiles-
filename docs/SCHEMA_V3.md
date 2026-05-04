@@ -745,3 +745,287 @@ Reasoning happens at the edges. Structuring at the front, generation at the back
 Migration 008 = schema v8 in the schema_migrations ledger. Tables `_v3` suffix where they replace v2 tables (mini_signals_v3 alongside legacy mini_signals). Existing v2 tables stay (initiatives_v2, components, etc.) but gain new columns. Migration 009/010 future work: dependency population pass per company, methodology v3 documentation rollout, query layer rendered as analyst dashboard.
 
 The acceptance test is the queries returning correct answers within the performance bounds. The framework is the operational pipeline. The substrate is the catalogue. All three together are the analytical engine the system has been pointing at since week one.
+
+## 13. Migration 011 — soft data layer (assumptions, tensions, reframings)
+
+**Why this exists.**
+
+Sections 3-12 specify a framework that captures hard-data analytical content well — attribute values, threshold operations, claim impacts, observations over time. The framework is structurally weak for H3 content: assumptions a hypothesis depends on, contradictions that cross initiatives, reframings of how an industry talks about a topic. These don't reduce to attribute-and-threshold structure but are the most valuable analytical content the system can surface.
+
+Migration 011 adds three structural homes for soft data: `initiative_assumptions`, `strategic_tensions`, `reframings`. Plus the supporting infrastructure: link tables, evidence tables, mini_signals_v3 extension, signal_soft_impacts.
+
+The architectural commitment: soft data is data. Reasoning about soft data still happens at Sonnet edges (interpretation, framing). But the soft content itself lives as queryable structure with evidence trails — same defensibility discipline as hard data.
+
+**Numbering note.** Migration 009 was used for the Datasette contact extensions. Migration 010 is reserved for the next operational migration between now and soft-data deploy. This is migration 011.
+
+### 13.1 initiative_assumptions
+
+What an initiative's hypothesis depends on being true at the relevant horizon. The unstated structural bets that, if wrong, change the analytical case.
+
+```sql
+CREATE TABLE initiative_assumptions (
+  id                          SERIAL PRIMARY KEY,
+  initiative_id               INTEGER NOT NULL REFERENCES initiatives_v2(id) ON DELETE CASCADE,
+  assumption_text             TEXT NOT NULL,
+  assumption_role             TEXT NOT NULL
+    CHECK (assumption_role IN ('supports','constrains','enables','protects','threatens')),
+  horizon                     TEXT NOT NULL CHECK (horizon IN ('H1','H2','H3')),
+  contradiction_mechanism     TEXT NOT NULL,
+  contradiction_evidence_type TEXT
+    CHECK (contradiction_evidence_type IN ('regulatory','market','technological','behavioural','geopolitical','none_required')
+           OR contradiction_evidence_type IS NULL),
+  fragility_score             NUMERIC(3,2) CHECK (fragility_score BETWEEN 0 AND 1),
+  status                      TEXT NOT NULL DEFAULT 'active'
+    CHECK (status IN ('active','contradicted','validated','obsolete')),
+  source_citation             TEXT,
+  reasoning_text              TEXT,
+  draft_status                TEXT NOT NULL DEFAULT 'draft_unreviewed',
+  created_at                  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  last_reviewed_at            TIMESTAMPTZ,
+  last_status_change_at       TIMESTAMPTZ,
+  UNIQUE (initiative_id, assumption_text)
+);
+
+CREATE INDEX idx_assumption_initiative ON initiative_assumptions(initiative_id);
+CREATE INDEX idx_assumption_status ON initiative_assumptions(status) WHERE status != 'obsolete';
+CREATE INDEX idx_assumption_horizon ON initiative_assumptions(horizon);
+CREATE INDEX idx_assumption_role ON initiative_assumptions(assumption_role);
+```
+
+**Role values, defined.**
+
+- `supports` — direct positive contribution to the hypothesis (most common; "PEM electrolyser costs continue declining at >5% YoY")
+- `constrains` — bounded condition that must hold (regulatory window, capital availability; "EU Hydrogen Bank funding remains within 20% of stated budget through 2028")
+- `enables` — second-order condition that allows the hypothesis to operate (infrastructure presence, partner willingness; "Gasunie completes hydrogen backbone Phase 1 before HHI commercial start")
+- `protects` — defensive assumption (brand permission, optionality value, exit pathway; "Shell's brand permits H2 retreat without permanent reputational damage")
+- `threatens` — assumption that something *won't* happen (no major substitution event, no demand-side regulation; "No EU regulation forcing direct DRI without H2 by 2030")
+
+Methodology requirement: every initiative carries 3-5 assumptions across roles. Population pass walks each initiative, identifies stated and unstated assumptions, classifies role and horizon, names contradiction mechanism per spec methodology v3 step 13.
+
+### 13.2 strategic_tensions
+
+Interpretive content that crosses initiatives, horizons, or industries. Captures structural questions the catalogue's hypothesis-and-claim structure can't natively express. This is the home for the "what's the company assuming, why might it be wrong" content GPT diagnosed as missing from v2.
+
+```sql
+CREATE TABLE strategic_tensions (
+  id                  SERIAL PRIMARY KEY,
+  tension_name        TEXT NOT NULL,
+  tension_statement   TEXT NOT NULL,
+  tension_type        TEXT NOT NULL
+    CHECK (tension_type IN ('substitution','timing','capital_allocation','demand_shift','regulatory_arbitrage','regime_change','cross_horizon')),
+  scope               TEXT NOT NULL
+    CHECK (scope IN ('within_initiative','cross_initiative','cross_company','cross_industry','portfolio_level')),
+  primary_horizon     TEXT NOT NULL CHECK (primary_horizon IN ('H1','H2','H3')),
+  primary_company_id  INTEGER REFERENCES companies(id),
+  reasoning_text      TEXT NOT NULL,
+  source_citation     TEXT,
+  status              TEXT NOT NULL DEFAULT 'emerging'
+    CHECK (status IN ('emerging','established','receding','resolved','dismissed')),
+  draft_status        TEXT NOT NULL DEFAULT 'draft_unreviewed',
+  created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  last_reinforced_at  TIMESTAMPTZ,
+  resolution_date     DATE,
+  resolution_text     TEXT
+);
+
+CREATE TABLE tension_affected_initiatives (
+  tension_id        INTEGER NOT NULL REFERENCES strategic_tensions(id) ON DELETE CASCADE,
+  initiative_id     INTEGER NOT NULL REFERENCES initiatives_v2(id) ON DELETE CASCADE,
+  exposure_type     TEXT NOT NULL CHECK (exposure_type IN ('reinforces','threatens','reframes','marginal')),
+  exposure_strength TEXT NOT NULL CHECK (exposure_strength IN ('critical','high','medium','low')),
+  PRIMARY KEY (tension_id, initiative_id)
+);
+
+CREATE TABLE tension_affected_components (
+  tension_id      INTEGER NOT NULL REFERENCES strategic_tensions(id) ON DELETE CASCADE,
+  component_id    INTEGER NOT NULL REFERENCES components(id) ON DELETE CASCADE,
+  exposure_type   TEXT NOT NULL CHECK (exposure_type IN ('central','peripheral','indirect')),
+  PRIMARY KEY (tension_id, component_id)
+);
+
+CREATE TABLE tension_evidence (
+  id                  SERIAL PRIMARY KEY,
+  tension_id          INTEGER NOT NULL REFERENCES strategic_tensions(id) ON DELETE CASCADE,
+  source_signal_id    INTEGER REFERENCES mini_signals_v3(id) ON DELETE SET NULL,
+  evidence_text       TEXT NOT NULL,
+  evidence_direction  TEXT NOT NULL CHECK (evidence_direction IN ('reinforcing','contradicting','clarifying')),
+  source_url          TEXT,
+  recorded_at         TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  recorded_by         TEXT
+);
+
+CREATE INDEX idx_tension_status ON strategic_tensions(status) WHERE status NOT IN ('resolved','dismissed');
+CREATE INDEX idx_tension_type ON strategic_tensions(tension_type);
+CREATE INDEX idx_tension_horizon ON strategic_tensions(primary_horizon);
+CREATE INDEX idx_tension_company ON strategic_tensions(primary_company_id) WHERE primary_company_id IS NOT NULL;
+CREATE INDEX idx_tension_evidence_signal ON tension_evidence(source_signal_id);
+```
+
+`primary_company_id` is nullable: set when the tension is primarily about one company's portfolio; null when it's industry-wide. Speeds queries that filter by company without requiring routing through affected_initiatives.
+
+### 13.3 reframings
+
+When industry framing of a topic shifts. Less common than tensions and assumptions; captures conceptual reframes that change how attributes should be measured rather than which values they take.
+
+```sql
+CREATE TABLE reframings (
+  id                          SERIAL PRIMARY KEY,
+  subject_type                TEXT NOT NULL CHECK (subject_type IN ('tech_function','market','component','regulatory_domain','industry')),
+  subject_id                  INTEGER,  -- FK semantics determined by subject_type at application layer
+  subject_name                TEXT NOT NULL,
+  reframe_text                TEXT NOT NULL,
+  from_frame                  TEXT NOT NULL,
+  to_frame                    TEXT NOT NULL,
+  source_citation             TEXT,
+  confidence_band             TEXT CHECK (confidence_band IN ('high','medium','low')),
+  status                      TEXT NOT NULL DEFAULT 'emerging'
+    CHECK (status IN ('emerging','established','receding','rejected')),
+  draft_status                TEXT NOT NULL DEFAULT 'draft_unreviewed',
+  first_observed_at           TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  last_reinforced_at          TIMESTAMPTZ,
+  promotion_to_established_at TIMESTAMPTZ
+);
+
+CREATE TABLE reframing_evidence (
+  id                  SERIAL PRIMARY KEY,
+  reframing_id        INTEGER NOT NULL REFERENCES reframings(id) ON DELETE CASCADE,
+  source_signal_id    INTEGER REFERENCES mini_signals_v3(id) ON DELETE SET NULL,
+  evidence_text       TEXT NOT NULL,
+  evidence_strength   TEXT CHECK (evidence_strength IN ('strong','moderate','weak')),
+  source_url          TEXT,
+  recorded_at         TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_reframing_subject ON reframings(subject_type, subject_id);
+CREATE INDEX idx_reframing_status ON reframings(status);
+CREATE INDEX idx_reframing_evidence_signal ON reframing_evidence(source_signal_id);
+```
+
+Population is event-driven. The methodology does not require analyst-driven seeding of reframings — they accumulate as mini_signals naturally surface conceptual shifts. Expect 2-5 per year per major technology domain.
+
+### 13.4 mini_signals_v3 extension
+
+Haiku extraction must be able to tag soft-signal content without forcing it into hard-data slots. New columns:
+
+```sql
+ALTER TABLE mini_signals_v3
+  ADD COLUMN soft_signal_type TEXT
+    CHECK (soft_signal_type IN ('assumption_evidence','tension_evidence','reframe_evidence','none')
+           OR soft_signal_type IS NULL),
+  ADD COLUMN soft_signal_subject TEXT,
+  ADD COLUMN soft_signal_direction TEXT
+    CHECK (soft_signal_direction IN ('reinforcing','contradicting','clarifying')
+           OR soft_signal_direction IS NULL),
+  ADD COLUMN soft_signal_reasoning TEXT;
+
+CREATE INDEX idx_minisignal_soft_type ON mini_signals_v3(soft_signal_type)
+  WHERE soft_signal_type IS NOT NULL AND soft_signal_type != 'none';
+```
+
+`soft_signal_subject` carries a text reference (entity name, tension name, or topic) for analyst review; resolution to FK happens at impact-assessment time when Sonnet matches the subject text against existing assumptions/tensions/reframings.
+
+### 13.5 signal_soft_impacts
+
+Parallel to signal_claim_impacts but for soft data. Each row records that a mini_signal moved (or could move) an assumption, tension, or reframing.
+
+```sql
+CREATE TABLE signal_soft_impacts (
+  id                      SERIAL PRIMARY KEY,
+  mini_signal_id          INTEGER NOT NULL REFERENCES mini_signals_v3(id) ON DELETE CASCADE,
+  impact_type             TEXT NOT NULL CHECK (impact_type IN ('assumption','tension','reframing')),
+  assumption_id           INTEGER REFERENCES initiative_assumptions(id),
+  tension_id              INTEGER REFERENCES strategic_tensions(id),
+  reframing_id            INTEGER REFERENCES reframings(id),
+  impact_direction        TEXT NOT NULL CHECK (impact_direction IN ('reinforces','contradicts','clarifies','marginal')),
+  impact_magnitude        NUMERIC(3,2) CHECK (impact_magnitude BETWEEN 0 AND 1),
+  is_material             BOOLEAN NOT NULL DEFAULT FALSE,
+  reasoning_text          TEXT NOT NULL,
+  assessment_model        TEXT NOT NULL DEFAULT 'claude-sonnet-4-6',
+  assessed_at             TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CHECK (
+    (impact_type = 'assumption' AND assumption_id IS NOT NULL AND tension_id IS NULL AND reframing_id IS NULL) OR
+    (impact_type = 'tension' AND tension_id IS NOT NULL AND assumption_id IS NULL AND reframing_id IS NULL) OR
+    (impact_type = 'reframing' AND reframing_id IS NOT NULL AND assumption_id IS NULL AND tension_id IS NULL)
+  )
+);
+
+CREATE INDEX idx_soft_impact_signal ON signal_soft_impacts(mini_signal_id);
+CREATE INDEX idx_soft_impact_assumption ON signal_soft_impacts(assumption_id) WHERE assumption_id IS NOT NULL;
+CREATE INDEX idx_soft_impact_tension ON signal_soft_impacts(tension_id) WHERE tension_id IS NOT NULL;
+CREATE INDEX idx_soft_impact_reframing ON signal_soft_impacts(reframing_id) WHERE reframing_id IS NOT NULL;
+CREATE INDEX idx_soft_impact_material ON signal_soft_impacts(is_material) WHERE is_material = true;
+```
+
+The XOR check constraint ensures each row references exactly one of (assumption_id, tension_id, reframing_id) consistent with impact_type.
+
+### 13.6 Haiku extraction prompt extension
+
+The mini_signal extraction prompt (section 4.1) gains a soft-signal output block. After the existing extracted_entities/extracted_attribute_types/extracted_values structure, the prompt asks:
+
+> "Beyond the structured hard-signal extraction above, does this news item carry soft-signal content? Soft signals are interpretive content that doesn't reduce to structured attribute movements. Three categories:
+>
+> ASSUMPTION_EVIDENCE: the signal provides evidence for or against something a strategy bet assumes (often unstated). Examples: a regulatory change that calls into question whether 'EU funding remains stable'; a competitor announcement that supports 'specialty chemicals pricing power persists.'
+>
+> TENSION_EVIDENCE: the signal reinforces or contradicts a structural tension that crosses initiatives or industries. Examples: a hiring pattern across majors signalling a capital allocation shift; a substitution event signalling regime change.
+>
+> REFRAME_EVIDENCE: the signal suggests industry framing of a topic is shifting. Examples: an analyst report reframing EV charging from utilisation-driven to demand-shape-driven; an industry conference reframing CCUS economics from policy-dependent to commercially viable.
+>
+> If the signal carries soft content, output:
+> {
+>   soft_signal_type: 'assumption_evidence' | 'tension_evidence' | 'reframe_evidence',
+>   soft_signal_subject: 'short text describing the assumption/tension/reframe being affected',
+>   soft_signal_direction: 'reinforcing' | 'contradicting' | 'clarifying',
+>   soft_signal_reasoning: '2-3 sentences explaining why this signal carries this soft content'
+> }
+>
+> If no soft content, output {soft_signal_type: 'none'}.
+>
+> A signal can have BOTH hard-signal extraction AND soft-signal content. Output both."
+
+### 13.7 New API endpoints
+
+Two endpoints supporting the soft-data flow:
+
+`POST /signal_route/assess_soft_impact` — input: {mini_signal_id}. For mini_signals where soft_signal_type is set, calls Sonnet to:
+1. Match soft_signal_subject text against existing assumptions/tensions/reframings via fuzzy text matching plus controlled-vocabulary check
+2. If no match, optionally CREATE a new assumption/tension/reframing record with draft_status='draft_unreviewed' and tag for analyst review
+3. Assess impact direction, magnitude, materiality
+4. INSERT INTO signal_soft_impacts
+
+`GET /signal_route/unprocessed_soft_signals?since={date}` — returns mini_signals with soft_signal_type set that don't yet have signal_soft_impacts rows.
+
+The pipeline orchestrator extends to call assess_soft_impact alongside assess_impact for each new mini_signal_v3.
+
+### 13.8 Acceptance tests for soft data
+
+Q6 — assumption status query:
+```sql
+SELECT i.name AS initiative, ia.assumption_text, ia.assumption_role, ia.horizon, 
+       ia.fragility_score, ia.status,
+       count(ssi.id) AS evidence_count,
+       count(ssi.id) FILTER (WHERE ssi.impact_direction = 'contradicts') AS contradicting_evidence
+FROM initiative_assumptions ia
+JOIN initiatives_v2 i ON i.id = ia.initiative_id
+LEFT JOIN signal_soft_impacts ssi ON ssi.assumption_id = ia.id
+WHERE ia.status = 'active'
+GROUP BY ia.id, i.name, ia.assumption_text, ia.assumption_role, ia.horizon, ia.fragility_score, ia.status
+ORDER BY contradicting_evidence DESC, ia.fragility_score DESC;
+```
+
+Q7 — emerging tensions query:
+```sql
+SELECT st.tension_name, st.tension_type, st.scope, st.primary_horizon,
+       count(DISTINCT tai.initiative_id) AS affected_initiatives,
+       count(DISTINCT tac.component_id) AS affected_components,
+       count(DISTINCT te.id) AS evidence_count,
+       max(te.recorded_at) AS last_evidence_at
+FROM strategic_tensions st
+LEFT JOIN tension_affected_initiatives tai ON tai.tension_id = st.id
+LEFT JOIN tension_affected_components tac ON tac.tension_id = st.id
+LEFT JOIN tension_evidence te ON te.tension_id = st.id
+WHERE st.status IN ('emerging','established')
+GROUP BY st.id, st.tension_name, st.tension_type, st.scope, st.primary_horizon
+ORDER BY evidence_count DESC, last_evidence_at DESC;
+```
+
+Q6 and Q7 become the framework's H3-content surfacing queries. Q7 in particular answers: "what are the structural questions about this portfolio that the system is currently tracking?"
