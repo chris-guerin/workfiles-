@@ -1,9 +1,15 @@
 # Ontology population procedure
 
-**Version:** 1.0
+**Version:** 1.1
 **Status:** Binding procedure for populating the technology × application ontology layer (`/docs/SCHEMA_ONTOLOGY.md`).
 **Audience:** Claude Code, analysts, anyone running an ontology population pass against a client initiative.
 **Companion:** `/docs/SCHEMA_ONTOLOGY.md` (the schema spec); `/docs/draft_review/ontology_ccus_worked_example.md` (the first worked example, Industrial CCUS, populated 2026-05-04).
+
+**Changelog**
+
+- **v1.1 (2026-05-04 evening).** Step 2 hard-evidence rule clarified: `operator_disclosure` at `evidence_strength='high'` counts as hard evidence when the operator is the only authoritative source for the fact in question (project operating data, throughput, FID date, financial parameters that operators publish but governments do not aggregate). The original rule had bracketed only `peer_reviewed`, `company_filing`, and `government_data` as hard evidence; this excluded fact patterns where operator self-disclosure is structurally the deepest available source. The clarification is enforced at population time by the analyst (procedure-level), not at schema-level CHECK. Section "Step 2 — source classification" updated; Section "Confidence band assignment from evidence" updated. Retroactive review applied to the Industrial CCUS worked example: both `Post-combustion amine × industrial point-source decarbonisation` and `Pre-combustion × industrial gas processing` remain correctly at `confidence='high'` because their operator_disclosure rows (Northern Lights consortium technical disclosures; Equinor Sleipner historical disclosure) qualify as hard evidence under v1.1.
+
+- **v1.0 (2026-05-04).** First version. Applied to Shell Industrial CCUS.
 
 ---
 
@@ -55,9 +61,17 @@ Seven steps. Each step has explicit inputs, outputs, and acceptance criteria. Th
 
 **Confidence band assignment from evidence:**
 
-- **high confidence** — ≥2 evidence rows from `peer_reviewed`, `company_filing`, or `government_data` with `evidence_strength='high'`. The pair's horizon classification is structurally defensible against a McKinsey-equivalent challenge.
-- **medium confidence** — ≥1 row from `analyst_report`, `industry_body`, or `operator_disclosure` with `evidence_strength>='medium'`. The classification is defensible against a senior client review but would benefit from harder evidence.
+- **high confidence** — ≥2 hard-evidence rows. Hard evidence is `peer_reviewed`, `company_filing`, or `government_data` with `evidence_strength='high'`; **plus (v1.1)** `operator_disclosure` with `evidence_strength='high'` *when the operator is the only authoritative source for the fact in question* — typically project operating data, throughput, FID date, financial structure, or technical-parameter disclosures that operators publish but governments and journals do not aggregate. The pair's horizon classification is structurally defensible against a McKinsey-equivalent challenge.
+- **medium confidence** — ≥1 row from `analyst_report`, `industry_body`, or `operator_disclosure` with `evidence_strength>='medium'`, OR a single hard-evidence row, OR a mix of medium-strength rows across types. The classification is defensible against a senior client review but would benefit from harder evidence.
 - **low confidence** — only `news` or `other` evidence available, OR sources conflict materially OR no source for a key claim. Triggers automatic flag for analyst review (Step 6).
+
+**Operator-as-only-authoritative-source heuristic.** The v1.1 carve-out applies when:
+
+1. The operator is the entity that produces the fact (Northern Lights consortium publishes the project's CO2 throughput; Ørsted publishes Hornsea capacity; ExxonMobil LaBarge publishes utilisation rate). Government and peer-reviewed sources cite the operator as primary — the operator IS the source of record.
+2. The disclosure is published in a structured, persistent form (project page, technical brochure, capital markets day deck) — not a press release on a contested claim.
+3. The disclosure is consistent over time and across operator outputs (annual report, project page, conference presentations align).
+
+Where these three conditions hold, an `operator_disclosure` row at `evidence_strength='high'` is structurally equivalent to a `company_filing` for confidence-band purposes. Where any one fails, do not invoke the carve-out — fall back to the strict reading.
 
 **Output:** for each pair, a list of evidence items typed and strength-assigned. At least one item per pair is required; absence of any evidence MUST stop the pair from being created — the pair is dropped or held for additional research.
 
@@ -230,4 +244,7 @@ The procedure does not change between populations. The discipline is the procedu
 
 ## Versioning
 
-Procedure v1.0 — 2026-05-04, first applied to Shell Industrial CCUS. Version increments require explicit reasoning recorded against the procedure file with a changelog entry. The procedure is binding; do not modify it without updating the version.
+- **v1.1** — 2026-05-04 evening, hard-evidence rule clarified to include high-strength `operator_disclosure` when the operator is the only authoritative source. Applied retroactively to the CCUS worked example with no pair reclassifications. First applied as written to Shell blue hydrogen, Shell SAF, and Vattenfall offshore wind.
+- **v1.0** — 2026-05-04, first version. Applied to Shell Industrial CCUS.
+
+Version increments require explicit reasoning recorded against the procedure file with a changelog entry. The procedure is binding; do not modify it without updating the version.
