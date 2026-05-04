@@ -1210,6 +1210,234 @@ Generate a personalised email JSON.`;
   }
 });
 
+// ============================================================================
+// /signal_route/assess_soft_impact + /signal_route/unprocessed_soft_signals
+// (Migration 011 soft data layer — spec section 13.7)
+// ============================================================================
+
+// GET unprocessed soft signals — mini_signals_v3 with soft_signal_type set
+// that don't yet have a signal_soft_impacts row.
+app.get('/signal_route/unprocessed_soft_signals', requireApiKey, async (req, res) => {
+  const since = req.query.since;
+  try {
+    const params = [];
+    let where = `ms.soft_signal_type IS NOT NULL AND ms.soft_signal_type != 'none'
+                  AND NOT EXISTS (SELECT 1 FROM signal_soft_impacts ssi WHERE ssi.mini_signal_id = ms.id)`;
+    if (since && /^\d{4}-\d{2}-\d{2}/.test(since)) {
+      params.push(since);
+      where += ` AND ms.created_at >= $${params.length}`;
+    }
+    const sql = `
+      SELECT ms.id, ms.signal_text, ms.signal_type, ms.soft_signal_type,
+             ms.soft_signal_subject, ms.soft_signal_direction,
+             ms.soft_signal_reasoning, ms.extracted_at, ms.created_at
+      FROM mini_signals_v3 ms
+      WHERE ${where}
+      ORDER BY ms.created_at DESC LIMIT 500`;
+    const { rows } = await pool.query(sql, params);
+    res.json({ count: rows.length, since: since || null, rows });
+  } catch (err) {
+    console.error('[GET /signal_route/unprocessed_soft_signals]', err);
+    res.status(500).json({ status: 'error', error: err.message });
+  }
+});
+
+// POST assess_soft_impact — input: {mini_signal_id, auto_create_record?: boolean}
+// Matches the soft_signal_subject against existing
+// assumptions/tensions/reframings via Sonnet; if matched, INSERTs into
+// signal_soft_impacts. If no match and auto_create_record=true, creates the
+// record (best-effort with draft_status='draft_unreviewed') and links.
+// Default auto_create_record is FALSE — orphans surface for analyst review.
+app.post('/signal_route/assess_soft_impact', requireApiKey, async (req, res) => {
+  const msId = parsePositiveInt(req.body?.mini_signal_id);
+  const autoCreate = Boolean(req.body?.auto_create_record);
+  if (msId === null) return res.status(400).json({ status: 'invalid', error: 'mini_signal_id required (positive integer)' });
+
+  try {
+    // Load the mini_signal
+    const { rows: msRows } = await pool.query(`
+      SELECT id, signal_text, signal_type, soft_signal_type, soft_signal_subject,
+             soft_signal_direction, soft_signal_reasoning, extracted_entities
+      FROM mini_signals_v3 WHERE id = $1`, [msId]);
+    if (msRows.length === 0) return res.status(404).json({ status: 'not_found', mini_signal_id: msId });
+    const ms = msRows[0];
+
+    if (!ms.soft_signal_type || ms.soft_signal_type === 'none') {
+      return res.json({ status: 'no_soft_signal', mini_signal_id: msId });
+    }
+
+    // Map soft_signal_type -> impact_type + target table
+    const typeMap = {
+      assumption_evidence: { impactType: 'assumption', table: 'initiative_assumptions', textCols: ['assumption_text'] },
+      tension_evidence:    { impactType: 'tension',    table: 'strategic_tensions',     textCols: ['tension_name', 'tension_statement'] },
+      reframe_evidence:    { impactType: 'reframing',  table: 'reframings',             textCols: ['subject_name', 'reframe_text'] },
+    };
+    const cfg = typeMap[ms.soft_signal_type];
+    if (!cfg) return res.status(400).json({ status: 'invalid', error: `unknown soft_signal_type: ${ms.soft_signal_type}` });
+
+    // Pull candidate records (limit to a reasonable set; full table for now since populations are small/zero)
+    let existing = [];
+    if (cfg.table === 'initiative_assumptions') {
+      const { rows } = await pool.query(`
+        SELECT a.id, a.assumption_text, a.assumption_role, a.horizon, a.status, a.fragility_score,
+               i.id AS initiative_id, i.name AS initiative_name
+        FROM initiative_assumptions a
+        JOIN initiatives_v2 i ON i.id = a.initiative_id
+        WHERE a.status != 'obsolete' ORDER BY a.id LIMIT 200`);
+      existing = rows;
+    } else if (cfg.table === 'strategic_tensions') {
+      const { rows } = await pool.query(`
+        SELECT id, tension_name, tension_statement, tension_type, scope, primary_horizon, status
+        FROM strategic_tensions WHERE status NOT IN ('resolved','dismissed') ORDER BY id LIMIT 200`);
+      existing = rows;
+    } else if (cfg.table === 'reframings') {
+      const { rows } = await pool.query(`
+        SELECT id, subject_type, subject_name, reframe_text, from_frame, to_frame, status
+        FROM reframings WHERE status NOT IN ('rejected') ORDER BY id LIMIT 200`);
+      existing = rows;
+    }
+
+    // Sonnet prompt — match + assess + propose
+    const SYSTEM = `You match soft signals to existing soft-data records (assumptions/tensions/reframings) for an analytical catalogue.
+
+Output STRICT JSON:
+{
+  "match_found": boolean,
+  "match_id": <int> | null,
+  "match_score": <number 0-1>,
+  "match_reasoning": "<short text>",
+  "impact": {
+    "impact_direction": "reinforces" | "contradicts" | "clarifies" | "marginal",
+    "impact_magnitude": <number 0-1>,
+    "is_material": boolean,
+    "reasoning_text": "<2-3 sentences, analyst voice>"
+  },
+  "suggested_new_record": <object | null>
+}
+
+Match rule: a record matches if its core text (assumption_text / tension_name+statement / subject_name+reframe_text) plausibly refers to the same conceptual subject as the soft_signal_subject. Score >= 0.5 means match. If multiple records score >= 0.5, pick the highest. If none reach 0.5, match_found=false.
+
+When match_found=false, propose a suggested_new_record with the fields the table requires:
+- assumption: {initiative_id (null if uncertain), assumption_text, assumption_role (supports/constrains/enables/protects/threatens), horizon (H1/H2/H3), contradiction_mechanism, fragility_score (0-1)}
+- tension: {tension_name, tension_statement, tension_type (substitution/timing/capital_allocation/demand_shift/regulatory_arbitrage/regime_change/cross_horizon), scope (within_initiative/cross_initiative/cross_company/cross_industry/portfolio_level), primary_horizon (H1/H2/H3), primary_company_id (null if industry-wide), reasoning_text}
+- reframing: {subject_type (tech_function/market/component/regulatory_domain/industry), subject_name, reframe_text, from_frame, to_frame, confidence_band (high/medium/low)}
+
+Always assess the impact regardless of match — the impact assessment uses the matched record (or the proposed new one) as the target.
+
+Voice for reasoning_text: senior analyst, FT Alphaville register, 10-18 word sentences, no consultant clichés.`;
+
+    const userPrompt = `Soft signal from mini_signal_id=${ms.id}:
+  type: ${ms.soft_signal_type}
+  subject: "${ms.soft_signal_subject || ''}"
+  direction: ${ms.soft_signal_direction || '(none)'}
+  reasoning: "${(ms.soft_signal_reasoning || '').slice(0, 600)}"
+  signal_text: "${(ms.signal_text || '').slice(0, 400)}"
+  extracted_entities: ${JSON.stringify(ms.extracted_entities || [])}
+
+Existing ${cfg.impactType} records (${existing.length}):
+${existing.length === 0 ? '  (none — table empty; match_found must be false)' : existing.map(r => '  ' + JSON.stringify(r)).join('\n')}
+
+Match the soft signal against the existing records, assess impact, and (if no match) propose a new record. Output the JSON.`;
+
+    const text = await callSonnet(SYSTEM, userPrompt, 1500);
+    const parsed = tryExtractJson(text);
+    if (!parsed) return res.status(500).json({ status: 'sonnet_parse_failed', raw: text.slice(0, 400) });
+
+    let matchedId = null;
+    let createdRecord = null;
+
+    if (parsed.match_found && parsed.match_id) {
+      const candidateId = parseInt(parsed.match_id);
+      if (existing.find(r => r.id === candidateId)) matchedId = candidateId;
+    }
+
+    // If no match and auto-create requested, create the record
+    if (!matchedId && autoCreate && parsed.suggested_new_record) {
+      try {
+        const sn = parsed.suggested_new_record;
+        if (cfg.impactType === 'assumption' && sn.initiative_id && sn.assumption_text && sn.assumption_role && sn.horizon && sn.contradiction_mechanism) {
+          const { rows: cr } = await pool.query(`
+            INSERT INTO initiative_assumptions
+              (initiative_id, assumption_text, assumption_role, horizon, contradiction_mechanism,
+               fragility_score, draft_status, source_citation, reasoning_text)
+            VALUES ($1,$2,$3,$4,$5,$6,'draft_unreviewed',$7,$8) RETURNING id`,
+            [sn.initiative_id, sn.assumption_text, sn.assumption_role, sn.horizon, sn.contradiction_mechanism,
+             typeof sn.fragility_score === 'number' ? sn.fragility_score : null,
+             `Auto-created from mini_signal_id=${ms.id}`, parsed.match_reasoning || null]);
+          matchedId = cr[0].id;
+          createdRecord = { table: 'initiative_assumptions', id: matchedId };
+        } else if (cfg.impactType === 'tension' && sn.tension_name && sn.tension_statement && sn.tension_type && sn.scope && sn.primary_horizon) {
+          const { rows: cr } = await pool.query(`
+            INSERT INTO strategic_tensions
+              (tension_name, tension_statement, tension_type, scope, primary_horizon,
+               primary_company_id, reasoning_text, draft_status, source_citation)
+            VALUES ($1,$2,$3,$4,$5,$6,$7,'draft_unreviewed',$8) RETURNING id`,
+            [sn.tension_name, sn.tension_statement, sn.tension_type, sn.scope, sn.primary_horizon,
+             sn.primary_company_id || null,
+             sn.reasoning_text || parsed.match_reasoning || `Created from mini_signal_id=${ms.id}`,
+             `Auto-created from mini_signal_id=${ms.id}`]);
+          matchedId = cr[0].id;
+          createdRecord = { table: 'strategic_tensions', id: matchedId };
+        } else if (cfg.impactType === 'reframing' && sn.subject_type && sn.subject_name && sn.reframe_text && sn.from_frame && sn.to_frame) {
+          const { rows: cr } = await pool.query(`
+            INSERT INTO reframings
+              (subject_type, subject_name, reframe_text, from_frame, to_frame,
+               confidence_band, draft_status, source_citation)
+            VALUES ($1,$2,$3,$4,$5,$6,'draft_unreviewed',$7) RETURNING id`,
+            [sn.subject_type, sn.subject_name, sn.reframe_text, sn.from_frame, sn.to_frame,
+             ['high','medium','low'].includes(sn.confidence_band) ? sn.confidence_band : null,
+             `Auto-created from mini_signal_id=${ms.id}`]);
+          matchedId = cr[0].id;
+          createdRecord = { table: 'reframings', id: matchedId };
+        }
+      } catch (e) {
+        // Auto-create failed (validation, etc.); fall through to orphan path
+        console.error('[assess_soft_impact auto_create]', e.message);
+      }
+    }
+
+    // INSERT signal_soft_impacts only when we have a target id
+    let inserted = null;
+    if (matchedId) {
+      const cols = ['mini_signal_id', 'impact_type'];
+      const vals = [ms.id, cfg.impactType];
+      if (cfg.impactType === 'assumption') { cols.push('assumption_id'); vals.push(matchedId); }
+      if (cfg.impactType === 'tension')    { cols.push('tension_id');    vals.push(matchedId); }
+      if (cfg.impactType === 'reframing')  { cols.push('reframing_id');  vals.push(matchedId); }
+      const imp = parsed.impact || {};
+      const dir = ['reinforces','contradicts','clarifies','marginal'].includes(imp.impact_direction) ? imp.impact_direction : 'marginal';
+      const mag = Math.max(0, Math.min(1, Number(imp.impact_magnitude) || 0));
+      const mat = Boolean(imp.is_material);
+      const reason = imp.reasoning_text || parsed.match_reasoning || '(no reasoning)';
+      cols.push('impact_direction','impact_magnitude','is_material','reasoning_text');
+      vals.push(dir, mag, mat, reason);
+      const placeholders = vals.map((_, i) => `$${i + 1}`).join(',');
+      const { rows: ins } = await pool.query(
+        `INSERT INTO signal_soft_impacts (${cols.join(',')}) VALUES (${placeholders}) RETURNING *`,
+        vals
+      );
+      inserted = ins[0];
+    }
+
+    res.status(matchedId ? 201 : 200).json({
+      status: matchedId ? 'assessed' : 'orphan_for_analyst_review',
+      mini_signal_id: ms.id,
+      soft_signal_type: ms.soft_signal_type,
+      match_found: parsed.match_found || false,
+      match_id: matchedId,
+      match_score: parsed.match_score || 0,
+      match_reasoning: parsed.match_reasoning || null,
+      impact: parsed.impact || null,
+      suggested_new_record: matchedId ? null : (parsed.suggested_new_record || null),
+      auto_created: createdRecord,
+      signal_soft_impact_inserted: inserted,
+    });
+  } catch (err) {
+    console.error('[POST /signal_route/assess_soft_impact]', err);
+    res.status(500).json({ status: 'error', error: err.message });
+  }
+});
+
 // GET /signal_route/pipeline/run — orchestrator for any ?days=7 window of mini_signals
 // not yet matched. Runs match → assess_impact (per match) → generate_signal (per
 // material impact) → generate_emails (per signal). Returns summary.
