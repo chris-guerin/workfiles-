@@ -331,6 +331,15 @@ const INITIATIVE_V2_COLS = [
   'hypothesis_statement', 'why_it_matters', 'horizon', 'persona',
   'time_horizon_year', 'time_horizon_source', 'decision_threshold',
   'baseline_confidence', 'current_confidence', 'draft_status',
+  'state', 'trajectory', 'last_state_change_date',
+];
+
+const INITIATIVE_V2_PATCH_COLS = [
+  'strategy_context', 'brief_description', 'hypothesis_statement',
+  'why_it_matters', 'horizon', 'persona', 'time_horizon_year',
+  'time_horizon_source', 'decision_threshold', 'baseline_confidence',
+  'current_confidence', 'draft_status', 'state', 'trajectory',
+  'last_state_change_date',
 ];
 
 app.post('/initiatives_v2', requireApiKey, async (req, res) => {
@@ -379,11 +388,44 @@ app.get('/initiatives_v2/:id', requireApiKey, async (req, res) => {
   return getRowById(res, 'initiatives_v2', req.params.id, 'initiatives_v2');
 });
 
+app.patch('/initiatives_v2/:id', requireApiKey, async (req, res) => {
+  const id = parsePositiveInt(req.params.id);
+  if (id === null) return res.status(400).json({ status: 'invalid', error: 'id must be a positive integer' });
+  const body = req.body || {};
+  const fields = pickFields(body, INITIATIVE_V2_PATCH_COLS);
+  if (Object.keys(fields).length === 0) {
+    return res.status(400).json({ status: 'invalid', error: 'no updatable fields provided' });
+  }
+  const setCols = Object.keys(fields);
+  const placeholders = setCols.map((c, i) => `${c} = $${i + 1}`).join(', ');
+  const values = setCols.map((c) => fields[c]);
+  values.push(id);
+  try {
+    const { rows } = await pool.query(
+      `UPDATE initiatives_v2 SET ${placeholders}, last_updated_at = NOW() WHERE id = $${values.length} RETURNING *`,
+      values
+    );
+    if (rows.length === 0) return res.status(404).json({ status: 'not_found', table: 'initiatives_v2', id });
+    res.json({ status: 'updated', row: rows[0] });
+  } catch (err) {
+    if (err.code === '23514') return res.status(400).json({ status: 'invalid', error: `CHECK constraint violation: ${err.message}` });
+    console.error('[PATCH /initiatives_v2/:id]', err);
+    res.status(500).json({ status: 'error', error: err.message });
+  }
+});
+
 // ---------- /components ----------
 const COMPONENT_COLS = [
   'initiative_id', 'parent_component_id', 'name', 'description',
   'component_type', 'vector', 'horizon', 'asset_replacement_cycle_years',
   'cross_industry', 'draft_status', 'source_citation',
+  'state', 'trajectory',
+];
+
+const COMPONENT_PATCH_COLS = [
+  'parent_component_id', 'name', 'description', 'horizon',
+  'asset_replacement_cycle_years', 'cross_industry', 'draft_status',
+  'source_citation', 'state', 'trajectory',
 ];
 
 app.post('/components', requireApiKey, async (req, res) => {
@@ -430,6 +472,32 @@ app.get('/components', requireApiKey, async (req, res) => {
 
 app.get('/components/:id', requireApiKey, async (req, res) => {
   return getRowById(res, 'components', req.params.id, 'components');
+});
+
+app.patch('/components/:id', requireApiKey, async (req, res) => {
+  const id = parsePositiveInt(req.params.id);
+  if (id === null) return res.status(400).json({ status: 'invalid', error: 'id must be a positive integer' });
+  const body = req.body || {};
+  const fields = pickFields(body, COMPONENT_PATCH_COLS);
+  if (Object.keys(fields).length === 0) {
+    return res.status(400).json({ status: 'invalid', error: 'no updatable fields provided' });
+  }
+  const setCols = Object.keys(fields);
+  const placeholders = setCols.map((c, i) => `${c} = $${i + 1}`).join(', ');
+  const values = setCols.map((c) => fields[c]);
+  values.push(id);
+  try {
+    const { rows } = await pool.query(
+      `UPDATE components SET ${placeholders}, last_updated_at = NOW() WHERE id = $${values.length} RETURNING *`,
+      values
+    );
+    if (rows.length === 0) return res.status(404).json({ status: 'not_found', table: 'components', id });
+    res.json({ status: 'updated', row: rows[0] });
+  } catch (err) {
+    if (err.code === '23514') return res.status(400).json({ status: 'invalid', error: `CHECK constraint violation: ${err.message}` });
+    console.error('[PATCH /components/:id]', err);
+    res.status(500).json({ status: 'error', error: err.message });
+  }
 });
 
 // ---------- /component_attributes ----------
