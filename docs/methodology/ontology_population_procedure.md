@@ -1,11 +1,13 @@
 # Ontology population procedure
 
-**Version:** 1.2
+**Version:** 1.3
 **Status:** Binding procedure for populating the technology × application ontology layer (`/docs/SCHEMA_ONTOLOGY.md`).
 **Audience:** Claude Code, analysts, anyone running an ontology population pass against a client initiative.
 **Companion:** `/docs/SCHEMA_ONTOLOGY.md` (the schema spec); `/docs/draft_review/ontology_ccus_worked_example.md` (the first worked example, Industrial CCUS, populated 2026-05-04).
 
 **Changelog**
+
+- **v1.3 (2026-05-05 morning).** Migration 014 introduces `pair_adjacencies.is_cross_client_edge` — a denormalised `BOOLEAN NOT NULL DEFAULT FALSE` column maintained by two triggers: a BEFORE INSERT/UPDATE trigger on `pair_adjacencies` that computes the flag from current `component_pair_links`, and an AFTER INSERT/UPDATE/DELETE trigger on `component_pair_links` that recomputes the flag for every adjacency row whose source_pair_id or target_pair_id matches the changed pair_id. This means a new client linking to an existing pair retroactively marks any adjacency edges involving that pair as cross-client whenever the two pair sides are touched by different companies. Step 7 self-marking output extended: every population run reports the count of new/affected adjacency rows where `is_cross_client_edge=TRUE`. Back-fill at migration time flagged 41 of 91 existing adjacency rows as cross-client.
 
 - **v1.2 (2026-05-04 night).** Migration 013 introduces `technology_application_pairs.hard_evidence_count` — a denormalised `INTEGER NOT NULL DEFAULT 0` column maintained by trigger on `pair_evidence`. The column counts evidence rows where `evidence_type IN ('peer_reviewed','company_filing','government_data')` OR `(evidence_type='operator_disclosure' AND evidence_strength='high')` — the v1.1 hard-evidence definition. The confidence_band vocabulary stays high/medium/low; this column makes the medium band queryable by surfacing the difference between "medium with 0 hard evidence rows" and "medium with 2+ hard evidence rows." Step 2 updated: hard_evidence_count populates automatically via trigger, but the analyst writing the population script MUST mention the resulting count in the confidence_reasoning so the audit trail captures both the count and the call. Step 7 self-marking output extended to include `medium-band breakdown by hard_evidence_count`.
 
@@ -227,6 +229,7 @@ Flagging rules:
 - **Adjacencies identified.** Total rows in `pair_adjacencies` involving the new pairs. Per-pair count (verify the ≥2-per-pair rule).
 - **Source citation quality.** Per-pair: count of evidence rows, count of evidence rows with `source_url` populated, count of evidence rows by type. The "no industry-knowledge placeholders" check runs as: every evidence row has `source_citation` not in {'industry knowledge', 'general knowledge', 'common knowledge'} (literal match check).
 - **Medium-band breakdown by hard_evidence_count (v1.2).** For pairs at `confidence_band='medium'`, partition by `hard_evidence_count`: 0 / 1 / ≥2 buckets. A medium band where all pairs sit at 0 hard rows is weak. A medium band where most pairs sit at ≥2 is robust — those pairs are essentially "would-be-high pending one more hard source." Surface the distribution in every population's self-marking output.
+- **Cross-client edge count (v1.3).** For each new pair populated in this run, count the `pair_adjacencies` rows where `is_cross_client_edge=TRUE` and source_pair_id OR target_pair_id is the new pair. Plus: count the existing adjacency rows that flipped from FALSE to TRUE because this run's component_pair_links inserts retroactively made them cross-client. The two counts together are the run's contribution to the structural cross-client adjacency surface — the compounding-asset KPI at the adjacency layer.
 - **Acceptance query results.** Run Q1-Q5 from `/docs/SCHEMA_ONTOLOGY.md` Section 6 and report row counts plus a 1-row sample from each.
 - **Open questions.** Any methodology gaps or schema gaps surfaced during population. These feed back into the procedure document for v1.1.
 - **Self-assessment.** Where the population was confident; where analyst review is most needed. Honest about uncertainty — do not smooth weak evidence.
@@ -249,6 +252,7 @@ The procedure does not change between populations. The discipline is the procedu
 
 ## Versioning
 
+- **v1.3** — 2026-05-05 morning, `is_cross_client_edge` denormalised flag on `pair_adjacencies` maintained by triggers on adjacencies and component_pair_links. Surfaces structural cross-client connections as a queryable column. Applied via migration 014 with retroactive back-fill (41 of 91 existing rows flagged TRUE).
 - **v1.2** — 2026-05-04 night, `hard_evidence_count` denormalised column on `technology_application_pairs`, maintained by trigger on `pair_evidence`. Makes medium-band heterogeneity queryable. First applied to Shell green H2, BP blue H2, Equinor (overnight batch 2).
 - **v1.1** — 2026-05-04 evening, hard-evidence rule clarified to include high-strength `operator_disclosure` when the operator is the only authoritative source. Applied retroactively to the CCUS worked example with no pair reclassifications. First applied as written to Shell blue hydrogen, Shell SAF, and Vattenfall offshore wind.
 - **v1.0** — 2026-05-04, first version. Applied to Shell Industrial CCUS.

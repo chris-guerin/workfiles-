@@ -200,6 +200,7 @@ CREATE TABLE pair_adjacencies (
   adjacency_strength       TEXT NOT NULL CHECK (adjacency_strength IN ('strong','moderate','weak')),
   reasoning_text           TEXT NOT NULL,
   source_citation          TEXT,
+  is_cross_client_edge     BOOLEAN NOT NULL DEFAULT FALSE,  -- v10.2 (migration 014); maintained by triggers on pair_adjacencies + component_pair_links
   recorded_at              TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   CHECK (source_pair_id != target_pair_id),
   UNIQUE (source_pair_id, target_pair_id, adjacency_type)
