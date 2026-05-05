@@ -68,11 +68,18 @@ Claude Code 2.1.119 installed at `C:\Users\Admin\.local\bin\claude.exe`. Local r
 
 ---
 
-## WF-15 Signal Engine pipeline — current state
+## Signal Pipeline 15a — current state
 
-WF-15 architecture exists at workflow ID `3yqglVMObKORQ595` running 22 nodes against the legacy schema. Per `docs/N8N_IMPLEMENTATION.md` Section 6, WF-15 will be reworked to target the mv1_* schema as part of Phase 3 of the migration sequence (post migration 004, post Shell methodology population).
+Workflow ID `3yqglVMObKORQ595` was reworked into **Signal Pipeline 15a** on 2026-05-05 — 12 nodes, weekly Monday 6am cadence (`0 6 * * 1`). Replaced the daily 6am trigger and Google-Sheet hypothesis repository with direct Postgres queries against `hypothesis-db` (Railway PG) using a new n8n credential `hypothesis-db Railway PG` (id `rgPwSKuC3uXH6fg7`).
 
-Until then, WF-15 continues to run against the legacy observable_layer tables. Do not modify WF-15 to target mv1_* until methodology v1 is validated and migration 004 is committed.
+15a is the signal-ingestion + hypothesis-matching half of the pipeline. It ends with an enriched output object written to a new Google Sheet tab `Signal_Pipeline_Queue` for 15b to consume. It does NOT score, select, generate content, or write to Signal Tracker — that is 15b's job.
+
+Pipeline (linear, no branching):
+1. Monday 6am Trigger → 2. Prepare Today → 3. Read Today's Mini-Signals (Sheet) → 4. **Postgres: Shell Hypotheses** → 5. Build Classification Context → 6. Combine Payload for Claude → 7. Claude — Classify Signals (HTTP) → 8. Parse Classification → 9. **Match Signals to Shell Hypotheses** (code, keyword overlap) → 10. **Postgres: Ontology Enrichment** → 11. **Build 15a Output** (ACT + ontology-gap filter, 15a output schema) → 12. Append to Signal_Pipeline_Queue.
+
+Build script: `n8n/_build-wf-15a.mjs`. Code nodes exploded under `n8n/code-nodes/wf15/`.
+
+15b (scoring, YAMM generation, Signal Tracker writes) is the next workflow to construct — not yet built.
 
 ---
 
