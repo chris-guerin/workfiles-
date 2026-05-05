@@ -71,7 +71,7 @@ for (const m of matchedItems) {
       signal_id: s.signal_id || '',
       signal_title: s.headline || '',
       signal_summary: s.short_summary || '',
-      signal_date: s.published_date || '',
+      signal_date: s.published_date || null,
       source_url: s.url || '',
       matched_hypothesis_ids: m.matched_hypothesis_ids || [],
       matched_hypothesis_labels: m.matched_hypothesis_labels || [],
@@ -79,10 +79,6 @@ for (const m of matchedItems) {
       overall_classification: overall,
       probability_delta: typeof m.probability_delta === 'number' ? m.probability_delta : 0,
       ontology_gap: anyGap,
-      // Sheets append wants flat strings for arrays.
-      matched_hypothesis_ids_str: (m.matched_hypothesis_ids || []).join(','),
-      matched_hypothesis_labels_str: (m.matched_hypothesis_labels || []).join(' | '),
-      horizon_classifications_str: JSON.stringify(horizonClassifications),
     }
   });
 }

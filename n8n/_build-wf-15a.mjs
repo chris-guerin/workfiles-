@@ -9,15 +9,19 @@
 //   1.  Schedule Trigger (Monday 6am — weekly)
 //   2.  Prepare Today                       — Code
 //   3.  Read Today's Mini-Signals           — Google Sheets (kept)
-//   4.  Postgres: Shell Hypotheses          — PG node (NEW; replaces Sheet HTTP)
+//   4.  Postgres: Shell Hypotheses          — PG node (replaces Sheet HTTP)
 //   5.  Build Classification Context        — Code (rewritten for PG)
-//   6.  Combine Payload for Claude          — Code (kept, refactored)
+//   6.  Combine Payload for Claude          — Code
 //   7.  Claude — Classify Signals           — HTTP (kept)
-//   8.  Parse Classification                — Code (kept)
-//   9.  Match Signals to Shell Hypotheses   — Code (NEW; keyword overlap)
-//   10. Postgres: Ontology Enrichment       — PG node (NEW; horizon by pair_id)
-//   11. Build 15a Output                    — Code (NEW; ACT+gap filter, 15a schema)
-//   12. Append to Signal_Pipeline_Queue     — Google Sheets append (NEW)
+//   8.  Parse Classification                — Code
+//   9.  Match Signals to Shell Hypotheses   — Code (keyword overlap)
+//   10. Postgres: Ontology Enrichment       — PG node (horizon by pair_id)
+//   11. Build 15a Output                    — Code (ACT + gap filter, 15a schema)
+//   12. Postgres: Insert into signal_horizon_log — PG node (15a → 15b handoff)
+//
+// 2026-05-05 second pass: replaced the Append-to-Signal_Pipeline_Queue
+// Google Sheets node with a Postgres insert into signal_horizon_log
+// (migration 015). The Sheet handoff is gone; 15b reads from PG.
 //
 // Output local file is gitignored (n8n/workflows/) because the legacy
 // "Claude — Classify Signals" node carries an inline x-api-key. Code nodes
@@ -578,7 +582,7 @@ for (const m of matchedItems) {
       signal_id: s.signal_id || '',
       signal_title: s.headline || '',
       signal_summary: s.short_summary || '',
-      signal_date: s.published_date || '',
+      signal_date: s.published_date || null,
       source_url: s.url || '',
       matched_hypothesis_ids: m.matched_hypothesis_ids || [],
       matched_hypothesis_labels: m.matched_hypothesis_labels || [],
@@ -586,10 +590,6 @@ for (const m of matchedItems) {
       overall_classification: overall,
       probability_delta: typeof m.probability_delta === 'number' ? m.probability_delta : 0,
       ontology_gap: anyGap,
-      // Sheets append wants flat strings for arrays.
-      matched_hypothesis_ids_str: (m.matched_hypothesis_ids || []).join(','),
-      matched_hypothesis_labels_str: (m.matched_hypothesis_labels || []).join(' | '),
-      horizon_classifications_str: JSON.stringify(horizonClassifications),
     }
   });
 }
@@ -605,33 +605,47 @@ return out;`;
   };
 }
 
-function appendToQueue() {
-  // Append-only to Signal_Pipeline_Queue tab. Tab must exist with column
-  // headers matching the field names in the Build 15a Output items —
-  // see run report for the column list to set up.
+function postgresInsertSignalHorizonLog() {
+  // Per-input-item INSERT into signal_horizon_log (migration 015).
+  // Replaces the Append-to-Signal_Pipeline_Queue Google Sheet handoff.
+  // Arrays bound as text[]; horizon_classifications JSON-stringified
+  // and cast ::jsonb. signal_date NULL if upstream item has no date.
+  const sql = `INSERT INTO signal_horizon_log
+  (signal_id, signal_title, signal_summary, signal_date, source_url,
+   matched_hypothesis_ids, matched_hypothesis_labels, horizon_classifications,
+   overall_classification, probability_delta, ontology_gap)
+VALUES
+  ($1, $2, $3, NULLIF($4, '')::date, $5,
+   $6::text[], $7::text[], $8::jsonb,
+   $9, $10::numeric, $11)`;
+  // Eleven positional parameters bound from the upstream item.
+  // Each ={{ ... }} expression evaluates per-item.
+  const replacement = [
+    "{{ $json.signal_id }}",
+    "{{ $json.signal_title }}",
+    "{{ $json.signal_summary }}",
+    "{{ $json.signal_date }}",
+    "{{ $json.source_url }}",
+    "{{ $json.matched_hypothesis_ids }}",
+    "{{ $json.matched_hypothesis_labels }}",
+    "{{ JSON.stringify($json.horizon_classifications) }}",
+    "{{ $json.overall_classification }}",
+    "{{ $json.probability_delta }}",
+    "{{ $json.ontology_gap }}",
+  ].join(', ');
   return {
     parameters: {
-      operation: 'append',
-      documentId: { __rl: true, value: SHEETS_DOC_ID, mode: 'id' },
-      sheetName: {
-        __rl: true,
-        value: 'Signal_Pipeline_Queue',
-        mode: 'name',
-      },
-      columns: {
-        mappingMode: 'autoMapInputData',
-        value: {},
-        matchingColumns: [],
-      },
-      options: {},
+      operation: 'executeQuery',
+      query: sql,
+      options: { queryReplacement: '=' + replacement },
     },
-    type: 'n8n-nodes-base.googleSheets',
-    typeVersion: 4.6,
+    type: 'n8n-nodes-base.postgres',
+    typeVersion: 2.6,
     position: [1200, 224],
     id: 'a1d0c08a-000c-4b00-9000-00000000000c',
-    name: 'Append to Signal_Pipeline_Queue',
+    name: 'Postgres: Insert into signal_horizon_log',
     credentials: {
-      googleSheetsOAuth2Api: { id: SHEETS_CRED_ID, name: 'Google Sheets account 2' }
+      postgres: { id: PG_CRED_ID, name: PG_CRED_NAME }
     },
   };
 }
@@ -649,7 +663,7 @@ const nodes = [
   matchSignalsToHypotheses(),
   postgresOntologyEnrichment(),
   build15aOutput(),
-  appendToQueue(),
+  postgresInsertSignalHorizonLog(),
 ];
 
 // Linear connections: each node's `main[0]` -> next node
