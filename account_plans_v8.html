@@ -232,8 +232,8 @@ main{padding:24px 36px 80px;max-width:1200px;width:100%}
 
   <div class="config-block">
     <div class="config-label">Signal Engine token</div>
-    <input class="config-input" type="password" id="bearerToken" placeholder="paste Bearer token" autocomplete="off">
-    <div class="config-help">Bearer token from Railway Variables (signal-engine-api).</div>
+    <input class="config-input" type="text" id="bearerToken" placeholder="paste Bearer token" autocomplete="off" spellcheck="false">
+    <div class="config-help">Bearer token from Railway Variables (signal-engine-api). Type=text so you can verify what's actually in the field — autofill on password fields was a suspect.</div>
   </div>
 
   <div class="config-block">
@@ -250,10 +250,17 @@ main{padding:24px 36px 80px;max-width:1200px;width:100%}
 
   <div style="display:flex;gap:6px">
     <button class="btn-primary" id="loadCompaniesBtn" style="flex:1" onclick="loadCompanies()">Load companies</button>
-    <button class="btn-ghost" id="testTokenBtn" onclick="testToken()" title="Hit /health then /v8/companies and report what comes back">Test</button>
+    <button class="btn-ghost" id="testTokenBtn" onclick="testToken()" title="Hit /health then /v8/companies, log every step to DevTools console + show outcome here">Test</button>
   </div>
 
-  <div id="tokenDiag" style="font-size:10px;color:var(--muted);font-family:var(--mono);min-height:14px"></div>
+  <div id="tokenDiag" style="font-size:10px;color:var(--muted);font-family:var(--mono);min-height:14px;line-height:1.5"></div>
+
+  <button class="btn-ghost" style="width:100%;font-size:10px" onclick="copyCurlCommand()">Copy curl command for /v8/companies</button>
+
+  <details style="font-size:10px;color:var(--muted);line-height:1.5">
+    <summary style="cursor:pointer;font-family:var(--mono);letter-spacing:0.04em">Network tab guide</summary>
+    <div style="padding-top:6px">When you click "Test" or "Load companies", DevTools Network shows TWO requests for each /v8/* call: an <strong>OPTIONS preflight first</strong> (no Authorization header — that's by design), then the actual <strong>GET right below it</strong> (Authorization should be present). If the GET is missing entirely, preflight failed and the browser blocked the GET. If the GET is present but has no Authorization header, the JS dropped it before fetch — open the DevTools Console and check the <code>[v8]</code> log line that prints right before each fetch.</div>
+  </details>
 
   <div id="companyList" class="company-list">
     <div class="company-list-empty">Enter Bearer token then click "Load companies" above. Use "Test" to diagnose if /v8/companies 401s.</div>
@@ -376,14 +383,33 @@ function clearCacheConfirm() {
 }
 
 // ══ API HELPERS ════════════════════════════════════════════════════════
+// Build a Headers object explicitly (instead of plain object literal)
+// because some browser extensions / service workers handle Headers
+// objects and plain objects differently. Headers() also normalises
+// header names so case-mismatches can't be the cause.
+function buildAuthHeaders(token) {
+  const h = new Headers();
+  h.set('Authorization', 'Bearer ' + token);
+  return h;
+}
+
 async function apiGet(path) {
   const tok = getBearer();
   if (!tok) throw new Error('No Bearer token in sidebar');
-  const headers = { 'Authorization': 'Bearer ' + tok };
-  // Console-side diagnostic — visible in DevTools Network tab anyway, but
-  // logging here makes debugging "is the header reaching the server?" easier.
-  console.log(`[v8] GET ${path}  Authorization: Bearer <len=${tok.length} ${tok.slice(0,3)}…${tok.slice(-3)}>`);
-  const r = await fetch(API_BASE + path, { headers });
+  const headers = buildAuthHeaders(tok);
+
+  // Verify the header survived construction. If this assert fires we have
+  // a bigger problem than the API call.
+  const auth = headers.get('Authorization');
+  if (!auth || !auth.startsWith('Bearer ')) {
+    console.error('[v8] Authorization header failed to attach! headers=', [...headers.entries()]);
+    throw new Error('Authorization header construction failed');
+  }
+  console.log(`[v8] GET ${path}  → headers:`, [...headers.entries()].map(([k,v]) =>
+    k.toLowerCase() === 'authorization' ? `${k}: Bearer <len=${tok.length} ${tok.slice(0,3)}…${tok.slice(-3)}>` : `${k}: ${v}`
+  ));
+
+  const r = await fetch(API_BASE + path, { method: 'GET', headers, mode: 'cors' });
   if (!r.ok) {
     const txt = await r.text().catch(() => '');
     throw new Error(`${path} → ${r.status}: ${txt.slice(0,200)}`);
@@ -392,31 +418,64 @@ async function apiGet(path) {
 }
 
 // Probe: hits /health (no auth) then /v8/companies (auth required).
-// Reports CORS + auth state in plain English under the token field.
+// Reports CORS + auth state in plain English under the token field
+// AND logs each step to DevTools Console for debugging.
 async function testToken() {
   const diag = document.getElementById('tokenDiag');
   const tok = getBearer();
   if (!tok) { diag.textContent = '⚠ No token in field — paste then test.'; return; }
+  console.group('[v8] testToken()');
+  console.log('token: len=' + tok.length + ' first3=' + tok.slice(0,3) + ' last3=' + tok.slice(-3));
   diag.textContent = tokenFingerprint() + ' · testing /health…';
   try {
-    const h = await fetch(API_BASE + '/health');
-    if (!h.ok) { diag.textContent = `⚠ /health failed (${h.status}) — API not reachable from this browser.`; return; }
+    console.log('→ fetch /health (no auth)');
+    const h = await fetch(API_BASE + '/health', { method: 'GET', mode: 'cors' });
+    console.log('← /health status', h.status);
+    if (!h.ok) {
+      diag.textContent = `⚠ /health failed (${h.status}) — API not reachable from this browser.`;
+      console.groupEnd();
+      return;
+    }
     diag.textContent = tokenFingerprint() + ' · /health OK · testing /v8/companies…';
-    const c = await fetch(API_BASE + '/v8/companies', {
-      headers: { 'Authorization': 'Bearer ' + tok }
-    });
+    const headers = buildAuthHeaders(tok);
+    console.log('→ fetch /v8/companies with headers:', [...headers.entries()].map(([k,v]) =>
+      k.toLowerCase() === 'authorization' ? `${k}: Bearer <len=${tok.length}>` : `${k}: ${v}`));
+    const c = await fetch(API_BASE + '/v8/companies', { method: 'GET', headers, mode: 'cors' });
+    console.log('← /v8/companies status', c.status);
+    console.log('  response headers:', [...c.headers.entries()]);
     if (c.ok) {
       const arr = await c.json();
-      diag.innerHTML = `<span style="color:var(--green)">✓ /v8/companies OK · ${arr.length} companies returned</span> · ${tokenFingerprint()}`;
+      diag.innerHTML = `<span style="color:var(--green)">✓ /v8/companies OK · ${arr.length} companies returned</span><br>${tokenFingerprint()}`;
+      console.log('  ✓ ' + arr.length + ' companies returned');
     } else if (c.status === 401) {
-      diag.innerHTML = `<span style="color:var(--red-dark)">✗ /v8/companies 401 unauthorised</span> · ${tokenFingerprint()} · token rejected by API. Check Railway env API_KEY matches what you pasted (no extra chars).`;
+      diag.innerHTML = `<span style="color:var(--red-dark)">✗ /v8/companies 401</span> · ${tokenFingerprint()}<br>Token rejected by API. Run the curl command (button above) in a terminal — if THAT works, the issue is browser-side (extension, service worker, CORS cache); if that fails too, the token doesn't match Railway's API_KEY env var.`;
     } else {
       const txt = await c.text().catch(() => '');
-      diag.innerHTML = `<span style="color:var(--red-dark)">✗ /v8/companies ${c.status}</span> · ${tokenFingerprint()} · ${escapeHtml(txt.slice(0,80))}`;
+      diag.innerHTML = `<span style="color:var(--red-dark)">✗ /v8/companies ${c.status}</span><br>${escapeHtml(txt.slice(0,120))}`;
     }
   } catch (e) {
     diag.innerHTML = `<span style="color:var(--red-dark)">✗ Network error: ${escapeHtml(e.message)}</span>`;
+    console.error('  ✗', e);
   }
+  console.groupEnd();
+}
+
+// Generates a curl command that mirrors what the browser SHOULD be sending.
+// Copies to clipboard. User runs in a terminal — if the curl works but the
+// browser doesn't, the issue is browser-side, not server-side.
+function copyCurlCommand() {
+  const tok = getBearer();
+  const diag = document.getElementById('tokenDiag');
+  if (!tok) { diag.textContent = '⚠ Paste a token first.'; return; }
+  const cmd = `curl -sS -i \\
+  -H "Origin: https://chris-guerin.github.io" \\
+  -H "Authorization: Bearer ${tok}" \\
+  ${API_BASE}/v8/companies`;
+  navigator.clipboard.writeText(cmd).then(() => {
+    diag.innerHTML = `<span style="color:var(--green)">✓ curl command copied to clipboard</span> — paste in terminal. If it returns the company list, the API is fine and the issue is browser-side.`;
+  }).catch(e => {
+    diag.innerHTML = `<span style="color:var(--red-dark)">clipboard failed: ${escapeHtml(e.message)}</span>`;
+  });
 }
 
 async function callClaude(prompt, maxTokens = 1500, system = null) {
