@@ -1,0 +1,128 @@
+#!/usr/bin/env bash
+# Pre-commit credential scan — installed at .githooks/pre-commit and
+# wired via `git config core.hooksPath .githooks` (so the hook is part of
+# the tracked repo, not the per-clone .git directory).
+#
+# Why this exists:
+#   On 2026-05-03 a commit nearly went out with a literal production
+#   Bearer token baked into .claude/settings.local.json. The file is now
+#   in .gitignore, but a future hook script, smoke test, n8n workflow
+#   JSON, or population script could re-introduce a credential into a
+#   staged diff. This hook is the automated backstop.
+#
+# What it scans:
+#   The set of files staged for commit — `git diff --cached --name-only`
+#   filtered to ADDED or MODIFIED files (excluding deletions). For each,
+#   it greps the staged content (not the working tree) against the
+#   credential-pattern list below.
+#
+# What triggers a block:
+#   Any literal match of the patterns in CRED_PATTERNS. The hook prints
+#   the offending file:line and the matched substring (truncated), then
+#   exits 1 — git aborts the commit. The user can:
+#     (a) sanitise the line, re-stage, retry
+#     (b) `git rm --cached <file>` and add it to .gitignore
+#     (c) override with `git commit --no-verify` (allowed but logged
+#         to the user's terminal — use only when the match is a literal
+#         false positive that would be more confusing to refactor)
+#
+# Maintenance:
+#   Add new credential patterns to CRED_PATTERNS as they are encountered.
+#   Keep regex patterns specific enough to avoid false-positive trigger
+#   on documentation that legitimately discusses the shape of a token
+#   (e.g. README examples).
+
+set -uo pipefail
+
+CRED_PATTERNS=(
+  # Anthropic API keys (live + revoked formats)
+  'sk-ant-api[0-9]{2}-[A-Za-z0-9_-]{40,}'
+  # OpenAI API keys
+  'sk-proj-[A-Za-z0-9_-]{40,}'
+  'sk-[A-Za-z0-9]{40,}'
+  # 64-char lowercase hex Bearer tokens (the signal-engine pattern)
+  'Bearer\s+[a-f0-9]{64}'
+  # AWS access key IDs
+  'AKIA[0-9A-Z]{16}'
+  # GitHub personal access tokens
+  'ghp_[A-Za-z0-9]{36,}'
+  'github_pat_[A-Za-z0-9_]{50,}'
+  # Generic Postgres connection strings with a non-empty password
+  'postgres(ql)?://[^:]+:[^@\s/'"'"']+@'
+  # n8n inline API key header — the shape that previously leaked
+  '"X-N8N-API-KEY"\s*:\s*"[A-Za-z0-9_.-]{20,}"'
+)
+
+# Files we don't want to false-positive on:
+#   - The hook itself (the patterns are inside it as literal regex)
+#   - Documentation files that may quote token shapes for explanation
+#   - This list is intentionally short; prefer fixing false positives
+#     in the patterns above over expanding the allowlist.
+ALLOW_PATHS=(
+  '.githooks/pre-commit'
+  '.claude/projects/'
+)
+
+is_allowed_path() {
+  local f="$1"
+  for ap in "${ALLOW_PATHS[@]}"; do
+    if [[ "$f" == "$ap"* ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+# Collect staged + added/modified files
+mapfile -t STAGED < <(git diff --cached --name-only --diff-filter=AM)
+
+if [[ ${#STAGED[@]} -eq 0 ]]; then
+  exit 0
+fi
+
+FAIL=0
+echo "[pre-commit] credential scan over ${#STAGED[@]} staged file(s)"
+
+for f in "${STAGED[@]}"; do
+  if is_allowed_path "$f"; then
+    continue
+  fi
+
+  # Read the staged version of the file (not the working tree). For
+  # binary or non-text files git will emit a warning; redirect stderr
+  # to /dev/null and skip if empty.
+  content=$(git show ":$f" 2>/dev/null) || continue
+  [[ -z "$content" ]] && continue
+
+  for pattern in "${CRED_PATTERNS[@]}"; do
+    matches=$(printf '%s\n' "$content" | grep -nE "$pattern" || true)
+    if [[ -n "$matches" ]]; then
+      FAIL=1
+      echo ""
+      echo "  [BLOCK] $f matches pattern: $pattern"
+      while IFS= read -r line; do
+        # Truncate the matched line so we don't echo a full credential
+        # to the terminal (the user's terminal scrollback may be visible
+        # to colleagues / screenshots).
+        truncated=$(printf '%s' "$line" | head -c 140)
+        echo "          -> $truncated"
+      done <<< "$matches"
+    fi
+  done
+done
+
+if [[ $FAIL -eq 1 ]]; then
+  echo ""
+  echo "[pre-commit] Commit blocked — at least one credential pattern matched a"
+  echo "             staged file. Resolve before retrying:"
+  echo "  (a) sanitise the offending line, re-stage, retry"
+  echo "  (b) git rm --cached <file> and add to .gitignore"
+  echo "  (c) override with --no-verify (only if false positive — log a note"
+  echo "      to sessions/_next.md to refine the pattern)"
+  echo ""
+  echo "  See feedback_credential_interception in auto-memory for the rationale."
+  exit 1
+fi
+
+echo "[pre-commit] OK — no credential patterns matched."
+exit 0

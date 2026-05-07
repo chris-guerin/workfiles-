@@ -1,107 +1,62 @@
-# Next session — gate 5 diagnosis and prompt rewrite
+# Next session — post-Path A (overnight 2026-05-07)
 
-**Status at session close (2026-05-02):** Substrate landed. Gate 5 not closed. Three Haiku runs today all failed the same way. Filter not applying as observed; root cause undiagnosed.
+**Status at session close (2026-05-07 morning):** Path A overnight run committed and pushed. BP and VW Group brand-stack hypotheses live in `catalogue.initiatives_v2`. 25 client initiatives now flowing through Signal Pipeline 15a (Shell 9, BP 4, VWG 3, Skoda 3, Porsche 3, Equinor 2, Vattenfall 1).
 
----
-
-## What is live and working
-
-- **PG `hypothesis-db`** at schema v6.0. Migration 004 committed. All eight initiative-model tables plus the four pipeline tables (news, mini_signals, signals, heat_map_aggregates) exist with correct FKs, CHECKs, indexes.
-- **API service** `signal-engine-api-production-0cf1.up.railway.app` healthy. Bearer auth working. POST /news, GET /news, DELETE /news/:id, POST /mini_signals all verified by smoke test.
-- **WF-WeeklyNews-PG** (`gOwTXiGfkZm5vFTO`) running end-to-end. RSS pull → Detect Companies & Tag → Remove Duplicates → POST /news → Fire WF-15A-PG webhook. Confirmed today: 1469 news rows in PG from gate 5 trigger runs. The workflow exits in red because `Email Alert to Chris` Gmail OAuth is expired (deferred re-auth, pre-existing issue), but the data path completes cleanly before that.
-- **WF-15A-PG** (`KtFda6LGUSfbYNDQ`) running end-to-end at the structural level — webhook receives, GET /news fetches, code nodes execute in order, POST /mini_signals + DELETE /news/:id wire correctly. The pipeline mechanics are sound. The Haiku-side decision logic is not producing useful output.
-
-Gates 1–4 closed. Gate 3 verified by 1088 successful POST /news calls in the gate 3 trigger window after credential and body-expression bugs were fixed.
+The previous _next.md (Gate 5 Haiku diagnosis from 2026-05-02) is obsolete — Gates 1–5 closed on the rebuilt WeeklyNews / 15a / 15b pipelines (commits `1919046`, `0682aec`). Archived to `sessions/2026-05-02-am.md` if needed for history; otherwise this rewrite is the live brief.
 
 ---
 
-## Gate 5 — not closed today
+## What landed overnight
 
-Three Haiku runs today produced 84 → 0/3/3 → 0 mini_signals across four executions, none of which hit the 20–50 target. Across all three runs, the per-node output count from `Parse + Validate Mini-Signal` matched its input count (1102 → 1102 in the most recent run), prompting the user's diagnostic claim:
+Three commits:
 
-> *"The filter is not being applied, regardless of which prompt is in the system prompt."*
+1. **Path A — BP and VW Group hypotheses** (`9b56f87`)
+   - 12 new initiatives, 49 components, 46 claims_v2 across BP / VW Group / Skoda Auto (new company row) / Porsche AG.
+   - Sources: the four `__N__.html` intelligence briefs in the repo root.
+   - All `draft_status='draft_unreviewed'`. Zero pending attribute rows (v2 discipline holds).
+   - New populator at `db/population/_populator_v2.mjs` — direct PG transport, not the signal-engine API. See open items for re-pointing.
+2. **Post-overnight — MASTER.md, CLAUDE.md hygiene rule, pre-commit hook, _next.md** (this commit)
 
-**Specific next-session task: read `/n8n/wf-15a-pg-current-state.md`** (committed today). It contains the byte-exact verbatim live state of the deployed `Build Extraction Payload` and `Parse + Validate Mini-Signal` nodes, captured from the n8n public API at session close. Local files match live exactly — no divergence.
-
-The file also walks through:
-- Why a 1102-in / 1102-out at Parse + Validate is consistent with the validator working as designed (it tags rather than drops; the drop happens at `Collect + Write to Datasette`).
-- Why the observed mini_signals=0 outcome rules out the "filter not firing" hypothesis and points to "every Haiku response is skip:true."
-- Three candidate causes for the universal-skip pattern.
-- The diagnostic sequence to run before any further prompt patch.
-
-**Start here — diagnose before any further trigger.** Per user instruction at session close: hierarchical three-step prompt rewrite is the planned approach (each step conditional on the previous, explicit "Stop" instructions on skip paths) — final form to be written by Chris after diagnosis. Do not iterate-and-trigger blindly.
-
-### Suspected mechanism (working hypothesis — verify before acting)
-
-Either:
-
-- **(p1)** the `centrally about` criterion in the v3 system prompt is being interpreted too literally by Haiku, causing it to return `skip:true` on items where the story is about a *company* in energy/mobility rather than about energy/mobility *as subjects*, OR
-- **(p2)** the title-only RSS input shape is causing Haiku to default to skip even though the prompt explicitly allows substantive titles, OR
-- **(p3)** something about how Haiku is structuring its response is triggering the `PARSE_FAILED` branch in Parse + Validate before the explicit `skip:true` branch is reached.
-
-Diagnostic step 1 in the state file (sample raw `Claude Haiku Extract` output for ~10 random items from the last execution) discriminates between these.
+Acceptance check committed at `db/_accept_path_a.mjs` — re-run any time to confirm row counts and 15a query coverage.
 
 ---
 
-## Captured design decisions from today
+## What was deferred (and why)
 
-These were agreed during the session and need to land in `ARCHITECTURE.md` and `/docs/N8N_IMPLEMENTATION.md` next session:
-
-- **WF-15A v0 is direct-relevance-only.** Adjacency reasoning is deferred. Stories about pharma, aerospace, defence, packaging, chemicals are explicitly out of scope until a later version. Haiku is instructed to drop them even if a clever connection could be made. This is a deliberate v0 recall trade for precision.
-- **WF-WeeklyNews-PG cadence is weekly v0.** Schedule trigger is `Weekly Monday 7am`. Active flag is currently `true` on the workflow but Test workflow was used for all gate 5 triggers today.
-- **WF-15C cross-domain enrichment is the planned home for adjacency reasoning.** Position in pipeline: after WF-15B routing, before WF-15D claim assessment. WF-15C does not exist yet — design intent only. Once methodology v1's entity catalogue is populated, WF-15C is where adjacency-aware enrichment lives so WF-15A can stay tight.
-
----
-
-## Open operational issues
-
-- **Gmail OAuth on `Email Alert to Chris` node expired.** WF-WeeklyNews-PG ends in error on every run due to this, even though the data path (POST /news + Fire WF-15A-PG webhook) completes cleanly before the email node. Pre-existing item from earlier `_next.md`. Fix: re-authorise Google OAuth in n8n credentials. Not gate-5-blocking but visually noisy in the executions list.
-- **Anthropic API key in plaintext in WF-15A-PG `Claude Haiku Extract` node `headerParameters`.** Carried over from legacy WF-15A. Per R24, this counts as exposed (it appeared in the workflow JSON the user pasted into chat transcript today). Rotate next session — generate new key in Anthropic console, update n8n node, retire old key.
-- **URGENT — signal-engine-api Bearer token rotation (today or tomorrow, by 2026-05-04 EOD).** Token `528f7fd5...37cd27c` for `signal-engine-api-production-0cf1.up.railway.app` has appeared in conversation transcripts and was a hair's-breadth from being pushed to public git history (held back from the 2026-05-03 R26 push when spotted in the `.claude/settings.local.json` diff; that file is now untracked). Per R24 this counts as exposed regardless of git outcome. Action: rotate `API_BEARER_TOKEN` in Railway env on the `signal-engine-api` service, redeploy, update the matching credential in n8n on every node that authenticates to it (POST /news, GET /news, DELETE /news/:id, POST /mini_signals across WF-WeeklyNews-PG and WF-15A-PG), update the team-shared smoke-test scripts under `api/`, retire the old token. Must complete before any client-facing work this week.
-- **Smoke-test residue cleanup script left at `db/_cleanup-smoke-test-residue.mjs`.** Already used. Disposable, safe to delete in cleanup gate.
-- **Multiple disposable diagnostic scripts** under `db/` and `n8n/` (prefix `_`) left behind from gate 5 work. List in `n8n/wf-15a-pg-current-state.md` and the gate 5 commit message. Clean up at the start of next session or on close.
-- ~~**PG has no `schema_migrations` ledger table.**~~ **RESOLVED 2026-05-03** by migration 006 (commit pending). The ledger table now exists with versions 1-6 backfilled; future migrations should INSERT their own row on success. Future runner idempotency improvement is a separate optional refactor — current 005/006 runners rely on transaction rollback for safety, which works.
+| Item | Why deferred | Precondition for next pass |
+|------|--------------|----------------------------|
+| **Technip Energies, TechnipFMC, ExxonMobil, Eni, ConocoPhillips, SLB** hypotheses | No intelligence brief for any of these in the repo. Path A discipline forbids inventing positions from training data. | Generate per-company intelligence brief HTML for each (same template as `bp_intelligence_brief__3_.html`). Then re-use `_populator_v2.mjs` to author `P1_<TICKER>_hypotheses.mjs`. |
+| **MAN_001 fleet BEV charging hypothesis** | No MAN brief in the repo. Was on the original VWG brief, dropped per Chris's Path A confirmation. | Generate `man_intelligence_brief__N_.html` matching the structure used for VW / Skoda / Porsche. |
+| **Phase 3 mobility ontology** | Methodology v1.3 requires ≥2 evidence URLs per pair × 10–15 pairs = 20–30 verified sources. Overnight session had no WebFetch budget for that depth, and Chris's brief explicitly said "do not rush — partial mobility ontology is worse than no mobility ontology." | A focused session (not overnight) with WebFetch access. Anchors: `SSP_ZONAL_ARCHITECTURE_AND_OTA`, `MEB_PLATFORM_BOM_COST_REDUCTION`, `BYD_HAN_TESLA_MS_EUROPEAN_PREMIUM_SHARE`, `ELECTRIC_RACING_POWERTRAIN_AND_RECOVERY` — Path A populated these specifically so the ontology pairs have client-side anchors. |
+| **API-vs-PG transport decision** | shell_v2.mjs uses the signal-engine API at `signal-engine-api-production-0cf1.up.railway.app` with a Bearer token in `.claude/settings.local.json`. The credential-interception rule kept us off that path until Chris confirms the token is live. The new BP+VWG scripts use direct PG instead — same data model, different transport. | Chris confirms YES/NO on the Bearer state. If YES, port the new scripts to API path (cosmetic refactor — extract API client wrapper from shell_v2.mjs). If NO, keep PG path and update CLAUDE.md to document divergence. |
 
 ---
 
-## What is in scope for next session
+## Top-priority open items (pick from this list at session start)
 
-1. Read `/n8n/wf-15a-pg-current-state.md` in full.
-2. Run the diagnostic sequence in section "Recommended next-session diagnostic sequence" of that file. **Step 1 first** (sample raw Haiku outputs). Do not edit anything before that produces concrete data.
-3. Once the cause is identified, implement the hierarchical three-step prompt rewrite per Chris's design intent. Final prompt text to be written by Chris.
-4. After re-deploy via sync.js (with R22 diff confirmation), re-run gate 5 verification per the close criteria specified in the gate 5 trigger sequence (clean PG baseline, fresh WF-WeeklyNews-PG trigger, count + 15-sample analysis).
-5. Update ARCHITECTURE.md and `/docs/N8N_IMPLEMENTATION.md` with the captured design decisions (direct-relevance-only v0, weekly cadence, WF-15C as home for adjacency).
-6. Address operational issues batch (Gmail OAuth + Anthropic key rotation) — possibly a separate session if it expands.
-7. Tidy disposable `_*` scripts.
+1. **Generate the next intelligence brief** (TEN, TFMC, XOM, ENI, CNP, or SLB). The HTML template is `bp_intelligence_brief__3_.html` — clone, swap company-specific content, run through `account_plans_v7.html` AI refresh. Once one brief is live, the population pass takes ~15 minutes via the `P1_<TICKER>_hypotheses.mjs` pattern.
+2. **Bearer token confirmation + transport decision** for the new population scripts. Five-minute task once Chris is at the keyboard.
+3. **Apps Script INSERT trigger install** — pre-existing item, still pending. Run `installOntologyTriggers()` in the Apps Script editor.
+4. **Mobility ontology Phase 3** — focused session with WebFetch access. Start with the 5 pairs Chris's brief prioritised: BEV platform × passenger EV electrification; Software-defined vehicle × passenger OEM platform; ADAS L2+ × passenger safety systems; SiC power electronics × EV drivetrain; Vehicle-to-grid × grid services. Use the new VWG components as `component_pair_links` anchors.
+5. **Audi AG hypotheses** — `audi_intelligence_brief__3_.html` exists in repo. Same population pattern. Quickest next add to the catalogue if Chris wants more brand depth before more energy clients.
 
 ---
 
-## What is NOT in scope for next session
+## Discipline notes for next session
 
-- Modifying gates 1–4 (substrate is good).
-- Touching `WF-WeeklyNews-PG` workflow shape (it works; only the email node is broken, and that's a credential issue).
-- Methodology-v1 entity-catalogue population (still queued for after gate 5 is closed; it depends on a working signal pipeline).
-- Building WF-15B / WF-15C / WF-15D (these are sequenced after gate 5 close per `MIGRATION_004_AND_WORKFLOWS_SPEC.md`).
-
----
-
-## Reference paths (this session)
-
-- `MIGRATION_004_AND_WORKFLOWS_SPEC.md` — the executable spec for gates 1–5
-- `n8n/wf-15a-pg-current-state.md` — live deployed state of WF-15A-PG's two key code nodes
-- `db/migrations/004_substrate.sql` + `_runner.js` — committed migration
-- `api/index.js` — the deployed API service
-- `n8n/code-nodes/wf15apg/build-extraction-payload--4ba2c2.js` — local copy of the v3 prompt code
-- `n8n/code-nodes/wf15apg/parse-validate-mini-signal--1a760a.js` — local copy of the validator (skip:true gated, confidence retired)
-- Session executions of interest (n8n): WF-WeeklyNews-PG `gOwTXiGfkZm5vFTO` exec ids 906/908/916/919/922; WF-15A-PG `KtFda6LGUSfbYNDQ` exec ids 907/909/911/915/917/920/921/923.
+- **R25 (no doc drift, same-day update):** The new pre-commit hook scans staged diffs for credentials. It does NOT scan for doc drift — that remains a manual discipline. CLAUDE.md was updated with an explicit MASTER.md update rule; honour it.
+- **R26 (end-of-session git hygiene):** Two commits + push completed for Path A. Working tree clean at session close.
+- **R24 (rotate exposed credentials):** The `sk-ant-api03-Wip4...` API key revocation is still on the open items list — outstanding from earlier sessions. Resolve at next opportunity.
+- **Credential interception rule:** Pre-commit hook is now the automated backstop. Re-read `~/.claude/projects/.../memory/feedback_credential_interception.md` if questions arise about what the hook should and shouldn't catch.
 
 ---
 
-## Linked rules to re-read at session start
+## Quick re-orient (for a fresh Claude Code session)
 
-- **R14** (schema freeze — currently v6.0 deployed; migration 004 committed today)
-- **R22** (no n8n push without diff and confirmation — sync.js patched today to sanitise settings on PUT)
-- **R23** (morning status check via `node sync.js status --since 24h`)
-- **R24** (rotate exposed credentials immediately — Anthropic key noted above)
-- **R25** (doc same-day update — design decisions to land in ARCHITECTURE.md tomorrow)
-- **R26** (end-of-session git hygiene — applied this session per gate boundary)
+1. Read `CLAUDE.md` (architectural state).
+2. Read `MASTER.md` sections 12 + 13 (current state + open items).
+3. Read this file.
+4. Run `node db/_accept_path_a.mjs` to confirm row counts haven't drifted.
+5. Pick from "Top-priority open items" above.
+
+`git log --oneline -5` should currently show the two Path A commits at HEAD.

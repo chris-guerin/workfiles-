@@ -118,4 +118,19 @@ Deferred but real:
 
 ---
 
+## Operating discipline — MASTER.md and the pre-commit hook
+
+**MASTER.md hygiene.** `MASTER.md` (at the repo root, NOT `docs/MASTER.md` despite the path reference inside the file — that mismatch is tracked) is the single-source-of-truth for current state and open items. It was rewritten as v3.0 on 2026-05-05. The discipline:
+
+- **Same-day update rule (R25).** Every session that changes the live state of a workflow, schema, hypothesis catalogue, or significant doc set MUST update `MASTER.md` sections 12 (Current state) and 13 (Open items) before session close. Do not let drift accumulate beyond 24 hours.
+- **What counts as "live state change":** new migration applied; new workflow built or deleted; new client hypotheses populated; ontology pairs added; pipeline reconfigured; credentials rotated. Code refactors that don't change observable behaviour do NOT trigger an update.
+- **Update mechanics:** Edit sections 12 and 13 in place. If infrastructure changed (URLs, IDs, credential rotation), update section 4 or 6 too. If a new workflow was built, update or add to section 5. Then commit with message `MASTER.md — daily update YYYY-MM-DD` (or as part of a larger commit that includes the change MASTER.md is documenting).
+- **Why this matters:** The next session's first three reads are `CLAUDE.md` → `MASTER.md` → `sessions/_next.md`. If MASTER.md is stale by more than a day, the next session starts with wrong assumptions.
+
+**Pre-commit credential scan.** A pre-commit hook lives at `.githooks/pre-commit` (wired via `git config core.hooksPath .githooks`). It scans every staged ADDED or MODIFIED file for credential patterns (Anthropic / OpenAI keys, Bearer tokens, AWS access keys, GitHub PATs, n8n API keys inline in JSON, Postgres URIs with non-empty passwords). It blocks the commit on match. Override with `git commit --no-verify` is allowed but should be rare and reasoned — log to `sessions/_next.md` if a pattern needs refinement.
+
+The hook is the automated backstop for the credential-interception rule (originated from the 2026-05-03 incident where a literal Bearer token nearly went into history via `.claude/settings.local.json`). The procedural rule still applies at review-time — the hook is belt + braces, not a replacement for reading diffs.
+
+---
+
 ## Repo structure
