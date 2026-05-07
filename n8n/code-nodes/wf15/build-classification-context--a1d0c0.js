@@ -2,14 +2,14 @@
 // id:   a1d0c08a-0005-4b00-9000-000000000005
 // type: n8n-nodes-base.code
 // --- code below this line is what runs in n8n ---
-// Signal Pipeline 15a — Build Classification Context — 2026-05-07
+// Signal Pipeline 15a — Build Classification Context — 2026-05-05
 // Aggregate the per-(initiative,component,pair) PG rows into one entry per
 // distinct Shell hypothesis. Each entry carries label + topical keywords
 // (initiative name + component names + pair labels) used by the matching
 // stage downstream. The Claude classifier sees a compact list of hypothesis
 // IDs + labels; matching by overlap is done in code, not by the LLM.
 
-const rows = $('Postgres: Shell Hypotheses').all().map(i => i.json);
+const rows = $('Postgres: All Hypotheses').all().map(i => i.json);
 
 const byId = new Map();
 for (const r of rows) {

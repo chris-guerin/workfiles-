@@ -9,12 +9,12 @@
 //   1.  Schedule Trigger (Monday 6am — weekly)
 //   2.  Prepare Today                       — Code
 //   3.  Postgres: Read Today's Mini-Signals — PG node (replaces Sheet read)
-//   4.  Postgres: Shell Hypotheses          — PG node
+//   4.  Postgres: All Hypotheses          — PG node
 //   5.  Build Classification Context        — Code
 //   6.  Combine Payload for Claude          — Code
 //   7.  Claude — Classify Signals           — HTTP (kept)
 //   8.  Parse Classification                — Code
-//   9.  Match Signals to Shell Hypotheses   — Code (keyword overlap)
+//   9.  Match Signals to Hypotheses   — Code (keyword overlap)
 //   10. Postgres: Ontology Enrichment       — PG node (horizon by pair_id)
 //   11. Build 15a Output                    — Code (ACT + gap filter, 15a schema)
 //   12. Postgres: Insert into signal_horizon_log — PG node (15a → 15b handoff)
@@ -36,7 +36,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const PG_CRED_ID = 'rgPwSKuC3uXH6fg7';     // hypothesis-db Railway PG (created 2026-05-05)
 const PG_CRED_NAME = 'hypothesis-db Railway PG';
 // Google Sheets constants removed 2026-05-07 — no Sheets nodes in 15a.
-const TODAY = '2026-05-07';
+const TODAY = '2026-05-05';
 
 // ---------- Load existing workflow for the legacy nodes we're keeping ----------
 const oldPath = join(__dirname, 'workflows', '3yqglVMObKORQ595.json');
@@ -103,17 +103,17 @@ ORDER BY created_at`;
   };
 }
 
-function postgresShellHypotheses() {
-  // Adapted from spec to live schema:
-  //   * initiative_assumptions has no assumption_code/component_id and is empty.
-  //   * Pivot to initiatives_v2 — each Shell initiative IS a hypothesis.
-  //   * Coin hypothesis_id = 'SHELL_' || LPAD(i.id::text, 3, '0')
-  // Returns 1 row per (initiative × component × pair). 9 distinct hypotheses,
-  // ~64 rows for Shell as of 2026-05-05.
+function postgresAllHypotheses() {
+  // 2026-05-05 fix: WHERE co.name = 'Shell' filter REMOVED. Returns
+  // hypotheses for ALL companies in initiatives_v2. The hypothesis_id
+  // is coined as <COMPANY>_<padded-id> using the company name (uppercased,
+  // non-alphanumeric stripped). New clients populated into initiatives_v2
+  // appear in 15a's classifier automatically.
   const sql = `SELECT
-  'SHELL_' || LPAD(i.id::text, 3, '0') AS hypothesis_id,
+  UPPER(REGEXP_REPLACE(co.name, '[^A-Za-z0-9]+', '_', 'g')) || '_' || LPAD(i.id::text, 3, '0') AS hypothesis_id,
   i.name                               AS hypothesis_label,
   i.name                               AS initiative_name,
+  co.name                              AS company_name,
   c.name                               AS component_name,
   cpl.pair_id,
   tap.pair_label,
@@ -126,8 +126,7 @@ JOIN companies co ON co.id = i.company_id
 LEFT JOIN components c ON c.initiative_id = i.id
 LEFT JOIN component_pair_links cpl ON cpl.component_id = c.id
 LEFT JOIN technology_application_pairs tap ON tap.id = cpl.pair_id
-WHERE co.name = 'Shell'
-ORDER BY i.id, c.id, cpl.pair_id`;
+ORDER BY co.name, i.id, c.id, cpl.pair_id`;
   return {
     parameters: {
       operation: 'executeQuery',
@@ -138,7 +137,7 @@ ORDER BY i.id, c.id, cpl.pair_id`;
     typeVersion: 2.6,
     position: [-720, 224],
     id: 'a1d0c08a-0004-4b00-9000-000000000004',
-    name: 'Postgres: Shell Hypotheses',
+    name: 'Postgres: All Hypotheses',
     credentials: {
       postgres: { id: PG_CRED_ID, name: PG_CRED_NAME }
     },
@@ -153,7 +152,7 @@ function buildClassificationContext() {
 // stage downstream. The Claude classifier sees a compact list of hypothesis
 // IDs + labels; matching by overlap is done in code, not by the LLM.
 
-const rows = $('Postgres: Shell Hypotheses').all().map(i => i.json);
+const rows = $('Postgres: All Hypotheses').all().map(i => i.json);
 
 const byId = new Map();
 for (const r of rows) {
@@ -204,12 +203,11 @@ return [{
 }
 
 function combinePayloadForClaude() {
-  // Slim version of the legacy combine-payload, oriented around the 9 PG-sourced
-  // Shell hypotheses (not the 80+ legacy IOC portfolio).
+  // Batches signals into payloads of <=10 each; the system prompt receives
+  // the PG-sourced hypothesis list (all clients) and asks Claude only for
+  // overall_classification + probability_delta. Hypothesis matching is done
+  // downstream in code, not by Claude.
   const code = `// Signal Pipeline 15a — Combine Payload for Claude — ${TODAY}
-// Batch signals into payloads of <=10 each; system prompt instructs Claude
-// to return overall_classification + Claude-suggested probability_delta only.
-// Hypothesis matching is done downstream in code, not by Claude.
 
 const ctx = $('Build Classification Context').first().json || {};
 const today = ctx.today || new Date().toISOString().slice(0, 10);
@@ -225,13 +223,13 @@ const systemPrompt = \`You are a signal classification engine for FutureBridge A
 
 For each signal, return a JSON object inside an array. No preamble. No explanation. JSON only.
 
-SHELL HYPOTHESES (full list — only these IDs are valid):
+HYPOTHESES (full list — only these IDs are valid):
 \${hypList}
 
 CLASSIFICATION RULES
-ACT     = threshold crossing or displacement event for one or more Shell hypotheses
+ACT     = threshold crossing or displacement event for one or more hypotheses
 WATCH   = material movement on one or more hypotheses, but no threshold crossed
-IGNORE  = no Shell hypothesis materially moved; or no relevance
+IGNORE  = no hypothesis materially moved; or no relevance
 
 For each signal, output:
 {
@@ -248,7 +246,7 @@ const batches = [];
 for (let i = 0; i < signals.length; i += batchSize) batches.push(signals.slice(i, i + batchSize));
 
 return batches.map((batch, idx) => {
-  const batchMessage = 'Classify these ' + batch.length + ' signals against the Shell hypothesis list above.\\n\\n' +
+  const batchMessage = 'Classify these ' + batch.length + ' signals against the hypothesis list above.\\n\\n' +
     batch.map((s, i) => 'SIGNAL ' + (i+1) +
       '\\nID: ' + (s.signal_id || '') +
       '\\nHeadline: ' + (s.headline || '') +
@@ -284,14 +282,33 @@ return batches.map((batch, idx) => {
 }
 
 function claudeClassify() {
-  // Reuse the existing node verbatim — preserves the inline x-api-key as deployed.
-  // Migration to anthropicApi credential is out of scope for this build (flagged
-  // in the run report as a separate fix).
-  const existing = byName['Claude — Classify Signals'];
+  // 2026-05-05 fix: switched to predefinedCredentialType + anthropicApi
+  // credential. No inline x-api-key. n8n auto-attaches the Anthropic key
+  // header from credential id SDCpsCbSvW9KWxdQ ("Anthropic account").
   return {
-    ...existing,
+    parameters: {
+      method: 'POST',
+      url: 'https://api.anthropic.com/v1/messages',
+      authentication: 'predefinedCredentialType',
+      nodeCredentialType: 'anthropicApi',
+      sendHeaders: true,
+      headerParameters: {
+        parameters: [
+          { name: 'anthropic-version', value: '2023-06-01' },
+        ],
+      },
+      sendBody: true,
+      contentType: 'raw',
+      rawContentType: 'application/json',
+      body: '={{ $json.request_body }}',
+      options: { timeout: 160000 },
+    },
+    type: 'n8n-nodes-base.httpRequest',
+    typeVersion: 4.4,
     position: [0, 224],
     id: 'a1d0c08a-0007-4b00-9000-000000000007',
+    name: 'Claude — Classify Signals',
+    credentials: { anthropicApi: { id: 'SDCpsCbSvW9KWxdQ', name: 'Anthropic account' } },
   };
 }
 
@@ -378,7 +395,7 @@ function matchSignalsToHypotheses() {
   // compute the set of Shell hypotheses whose keyword bag overlaps with the
   // signal's text bag above a threshold. Returns one item per matched signal,
   // with matched_hypothesis_ids and matched_pair_ids arrays.
-  const code = `// Signal Pipeline 15a — Match Signals to Shell Hypotheses — ${TODAY}
+  const code = `// Signal Pipeline 15a — Match Signals to Hypotheses — ${TODAY}
 // Code-based keyword overlap: not LLM. Each Shell hypothesis's keyword bag
 // is built from its initiative name, component names, and pair labels.
 // A signal matches if it shares >=2 distinct content tokens (after stop-word
@@ -469,7 +486,7 @@ return out;`;
     typeVersion: 2,
     position: [480, 224],
     id: 'a1d0c08a-0009-4b00-9000-000000000009',
-    name: 'Match Signals to Shell Hypotheses',
+    name: 'Match Signals to Hypotheses',
   };
 }
 
@@ -515,7 +532,7 @@ function build15aOutput() {
 // ontology_gap, apply ACT + gap filter (skip non-ACT; skip ACT where ALL
 // matched hypotheses have gap; pass mixed and flag).
 
-const matchedItems = $('Match Signals to Shell Hypotheses').all().map(i => i.json);
+const matchedItems = $('Match Signals to Hypotheses').all().map(i => i.json);
 const enrichmentRows = $('Postgres: Ontology Enrichment').all().map(i => i.json);
 const pairById = new Map(enrichmentRows.map(r => [r.pair_id, r]));
 
@@ -652,7 +669,7 @@ const nodes = [
   trigger(),
   prepareToday(),
   readMiniSignals(),
-  postgresShellHypotheses(),
+  postgresAllHypotheses(),
   buildClassificationContext(),
   combinePayloadForClaude(),
   claudeClassify(),

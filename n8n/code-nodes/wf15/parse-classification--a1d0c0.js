@@ -2,7 +2,7 @@
 // id:   a1d0c08a-0008-4b00-9000-000000000008
 // type: n8n-nodes-base.code
 // --- code below this line is what runs in n8n ---
-// Signal Pipeline 15a — Parse Classification — 2026-05-07
+// Signal Pipeline 15a — Parse Classification — 2026-05-05
 // Parse Claude's batch responses. Each batch returns a JSON array of
 // {signal_id, overall_classification, probability_delta, rationale}.
 // Flatten to a single results array and attach the original signal payload

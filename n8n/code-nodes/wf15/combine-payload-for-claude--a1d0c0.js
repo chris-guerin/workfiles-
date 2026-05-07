@@ -2,10 +2,7 @@
 // id:   a1d0c08a-0006-4b00-9000-000000000006
 // type: n8n-nodes-base.code
 // --- code below this line is what runs in n8n ---
-// Signal Pipeline 15a — Combine Payload for Claude — 2026-05-07
-// Batch signals into payloads of <=10 each; system prompt instructs Claude
-// to return overall_classification + Claude-suggested probability_delta only.
-// Hypothesis matching is done downstream in code, not by Claude.
+// Signal Pipeline 15a — Combine Payload for Claude — 2026-05-05
 
 const ctx = $('Build Classification Context').first().json || {};
 const today = ctx.today || new Date().toISOString().slice(0, 10);
@@ -21,13 +18,13 @@ const systemPrompt = `You are a signal classification engine for FutureBridge Ad
 
 For each signal, return a JSON object inside an array. No preamble. No explanation. JSON only.
 
-SHELL HYPOTHESES (full list — only these IDs are valid):
+HYPOTHESES (full list — only these IDs are valid):
 ${hypList}
 
 CLASSIFICATION RULES
-ACT     = threshold crossing or displacement event for one or more Shell hypotheses
+ACT     = threshold crossing or displacement event for one or more hypotheses
 WATCH   = material movement on one or more hypotheses, but no threshold crossed
-IGNORE  = no Shell hypothesis materially moved; or no relevance
+IGNORE  = no hypothesis materially moved; or no relevance
 
 For each signal, output:
 {
@@ -44,7 +41,7 @@ const batches = [];
 for (let i = 0; i < signals.length; i += batchSize) batches.push(signals.slice(i, i + batchSize));
 
 return batches.map((batch, idx) => {
-  const batchMessage = 'Classify these ' + batch.length + ' signals against the Shell hypothesis list above.\n\n' +
+  const batchMessage = 'Classify these ' + batch.length + ' signals against the hypothesis list above.\n\n' +
     batch.map((s, i) => 'SIGNAL ' + (i+1) +
       '\nID: ' + (s.signal_id || '') +
       '\nHeadline: ' + (s.headline || '') +
