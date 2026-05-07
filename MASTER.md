@@ -317,12 +317,21 @@ Rules: under 120 words. No FutureBridge name in body. No generic openers. Three 
 | Volkswagen Group | 3 | `P2_VWG_hypotheses` |
 | Porsche AG | 3 | `P2_VWG_hypotheses` |
 | Skoda Auto | 3 | `P2_VWG_hypotheses` |
+| **Infineon Technologies AG** | **3** | **`P4_infineon_hypotheses` (IFX-01..03 — 2026-05-07)** |
+| **Mercedes-Benz** | **3** | **`P4_mercedes_hypotheses` (MBG-01..03 — 2026-05-07; PG id=9 NOT id=6 Daimler Truck)** |
+| **Michelin Group** | **3** | **`P4_michelin_hypotheses` (ML-01..03 — 2026-05-07)** |
+| **MOL Group** | **3** | **`P4_mol_hypotheses` (MOL-01..03 — 2026-05-07; new PG company row created)** |
+| **SEAT / CUPRA** | **3** | **`P4_seat_cupra_hypotheses` (CUP-01..03 — 2026-05-07)** |
+| **Audi AG** | **3** | **`P4_audi_hypotheses` (AUD-01..03 — 2026-05-07)** |
 | Equinor ASA | 2 | from earlier ontology population scripts |
 | Vattenfall AB | 1 | from earlier ontology population scripts |
-| **Total live in 15a** | **25** | All seven companies pass the 15a hypothesis query (no Shell filter). |
+| **Total live in 15a** | **43** | All thirteen client companies pass the 15a hypothesis query (no Shell filter). |
 
-Total components added to `catalogue.components` in this run: 49.
-Total claims_v2 rows added: 46. Component attribute rows zero pending after run (v2 discipline holds: every populated attribute carries source_citation; every other attribute resolved to `not_in_source` with brief-anchored reason).
+Total components added in P4 run: 72 (12 per client × 6 clients).
+Total claims_v2 rows added in P4 run: 72.
+Total component_pair_links added (P4 → existing ontology): 18 (Infineon→SiC ×4, Infineon→auto-semis ×3, Mercedes→SDV/OTA ×4, SEAT/CUPRA→BEV/LFP ×3, Audi→SiC/SDV ×2, Mercedes→BEV exposure ×1, Michelin→BEV exposure ×1).
+
+**Component attribute rows: zero pending after each P4 run** (v2 discipline holds across all 6 P4 scripts).
 
 ---
 
@@ -332,8 +341,10 @@ Total claims_v2 rows added: 46. Component attribute rows zero pending after run 
 |----------|------|
 | URGENT | Revoke exposed API key (sk-ant-api03-Wip4...) at console.anthropic.com if not done |
 | Next | Apps Script INSERT trigger — install (run `installOntologyTriggers()` in Apps Script editor) |
-| Next | **Generate intelligence briefs for the 6 deferred energy clients** (TEN, TFMC, XOM, ENI, CNP, SLB) — this is the precondition for hypothesis population. Path A overnight skipped these because no brief existed in repo. |
+| Next | **Generate intelligence briefs for the deferred targets** — the most commercially valuable: STMicroelectronics, NXP Semiconductors, JLR, Continental AG. Then secondary energy clients: TEN, TFMC, XOM, ENI, CNP, SLB, Saudi Aramco. Then Renesas, onsemi, Wolfspeed, Mobileye for full semiconductor coverage. |
+| Next | **NXP Semiconductors PG dedup** — three rows in `catalogue.companies` (id=53 NXP Semiconductors, id=25 NXP Semiconductors Austria, id=52 NXP Semiconductors NV). Consolidate to one canonical row before populating NXP. None has any initiatives yet so consolidation is low-risk. |
 | Next | **MAN_001 fleet BEV charging hypothesis** — generate MAN brief first, then populate (was on original VWG brief, dropped from Path A) |
+| Next | **Tyre-specific ontology pairs** — current mobility ontology has no tyre pairs. Michelin (3 inits, 12 components) only has exposure_only linkage to BEV × passenger. Future pass: add `ev_specific_tyre_compound × passenger_car_electrification`, `aircraft_tyre_materials × aviation`, `mining_tyre × resource_extraction` pairs anchored on Michelin components. |
 | Done | ~~Mobility ontology Phase 3~~ — 15 pairs populated 2026-05-07 via `P3_mobility_ontology.mjs`. Cross-client adjacency edges (v1.3) flagged 13 of 36 new edges as cross-client. Ontology heat map now spans energy (33 pairs) + mobility (15 pairs) = 48 pairs total, 26 technologies, 12 applications. |
 | Next | **Mobility ontology cross-client extension** — when more brand briefs land (Audi, Mercedes, BMW, JLR), additional `component_pair_links` will retroactively flag adjacencies as cross-client via the v1.3 trigger. No schema work needed. |
 | Next | Confirm signal-engine API Bearer token state in `.claude/settings.local.json` and decide whether to repoint the new BP+VWG population scripts from direct PG to API path (matches Shell pattern exactly). |
