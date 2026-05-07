@@ -27,6 +27,7 @@
 //   GET    /health         Public, returns {ok: true} for Railway healthcheck.
 
 import express from 'express';
+import cors from 'cors';
 import pg from 'pg';
 import crypto from 'node:crypto';
 
@@ -54,6 +55,26 @@ pool.on('error', (err) => {
 });
 
 const app = express();
+
+// CORS — allow GitHub Pages (where account_plans_v8.html lives) and local
+// dev origins. Must be applied BEFORE the body parser so preflight OPTIONS
+// requests short-circuit cleanly (204) without express trying to read a body.
+// Server-to-server callers (n8n, population scripts, smoke tests) don't hit
+// CORS — only browser callers do — so this is purely additive.
+app.use(cors({
+  origin: [
+    'https://chris-guerin.github.io',
+    'http://localhost:3000',
+    'http://127.0.0.1:5500',
+  ],
+  methods: ['GET', 'POST', 'DELETE'],
+  allowedHeaders: [
+    'Authorization',
+    'Content-Type',
+    'anthropic-dangerous-direct-browser-access',
+  ],
+}));
+
 app.use(express.json({ limit: '2mb' }));
 
 // ---------- auth middleware ----------
