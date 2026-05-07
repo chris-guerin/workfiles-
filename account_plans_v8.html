@@ -1,0 +1,1484 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Account Plans v8 — FutureBridge Advisory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff; --fg:#000000; --muted:#4B4B55; --muted-light:#9a9aa0;
+  --border:#e6e6e8; --border-strong:#c8c8cc; --panel:#fafafa; --panel-2:#f3f3f5;
+  --red:#F84E5D; --red-dark:#d43a4a;
+  --green:#2c8a4d; --amber:#c98a1a; --grey:#6b6b70; --blue:#3a6ea5;
+  --font:'DM Sans',Helvetica,Arial,sans-serif;
+  --mono:'DM Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:var(--fg);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px}
+button{font-family:inherit;cursor:pointer}
+
+/* ── Layout ── */
+.app{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+aside{background:var(--panel);border-right:1px solid var(--border);padding:20px;display:flex;flex-direction:column;gap:18px;position:sticky;top:0;height:100vh;overflow-y:auto}
+main{padding:24px 36px 80px;max-width:1200px;width:100%}
+
+/* ── Sidebar ── */
+.brand{font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;line-height:1.3}
+.brand span{color:var(--muted);font-weight:500;font-size:10px;letter-spacing:0.1em;display:block;margin-top:3px}
+.config-block{display:flex;flex-direction:column;gap:8px;padding:14px;background:#fff;border:1px solid var(--border)}
+.config-label{font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)}
+.config-input{font-family:var(--mono);font-size:11px;padding:7px 8px;border:1px solid var(--border);background:#fff;color:var(--fg);outline:none;width:100%}
+.config-input:focus{border-color:var(--fg)}
+.config-help{font-size:10px;color:var(--muted);line-height:1.4}
+.btn-primary{background:var(--fg);color:#fff;border:none;padding:8px 12px;font-size:11px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase}
+.btn-primary:hover{background:var(--muted)}
+.btn-primary:disabled{opacity:0.4;cursor:not-allowed}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);padding:6px 10px;font-size:10px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase}
+.btn-ghost:hover{color:var(--fg);border-color:var(--fg)}
+
+.company-list{display:flex;flex-direction:column;gap:1px;flex:1;overflow-y:auto;border:1px solid var(--border);background:#fff}
+.company-list-empty{padding:14px;font-size:12px;color:var(--muted);font-style:italic}
+.company-item{padding:9px 12px;font-size:12px;cursor:pointer;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.company-item:last-child{border-bottom:none}
+.company-item:hover{background:var(--panel-2)}
+.company-item.active{background:var(--fg);color:#fff}
+.company-item.active .ci-count{color:#fff;border-color:#fff}
+.ci-count{font-family:var(--mono);font-size:10px;color:var(--muted);border:1px solid var(--border-strong);padding:1px 5px;border-radius:2px;flex-shrink:0}
+
+/* ── Main header ── */
+.main-header{padding-bottom:20px;border-bottom:1px solid var(--border);margin-bottom:24px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.mh-left h1{font-size:28px;font-weight:700;line-height:1.15}
+.mh-meta{margin-top:6px;font-size:11px;color:var(--muted);font-family:var(--mono);letter-spacing:0.04em}
+.mh-meta .sep{margin:0 8px;color:var(--border-strong)}
+.mh-right{display:flex;gap:6px;flex-wrap:wrap}
+
+/* ── Tab nav ── */
+.tabs{display:flex;flex-wrap:wrap;gap:0;border-bottom:1px solid var(--border);margin-bottom:24px}
+.tab{background:transparent;border:none;border-bottom:2px solid transparent;padding:10px 14px;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;font-family:var(--font)}
+.tab:hover{color:var(--fg)}
+.tab.active{color:var(--fg);border-bottom-color:var(--red);font-weight:600}
+.tab .badge{background:var(--panel-2);color:var(--muted);font-family:var(--mono);font-size:10px;padding:1px 5px;border-radius:2px;margin-left:6px}
+.tab.active .badge{background:var(--fg);color:#fff}
+
+/* ── Section / cards ── */
+.section{margin-bottom:36px}
+.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:14px;border-bottom:1px solid var(--border);padding-bottom:8px}
+.section-head h2{font-size:18px;font-weight:600;line-height:1.2}
+.section-head .sub{font-size:11px;color:var(--muted);margin-top:2px}
+.section-head-right{display:flex;gap:6px;align-items:center}
+.section-source{font-size:10px;color:var(--muted-light);font-family:var(--mono);letter-spacing:0.06em;text-transform:uppercase}
+
+.card{border:1px solid var(--border);background:#fff;padding:18px;margin-bottom:12px}
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}
+.card h3{font-size:14px;font-weight:600;line-height:1.3}
+.card .meta{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:0.04em}
+.card .body{font-size:13px;color:var(--muted);line-height:1.55;margin-top:6px}
+.card .body strong{color:var(--fg);font-weight:600}
+
+/* ── Badges ── */
+.badge-pill{display:inline-block;font-family:var(--mono);font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;letter-spacing:0.04em}
+.b-h1{background:#e3f0e6;color:var(--green)}
+.b-h2{background:#fdf3dd;color:var(--amber)}
+.b-h3{background:#fde2e5;color:var(--red-dark)}
+.b-high{background:#e3f0e6;color:var(--green)}
+.b-medium{background:#fdf3dd;color:var(--amber)}
+.b-low{background:#fde2e5;color:var(--red-dark)}
+.b-strengthening{background:#e3f0e6;color:var(--green)}
+.b-improving{background:#e3f0e6;color:var(--green)}
+.b-holding{background:var(--panel-2);color:var(--grey)}
+.b-stable{background:var(--panel-2);color:var(--grey)}
+.b-weakening{background:#fde2e5;color:var(--red-dark)}
+.b-deteriorating{background:#fde2e5;color:var(--red-dark)}
+.b-volatile{background:#fdf3dd;color:var(--amber)}
+.b-ambiguous{background:#fdf3dd;color:var(--amber)}
+.b-new{background:#dee9f5;color:var(--blue)}
+.b-broken{background:#fde2e5;color:var(--red-dark)}
+.b-primary{background:var(--fg);color:#fff}
+.b-secondary{background:var(--panel-2);color:var(--muted)}
+.b-exposure_only{background:#dee9f5;color:var(--blue)}
+.b-flag{background:var(--red);color:#fff}
+
+/* ── Confidence bar ── */
+.confbar{display:flex;align-items:center;gap:8px;margin-top:6px}
+.confbar-rail{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;max-width:200px}
+.confbar-fill{height:100%;background:var(--red);transition:width 0.3s}
+.confbar-val{font-family:var(--mono);font-size:11px;color:var(--muted);min-width:38px}
+
+/* ── Loading / error states ── */
+.state-block{padding:24px;text-align:center;border:1px dashed var(--border);background:var(--panel)}
+.state-block .icon{font-size:18px;margin-bottom:8px}
+.state-block .msg{font-size:13px;color:var(--muted)}
+.state-block .sub{font-size:11px;color:var(--muted-light);margin-top:4px;font-family:var(--mono)}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--fg);border-radius:50%;animation:spin 0.8s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── Tab-specific ── */
+.empty-prompt{padding:80px 20px;text-align:center;color:var(--muted)}
+.empty-prompt h2{font-weight:500;font-size:18px;margin-bottom:8px}
+.empty-prompt p{font-size:13px;line-height:1.6;max-width:480px;margin:0 auto}
+
+/* Hypotheses */
+.hyp-card{border:1px solid var(--border);background:#fff;margin-bottom:14px;padding:0}
+.hyp-card-head{padding:14px 16px 12px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.hyp-card-name{font-size:14px;font-weight:600;line-height:1.3;flex:1}
+.hyp-statement{padding:14px 16px;font-size:13px;font-style:italic;color:var(--muted);border-bottom:1px solid var(--border);line-height:1.55}
+.hyp-decision{padding:12px 16px;background:var(--panel);font-size:12px;color:var(--muted);border-bottom:1px solid var(--border);line-height:1.55}
+.hyp-decision strong{color:var(--fg);font-weight:600;text-transform:uppercase;font-size:10px;letter-spacing:0.06em}
+.hyp-comps{padding:10px 16px}
+.hyp-comp-toggle{font-size:11px;color:var(--muted);cursor:pointer;font-family:var(--mono);letter-spacing:0.04em;text-transform:uppercase;padding:4px 0}
+.hyp-comp-list{margin-top:8px;display:none}
+.hyp-comp-list.open{display:block}
+.hyp-comp{padding:8px 10px;border:1px solid var(--border);background:#fff;margin-bottom:6px;font-size:12px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.hyp-comp-name{font-family:var(--mono);font-size:11px;color:var(--fg);flex:1;word-break:break-word}
+.hyp-comp-meta{display:flex;gap:5px;flex-shrink:0}
+
+/* Technologies */
+.tech-horizon{margin-bottom:20px}
+.tech-horizon-head{font-size:13px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.tech-pair{padding:12px 14px;border:1px solid var(--border);background:#fff;margin-bottom:6px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}
+.tech-pair-label{font-size:13px;font-weight:500;line-height:1.4}
+.tech-pair-tech{font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:3px}
+.tech-pair-meta{display:flex;gap:5px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.tech-traj{font-family:var(--mono);font-size:14px;font-weight:600}
+.tech-traj.up{color:var(--green)}
+.tech-traj.down{color:var(--red-dark)}
+.tech-traj.flat{color:var(--grey)}
+.tech-cce{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--blue);font-family:var(--mono);background:#dee9f5;padding:2px 6px;border-radius:10px}
+
+/* Signals */
+.signal-card{border:1px solid var(--border);background:#fff;padding:14px;margin-bottom:8px}
+.signal-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px}
+.signal-title{font-size:13px;font-weight:600;line-height:1.35;flex:1}
+.signal-class{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:0.06em;padding:2px 7px;border-radius:2px}
+.signal-class.act{background:var(--red);color:#fff}
+.signal-class.watch{background:#fdf3dd;color:var(--amber)}
+.signal-class.ignore{background:var(--panel-2);color:var(--muted)}
+.signal-meta{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:6px}
+.signal-hyp-tags{margin-top:8px;display:flex;gap:4px;flex-wrap:wrap}
+.signal-hyp-tag{font-family:var(--mono);font-size:10px;background:var(--panel-2);color:var(--muted);padding:2px 6px;border-radius:2px;border:1px solid var(--border)}
+
+/* Contacts */
+.contacts-tier-group{margin-bottom:22px}
+.contacts-tier-head{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.contact-row{padding:10px 14px;border:1px solid var(--border);background:#fff;margin-bottom:5px;display:grid;grid-template-columns:1fr auto auto auto;gap:10px;align-items:center;font-size:12px}
+.contact-name{font-weight:600}
+.contact-title{color:var(--muted);font-size:11px;margin-top:2px}
+.contact-persona{font-family:var(--mono);font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);background:var(--panel-2);padding:2px 6px;border-radius:2px}
+.contact-tier{font-family:var(--mono);font-size:10px;color:var(--muted);font-weight:600}
+.contact-link{font-size:11px}
+
+/* Pre/Post meeting */
+.pm-step{margin-bottom:18px;padding:16px;border:1px solid var(--border);background:#fff}
+.pm-step-head{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px}
+.pm-input,.pm-select,.pm-textarea{font-family:var(--font);font-size:13px;padding:8px 10px;border:1px solid var(--border);background:#fff;color:var(--fg);width:100%;outline:none}
+.pm-input:focus,.pm-select:focus,.pm-textarea:focus{border-color:var(--fg)}
+.pm-textarea{min-height:90px;resize:vertical;line-height:1.5}
+.pm-textarea.transcript{min-height:400px;font-family:var(--mono);font-size:12px;line-height:1.55}
+.pm-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pm-output{margin-top:14px;padding:18px;background:var(--panel);border:1px solid var(--border)}
+.pm-output h3{font-size:13px;font-weight:600;margin-bottom:8px;letter-spacing:0.04em;text-transform:uppercase;color:var(--muted)}
+.pm-output h3:not(:first-child){margin-top:18px}
+.pm-output p{font-size:13px;line-height:1.6;color:var(--fg);margin-bottom:8px}
+.pm-output ul{padding-left:20px;font-size:13px;line-height:1.6}
+.pm-output li{margin-bottom:5px}
+
+/* Meetings (carry from v7 — simplified) */
+.mtg-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:14px}
+.mtg-tab{background:transparent;border:none;border-bottom:2px solid transparent;padding:8px 14px;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer}
+.mtg-tab.active{color:var(--fg);border-bottom-color:var(--red);font-weight:600}
+.mtg-form .field{margin-bottom:10px}
+.mtg-form label{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.04em}
+.mtg-form input,.mtg-form textarea,.mtg-form select{width:100%;padding:8px;border:1px solid var(--border);font-family:var(--font);font-size:13px;outline:none}
+.mtg-form input:focus,.mtg-form textarea:focus,.mtg-form select:focus{border-color:var(--fg)}
+.mtg-form textarea{min-height:120px;resize:vertical}
+
+/* Hypothesis update preview */
+.hyp-update-card{padding:10px 12px;background:#fff;border:1px solid var(--border);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.hyp-update-arrow{font-family:var(--mono);font-size:14px;font-weight:600}
+.hyp-update-arrow.up{color:var(--green)}
+.hyp-update-arrow.down{color:var(--red-dark)}
+.hyp-update-arrow.flat{color:var(--grey)}
+
+/* Markdown-ish formatting helpers for Claude output */
+.fmt h1,.fmt h2,.fmt h3,.fmt h4{font-weight:600;line-height:1.3;margin:14px 0 6px}
+.fmt h1{font-size:18px}
+.fmt h2{font-size:15px}
+.fmt h3{font-size:13px;text-transform:uppercase;letter-spacing:0.04em;color:var(--muted)}
+.fmt p{margin-bottom:10px;font-size:13px;line-height:1.6}
+.fmt ul,.fmt ol{padding-left:20px;margin-bottom:10px;font-size:13px;line-height:1.6}
+.fmt li{margin-bottom:4px}
+.fmt strong{font-weight:600}
+.fmt em{font-style:italic;color:var(--muted)}
+.fmt code{font-family:var(--mono);font-size:11px;background:var(--panel-2);padding:1px 4px;border-radius:2px}
+
+/* Print styles */
+@media print{
+  aside,.tabs,.section-head-right,.btn-primary,.btn-ghost{display:none !important}
+  main{padding:0;max-width:100%}
+  .pm-output{border:none;padding:0;background:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ══ SIDEBAR ══════════════════════════════════════════════════════════ -->
+<aside>
+  <div class="brand">FutureBridge<br><span>Account Plans v8</span></div>
+
+  <div class="config-block">
+    <div class="config-label">Signal Engine token</div>
+    <input class="config-input" type="password" id="bearerToken" placeholder="paste Bearer token" autocomplete="off">
+    <div class="config-help">Bearer token from Railway Variables (signal-engine-api).</div>
+  </div>
+
+  <div class="config-block">
+    <div class="config-label">Anthropic API key</div>
+    <input class="config-input" type="password" id="anthropicKey" placeholder="sk-ant-..." autocomplete="off">
+    <div class="config-help">For Claude generation in Overview, Strategy, Pre-Meeting, Post-Meeting tabs.</div>
+  </div>
+
+  <div class="config-block">
+    <div class="config-label">Apps Script URL</div>
+    <input class="config-input" type="text" id="scriptUrl" placeholder="https://script.google.com/..." autocomplete="off">
+    <div class="config-help">Meeting log backend (carry from v7).</div>
+  </div>
+
+  <button class="btn-primary" id="loadCompaniesBtn" onclick="loadCompanies()">Load companies</button>
+
+  <div id="companyList" class="company-list">
+    <div class="company-list-empty">Enter Bearer token then click "Load companies" above.</div>
+  </div>
+
+  <div style="display:flex;gap:6px;margin-top:auto">
+    <button class="btn-ghost" style="flex:1" onclick="clearCacheConfirm()">Clear cache</button>
+  </div>
+</aside>
+
+<!-- ══ MAIN ════════════════════════════════════════════════════════════ -->
+<main>
+  <div id="mainContent">
+    <div class="empty-prompt">
+      <h2>Account Plans v8 — live intelligence</h2>
+      <p>Enter your Signal Engine Bearer token and Anthropic API key in the sidebar, then load companies. Selecting a company pulls live hypotheses, ontology pairs, signal log, and contacts from the catalogue, and enriches Claude generations with that data.</p>
+      <p style="margin-top:14px;font-size:11px;color:var(--muted-light);font-family:var(--mono)">API base: signal-engine-api-production-0cf1.up.railway.app</p>
+    </div>
+  </div>
+</main>
+
+</div>
+
+<script>
+// ══ CONSTANTS ══════════════════════════════════════════════════════════
+const API_BASE = 'https://signal-engine-api-production-0cf1.up.railway.app';
+const ANTHROPIC_MODEL = 'claude-sonnet-4-5';
+const ANTHROPIC_VERSION = '2023-06-01';
+
+const TABS = [
+  { id:'overview',     label:'Overview',     source:'claude' },
+  { id:'strategy',     label:'Strategy',     source:'claude' },
+  { id:'hypotheses',   label:'Hypotheses',   source:'pg' },
+  { id:'technologies', label:'Technologies', source:'pg' },
+  { id:'signals',      label:'Signal Log',   source:'pg' },
+  { id:'painpoints',   label:'Pain points',  source:'claude' },
+  { id:'weaksignals',  label:'Weak signals', source:'claude' },
+  { id:'contacts',     label:'Contacts',     source:'pg' },
+  { id:'premeeting',   label:'Pre-Meeting',  source:'claude' },
+  { id:'meetings',     label:'Meetings',     source:'apps_script' },
+  { id:'postmeeting',  label:'Post-Meeting', source:'claude' },
+];
+
+// ══ STATE ══════════════════════════════════════════════════════════════
+const state = {
+  companies: [],
+  current: null,           // { id, name, sector, initiative_count }
+  data: {                  // per-company live data
+    hypotheses: null,      // null = not loaded; [] = empty; [...] = loaded
+    ontology: null,
+    signals: null,
+    contacts: null,
+  },
+  claudeCache: {},         // key -> last response text
+  activeTab: 'hypotheses', // default to first PG-backed tab
+};
+
+// ══ INIT ═══════════════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  // Restore config from localStorage
+  ['bearerToken','anthropicKey','scriptUrl'].forEach(id => {
+    const v = localStorage.getItem('v8_' + id) || '';
+    document.getElementById(id).value = v;
+    document.getElementById(id).addEventListener('input', e => {
+      localStorage.setItem('v8_' + id, e.target.value);
+    });
+  });
+
+  // If token present, auto-load companies
+  if (document.getElementById('bearerToken').value) {
+    loadCompanies();
+  }
+});
+
+// ══ CONFIG GETTERS ═════════════════════════════════════════════════════
+const getBearer = () => document.getElementById('bearerToken').value.trim();
+const getAnthropicKey = () => document.getElementById('anthropicKey').value.trim();
+const getScriptUrl = () => document.getElementById('scriptUrl').value.trim();
+
+function clearCacheConfirm() {
+  if (confirm('Clear all local caches (Claude responses, per-company data)? Sidebar config is kept.')) {
+    state.companies = [];
+    state.current = null;
+    state.data = { hypotheses:null, ontology:null, signals:null, contacts:null };
+    state.claudeCache = {};
+    localStorage.removeItem('v8_claudeCache');
+    document.getElementById('companyList').innerHTML = '<div class="company-list-empty">Cache cleared. Click "Load companies" to refresh.</div>';
+    document.getElementById('mainContent').innerHTML = '<div class="empty-prompt"><h2>Cache cleared</h2><p>Click "Load companies" in the sidebar.</p></div>';
+  }
+}
+
+// ══ API HELPERS ════════════════════════════════════════════════════════
+async function apiGet(path) {
+  const tok = getBearer();
+  if (!tok) throw new Error('No Bearer token in sidebar');
+  const r = await fetch(API_BASE + path, {
+    headers: { 'Authorization': 'Bearer ' + tok }
+  });
+  if (!r.ok) {
+    const txt = await r.text().catch(() => '');
+    throw new Error(`${path} → ${r.status}: ${txt.slice(0,160)}`);
+  }
+  return r.json();
+}
+
+async function callClaude(prompt, maxTokens = 1500, system = null) {
+  const key = getAnthropicKey();
+  if (!key) throw new Error('No Anthropic API key in sidebar');
+  const body = {
+    model: ANTHROPIC_MODEL,
+    max_tokens: maxTokens,
+    messages: [{ role:'user', content: prompt }],
+  };
+  if (system) body.system = system;
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-api-key': key,
+      'anthropic-version': ANTHROPIC_VERSION,
+      'anthropic-dangerous-direct-browser-access': 'true',
+    },
+    body: JSON.stringify(body),
+  });
+  if (!r.ok) {
+    const txt = await r.text().catch(() => '');
+    throw new Error(`Claude ${r.status}: ${txt.slice(0,200)}`);
+  }
+  const data = await r.json();
+  return (data.content || []).map(c => c.text || '').join('');
+}
+
+async function appsScriptGet(action, params = {}) {
+  const url = getScriptUrl();
+  if (!url) throw new Error('No Apps Script URL in sidebar');
+  const qs = new URLSearchParams({ action, ...params });
+  const r = await fetch(url + '?' + qs.toString());
+  if (!r.ok) throw new Error(`Apps Script ${r.status}`);
+  return r.json();
+}
+
+async function appsScriptPost(action, data) {
+  const url = getScriptUrl();
+  if (!url) throw new Error('No Apps Script URL in sidebar');
+  // no-cors mode (matches v7) — we don't get a response body but the write succeeds
+  await fetch(url, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action, data }),
+  });
+}
+
+// ══ COMPANY LOADER ═════════════════════════════════════════════════════
+async function loadCompanies() {
+  const btn = document.getElementById('loadCompaniesBtn');
+  const list = document.getElementById('companyList');
+  if (!getBearer()) { list.innerHTML = '<div class="company-list-empty">⚠ Bearer token required.</div>'; return; }
+  btn.disabled = true; btn.textContent = 'Loading…';
+  list.innerHTML = '<div class="company-list-empty"><span class="spinner"></span>Fetching /v8/companies…</div>';
+  try {
+    const cos = await apiGet('/v8/companies');
+    state.companies = cos;
+    renderCompanyList();
+    // URL parameter direct linking
+    const params = new URLSearchParams(window.location.search);
+    const direct = params.get('company');
+    if (direct) {
+      const match = cos.find(c => c.name.toLowerCase() === direct.toLowerCase())
+                 || cos.find(c => c.name.toLowerCase().includes(direct.toLowerCase()));
+      if (match) selectCompany(match);
+    }
+  } catch (e) {
+    list.innerHTML = `<div class="company-list-empty">Error: ${escapeHtml(e.message)}</div>`;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Reload companies';
+  }
+}
+
+function renderCompanyList() {
+  const list = document.getElementById('companyList');
+  if (!state.companies.length) {
+    list.innerHTML = '<div class="company-list-empty">No companies returned.</div>';
+    return;
+  }
+  list.innerHTML = state.companies.map(c => `
+    <div class="company-item ${state.current && state.current.id===c.id?'active':''}" onclick='selectCompany(${JSON.stringify(c).replace(/'/g,"\\'")})'>
+      <span>${escapeHtml(c.name)}</span>
+      <span class="ci-count">${c.initiative_count}</span>
+    </div>
+  `).join('');
+}
+
+// ══ COMPANY SELECTION ══════════════════════════════════════════════════
+async function selectCompany(co) {
+  state.current = co;
+  state.data = { hypotheses:null, ontology:null, signals:null, contacts:null };
+  state.activeTab = 'hypotheses';
+  renderCompanyList();
+  renderMain();
+  // Update URL without reload (deep-link friendly)
+  const url = new URL(window.location);
+  url.searchParams.set('company', co.name);
+  history.replaceState({}, '', url);
+  // Parallel fetch of all 4 PG endpoints (each independent — failures show per-section)
+  loadHypotheses();
+  loadOntology();
+  loadSignals();
+  loadContacts();
+}
+
+async function loadHypotheses() {
+  try {
+    state.data.hypotheses = await apiGet('/v8/hypotheses?company=' + encodeURIComponent(state.current.name));
+  } catch (e) {
+    state.data.hypotheses = { error: e.message };
+  }
+  if (state.activeTab === 'hypotheses') renderTab();
+}
+async function loadOntology() {
+  try {
+    state.data.ontology = await apiGet('/v8/ontology-pairs?company=' + encodeURIComponent(state.current.name));
+  } catch (e) {
+    state.data.ontology = { error: e.message };
+  }
+  if (state.activeTab === 'technologies') renderTab();
+}
+async function loadSignals() {
+  try {
+    state.data.signals = await apiGet('/v8/signals?company=' + encodeURIComponent(state.current.name) + '&limit=50');
+  } catch (e) {
+    state.data.signals = { error: e.message };
+  }
+  if (state.activeTab === 'signals') renderTab();
+}
+async function loadContacts() {
+  try {
+    state.data.contacts = await apiGet('/v8/contacts?company=' + encodeURIComponent(state.current.name) + '&limit=200');
+  } catch (e) {
+    state.data.contacts = { error: e.message };
+  }
+  if (state.activeTab === 'contacts' || state.activeTab === 'premeeting') renderTab();
+}
+
+// ══ MAIN RENDER ════════════════════════════════════════════════════════
+function renderMain() {
+  if (!state.current) return;
+  const co = state.current;
+  document.getElementById('mainContent').innerHTML = `
+    <div class="main-header">
+      <div class="mh-left">
+        <h1>${escapeHtml(co.name)}</h1>
+        <div class="mh-meta">
+          ${escapeHtml(co.sector)} <span class="sep">·</span>
+          ${co.initiative_count} initiative${co.initiative_count===1?'':'s'}
+          <span class="sep">·</span>
+          live from catalogue.initiatives_v2
+        </div>
+      </div>
+      <div class="mh-right">
+        <button class="btn-ghost" onclick="window.print()">Print / PDF</button>
+        <button class="btn-ghost" onclick="copyDeepLink()">Copy link</button>
+      </div>
+    </div>
+    <nav class="tabs" id="tabNav">
+      ${TABS.map(t => `<button class="tab ${state.activeTab===t.id?'active':''}" onclick="switchTab('${t.id}')">${t.label}</button>`).join('')}
+    </nav>
+    <div id="tabContent"></div>
+  `;
+  renderTab();
+}
+
+function switchTab(tabId) {
+  state.activeTab = tabId;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  renderTab();
+}
+
+function copyDeepLink() {
+  const url = new URL(window.location);
+  url.searchParams.set('company', state.current.name);
+  navigator.clipboard.writeText(url.toString()).then(()=>{
+    const b = event.currentTarget;
+    const orig = b.textContent;
+    b.textContent = 'Copied ✓';
+    setTimeout(()=>{ b.textContent = orig; }, 1400);
+  });
+}
+
+function renderTab() {
+  const c = document.getElementById('tabContent');
+  if (!c) return;
+  const tab = state.activeTab;
+  c.innerHTML = '<div class="state-block"><div class="msg"><span class="spinner"></span>Rendering…</div></div>';
+  switch (tab) {
+    case 'overview':     renderOverview(c); break;
+    case 'strategy':     renderStrategy(c); break;
+    case 'hypotheses':   renderHypothesesTab(c); break;
+    case 'technologies': renderTechnologiesTab(c); break;
+    case 'signals':      renderSignalsTab(c); break;
+    case 'painpoints':   renderPainPointsTab(c); break;
+    case 'weaksignals':  renderWeakSignalsTab(c); break;
+    case 'contacts':     renderContactsTab(c); break;
+    case 'premeeting':   renderPreMeetingTab(c); break;
+    case 'meetings':     renderMeetingsTab(c); break;
+    case 'postmeeting':  renderPostMeetingTab(c); break;
+    default:             c.innerHTML = '<div class="state-block"><div class="msg">Unknown tab.</div></div>';
+  }
+}
+
+// ══ HELPERS ════════════════════════════════════════════════════════════
+function escapeHtml(s) {
+  if (s == null) return '';
+  return String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+function fmt(s) {
+  // Light markdown: paragraphs, bold, bullets, headings
+  if (!s) return '';
+  let out = escapeHtml(s);
+  out = out.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+  out = out.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+  out = out.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+  out = out.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  out = out.replace(/(^|\n)(- |\* )(.+)/g, (_,p,b,t) => `${p}<li>${t}</li>`);
+  out = out.replace(/(<li>.+<\/li>(\n<li>.+<\/li>)*)/g, '<ul>$1</ul>');
+  out = out.replace(/<\/li>\n<li>/g, '</li><li>');
+  out = out.replace(/\n\n+/g, '</p><p>');
+  out = '<p>' + out + '</p>';
+  out = out.replace(/<p>(<h[1-3]|<ul)/g, '$1').replace(/(<\/h[1-3]>|<\/ul>)<\/p>/g, '$1');
+  return `<div class="fmt">${out}</div>`;
+}
+function arrow(traj) {
+  const t = (traj || '').toLowerCase();
+  if (t === 'improving' || t === 'strengthening') return { sym:'↑', cls:'up' };
+  if (t === 'deteriorating' || t === 'weakening' || t === 'broken') return { sym:'↓', cls:'down' };
+  if (t === 'volatile' || t === 'ambiguous')      return { sym:'↔', cls:'flat' };
+  if (t === 'new')                                return { sym:'★', cls:'flat' };
+  return { sym:'→', cls:'flat' };
+}
+function badge(value, prefix = '') {
+  if (!value) return '';
+  const cls = `badge-pill b-${prefix}${String(value).toLowerCase().replace(/[^a-z0-9_]/g,'')}`;
+  return `<span class="${cls}">${escapeHtml(value)}</span>`;
+}
+function loadingBlock(label) {
+  return `<div class="state-block"><div class="msg"><span class="spinner"></span>${escapeHtml(label)}</div></div>`;
+}
+function errorBlock(label, err) {
+  return `<div class="state-block"><div class="icon">⚠</div><div class="msg">${escapeHtml(label)}</div><div class="sub">${escapeHtml(err || '')}</div></div>`;
+}
+function checkData(d) { return d && !d.error; }
+
+// ══ OVERVIEW (Claude) ══════════════════════════════════════════════════
+async function renderOverview(c) {
+  if (!checkData(state.data.hypotheses)) {
+    c.innerHTML = loadingBlock('Waiting for hypotheses to load…');
+    return;
+  }
+  const cacheKey = 'overview:' + state.current.id;
+  if (state.claudeCache[cacheKey]) {
+    c.innerHTML = renderClaudeBlock('Overview', 'Business summary, key metrics, current confidence', state.claudeCache[cacheKey], cacheKey);
+    return;
+  }
+  c.innerHTML = `
+    <div class="section">
+      <div class="section-head">
+        <div><h2>Overview</h2><div class="sub">Business summary enriched with PG hypotheses</div></div>
+        <div class="section-head-right"><span class="section-source">Claude · live</span></div>
+      </div>
+      ${loadingBlock('Generating overview from hypotheses…')}
+    </div>`;
+  try {
+    const ctx = state.data.hypotheses.map(h => `- ${h.initiative_name} (H=${h.horizon}, conf=${h.confidence_level}, state=${h.state})`).join('\n');
+    const prompt = `You are a senior FutureBridge analyst. Generate a concise overview of ${state.current.name} as a strategic engagement target.
+
+Their currently-tracked strategic hypotheses (from FutureBridge catalogue):
+${ctx}
+
+Produce a brief in three short sections:
+1. Business summary — 3 sentences positioning ${state.current.name} in its sector.
+2. Confidence read — what the hypothesis confidence pattern tells us about strategic clarity at this client.
+3. Current FutureBridge angle — one paragraph naming the most commercially relevant 1–2 hypotheses to lead engagement.
+
+Plain prose, no markdown headers, no bold. Sentence case throughout. Maximum ~350 words.`;
+    const out = await callClaude(prompt, 700);
+    state.claudeCache[cacheKey] = out;
+    c.innerHTML = renderClaudeBlock('Overview', 'Business summary enriched with PG hypotheses', out, cacheKey);
+  } catch (e) {
+    c.innerHTML = errorBlock('Could not generate overview', e.message);
+  }
+}
+
+function renderClaudeBlock(title, sub, text, cacheKey) {
+  return `
+    <div class="section">
+      <div class="section-head">
+        <div><h2>${escapeHtml(title)}</h2><div class="sub">${escapeHtml(sub)}</div></div>
+        <div class="section-head-right">
+          <span class="section-source">Claude · cached</span>
+          <button class="btn-ghost" onclick="invalidateAndRerender('${cacheKey}')">Regenerate</button>
+        </div>
+      </div>
+      ${fmt(text)}
+    </div>`;
+}
+function invalidateAndRerender(cacheKey) {
+  delete state.claudeCache[cacheKey];
+  renderTab();
+}
+
+// ══ STRATEGY (Claude) ══════════════════════════════════════════════════
+async function renderStrategy(c) {
+  if (!checkData(state.data.hypotheses)) {
+    c.innerHTML = loadingBlock('Waiting for hypotheses to load…');
+    return;
+  }
+  const cacheKey = 'strategy:' + state.current.id;
+  if (state.claudeCache[cacheKey]) {
+    c.innerHTML = renderClaudeBlock('Strategy', 'Strategic direction + major bets', state.claudeCache[cacheKey], cacheKey);
+    return;
+  }
+  c.innerHTML = `
+    <div class="section">
+      <div class="section-head">
+        <div><h2>Strategy</h2><div class="sub">Strategic direction + major bets</div></div>
+        <div class="section-head-right"><span class="section-source">Claude · live</span></div>
+      </div>
+      ${loadingBlock('Generating strategy section from hypotheses…')}
+    </div>`;
+  try {
+    const ctx = state.data.hypotheses.map(h => `- ${h.initiative_name}: ${h.hypothesis} (horizon=${h.horizon}, year=${h.time_horizon_year}, state=${h.state}, trajectory=${h.trajectory})`).join('\n');
+    const prompt = `You are a senior FutureBridge analyst. Generate a Strategy section for ${state.current.name}.
+
+Tracked hypotheses with state and trajectory:
+${ctx}
+
+Produce three sections of plain prose:
+1. Strategic direction — one paragraph synthesising the core bet ${state.current.name} is making across these hypotheses.
+2. Major bets — three bullet points, each tied to a specific hypothesis name from the list.
+3. Defensive moves — two bullet points, each tied to hypothesis state being weakening, deteriorating, ambiguous, or new.
+
+Use sentence case. No bold. Use - for bullets. Maximum ~450 words.`;
+    const out = await callClaude(prompt, 900);
+    state.claudeCache[cacheKey] = out;
+    c.innerHTML = renderClaudeBlock('Strategy', 'Strategic direction + major bets', out, cacheKey);
+  } catch (e) {
+    c.innerHTML = errorBlock('Could not generate strategy', e.message);
+  }
+}
+
+// ══ HYPOTHESES (PG live) ═══════════════════════════════════════════════
+function renderHypothesesTab(c) {
+  const d = state.data.hypotheses;
+  if (d === null) { c.innerHTML = loadingBlock('Loading hypotheses from /v8/hypotheses…'); return; }
+  if (d.error)    { c.innerHTML = errorBlock('Hypotheses unavailable — check API token in sidebar', d.error); return; }
+  if (!d.length)  { c.innerHTML = `<div class="state-block"><div class="msg">No hypotheses populated for ${escapeHtml(state.current.name)}.</div></div>`; return; }
+  c.innerHTML = `
+    <div class="section">
+      <div class="section-head">
+        <div><h2>Hypotheses</h2><div class="sub">${d.length} initiative${d.length===1?'':'s'} from catalogue.initiatives_v2</div></div>
+        <div class="section-head-right"><span class="section-source">PG · live</span></div>
+      </div>
+      ${d.map(renderHypothesisCard).join('')}
+    </div>`;
+}
+
+function renderHypothesisCard(h) {
+  const conf = Math.round((h.confidence_level || 0) * 100);
+  const arr = arrow(h.trajectory);
+  const compsCount = (h.components || []).length;
+  return `
+    <div class="hyp-card">
+      <div class="hyp-card-head">
+        <div class="hyp-card-name">${escapeHtml(h.initiative_name)}</div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;flex-shrink:0">
+          ${badge(h.horizon, 'h')}
+          ${badge(h.persona)}
+          ${badge(h.state)}
+          <span class="badge-pill" style="background:var(--panel-2);color:var(--muted)">${h.time_horizon_year || '—'}</span>
+        </div>
+      </div>
+      <div class="hyp-statement">${escapeHtml(h.hypothesis)}</div>
+      ${h.decision_threshold ? `<div class="hyp-decision"><strong>Decision threshold</strong><br>${escapeHtml(h.decision_threshold)}</div>` : ''}
+      <div class="hyp-comps">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="confbar">
+            <div class="confbar-rail"><div class="confbar-fill" style="width:${conf}%"></div></div>
+            <div class="confbar-val">${conf}%</div>
+            <span class="tech-traj ${arr.cls}" title="trajectory: ${escapeHtml(h.trajectory||'unknown')}">${arr.sym}</span>
+          </div>
+          <div class="hyp-comp-toggle" onclick="toggleHypComps(this)">${compsCount} components ▾</div>
+        </div>
+        <div class="hyp-comp-list">
+          ${(h.components||[]).map(comp => `
+            <div class="hyp-comp">
+              <div>
+                <div class="hyp-comp-name">${escapeHtml(comp.name)}</div>
+                ${comp.description ? `<div style="font-size:11px;color:var(--muted);margin-top:3px;line-height:1.5">${escapeHtml((comp.description||'').slice(0,260))}${(comp.description||'').length>260?'…':''}</div>` : ''}
+              </div>
+              <div class="hyp-comp-meta">
+                ${badge(comp.vector || comp.component_type)}
+                ${badge(comp.state)}
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+function toggleHypComps(el) {
+  const list = el.parentElement.parentElement.querySelector('.hyp-comp-list');
+  list.classList.toggle('open');
+  el.textContent = el.textContent.replace(/[▾▴]/, list.classList.contains('open') ? '▴' : '▾');
+}
+
+// ══ TECHNOLOGIES (PG live) ═════════════════════════════════════════════
+function renderTechnologiesTab(c) {
+  const d = state.data.ontology;
+  if (d === null) { c.innerHTML = loadingBlock('Loading ontology pairs from /v8/ontology-pairs…'); return; }
+  if (d.error)    { c.innerHTML = errorBlock('Ontology unavailable — check API token in sidebar', d.error); return; }
+  if (!d.length)  { c.innerHTML = `<div class="state-block"><div class="msg">No ontology pairs touched by ${escapeHtml(state.current.name)} yet.</div><div class="sub">Components need component_pair_links into the ontology layer.</div></div>`; return; }
+  const byHorizon = { H1:[], H2:[], H3:[] };
+  for (const p of d) (byHorizon[p.horizon] || (byHorizon[p.horizon] = [])).push(p);
+  let html = `
+    <div class="section">
+      <div class="section-head">
+        <div><h2>Technologies</h2><div class="sub">${d.length} ontology pair${d.length===1?'':'s'} touched · grouped by horizon</div></div>
+        <div class="section-head-right"><span class="section-source">PG · live</span></div>
+      </div>`;
+  for (const horizon of ['H1','H2','H3']) {
+    const rows = byHorizon[horizon] || [];
+    if (!rows.length) continue;
+    html += `
+      <div class="tech-horizon">
+        <div class="tech-horizon-head">${badge(horizon,'h')} <span>${horizon === 'H1' ? 'Current commercial operation' : horizon === 'H2' ? '3–7 year viability' : '5+ year structural'}</span> <span style="color:var(--muted-light);font-family:var(--mono);font-size:10px">${rows.length} pair${rows.length===1?'':'s'}</span></div>
+        ${rows.map(p => {
+          const arr = arrow(p.trajectory);
+          return `
+            <div class="tech-pair">
+              <div>
+                <div class="tech-pair-label">${escapeHtml(p.pair_label)}</div>
+                <div class="tech-pair-tech">${escapeHtml(p.technology)} × ${escapeHtml(p.application)} · hard_evidence_count=${p.hard_evidence_count}</div>
+              </div>
+              <div class="tech-pair-meta">
+                ${badge(p.confidence)}
+                <span class="tech-traj ${arr.cls}" title="trajectory: ${escapeHtml(p.trajectory||'unknown')}">${arr.sym}</span>
+                ${badge(p.link_type)}
+                ${p.is_cross_client_edge ? '<span class="tech-cce">cross-client</span>' : ''}
+                ${p.is_flagged_for_review ? '<span class="badge-pill b-flag">flagged</span>' : ''}
+              </div>
+            </div>`;
+        }).join('')}
+      </div>`;
+  }
+  html += '</div>';
+  c.innerHTML = html;
+}
+
+// ══ SIGNAL LOG (PG live) ═══════════════════════════════════════════════
+function renderSignalsTab(c) {
+  const d = state.data.signals;
+  if (d === null) { c.innerHTML = loadingBlock('Loading signal_horizon_log…'); return; }
+  if (d.error)    { c.innerHTML = errorBlock('Signal log unavailable — check API token in sidebar', d.error); return; }
+  if (!d.length) {
+    c.innerHTML = `
+      <div class="section">
+        <div class="section-head">
+          <div><h2>Signal Log</h2><div class="sub">Recent signals matched to this company's hypotheses</div></div>
+          <div class="section-head-right"><span class="section-source">PG · live</span></div>
+        </div>
+        <div class="state-block">
+          <div class="msg">No signals recorded yet</div>
+          <div class="sub">Signal Pipeline 15a runs Monday 6am — first signals will appear after the next run.</div>
+        </div>
+      </div>`;
+    return;
+  }
+  c.innerHTML = `
+    <div class="section">
+      <div class="section-head">
+        <div><h2>Signal Log</h2><div class="sub">${d.length} recent signal${d.length===1?'':'s'} matched to hypotheses</div></div>
+        <div class="section-head-right"><span class="section-source">PG · live</span></div>
+      </div>
+      ${d.map(renderSignalCard).join('')}
+    </div>`;
+}
+
+function renderSignalCard(s) {
+  const cls = (s.overall_classification || '').toLowerCase();
+  const labels = (s.matched_hypothesis_labels || []).map(l =>
+    `<span class="signal-hyp-tag">${escapeHtml(l)}</span>`).join('');
+  return `
+    <div class="signal-card">
+      <div class="signal-head">
+        <div>
+          <div class="signal-title">${escapeHtml(s.signal_title || s.signal_id)}</div>
+          ${s.signal_summary ? `<div class="card body" style="margin-top:6px">${escapeHtml(s.signal_summary)}</div>` : ''}
+        </div>
+        <span class="signal-class ${cls || 'ignore'}">${escapeHtml(s.overall_classification || '—')}</span>
+      </div>
+      <div class="signal-meta">
+        ${escapeHtml(s.signal_date || s.created_at?.slice(0,10) || '—')}
+        ${s.probability_delta != null ? `· Δ ${(s.probability_delta * 100).toFixed(1)}%` : ''}
+        ${s.source_url ? `· <a href="${escapeHtml(s.source_url)}" target="_blank" rel="noopener">source</a>` : ''}
+        ${s.ontology_gap ? '· ⚠ ontology gap' : ''}
+      </div>
+      ${labels ? `<div class="signal-hyp-tags">${labels}</div>` : ''}
+    </div>`;
+}
+
+// ══ PAIN POINTS (Claude) ═══════════════════════════════════════════════
+async function renderPainPointsTab(c) {
+  if (!checkData(state.data.hypotheses)) {
+    c.innerHTML = loadingBlock('Waiting for hypotheses to load…');
+    return;
+  }
+  const cacheKey = 'painpoints:' + state.current.id;
+  if (state.claudeCache[cacheKey]) {
+    c.innerHTML = renderPainPointsBlock(state.claudeCache[cacheKey], cacheKey);
+    return;
+  }
+  c.innerHTML = `
+    <div class="section">
+      <div class="section-head">
+        <div><h2>Pain points</h2><div class="sub">Where the pressure lands inside the business</div></div>
+        <div class="section-head-right"><span class="section-source">Claude · live</span></div>
+      </div>
+      ${loadingBlock('Generating per-function pain points…')}
+    </div>`;
+  try {
+    const hyp = state.data.hypotheses.map(h => `- ${h.initiative_name}: ${h.hypothesis}`).join('\n');
+    const prompt = `You are a senior FutureBridge analyst. For ${state.current.name}, identify per-function pain points and where FutureBridge intelligence applies.
+
+Strategic hypotheses already tracked:
+${hyp}
+
+Return a JSON array of 4–6 objects, each:
+{"function":"e.g. Strategy / R&D / Procurement / Operations / Sales", "pain":"specific pain in 1–2 sentences", "fb_opportunity":"1 sentence — where FutureBridge intelligence directly addresses this pain"}
+
+Return ONLY the JSON array. No prose, no markdown fences.`;
+    const out = await callClaude(prompt, 1200);
+    state.claudeCache[cacheKey] = out;
+    c.innerHTML = renderPainPointsBlock(out, cacheKey);
+  } catch (e) {
+    c.innerHTML = errorBlock('Could not generate pain points', e.message);
+  }
+}
+function renderPainPointsBlock(text, cacheKey) {
+  let items = [];
+  try {
+    const cleaned = text.replace(/^```json\s*|\s*```$/g, '').trim();
+    items = JSON.parse(cleaned);
+    if (!Array.isArray(items)) items = [];
+  } catch (_) {
+    return `
+      <div class="section">
+        <div class="section-head">
+          <div><h2>Pain points</h2></div>
+          <div class="section-head-right"><span class="section-source">Claude · cached</span><button class="btn-ghost" onclick="invalidateAndRerender('${cacheKey}')">Regenerate</button></div>
+        </div>
+        ${fmt(text)}
+      </div>`;
+  }
+  return `
+    <div class="section">
+      <div class="section-head">
+        <div><h2>Pain points</h2><div class="sub">Where the pressure lands inside the business</div></div>
+        <div class="section-head-right"><span class="section-source">Claude · cached</span><button class="btn-ghost" onclick="invalidateAndRerender('${cacheKey}')">Regenerate</button></div>
+      </div>
+      ${items.map(it => `
+        <div class="card">
+          <div class="card-head"><h3>${escapeHtml(it.function || 'Unspecified function')}</h3></div>
+          <div class="body">${escapeHtml(it.pain || '')}</div>
+          <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:12px;color:var(--fg)"><strong style="font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted)">FutureBridge entry point</strong><br>${escapeHtml(it.fb_opportunity || '')}</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+// ══ WEAK SIGNALS (Claude, ontology-enriched) ═══════════════════════════
+async function renderWeakSignalsTab(c) {
+  if (!checkData(state.data.hypotheses) || !checkData(state.data.ontology)) {
+    c.innerHTML = loadingBlock('Waiting for hypotheses + ontology to load…');
+    return;
+  }
+  const cacheKey = 'weaksignals:' + state.current.id;
+  if (state.claudeCache[cacheKey]) {
+    c.innerHTML = renderWeakSignalsBlock(state.claudeCache[cacheKey], cacheKey);
+    return;
+  }
+  c.innerHTML = `
+    <div class="section">
+      <div class="section-head">
+        <div><h2>Weak signals</h2><div class="sub">Frontier tech indicators · enriched with ontology pairs</div></div>
+        <div class="section-head-right"><span class="section-source">Claude · live</span></div>
+      </div>
+      ${loadingBlock('Generating weak signals from ontology context…')}
+    </div>`;
+  try {
+    const hyp = state.data.hypotheses.map(h => `- ${h.initiative_name}`).join('\n');
+    const ont = state.data.ontology.slice(0, 30).map(p => `- ${p.pair_label} [${p.horizon}, ${p.confidence}, ${p.trajectory}]`).join('\n');
+    const prompt = `You are a senior FutureBridge analyst. Identify 4–6 weak signals (TRL 1–4 or pre-commercial) that are adjacent to ${state.current.name}'s tracked hypotheses and ontology pairs.
+
+Tracked hypotheses:
+${hyp}
+
+Ontology pairs the company already touches (label · horizon · confidence · trajectory):
+${ont}
+
+Return a JSON array of 4–6 objects, each:
+{"signal_name":"specific frontier development", "trl_band":"e.g. TRL 2–3", "sector":"sector tag", "strength":"1–10 strength score", "why_matters":"1 sentence — how this connects to one of the named hypotheses or pairs"}
+
+Return ONLY the JSON array. No prose, no markdown fences.`;
+    const out = await callClaude(prompt, 1500);
+    state.claudeCache[cacheKey] = out;
+    c.innerHTML = renderWeakSignalsBlock(out, cacheKey);
+  } catch (e) {
+    c.innerHTML = errorBlock('Could not generate weak signals', e.message);
+  }
+}
+function renderWeakSignalsBlock(text, cacheKey) {
+  let items = [];
+  try {
+    const cleaned = text.replace(/^```json\s*|\s*```$/g, '').trim();
+    items = JSON.parse(cleaned);
+    if (!Array.isArray(items)) items = [];
+  } catch (_) {
+    return `
+      <div class="section">
+        <div class="section-head">
+          <div><h2>Weak signals</h2></div>
+          <div class="section-head-right"><span class="section-source">Claude · cached</span><button class="btn-ghost" onclick="invalidateAndRerender('${cacheKey}')">Regenerate</button></div>
+        </div>
+        ${fmt(text)}
+      </div>`;
+  }
+  return `
+    <div class="section">
+      <div class="section-head">
+        <div><h2>Weak signals</h2><div class="sub">Frontier tech indicators · enriched with ontology pairs</div></div>
+        <div class="section-head-right"><span class="section-source">Claude · cached</span><button class="btn-ghost" onclick="invalidateAndRerender('${cacheKey}')">Regenerate</button></div>
+      </div>
+      ${items.map(it => `
+        <div class="card">
+          <div class="card-head">
+            <h3>${escapeHtml(it.signal_name || it.name || '—')}</h3>
+            <div style="display:flex;gap:5px;flex-shrink:0">
+              <span class="badge-pill" style="background:var(--panel-2);color:var(--muted)">${escapeHtml(it.trl_band || '')}</span>
+              <span class="badge-pill" style="background:var(--panel-2);color:var(--muted)">${escapeHtml(it.sector || '')}</span>
+              ${it.strength ? `<span class="badge-pill" style="background:var(--panel-2);color:var(--muted)">${escapeHtml(String(it.strength))}/10</span>` : ''}
+            </div>
+          </div>
+          <div class="body">${escapeHtml(it.why_matters || it.description || '')}</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+// ══ CONTACTS (PG live) ═════════════════════════════════════════════════
+function renderContactsTab(c) {
+  const d = state.data.contacts;
+  if (d === null) { c.innerHTML = loadingBlock('Loading contacts from /v8/contacts…'); return; }
+  if (d.error)    { c.innerHTML = errorBlock('Contacts unavailable — check API token in sidebar', d.error); return; }
+  if (!d.length)  { c.innerHTML = `<div class="state-block"><div class="msg">No contacts found for ${escapeHtml(state.current.name)}.</div></div>`; return; }
+  const byTier = {};
+  for (const x of d) {
+    const t = x.tier ?? 99;
+    (byTier[t] || (byTier[t] = [])).push(x);
+  }
+  const tierLabels = { 1:'Tier 1 — executive', 2:'Tier 2 — strategy', 3:'Tier 3 — practitioner', 99:'Tier — unscored' };
+  const tiers = Object.keys(byTier).map(Number).sort((a,b)=>a-b);
+  let html = `
+    <div class="section">
+      <div class="section-head">
+        <div><h2>Contacts</h2><div class="sub">${d.length} contact${d.length===1?'':'s'} · datasette_export_2026_05_04</div></div>
+        <div class="section-head-right"><span class="section-source">PG · live</span></div>
+      </div>`;
+  for (const tier of tiers) {
+    const rows = byTier[tier];
+    html += `
+      <div class="contacts-tier-group">
+        <div class="contacts-tier-head">${tierLabels[tier] || ('Tier '+tier)} <span style="font-family:var(--mono);font-size:10px;color:var(--muted-light);font-weight:400">${rows.length}</span></div>
+        ${rows.map(x => `
+          <div class="contact-row">
+            <div>
+              <div class="contact-name">${escapeHtml(x.full_name || '—')}</div>
+              <div class="contact-title">${escapeHtml(x.role_title || '')}${x.dept?` · ${escapeHtml(x.dept)}`:''}${x.hq_location?` · ${escapeHtml(x.hq_location)}`:''}</div>
+            </div>
+            <div class="contact-persona">${escapeHtml(x.persona_match || '—')}</div>
+            <div class="contact-tier">T${x.tier ?? '—'}</div>
+            <div class="contact-link">${x.linkedin_url ? `<a href="${escapeHtml(x.linkedin_url)}" target="_blank" rel="noopener">LinkedIn</a>` : ''}</div>
+          </div>`).join('')}
+      </div>`;
+  }
+  html += '</div>';
+  c.innerHTML = html;
+}
+
+// ══ PRE-MEETING (Claude 3-call pipeline) ═══════════════════════════════
+function renderPreMeetingTab(c) {
+  if (!checkData(state.data.contacts) || !checkData(state.data.hypotheses)) {
+    c.innerHTML = loadingBlock('Waiting for contacts + hypotheses to load…');
+    return;
+  }
+  const contacts = state.data.contacts;
+  const meetingTypes = ['Intro call','Hypothesis review','Proposal','Renewal','Executive briefing','Other'];
+  c.innerHTML = `
+    <div class="section">
+      <div class="section-head">
+        <div><h2>Pre-Meeting</h2><div class="sub">Generate a structured meeting brief from PG hypotheses + signal log</div></div>
+        <div class="section-head-right"><span class="section-source">Claude · 3-call pipeline</span></div>
+      </div>
+      <div class="pm-step">
+        <div class="pm-step-head">Step 1 — Contact</div>
+        <select class="pm-select" id="pm_contact">
+          <option value="">— select contact —</option>
+          ${contacts.map(x => `<option value="${x.id}">${escapeHtml(x.full_name)} · ${escapeHtml(x.role_title || '')}${x.tier?` · T${x.tier}`:''}</option>`).join('')}
+        </select>
+      </div>
+      <div class="pm-step">
+        <div class="pm-step-head">Step 2 — Meeting context</div>
+        <div class="pm-grid">
+          <select class="pm-select" id="pm_type">
+            ${meetingTypes.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('')}
+          </select>
+          <input class="pm-input" id="pm_objective" maxlength="200" placeholder="Brief objective (max 200 chars)">
+        </div>
+      </div>
+      <div class="pm-step">
+        <div class="pm-step-head">Step 3 — Generate brief</div>
+        <button class="btn-primary" onclick="runPreMeetingPipeline()">Generate meeting brief</button>
+        <div id="pm_status" style="margin-top:10px;font-size:12px;color:var(--muted)"></div>
+      </div>
+      <div id="pm_output"></div>
+    </div>`;
+}
+
+async function runPreMeetingPipeline() {
+  const contactId = document.getElementById('pm_contact').value;
+  const meetingType = document.getElementById('pm_type').value;
+  const objective = document.getElementById('pm_objective').value;
+  const status = document.getElementById('pm_status');
+  const output = document.getElementById('pm_output');
+  if (!contactId) { status.textContent = '⚠ Pick a contact first.'; return; }
+  const contact = state.data.contacts.find(x => String(x.id) === String(contactId));
+  if (!contact) { status.textContent = '⚠ Contact not found.'; return; }
+
+  const hyps = state.data.hypotheses;
+  const signals = state.data.signals && !state.data.signals.error ? state.data.signals : [];
+  const ontology = state.data.ontology && !state.data.ontology.error ? state.data.ontology : [];
+  const hypCtx = hyps.map(h => `- ${h.initiative_name} (H=${h.horizon}, conf=${h.confidence_level}, state=${h.state}): ${h.hypothesis}`).join('\n');
+  const sigCtx = signals.length ? signals.slice(0,8).map(s => `- ${s.signal_date || s.created_at?.slice(0,10)}: ${s.signal_title} [${s.overall_classification}]`).join('\n') : '(no recent signals — pipeline runs Monday 6am)';
+  const ontCtx = ontology.slice(0,12).map(p => `- ${p.pair_label} [${p.horizon}/${p.confidence}/${p.trajectory}]`).join('\n');
+
+  output.innerHTML = '';
+  status.innerHTML = '<span class="spinner"></span>Step 1 — contact intelligence…';
+  try {
+    // Call 1 — Contact intelligence
+    const p1 = `You are a senior FutureBridge analyst. Generate contact intelligence for an upcoming ${meetingType} meeting with this person.
+
+Contact: ${contact.full_name}
+Title: ${contact.role_title || '—'}
+Company: ${state.current.name}
+Persona: ${contact.persona_match || '—'}, tier ${contact.tier ?? '—'}, dept ${contact.dept || '—'}
+
+The company's currently-tracked strategic hypotheses are:
+${hypCtx}
+
+Produce three short paragraphs in plain prose:
+1. Likely priorities based on this person's role and seniority.
+2. Which 2–3 hypotheses are most relevant to their area.
+3. Suggested angle for this meeting type given their persona.
+
+Sentence case. No bold. Max ~350 words.`;
+    const r1 = await callClaude(p1, 600);
+
+    status.innerHTML = '<span class="spinner"></span>Step 2 — market context…';
+    // Call 2 — Market context
+    const p2 = `You are a senior FutureBridge analyst. Generate market context for ${state.current.name} for an upcoming meeting.
+
+Tracked hypotheses (with state and trajectory):
+${hypCtx}
+
+Recent signal log entries for ${state.current.name}:
+${sigCtx}
+
+Top ontology pairs the company touches:
+${ontCtx}
+
+Produce a market context brief in three short paragraphs:
+1. What has moved recently — synthesise from the signal log entries (or note absence if signals are empty).
+2. Which 2–3 hypotheses are most active right now (state strengthening, trajectory improving or deteriorating, hard threshold approaching).
+3. Technology pairs at inflection — which are H1 with crossing thresholds or H2 accelerating.
+
+Sentence case. No bold. Max ~400 words.`;
+    const r2 = await callClaude(p2, 700);
+
+    status.innerHTML = '<span class="spinner"></span>Step 3 — full meeting brief…';
+    // Call 3 — Full brief
+    const p3 = `You are a senior FutureBridge analyst. Combine the contact intelligence and market context below into a structured meeting brief.
+
+Meeting type: ${meetingType}
+${objective ? `Stated objective: ${objective}\n` : ''}
+
+CONTACT INTELLIGENCE:
+${r1}
+
+MARKET CONTEXT:
+${r2}
+
+Produce a structured brief with these sections, in this order, using these exact section headers (## prefix):
+
+## Contact summary
+One paragraph synthesising who they are and what they care about.
+
+## Top 3 talking points
+Three bullet points — each tied to a specific hypothesis or signal from the context above.
+
+## Questions to ask
+Three to five questions specific to this person's role and the meeting type.
+
+## FutureBridge angles to lead with
+Two to three angles, each one sentence, each tied to where FutureBridge can add observable value given the hypothesis state.
+
+## What to listen for
+Two to three signals that, if heard, would update one of the tracked hypothesis confidence values.
+
+Use - for bullets. Sentence case. No bold within bullets. Concise — total under ~550 words.`;
+    const r3 = await callClaude(p3, 1100);
+
+    status.textContent = '✓ Brief generated.';
+    output.innerHTML = `
+      <div class="pm-output">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)">
+          <div>
+            <div style="font-size:11px;color:var(--muted);font-family:var(--mono);letter-spacing:0.06em;text-transform:uppercase">Meeting brief</div>
+            <div style="font-size:14px;font-weight:600;margin-top:3px">${escapeHtml(contact.full_name)} · ${escapeHtml(meetingType)}</div>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn-ghost" onclick="copyToClipboard(this)" data-text="${escapeHtml(r3)}">Copy</button>
+            <button class="btn-ghost" onclick="window.print()">Print / PDF</button>
+          </div>
+        </div>
+        ${fmt(r3)}
+      </div>`;
+  } catch (e) {
+    status.innerHTML = '<span style="color:var(--red-dark)">⚠ ' + escapeHtml(e.message) + '</span>';
+  }
+}
+
+function copyToClipboard(btn) {
+  const text = btn.dataset.text;
+  navigator.clipboard.writeText(text).then(()=>{
+    const orig = btn.textContent;
+    btn.textContent = 'Copied ✓';
+    setTimeout(()=>{ btn.textContent = orig; }, 1400);
+  });
+}
+
+// ══ MEETINGS (Apps Script — carry from v7) ═════════════════════════════
+let mtgSubTab = 'log';
+function renderMeetingsTab(c) {
+  c.innerHTML = `
+    <div class="section">
+      <div class="section-head">
+        <div><h2>Meetings</h2><div class="sub">Log meeting · history · pattern analysis · Apps Script backend</div></div>
+        <div class="section-head-right"><span class="section-source">Apps Script · live</span></div>
+      </div>
+      <div class="mtg-tabs">
+        <button class="mtg-tab ${mtgSubTab==='log'?'active':''}" onclick="setMtgTab('log')">Log meeting</button>
+        <button class="mtg-tab ${mtgSubTab==='history'?'active':''}" onclick="setMtgTab('history')">History</button>
+        <button class="mtg-tab ${mtgSubTab==='patterns'?'active':''}" onclick="setMtgTab('patterns')">Pattern analysis</button>
+      </div>
+      <div id="mtgSubContent"></div>
+    </div>`;
+  renderMtgSub();
+}
+function setMtgTab(t) { mtgSubTab = t; renderMtgSub(); document.querySelectorAll('.mtg-tab').forEach(b=>b.classList.remove('active')); event.currentTarget.classList.add('active'); }
+
+function renderMtgSub() {
+  const c = document.getElementById('mtgSubContent');
+  if (!c) return;
+  if (mtgSubTab === 'log') {
+    c.innerHTML = `
+      <form class="mtg-form" onsubmit="event.preventDefault(); submitMeeting();">
+        <div class="field"><label>Date</label><input type="date" id="mtg_date" value="${new Date().toISOString().slice(0,10)}"></div>
+        <div class="field"><label>Contact name</label><input type="text" id="mtg_contact" placeholder="e.g. John Smith"></div>
+        <div class="field"><label>FutureBridge rep</label><input type="text" id="mtg_rep" placeholder="e.g. Chris Sherwood"></div>
+        <div class="field"><label>Notes</label><textarea id="mtg_notes" placeholder="Free-form meeting notes…"></textarea></div>
+        <button class="btn-primary" type="submit">Save meeting</button>
+        <div id="mtg_status" style="margin-top:10px;font-size:12px;color:var(--muted)"></div>
+      </form>`;
+  } else if (mtgSubTab === 'history') {
+    c.innerHTML = '<div id="mtg_history">' + loadingBlock('Loading history from Apps Script…') + '</div>';
+    loadMeetingHistory();
+  } else {
+    c.innerHTML = `
+      <div class="state-block">
+        <div class="msg">Pattern analysis runs Claude over the full meeting history for ${escapeHtml(state.current.name)}.</div>
+        <button class="btn-primary" style="margin-top:14px" onclick="runPatternAnalysis()">Run pattern analysis</button>
+        <div id="mtg_pattern" style="margin-top:14px;text-align:left"></div>
+      </div>`;
+  }
+}
+
+async function submitMeeting() {
+  const status = document.getElementById('mtg_status');
+  const data = {
+    date: document.getElementById('mtg_date').value,
+    company: state.current.name,
+    contact: document.getElementById('mtg_contact').value,
+    rep: document.getElementById('mtg_rep').value,
+    notes: document.getElementById('mtg_notes').value,
+  };
+  if (!data.contact || !data.notes) { status.textContent = '⚠ Contact and notes required.'; return; }
+  status.innerHTML = '<span class="spinner"></span>Saving…';
+  try {
+    await appsScriptPost('saveMeeting', data);
+    status.textContent = '✓ Saved (no-cors mode — Apps Script confirms via mailbox if configured).';
+  } catch (e) {
+    status.innerHTML = '<span style="color:var(--red-dark)">⚠ ' + escapeHtml(e.message) + '</span>';
+  }
+}
+
+async function loadMeetingHistory() {
+  const c = document.getElementById('mtg_history');
+  try {
+    const data = await appsScriptGet('getMeetings', { company: state.current.name });
+    const meetings = data.meetings || [];
+    if (!meetings.length) { c.innerHTML = '<div class="state-block"><div class="msg">No meetings logged for this company yet.</div></div>'; return; }
+    c.innerHTML = meetings.map(m => `
+      <div class="card">
+        <div class="card-head">
+          <h3>${escapeHtml(m.contact || '')}</h3>
+          <div class="meta">${escapeHtml(m.date || '')} · ${escapeHtml(m.rep || '')}</div>
+        </div>
+        <div class="body">${escapeHtml(m.notes || '').slice(0,400)}${(m.notes||'').length>400?'…':''}</div>
+      </div>`).join('');
+  } catch (e) {
+    c.innerHTML = errorBlock('Could not load meeting history', e.message);
+  }
+}
+
+async function runPatternAnalysis() {
+  const out = document.getElementById('mtg_pattern');
+  out.innerHTML = '<span class="spinner"></span>Loading meeting history then analysing…';
+  try {
+    const data = await appsScriptGet('getMeetings', { company: state.current.name });
+    const meetings = data.meetings || [];
+    if (!meetings.length) { out.innerHTML = '<div class="state-block"><div class="msg">No meetings to analyse.</div></div>'; return; }
+    const compiled = meetings.map(m => `[${m.date || '?'}] ${m.contact || '?'} (${m.rep || '?'}): ${m.notes || ''}`).join('\n\n---\n\n');
+    const prompt = `You are a senior FutureBridge analyst. Analyse the complete meeting history below for ${state.current.name} and produce a longitudinal intelligence report.
+
+Currently tracked hypotheses:
+${state.data.hypotheses.map(h => `- ${h.initiative_name}: ${h.hypothesis}`).join('\n')}
+
+Meeting history (most recent first):
+${compiled}
+
+Produce a structured report:
+## Themes across meetings
+3–5 cross-meeting themes.
+
+## Hypothesis confidence updates
+For each hypothesis name, indicate: confidence direction (up / down / unchanged) based on what the meetings revealed, with a one-sentence reason.
+
+## FutureBridge engagement opportunities surfaced
+Specific opportunities mentioned across meetings.
+
+## Open commitments
+Outstanding commitments by either side.
+
+## Recommended next steps
+Three concrete next moves.
+
+Sentence case. Use - for bullets.`;
+    const result = await callClaude(prompt, 2000);
+    out.innerHTML = fmt(result);
+  } catch (e) {
+    out.innerHTML = errorBlock('Pattern analysis failed', e.message);
+  }
+}
+
+// ══ POST-MEETING (Fathom transcript → Claude → Apps Script) ════════════
+let postMeetingResult = null;
+function renderPostMeetingTab(c) {
+  c.innerHTML = `
+    <div class="section">
+      <div class="section-head">
+        <div><h2>Post-Meeting</h2><div class="sub">Paste Fathom transcript · Claude extracts structured intelligence · save to meeting log</div></div>
+        <div class="section-head-right"><span class="section-source">Claude + Apps Script</span></div>
+      </div>
+      <div class="pm-step">
+        <div class="pm-step-head">Step 1 — Paste transcript</div>
+        <textarea class="pm-textarea transcript" id="post_transcript" placeholder="Paste Fathom transcript here (timestamped dialogue accepted)…"></textarea>
+      </div>
+      <div class="pm-step">
+        <div class="pm-step-head">Step 2 — Process</div>
+        <button class="btn-primary" onclick="processPostMeeting()">Extract structured intelligence</button>
+        <div id="post_status" style="margin-top:10px;font-size:12px;color:var(--muted)"></div>
+      </div>
+      <div id="post_output"></div>
+    </div>`;
+}
+
+async function processPostMeeting() {
+  const transcript = document.getElementById('post_transcript').value.trim();
+  const status = document.getElementById('post_status');
+  const output = document.getElementById('post_output');
+  if (!transcript) { status.textContent = '⚠ Paste a transcript first.'; return; }
+  if (!checkData(state.data.hypotheses)) { status.textContent = '⚠ Hypotheses not loaded — wait then retry.'; return; }
+  output.innerHTML = '';
+  status.innerHTML = '<span class="spinner"></span>Calling Claude…';
+  try {
+    const hypList = state.data.hypotheses.map(h => `${h.id}: ${h.initiative_name} — ${h.hypothesis}`).join('\n');
+    const system = `You are processing a client meeting transcript for FutureBridge Advisory. Extract structured intelligence from this meeting. The client is ${state.current.name}. Their strategic hypotheses are:
+${hypList}
+
+Return a JSON object (no markdown fences, no prose before or after) with these fields exactly:
+{
+  "summary": "string (3-4 sentences, what the meeting covered)",
+  "key_signals": [{"quote":"verbatim excerpt","hypothesis_id":"id from list above or null","direction":"positive|negative|neutral","implication":"one sentence"}],
+  "action_items": [{"owner":"name","item":"specific action","deadline":"ISO date or null"}],
+  "hypothesis_updates": [{"hypothesis_name":"exact name from list","direction":"up|down|unchanged","reasoning":"one sentence"}],
+  "next_steps": "string (1-2 sentences)",
+  "relationship_notes": "string (tone, openness, buying signals or concerns observed)"
+}`;
+    const result = await callClaude(transcript, 2500, system);
+    let parsed;
+    try {
+      const cleaned = result.replace(/^```json\s*|\s*```$/g, '').trim();
+      parsed = JSON.parse(cleaned);
+    } catch (e) {
+      throw new Error('Claude returned non-JSON; raw: ' + result.slice(0,300));
+    }
+    postMeetingResult = parsed;
+    status.textContent = '✓ Extracted.';
+    renderPostMeetingOutput(parsed, transcript);
+  } catch (e) {
+    status.innerHTML = '<span style="color:var(--red-dark)">⚠ ' + escapeHtml(e.message) + '</span>';
+  }
+}
+
+function renderPostMeetingOutput(p, transcript) {
+  const output = document.getElementById('post_output');
+  const hypUpdatesHtml = (p.hypothesis_updates || []).map(u => {
+    const arr = u.direction === 'up' ? {sym:'↑',cls:'up'} : u.direction === 'down' ? {sym:'↓',cls:'down'} : {sym:'→',cls:'flat'};
+    return `<div class="hyp-update-card">
+      <div><strong>${escapeHtml(u.hypothesis_name)}</strong><br><span style="font-size:12px;color:var(--muted)">${escapeHtml(u.reasoning || '')}</span></div>
+      <div class="hyp-update-arrow ${arr.cls}">${arr.sym}</div>
+    </div>`;
+  }).join('');
+  const signalsHtml = (p.key_signals || []).map(s => `
+    <div class="card">
+      <div class="card-head">
+        <div style="font-style:italic;font-size:13px;color:var(--fg)">"${escapeHtml(s.quote || '')}"</div>
+        <span class="badge-pill ${s.direction==='positive'?'b-improving':s.direction==='negative'?'b-deteriorating':'b-holding'}">${escapeHtml(s.direction || 'neutral')}</span>
+      </div>
+      <div class="body">${escapeHtml(s.implication || '')}${s.hypothesis_id ? ` <span style="font-family:var(--mono);font-size:11px;color:var(--muted)">→ hypothesis #${escapeHtml(String(s.hypothesis_id))}</span>` : ''}</div>
+    </div>`).join('');
+  const actionsHtml = (p.action_items || []).map(a => `
+    <div class="card" style="padding:10px 14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+        <div><strong>${escapeHtml(a.owner || '?')}</strong> — ${escapeHtml(a.item || '')}</div>
+        <div style="font-family:var(--mono);font-size:11px;color:var(--muted)">${escapeHtml(a.deadline || 'no deadline')}</div>
+      </div>
+    </div>`).join('');
+  output.innerHTML = `
+    <div class="pm-output">
+      <h3>Meeting summary</h3>
+      <p>${escapeHtml(p.summary || '')}</p>
+
+      <h3>Key signals</h3>
+      ${signalsHtml || '<p style="color:var(--muted);font-style:italic">none extracted</p>'}
+
+      <h3>Action items</h3>
+      ${actionsHtml || '<p style="color:var(--muted);font-style:italic">none extracted</p>'}
+
+      <h3>Hypothesis confidence updates</h3>
+      ${hypUpdatesHtml || '<p style="color:var(--muted);font-style:italic">no updates flagged</p>'}
+
+      <h3>Next steps</h3>
+      <p>${escapeHtml(p.next_steps || '—')}</p>
+
+      <h3>Relationship notes</h3>
+      <p>${escapeHtml(p.relationship_notes || '—')}</p>
+
+      <div style="margin-top:20px;padding-top:14px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <button class="btn-primary" onclick="savePostMeeting(false)">Save to meeting log</button>
+        <button class="btn-ghost" onclick="savePostMeeting(true)">Save with raw transcript</button>
+        ${(p.hypothesis_updates || []).filter(u => u.direction !== 'unchanged').length ? `<button class="btn-ghost" onclick="flagForReview()">Flag confidence changes for review</button>` : ''}
+        <span id="post_save_status" style="font-size:12px;color:var(--muted);margin-left:8px"></span>
+      </div>
+    </div>`;
+}
+
+async function savePostMeeting(includeRaw) {
+  const s = document.getElementById('post_save_status');
+  s.innerHTML = '<span class="spinner"></span>Saving…';
+  try {
+    const data = {
+      date: new Date().toISOString().slice(0,10),
+      company: state.current.name,
+      contact: '(post-meeting structured)',
+      rep: '(via Post-Meeting tab)',
+      notes: JSON.stringify(postMeetingResult, null, 2),
+      raw_transcript: includeRaw ? document.getElementById('post_transcript').value : null,
+      structured: true,
+    };
+    await appsScriptPost('saveMeeting', data);
+    s.textContent = '✓ Saved to meeting log.';
+  } catch (e) {
+    s.innerHTML = '<span style="color:var(--red-dark)">⚠ ' + escapeHtml(e.message) + '</span>';
+  }
+}
+
+async function flagForReview() {
+  const s = document.getElementById('post_save_status');
+  s.innerHTML = '<span class="spinner"></span>Flagging hypothesis confidence changes for analyst review…';
+  try {
+    const updates = (postMeetingResult.hypothesis_updates || []).filter(u => u.direction !== 'unchanged');
+    await appsScriptPost('flagHypothesisReview', {
+      company: state.current.name,
+      date: new Date().toISOString().slice(0,10),
+      updates: updates,
+      note: 'Auto-flagged from Post-Meeting tab. PG NOT auto-updated — analyst confirms manually before changing initiatives_v2.',
+    });
+    s.textContent = '✓ ' + updates.length + ' hypothesis update(s) flagged for review.';
+  } catch (e) {
+    s.innerHTML = '<span style="color:var(--red-dark)">⚠ ' + escapeHtml(e.message) + '</span>';
+  }
+}
+</script>
+</body>
+</html>

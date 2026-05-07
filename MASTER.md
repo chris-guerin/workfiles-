@@ -335,12 +335,26 @@ Total component_pair_links added (P4 → existing ontology): 18 (Infineon→SiC 
 
 ---
 
+**As of 2026-05-07 evening — account_plans_v8 + signal-engine-api v8 routes**
+
+| Component | Status |
+|-----------|--------|
+| **signal-engine-api `/v8/*` routes** | **Deployed to Railway. 5 routes: /v8/companies, /v8/hypotheses, /v8/ontology-pairs, /v8/signals, /v8/contacts. All read-only, Bearer-auth. Verified live by Chris (13 companies returning).** |
+| **account_plans_v8.html** | **Built. 11 tabs: Overview, Strategy (Claude+PG), Hypotheses, Technologies, Signal Log, Contacts (PG live), Pain points, Weak signals (Claude+PG), Pre-Meeting (3-call Claude pipeline), Meetings (Apps Script carry from v7), Post-Meeting (Fathom transcript → Claude → Apps Script). Sidebar config: Bearer + Anthropic key + Apps Script URL. URL parameter `?company=X` for direct linking.** |
+| **index.html** | **Updated — Account Plans tile now points to v8 with per-company quick-link block (13 deep links). v7 archived link retained.** |
+| **17 intel brief HTMLs** | **Deprecated — all 32 brief HTML files (16 companies × bare + `__N_` versions) now carry a black-banner deprecation note at top, linking to v8 with the company URL parameter (or v8 root for the 5 uncovered companies: Datwyler, EDF, E.ON, Halliburton, WOCO).** |
+| Existing v7 (`account_plans_v7.html`) | Retained as archive. Linked from index.html footer of v8 tile as "v7 archived at..." |
+
+---
+
 ## 13. Open items (update daily)
 
 | Priority | Item |
 |----------|------|
 | URGENT | Revoke exposed API key (sk-ant-api03-Wip4...) at console.anthropic.com if not done |
 | Next | Apps Script INSERT trigger — install (run `installOntologyTriggers()` in Apps Script editor) |
+| Today | **End-to-end test account_plans_v8.html in browser** — load companies, switch tabs (Hypotheses, Technologies, Contacts should render from PG; Pre-Meeting + Post-Meeting need Anthropic key + a contact selected; Meetings needs Apps Script URL configured). Confirm Claude generation works for Overview / Strategy / Pain points / Weak signals tabs. |
+| Today | **Add 5 uncovered companies to v8 catalogue** — Datwyler, EDF, E.ON, Halliburton, WOCO each have intel briefs in repo but no PG hypotheses. Their brief deprecation banners link to v8 root (no `?company=` parameter) because v8 has no data to show them. Generate brief-sourced hypotheses for each via the established `_populator_v2.mjs` pattern. |
 | Next | **Generate intelligence briefs for the deferred targets** — the most commercially valuable: STMicroelectronics, NXP Semiconductors, JLR, Continental AG. Then secondary energy clients: TEN, TFMC, XOM, ENI, CNP, SLB, Saudi Aramco. Then Renesas, onsemi, Wolfspeed, Mobileye for full semiconductor coverage. |
 | Next | **NXP Semiconductors PG dedup** — three rows in `catalogue.companies` (id=53 NXP Semiconductors, id=25 NXP Semiconductors Austria, id=52 NXP Semiconductors NV). Consolidate to one canonical row before populating NXP. None has any initiatives yet so consolidation is low-risk. |
 | Next | **MAN_001 fleet BEV charging hypothesis** — generate MAN brief first, then populate (was on original VWG brief, dropped from Path A) |

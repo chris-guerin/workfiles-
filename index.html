@@ -228,21 +228,41 @@ footer{background:var(--black);padding:20px 52px;display:flex;align-items:center
     </div>
     <div class="grid-feat">
 
-      <a href="account_plans_v7.html" class="tool live">
+      <a href="account_plans_v8.html" class="tool live">
         <div class="t-num">01</div>
         <div class="t-icon">◈</div>
-        <div class="t-title">Account Plans</div>
-        <p class="t-desc">AI-generated intelligence briefs for 36 companies. Follows the chain: performance pressures → strategy → pain points → initiatives → technologies → weak signals. Every initiative has a hypothesis, WNTBT conditions, and a FutureBridge capability entry point mapped to it. Includes meeting log, longitudinal analysis, and one-click client brief download.</p>
+        <div class="t-title">Account Plans v8 — live intelligence</div>
+        <p class="t-desc">Unified live tool replacing per-company intel briefs and v7 account plans. Live data from catalogue.initiatives_v2 (hypotheses + components), ontology layer (technology × application pairs touched), signal_horizon_log (matched signals), contacts (datasette import). Claude generation enriched with PG hypotheses across Overview, Strategy, Pain points, Weak signals. Pre-Meeting brief pipeline (3-call Claude). Post-Meeting structured extraction from Fathom transcript. Meeting log via Apps Script (carry from v7).</p>
         <div class="t-tags">
-          <span class="tag live">Live</span>
-          <span class="tag">36 companies · 10 sectors</span>
-          <span class="tag">Hypotheses</span>
-          <span class="tag">FB capability map</span>
-          <span class="tag">↓ Client brief</span>
-          <span class="tag">Meeting log</span>
+          <span class="tag live">Live · PG-backed</span>
+          <span class="tag">13 companies live</span>
+          <span class="tag">Hypotheses (live)</span>
+          <span class="tag">Ontology (live)</span>
+          <span class="tag">Signal log (live)</span>
+          <span class="tag">Contacts (15.9k rows)</span>
+          <span class="tag">Pre-Meeting</span>
+          <span class="tag">Post-Meeting</span>
         </div>
         <div class="t-link">Open tool <span class="t-arr"></span></div>
-        <div onclick="event.preventDefault();event.stopPropagation();copyWarLink()" style="margin-top:10px;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--red);font-family:'Courier New',monospace;cursor:pointer;padding:6px 0;border-top:1px solid var(--border)" title="Copy direct link">⎘ Copy direct link</div>
+        <div style="margin-top:14px;padding-top:10px;border-top:1px solid var(--border)">
+          <div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Direct links</div>
+          <div style="display:flex;flex-wrap:wrap;gap:5px;font-family:'Courier New',monospace;font-size:10px">
+            <a href="account_plans_v8.html?company=Shell" onclick="event.stopPropagation()" style="padding:3px 7px;background:#f3f3f5;color:#000;text-decoration:none;border:1px solid #e6e6e8">Shell</a>
+            <a href="account_plans_v8.html?company=BP%20plc" onclick="event.stopPropagation()" style="padding:3px 7px;background:#f3f3f5;color:#000;text-decoration:none;border:1px solid #e6e6e8">BP</a>
+            <a href="account_plans_v8.html?company=Volkswagen%20Group" onclick="event.stopPropagation()" style="padding:3px 7px;background:#f3f3f5;color:#000;text-decoration:none;border:1px solid #e6e6e8">VW Group</a>
+            <a href="account_plans_v8.html?company=Audi%20AG" onclick="event.stopPropagation()" style="padding:3px 7px;background:#f3f3f5;color:#000;text-decoration:none;border:1px solid #e6e6e8">Audi</a>
+            <a href="account_plans_v8.html?company=Porsche%20AG" onclick="event.stopPropagation()" style="padding:3px 7px;background:#f3f3f5;color:#000;text-decoration:none;border:1px solid #e6e6e8">Porsche</a>
+            <a href="account_plans_v8.html?company=Skoda%20Auto" onclick="event.stopPropagation()" style="padding:3px 7px;background:#f3f3f5;color:#000;text-decoration:none;border:1px solid #e6e6e8">Skoda</a>
+            <a href="account_plans_v8.html?company=SEAT%20%2F%20CUPRA" onclick="event.stopPropagation()" style="padding:3px 7px;background:#f3f3f5;color:#000;text-decoration:none;border:1px solid #e6e6e8">SEAT/CUPRA</a>
+            <a href="account_plans_v8.html?company=Mercedes-Benz" onclick="event.stopPropagation()" style="padding:3px 7px;background:#f3f3f5;color:#000;text-decoration:none;border:1px solid #e6e6e8">Mercedes-Benz</a>
+            <a href="account_plans_v8.html?company=Infineon%20Technologies%20AG" onclick="event.stopPropagation()" style="padding:3px 7px;background:#f3f3f5;color:#000;text-decoration:none;border:1px solid #e6e6e8">Infineon</a>
+            <a href="account_plans_v8.html?company=Michelin%20Group" onclick="event.stopPropagation()" style="padding:3px 7px;background:#f3f3f5;color:#000;text-decoration:none;border:1px solid #e6e6e8">Michelin</a>
+            <a href="account_plans_v8.html?company=MOL%20Group" onclick="event.stopPropagation()" style="padding:3px 7px;background:#f3f3f5;color:#000;text-decoration:none;border:1px solid #e6e6e8">MOL Group</a>
+            <a href="account_plans_v8.html?company=Equinor%20ASA" onclick="event.stopPropagation()" style="padding:3px 7px;background:#f3f3f5;color:#000;text-decoration:none;border:1px solid #e6e6e8">Equinor</a>
+            <a href="account_plans_v8.html?company=Vattenfall%20AB" onclick="event.stopPropagation()" style="padding:3px 7px;background:#f3f3f5;color:#000;text-decoration:none;border:1px solid #e6e6e8">Vattenfall</a>
+          </div>
+          <div style="margin-top:8px;font-size:9px;color:var(--muted);font-family:'Courier New',monospace">v7 archived at <a href="account_plans_v7.html" onclick="event.stopPropagation()" style="color:var(--muted);text-decoration:underline">account_plans_v7.html</a> · per-company intel briefs deprecated · superseded by v8 above</div>
+        </div>
       </a>
 
       <a href="insight_forecast.html" class="tool live">
