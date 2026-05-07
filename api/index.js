@@ -1521,6 +1521,226 @@ app.get('/signal_route/pipeline/run', requireApiKey, async (req, res) => {
   }
 });
 
+// ============================================================================
+// v8 read-only routes — backing the unified account_plans_v8 frontend.
+// Search_path (pipeline, ontology, catalogue, contacts, public) is set on the
+// database + role per migration 017 — unprefixed table names resolve correctly
+// across schemas, including contacts.contacts.
+//
+// Schema deviations from the original spec (documented for audit):
+//   - initiatives_v2 has no `strategic_priority` — ORDER BY uses current_confidence
+//   - technology_application_pairs has no `is_cross_client_edge` (it lives on
+//     pair_adjacencies); we surface it via a correlated EXISTS subquery
+//   - column aliases applied for spec-compatible field names: name AS
+//     initiative_name, hypothesis_statement AS hypothesis, horizon AS horizon,
+//     current_confidence AS confidence_level, draft_status AS status,
+//     technology_label AS technology, application_label AS application,
+//     confidence_band AS confidence, link_role AS link_type
+// ============================================================================
+
+// GET /v8/companies — companies that have >=1 initiative_v2 row.
+// Implemented as a separate path to avoid breaking the existing
+// /companies route used by n8n + population scripts (returns ALL companies).
+app.get('/v8/companies', requireApiKey, async (_req, res) => {
+  try {
+    const { rows } = await pool.query(`
+      SELECT co.id, co.name, co.sector,
+             COUNT(iv.id)::int AS initiative_count
+      FROM companies co
+      JOIN initiatives_v2 iv ON iv.company_id = co.id
+      GROUP BY co.id, co.name, co.sector
+      ORDER BY co.name
+    `);
+    res.json(rows);
+  } catch (err) {
+    console.error('[GET /v8/companies]', err);
+    res.status(500).json({ status: 'error', error: err.message });
+  }
+});
+
+// GET /v8/hypotheses?company=<name> — initiatives + components for a company.
+app.get('/v8/hypotheses', requireApiKey, async (req, res) => {
+  const companyName = (req.query.company || '').toString().trim();
+  if (!companyName) {
+    return res.status(400).json({ status: 'invalid', error: 'company query parameter required' });
+  }
+  try {
+    const { rows } = await pool.query(`
+      SELECT iv.id,
+             iv.name AS initiative_name,
+             iv.hypothesis_statement AS hypothesis,
+             iv.why_it_matters,
+             iv.horizon,
+             iv.persona,
+             iv.time_horizon_year,
+             iv.decision_threshold,
+             iv.baseline_confidence,
+             iv.current_confidence AS confidence_level,
+             iv.draft_status AS status,
+             iv.state,
+             iv.trajectory,
+             iv.state_reasoning,
+             iv.trajectory_reasoning,
+             COALESCE(
+               (SELECT json_agg(json_build_object(
+                          'id', c.id,
+                          'name', c.name,
+                          'component_type', c.component_type,
+                          'vector', c.vector,
+                          'description', c.description,
+                          'state', c.state,
+                          'trajectory', c.trajectory,
+                          'source_citation', c.source_citation
+                       ) ORDER BY c.id)
+                FROM components c WHERE c.initiative_id = iv.id),
+               '[]'::json
+             ) AS components
+      FROM initiatives_v2 iv
+      JOIN companies co ON co.id = iv.company_id
+      WHERE co.name ILIKE $1
+      ORDER BY iv.current_confidence DESC NULLS LAST, iv.id ASC
+    `, [`%${companyName}%`]);
+    res.json(rows);
+  } catch (err) {
+    console.error('[GET /v8/hypotheses]', err);
+    res.status(500).json({ status: 'error', error: err.message });
+  }
+});
+
+// GET /v8/ontology-pairs?company=<name> — ontology pairs the company touches.
+// is_cross_client_edge computed via correlated subquery against pair_adjacencies.
+app.get('/v8/ontology-pairs', requireApiKey, async (req, res) => {
+  const companyName = (req.query.company || '').toString().trim();
+  if (!companyName) {
+    return res.status(400).json({ status: 'invalid', error: 'company query parameter required' });
+  }
+  try {
+    const { rows } = await pool.query(`
+      WITH pair_set AS (
+        SELECT DISTINCT
+          tap.id,
+          tap.pair_label,
+          t.technology_name,
+          t.technology_label AS technology,
+          a.application_name,
+          a.application_label AS application,
+          a.application_domain,
+          tap.horizon,
+          tap.confidence_band AS confidence,
+          tap.trajectory,
+          tap.hard_evidence_count,
+          tap.is_flagged_for_review,
+          cpl.link_role AS link_type,
+          cpl.reasoning_text AS link_reasoning,
+          EXISTS (
+            SELECT 1 FROM pair_adjacencies pa
+            WHERE (pa.source_pair_id = tap.id OR pa.target_pair_id = tap.id)
+              AND pa.is_cross_client_edge = TRUE
+          ) AS is_cross_client_edge
+        FROM technology_application_pairs tap
+        JOIN technologies t ON t.id = tap.technology_id
+        JOIN applications a ON a.id = tap.application_id
+        JOIN component_pair_links cpl ON cpl.pair_id = tap.id
+        JOIN components c ON c.id = cpl.component_id
+        JOIN initiatives_v2 iv ON iv.id = c.initiative_id
+        JOIN companies co ON co.id = iv.company_id
+        WHERE co.name ILIKE $1
+      )
+      SELECT * FROM pair_set
+      ORDER BY horizon ASC,
+               CASE confidence WHEN 'high' THEN 0 WHEN 'medium' THEN 1 WHEN 'low' THEN 2 END ASC,
+               pair_label ASC
+    `, [`%${companyName}%`]);
+    res.json(rows);
+  } catch (err) {
+    console.error('[GET /v8/ontology-pairs]', err);
+    res.status(500).json({ status: 'error', error: err.message });
+  }
+});
+
+// GET /v8/signals?company=<name>&limit=<n> — recent signal_horizon_log rows
+// matched to any of this company's initiatives_v2 rows.
+// matched_hypothesis_ids is TEXT[] (signal_horizon_log column), so we cast.
+app.get('/v8/signals', requireApiKey, async (req, res) => {
+  const companyName = (req.query.company || '').toString().trim();
+  if (!companyName) {
+    return res.status(400).json({ status: 'invalid', error: 'company query parameter required' });
+  }
+  const limit = Math.min(parseInt(req.query.limit, 10) || 20, 200);
+  try {
+    const { rows } = await pool.query(`
+      SELECT shl.id,
+             shl.signal_id,
+             shl.signal_title,
+             shl.signal_summary,
+             shl.signal_date,
+             shl.source_url,
+             shl.matched_hypothesis_ids,
+             shl.matched_hypothesis_labels,
+             shl.horizon_classifications,
+             shl.overall_classification,
+             shl.probability_delta,
+             shl.ontology_gap,
+             shl.processed_by_15b,
+             shl.created_at
+      FROM signal_horizon_log shl
+      WHERE shl.matched_hypothesis_ids && (
+        SELECT COALESCE(array_agg(iv.id::text), ARRAY[]::text[])
+        FROM initiatives_v2 iv
+        JOIN companies co ON co.id = iv.company_id
+        WHERE co.name ILIKE $1
+      )
+      ORDER BY shl.created_at DESC
+      LIMIT $2
+    `, [`%${companyName}%`, limit]);
+    res.json(rows);
+  } catch (err) {
+    console.error('[GET /v8/signals]', err);
+    res.status(500).json({ status: 'error', error: err.message });
+  }
+});
+
+// GET /v8/contacts?company=<name>&limit=<n> — contacts for the company
+// from the 2026-05-04 datasette import.
+app.get('/v8/contacts', requireApiKey, async (req, res) => {
+  const companyName = (req.query.company || '').toString().trim();
+  if (!companyName) {
+    return res.status(400).json({ status: 'invalid', error: 'company query parameter required' });
+  }
+  const limit = Math.min(parseInt(req.query.limit, 10) || 50, 500);
+  try {
+    const { rows } = await pool.query(`
+      SELECT c.id,
+             c.full_name,
+             c.email,
+             c.role_title,
+             c.persona_match,
+             c.seniority,
+             c.tier,
+             c.linkedin_url,
+             c.dept,
+             c.hq_location,
+             c.original_company_name,
+             c.comm_style,
+             c.content_depth,
+             c.tech_interests,
+             c.strategies,
+             c.signal_types
+      FROM contacts c
+      JOIN companies co ON co.id = c.company_id
+      WHERE co.name ILIKE $1
+        AND c.active = TRUE
+        AND c.imported_from = 'datasette_export_2026_05_04'
+      ORDER BY c.tier ASC NULLS LAST, c.id ASC
+      LIMIT $2
+    `, [`%${companyName}%`, limit]);
+    res.json(rows);
+  } catch (err) {
+    console.error('[GET /v8/contacts]', err);
+    res.status(500).json({ status: 'error', error: err.message });
+  }
+});
+
 // ---------- 404 fallthrough ----------
 app.use((req, res) => {
   res.status(404).json({ status: 'not_found', path: req.path });
