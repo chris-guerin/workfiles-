@@ -79,6 +79,22 @@ Pipeline (linear, no branching):
 
 No Google Sheets nodes in the 15a pipeline. WF-WeeklyNews-PG runs Sunday 11pm and writes mini_signals rows directly into PG via `Postgres: Insert into mini_signals` — the Mini_Signals Google Sheet is no longer in the handoff chain.
 
+---
+
+## Database schema structure (post-migration 017)
+
+The PostgreSQL database (`hypothesis-db` on Railway) is organised into **four named schemas** plus an empty `public`. A fresh Claude instance can understand the database from the schema names alone:
+
+- **`pipeline`** (18 tables) — data in flight: `news`, `mini_signals`, `signal_horizon_log`, the matching/impact tables, `attribute_observations`, `generated_*`, `catalogue_names`, `schema_migrations`.
+- **`ontology`** (7 tables) — technology knowledge layer: `technologies`, `applications`, `technology_application_pairs`, `pair_evidence`, `pair_adjacencies`, `component_pair_links`, `tech_functions`.
+- **`catalogue`** (24 tables) — client intelligence: `companies`, `initiatives_v2`, `components`, `component_attributes`, `claims_v2`, `attribute_definitions`, the assumption/tension/reframing framework, plus legacy v1 tables (`initiatives`, `entities`, `links`, `signals`, `hypothesis_register`, etc.).
+- **`contacts`** (2 tables) — CRM data: `contacts` (~16k), `contact_initiative_interests`.
+- **`public`** — empty by design.
+
+**search_path rule.** Migration 017 runs `ALTER DATABASE railway SET search_path = pipeline, ontology, catalogue, contacts, public` and the same for the connecting role. Every existing query continues to resolve unprefixed names — `SELECT COUNT(*) FROM mini_signals` works, no schema prefix required. Cross-schema joins also work without prefixes (e.g. `JOIN component_pair_links ON ...` resolves to `ontology.component_pair_links`).
+
+When writing new queries, prefer unprefixed names. Use prefixes only when explicitly disambiguating, when reading audit/inventory queries against `pg_class`/`information_schema`, or when running outside this database's default search_path.
+
 Build script: `n8n/_build-wf-15a.mjs`. Code nodes exploded under `n8n/code-nodes/wf15/`.
 
 15b (scoring, YAMM generation, Signal Tracker writes) is the next workflow to construct — not yet built.
