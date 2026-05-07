@@ -2,7 +2,7 @@
 // id:   b2e1d09a-0006-4b00-9000-000000000006
 // type: n8n-nodes-base.code
 // --- code below this line is what runs in n8n ---
-// WeeklyNews — Collect Mini-Signals — 2026-05-05
+// WeeklyNews — Collect Mini-Signals — 2026-05-07
 // Mode: Run Once for All Items
 // Filters Parse + Validate output to valid signals; emits one item per signal
 // so the downstream Sheets append writes per-row. extracted_at forced to today

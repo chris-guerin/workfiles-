@@ -2,7 +2,7 @@
 // id:   a1d0c08a-0006-4b00-9000-000000000006
 // type: n8n-nodes-base.code
 // --- code below this line is what runs in n8n ---
-// Signal Pipeline 15a — Combine Payload for Claude — 2026-05-05
+// Signal Pipeline 15a — Combine Payload for Claude — 2026-05-07
 // Batch signals into payloads of <=10 each; system prompt instructs Claude
 // to return overall_classification + Claude-suggested probability_delta only.
 // Hypothesis matching is done downstream in code, not by Claude.
@@ -11,7 +11,7 @@ const ctx = $('Build Classification Context').first().json || {};
 const today = ctx.today || new Date().toISOString().slice(0, 10);
 const hypList = ctx.hyp_summary_str || '';
 
-const signals = $('Read Today\'s Mini-Signals').all().map(i => i.json).filter(s => s.signal_id && s.headline);
+const signals = $('Postgres: Read Today\'s Mini-Signals').all().map(i => i.json).filter(s => s.signal_id && s.headline);
 
 if (signals.length === 0) {
   return [{ json: { no_signals: true, reason: 'No mini-signals for ' + today, today } }];

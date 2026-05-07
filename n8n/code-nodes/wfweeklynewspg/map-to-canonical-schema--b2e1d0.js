@@ -2,7 +2,7 @@
 // id:   b2e1d09a-0001-4b00-9000-000000000001
 // type: n8n-nodes-base.code
 // --- code below this line is what runs in n8n ---
-// WeeklyNews — Map to Canonical Schema — 2026-05-05
+// WeeklyNews — Map to Canonical Schema — 2026-05-07
 // MAP TO CANONICAL SCHEMA — Fallback (no crypto)
 // Mode: Run Once for Each Item
 

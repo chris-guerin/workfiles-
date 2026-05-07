@@ -72,10 +72,12 @@ Claude Code 2.1.119 installed at `C:\Users\Admin\.local\bin\claude.exe`. Local r
 
 Workflow ID `3yqglVMObKORQ595` was reworked into **Signal Pipeline 15a** on 2026-05-05 — 12 nodes, weekly Monday 6am cadence (`0 6 * * 1`). Replaced the daily 6am trigger and Google-Sheet hypothesis repository with direct Postgres queries against `hypothesis-db` (Railway PG) using a new n8n credential `hypothesis-db Railway PG` (id `rgPwSKuC3uXH6fg7`).
 
-15a is the signal-ingestion + hypothesis-matching half of the pipeline. It ends with an enriched output row inserted into PG `signal_horizon_log` (migration 015) for 15b to consume by polling `WHERE processed_by_15b = FALSE`. It does NOT score, select, generate content, or write to Signal Tracker — that is 15b's job.
+15a is the signal-ingestion + hypothesis-matching half of the pipeline. It reads mini_signals from PG (migration 016) for the current day, matches them against Shell hypotheses, and inserts an enriched output row into PG `signal_horizon_log` (migration 015) for 15b to consume by polling `WHERE processed_by_15b = FALSE`. It does NOT score, select, generate content, or write to Signal Tracker — that is 15b's job.
 
 Pipeline (linear, no branching):
-1. Monday 6am Trigger → 2. Prepare Today → 3. Read Today's Mini-Signals (Sheet) → 4. **Postgres: Shell Hypotheses** → 5. Build Classification Context → 6. Combine Payload for Claude → 7. Claude — Classify Signals (HTTP) → 8. Parse Classification → 9. **Match Signals to Shell Hypotheses** (code, keyword overlap) → 10. **Postgres: Ontology Enrichment** → 11. **Build 15a Output** (ACT + ontology-gap filter, 15a output schema) → 12. **Postgres: Insert into signal_horizon_log**.
+1. Monday 6am Trigger → 2. Prepare Today → 3. **Postgres: Read Today's Mini-Signals** → 4. **Postgres: Shell Hypotheses** → 5. Build Classification Context → 6. Combine Payload for Claude → 7. Claude — Classify Signals (HTTP) → 8. Parse Classification → 9. **Match Signals to Shell Hypotheses** (code, keyword overlap) → 10. **Postgres: Ontology Enrichment** → 11. **Build 15a Output** (ACT + ontology-gap filter, 15a output schema) → 12. **Postgres: Insert into signal_horizon_log**.
+
+No Google Sheets nodes in the 15a pipeline. WF-WeeklyNews-PG runs Sunday 11pm and writes mini_signals rows directly into PG via `Postgres: Insert into mini_signals` — the Mini_Signals Google Sheet is no longer in the handoff chain.
 
 Build script: `n8n/_build-wf-15a.mjs`. Code nodes exploded under `n8n/code-nodes/wf15/`.
 

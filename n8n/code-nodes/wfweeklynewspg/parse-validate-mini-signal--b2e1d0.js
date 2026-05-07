@@ -2,7 +2,7 @@
 // id:   b2e1d09a-0005-4b00-9000-000000000005
 // type: n8n-nodes-base.code
 // --- code below this line is what runs in n8n ---
-// WeeklyNews — Parse + Validate Mini-Signal — 2026-05-05
+// WeeklyNews — Parse + Validate Mini-Signal — 2026-05-07
 // PARSE + VALIDATE MINI-SIGNAL
 // Mode: Run Once for Each Item
 

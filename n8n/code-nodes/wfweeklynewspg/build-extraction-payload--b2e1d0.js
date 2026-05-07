@@ -2,7 +2,7 @@
 // id:   b2e1d09a-0003-4b00-9000-000000000003
 // type: n8n-nodes-base.code
 // --- code below this line is what runs in n8n ---
-// WeeklyNews — Build Extraction Payload — 2026-05-05
+// WeeklyNews — Build Extraction Payload — 2026-05-07
 // BUILD EXTRACTION PAYLOAD
 // Mode: Run Once for Each Item
 

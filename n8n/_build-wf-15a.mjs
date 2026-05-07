@@ -8,9 +8,9 @@
 // Linear flow:
 //   1.  Schedule Trigger (Monday 6am — weekly)
 //   2.  Prepare Today                       — Code
-//   3.  Read Today's Mini-Signals           — Google Sheets (kept)
-//   4.  Postgres: Shell Hypotheses          — PG node (replaces Sheet HTTP)
-//   5.  Build Classification Context        — Code (rewritten for PG)
+//   3.  Postgres: Read Today's Mini-Signals — PG node (replaces Sheet read)
+//   4.  Postgres: Shell Hypotheses          — PG node
+//   5.  Build Classification Context        — Code
 //   6.  Combine Payload for Claude          — Code
 //   7.  Claude — Classify Signals           — HTTP (kept)
 //   8.  Parse Classification                — Code
@@ -19,9 +19,9 @@
 //   11. Build 15a Output                    — Code (ACT + gap filter, 15a schema)
 //   12. Postgres: Insert into signal_horizon_log — PG node (15a → 15b handoff)
 //
-// 2026-05-05 second pass: replaced the Append-to-Signal_Pipeline_Queue
-// Google Sheets node with a Postgres insert into signal_horizon_log
-// (migration 015). The Sheet handoff is gone; 15b reads from PG.
+// 2026-05-07 third pass: replaced the Read-Today's-Mini-Signals Google
+// Sheets node with a Postgres SELECT against mini_signals (migration 016).
+// No Google Sheets nodes remain in the 15a pipeline.
 //
 // Output local file is gitignored (n8n/workflows/) because the legacy
 // "Claude — Classify Signals" node carries an inline x-api-key. Code nodes
@@ -35,10 +35,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const PG_CRED_ID = 'rgPwSKuC3uXH6fg7';     // hypothesis-db Railway PG (created 2026-05-05)
 const PG_CRED_NAME = 'hypothesis-db Railway PG';
-const SHEETS_CRED_ID = '9aQCdF0Uwmy5qHDV'; // Google Sheets account 2 (existing)
-const SHEETS_DOC_ID = '1DUlVxb66yIgrd7borMm8NSeJHnvkDEBU4jciSKvvdyM';
-const MINI_SIGNALS_GID = 1905930997;
-const TODAY = '2026-05-05';
+// Google Sheets constants removed 2026-05-07 — no Sheets nodes in 15a.
+const TODAY = '2026-05-07';
 
 // ---------- Load existing workflow for the legacy nodes we're keeping ----------
 const oldPath = join(__dirname, 'workflows', '3yqglVMObKORQ595.json');
@@ -77,31 +75,30 @@ return [{ json: { today, run_label: 'Signal Pipeline 15a' } }];`;
 }
 
 function readMiniSignals() {
+  // Reads mini_signals rows for today (today date supplied by Prepare Today
+  // upstream). Replaces the prior Google Sheets read of the Mini_Signals tab.
+  // Returns one item per row, with json keys matching mini_signals columns —
+  // signal_id, headline, source, published_date, companies, technologies,
+  // geography, short_summary, evidence_snippet, etc. — same shape downstream
+  // code-nodes expected from the Sheet read.
+  const sql = `SELECT * FROM mini_signals
+WHERE extracted_at = $1::date
+ORDER BY created_at`;
   return {
     parameters: {
-      documentId: { __rl: true, value: SHEETS_DOC_ID, mode: 'id' },
-      sheetName: {
-        __rl: true,
-        value: MINI_SIGNALS_GID,
-        mode: 'list',
-        cachedResultName: 'Mini_Signals',
-        cachedResultUrl: `https://docs.google.com/spreadsheets/d/${SHEETS_DOC_ID}/edit#gid=${MINI_SIGNALS_GID}`,
+      operation: 'executeQuery',
+      query: sql,
+      options: {
+        queryReplacement: "={{ $('Prepare Today').first().json.today }}",
       },
-      filtersUI: {
-        values: [{
-          lookupColumn: 'extracted_at',
-          lookupValue: '={{ $(\'Prepare Today\').first().json.today }}'
-        }]
-      },
-      options: {},
     },
-    type: 'n8n-nodes-base.googleSheets',
-    typeVersion: 4.6,
+    type: 'n8n-nodes-base.postgres',
+    typeVersion: 2.6,
     position: [-960, 224],
     id: 'a1d0c08a-0003-4b00-9000-000000000003',
-    name: "Read Today's Mini-Signals",
+    name: "Postgres: Read Today's Mini-Signals",
     credentials: {
-      googleSheetsOAuth2Api: { id: SHEETS_CRED_ID, name: 'Google Sheets account 2' }
+      postgres: { id: PG_CRED_ID, name: PG_CRED_NAME }
     },
   };
 }
@@ -218,7 +215,7 @@ const ctx = $('Build Classification Context').first().json || {};
 const today = ctx.today || new Date().toISOString().slice(0, 10);
 const hypList = ctx.hyp_summary_str || '';
 
-const signals = $('Read Today\\'s Mini-Signals').all().map(i => i.json).filter(s => s.signal_id && s.headline);
+const signals = $('Postgres: Read Today\\'s Mini-Signals').all().map(i => i.json).filter(s => s.signal_id && s.headline);
 
 if (signals.length === 0) {
   return [{ json: { no_signals: true, reason: 'No mini-signals for ' + today, today } }];

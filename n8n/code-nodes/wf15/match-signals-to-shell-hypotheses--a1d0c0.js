@@ -2,7 +2,7 @@
 // id:   a1d0c08a-0009-4b00-9000-000000000009
 // type: n8n-nodes-base.code
 // --- code below this line is what runs in n8n ---
-// Signal Pipeline 15a — Match Signals to Shell Hypotheses — 2026-05-05
+// Signal Pipeline 15a — Match Signals to Shell Hypotheses — 2026-05-07
 // Code-based keyword overlap: not LLM. Each Shell hypothesis's keyword bag
 // is built from its initiative name, component names, and pair labels.
 // A signal matches if it shares >=2 distinct content tokens (after stop-word

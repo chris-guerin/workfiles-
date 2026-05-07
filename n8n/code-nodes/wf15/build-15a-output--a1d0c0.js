@@ -2,7 +2,7 @@
 // id:   a1d0c08a-000b-4b00-9000-00000000000b
 // type: n8n-nodes-base.code
 // --- code below this line is what runs in n8n ---
-// Signal Pipeline 15a — Build 15a Output — 2026-05-05
+// Signal Pipeline 15a — Build 15a Output — 2026-05-07
 // For each matched signal: assemble the per-spec output schema, compute
 // ontology_gap, apply ACT + gap filter (skip non-ACT; skip ACT where ALL
 // matched hypotheses have gap; pass mixed and flag).

@@ -2,7 +2,7 @@
 // id:   b2e1d09a-0002-4b00-9000-000000000002
 // type: n8n-nodes-base.code
 // --- code below this line is what runs in n8n ---
-// WeeklyNews — Noise Blocklist + Deduplicate — 2026-05-05
+// WeeklyNews — Noise Blocklist + Deduplicate — 2026-05-07
 // NOISE BLOCKLIST + DEDUPLICATE
 // Mode: Run Once for All Items
 // Job: remove genuine noise and exact duplicates only

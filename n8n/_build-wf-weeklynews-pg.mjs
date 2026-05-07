@@ -24,10 +24,8 @@ const SRC = join(__dirname, 'workflows', 'wfweeklynewspg.json');
 const OUT = SRC; // overwrite in place
 
 const ANTHROPIC_CRED = { id: 'SDCpsCbSvW9KWxdQ', name: 'Anthropic account' };
-const SHEETS_CRED = { id: '9aQCdF0Uwmy5qHDV', name: 'Google Sheets account 2' };
-const SHEETS_DOC_ID = '1DUlVxb66yIgrd7borMm8NSeJHnvkDEBU4jciSKvvdyM';
-const MINI_SIGNALS_GID = 1905930997;
-const TODAY_NOTE = '2026-05-05';
+const PG_CRED = { id: 'rgPwSKuC3uXH6fg7', name: 'hypothesis-db Railway PG' };
+const TODAY_NOTE = '2026-05-07';
 
 // Names of nodes to remove
 const REMOVE = new Set([
@@ -186,27 +184,47 @@ function nodeCollectMiniSignals() {
     name: 'Collect Mini-Signals',
   };
 }
-function nodeAppendToSheet() {
+function nodePostgresInsertMiniSignals() {
+  // Per-input-item INSERT into mini_signals (migration 016).
+  // Replaces the Append-to-Mini_Signals Google Sheet handoff.
+  // 15 positional params; id and created_at use defaults. extracted_at
+  // and published_date cast via NULLIF($N,'')::date to tolerate empty/missing.
+  const sql = `INSERT INTO mini_signals
+  (signal_id, extracted_at, published_date, source, source_type, url,
+   headline, companies, technologies, geography, event_type,
+   value_chain_position, short_summary, evidence_snippet, extraction_model)
+VALUES
+  ($1, NULLIF($2, '')::date, NULLIF($3, '')::date, $4, $5, $6,
+   $7, $8, $9, $10, $11, $12, $13, $14, $15)`;
+  const replacement = [
+    "{{ $json.signal_id }}",
+    "{{ $json.extracted_at }}",
+    "{{ $json.published_date }}",
+    "{{ $json.source }}",
+    "{{ $json.source_type }}",
+    "{{ $json.url }}",
+    "{{ $json.headline }}",
+    "{{ $json.companies }}",
+    "{{ $json.technologies }}",
+    "{{ $json.geography }}",
+    "{{ $json.event_type }}",
+    "{{ $json.value_chain_position }}",
+    "{{ $json.short_summary }}",
+    "{{ $json.evidence_snippet }}",
+    "{{ $json.extraction_model }}",
+  ].join(', ');
   return {
     parameters: {
-      operation: 'append',
-      documentId: { __rl: true, value: SHEETS_DOC_ID, mode: 'id' },
-      sheetName: {
-        __rl: true,
-        value: MINI_SIGNALS_GID,
-        mode: 'list',
-        cachedResultName: 'Mini_Signals',
-        cachedResultUrl: `https://docs.google.com/spreadsheets/d/${SHEETS_DOC_ID}/edit#gid=${MINI_SIGNALS_GID}`,
-      },
-      columns: { mappingMode: 'autoMapInputData', value: {}, matchingColumns: [] },
-      options: {},
+      operation: 'executeQuery',
+      query: sql,
+      options: { queryReplacement: '=' + replacement },
     },
-    type: 'n8n-nodes-base.googleSheets',
-    typeVersion: 4.6,
+    type: 'n8n-nodes-base.postgres',
+    typeVersion: 2.6,
     position: [1680, 480],
     id: 'b2e1d09a-0007-4b00-9000-000000000007',
-    name: 'Append to Mini_Signals',
-    credentials: { googleSheetsOAuth2Api: { id: SHEETS_CRED.id, name: SHEETS_CRED.name } },
+    name: 'Postgres: Insert into mini_signals',
+    credentials: { postgres: { id: PG_CRED.id, name: PG_CRED.name } },
   };
 }
 
@@ -221,11 +239,14 @@ trig.parameters = {
   rule: { interval: [{ field: 'cronExpression', expression: '0 23 * * 0' }] }
 };
 
-// 2. Drop the 5 obsolete nodes
+// 2. Drop the 5 obsolete nodes plus the prior pass's Append-to-Mini_Signals
+//    (now superseded by Postgres: Insert into mini_signals).
 const oldTriggerName = 'Weekly Monday 7am';
-wf.nodes = wf.nodes.filter(n => !REMOVE.has(n.name));
+const REMOVE_PLUS = new Set([...REMOVE, 'Append to Mini_Signals']);
+wf.nodes = wf.nodes.filter(n => !REMOVE_PLUS.has(n.name));
 
-// 3. Add new Haiku branch nodes
+// 3. Build new Haiku branch nodes (deduped by name — script is idempotent
+//    against re-runs that read a previously-built local file).
 const haikuNodes = [
   nodeMapToCanonical(),
   nodeNoiseBlocklist(),
@@ -233,8 +254,10 @@ const haikuNodes = [
   nodeClaudeHaiku(),
   nodeParseValidate(),
   nodeCollectMiniSignals(),
-  nodeAppendToSheet(),
+  nodePostgresInsertMiniSignals(),
 ];
+const haikuNames = new Set(haikuNodes.map(n => n.name));
+wf.nodes = wf.nodes.filter(n => !haikuNames.has(n.name));
 wf.nodes.push(...haikuNodes);
 
 // 4. Connections — rebuild
@@ -280,7 +303,7 @@ newConnections['Noise Blocklist + Deduplicate'] = { main: [[{ node: 'Build Extra
 newConnections['Build Extraction Payload'] = { main: [[{ node: 'Claude Haiku Extract', type: 'main', index: 0 }]] };
 newConnections['Claude Haiku Extract'] = { main: [[{ node: 'Parse + Validate Mini-Signal', type: 'main', index: 0 }]] };
 newConnections['Parse + Validate Mini-Signal'] = { main: [[{ node: 'Collect Mini-Signals', type: 'main', index: 0 }]] };
-newConnections['Collect Mini-Signals'] = { main: [[{ node: 'Append to Mini_Signals', type: 'main', index: 0 }]] };
+newConnections['Collect Mini-Signals'] = { main: [[{ node: 'Postgres: Insert into mini_signals', type: 'main', index: 0 }]] };
 
 wf.connections = newConnections;
 wf.name = 'WF-WeeklyNews-PG';
