@@ -302,7 +302,7 @@ Rules: under 120 words. No FutureBridge name in body. No generic openers. Three 
 | **Skoda Auto hypotheses (PG)** | **Built — 3 brand-level initiatives from `skoda_intelligence_brief__3_.html` (SKD-01 India platform, SKD-02 affordable EV top-3, SKD-03 Czech manufacturing advantage). New `companies` row created.** |
 | **Porsche AG hypotheses (PG)** | **Built — 3 brand-level initiatives from `porsche_intelligence_brief__4_.html` (PAG-01 eFuels carve-out, PAG-02 Taycan premium, PAG-03 motorsport+experiential)** |
 | Ontology (energy) | 33 pairs, 16 technologies, v10.3 |
-| Ontology (mobility) | NOT STARTED — deferred from overnight run, see open items |
+| **Ontology (mobility)** | **Built — 15 pairs, 10 technologies, 7 applications via `P3_mobility_ontology.mjs`. 37 evidence rows (all URL-backed), 36 adjacencies, 11 component_pair_links to the four VWG-stack anchor components. Methodology v1.3.** |
 | Account plans v7 | Live — Shell, Siemens Energy, TotalEnergies added |
 | Intel briefs + PG hypotheses | Designed, not built |
 | Exposed API key (sk-ant-api03-Wip4...) | Revoke at console.anthropic.com if not done |
@@ -334,7 +334,8 @@ Total claims_v2 rows added: 46. Component attribute rows zero pending after run 
 | Next | Apps Script INSERT trigger — install (run `installOntologyTriggers()` in Apps Script editor) |
 | Next | **Generate intelligence briefs for the 6 deferred energy clients** (TEN, TFMC, XOM, ENI, CNP, SLB) — this is the precondition for hypothesis population. Path A overnight skipped these because no brief existed in repo. |
 | Next | **MAN_001 fleet BEV charging hypothesis** — generate MAN brief first, then populate (was on original VWG brief, dropped from Path A) |
-| Next | **Mobility ontology Phase 3** — populate VWG-anchored mobility ontology pairs (BEV platform × passenger EV, SDV × passenger OEM, ADAS L2+ × safety, SiC × drivetrain, V2G × grid services). Methodology v1.3 requires ≥2 evidence URLs per pair × 10-15 pairs minimum. Anchors on the new SSP_ZONAL_ARCHITECTURE_AND_OTA, MEB_PLATFORM_BOM_COST_REDUCTION, ELECTRIC_RACING_POWERTRAIN_AND_RECOVERY components from Path A. |
+| Done | ~~Mobility ontology Phase 3~~ — 15 pairs populated 2026-05-07 via `P3_mobility_ontology.mjs`. Cross-client adjacency edges (v1.3) flagged 13 of 36 new edges as cross-client. Ontology heat map now spans energy (33 pairs) + mobility (15 pairs) = 48 pairs total, 26 technologies, 12 applications. |
+| Next | **Mobility ontology cross-client extension** — when more brand briefs land (Audi, Mercedes, BMW, JLR), additional `component_pair_links` will retroactively flag adjacencies as cross-client via the v1.3 trigger. No schema work needed. |
 | Next | Confirm signal-engine API Bearer token state in `.claude/settings.local.json` and decide whether to repoint the new BP+VWG population scripts from direct PG to API path (matches Shell pattern exactly). |
 | Next | Intel briefs HTML — connect to PG hypotheses via Apps Script endpoint (each per-company brief should pull its hypotheses from `catalogue.initiatives_v2` and inject into the Claude API prompt) |
 | Next | Old Google Sheet hypotheses — delete after PG hypotheses complete for all in-scope clients |
