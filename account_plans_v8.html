@@ -248,10 +248,15 @@ main{padding:24px 36px 80px;max-width:1200px;width:100%}
     <div class="config-help">Meeting log backend (carry from v7).</div>
   </div>
 
-  <button class="btn-primary" id="loadCompaniesBtn" onclick="loadCompanies()">Load companies</button>
+  <div style="display:flex;gap:6px">
+    <button class="btn-primary" id="loadCompaniesBtn" style="flex:1" onclick="loadCompanies()">Load companies</button>
+    <button class="btn-ghost" id="testTokenBtn" onclick="testToken()" title="Hit /health then /v8/companies and report what comes back">Test</button>
+  </div>
+
+  <div id="tokenDiag" style="font-size:10px;color:var(--muted);font-family:var(--mono);min-height:14px"></div>
 
   <div id="companyList" class="company-list">
-    <div class="company-list-empty">Enter Bearer token then click "Load companies" above.</div>
+    <div class="company-list-empty">Enter Bearer token then click "Load companies" above. Use "Test" to diagnose if /v8/companies 401s.</div>
   </div>
 
   <div style="display:flex;gap:6px;margin-top:auto">
@@ -314,19 +319,49 @@ window.addEventListener('DOMContentLoaded', () => {
     document.getElementById(id).value = v;
     document.getElementById(id).addEventListener('input', e => {
       localStorage.setItem('v8_' + id, e.target.value);
+      if (id === 'bearerToken') refreshTokenDiag();
     });
   });
+  refreshTokenDiag();
 
   // If token present, auto-load companies
-  if (document.getElementById('bearerToken').value) {
+  if (getBearer()) {
     loadCompanies();
   }
 });
 
 // ══ CONFIG GETTERS ═════════════════════════════════════════════════════
-const getBearer = () => document.getElementById('bearerToken').value.trim();
-const getAnthropicKey = () => document.getElementById('anthropicKey').value.trim();
+// Defensive token cleanup — strips:
+//   - leading "Bearer " if user pasted with the prefix
+//   - all whitespace (incl. invisible: NBSP, ZWSP, BOM, line/paragraph separators)
+//   - quote characters that some clipboards add
+function cleanToken(raw) {
+  if (!raw) return '';
+  let t = String(raw);
+  // strip surrounding quotes
+  t = t.replace(/^["'‘’“”]+|["'‘’“”]+$/g, '');
+  // strip "Bearer " prefix if pasted with it (case-insensitive)
+  t = t.replace(/^\s*bearer\s+/i, '');
+  // strip ALL whitespace including invisible
+  t = t.replace(/[\s\u00A0\u200B-\u200D\uFEFF\u2028\u2029\u202F\u205F]+/g, '');
+  return t;
+}
+const getBearer = () => cleanToken(document.getElementById('bearerToken').value);
+const getAnthropicKey = () => cleanToken(document.getElementById('anthropicKey').value);
 const getScriptUrl = () => document.getElementById('scriptUrl').value.trim();
+
+// Show a sanitised view of the bearer token in the diagnostic line:
+// length + first 3 + last 3 chars. Never shows the full token.
+function tokenFingerprint() {
+  const t = getBearer();
+  if (!t) return 'no token';
+  if (t.length < 8) return `len=${t.length} (too short — typo?)`;
+  return `len=${t.length} · ${t.slice(0,3)}…${t.slice(-3)}`;
+}
+function refreshTokenDiag(extra = '') {
+  const el = document.getElementById('tokenDiag');
+  if (el) el.textContent = tokenFingerprint() + (extra ? ' · ' + extra : '');
+}
 
 function clearCacheConfirm() {
   if (confirm('Clear all local caches (Claude responses, per-company data)? Sidebar config is kept.')) {
@@ -344,14 +379,44 @@ function clearCacheConfirm() {
 async function apiGet(path) {
   const tok = getBearer();
   if (!tok) throw new Error('No Bearer token in sidebar');
-  const r = await fetch(API_BASE + path, {
-    headers: { 'Authorization': 'Bearer ' + tok }
-  });
+  const headers = { 'Authorization': 'Bearer ' + tok };
+  // Console-side diagnostic — visible in DevTools Network tab anyway, but
+  // logging here makes debugging "is the header reaching the server?" easier.
+  console.log(`[v8] GET ${path}  Authorization: Bearer <len=${tok.length} ${tok.slice(0,3)}…${tok.slice(-3)}>`);
+  const r = await fetch(API_BASE + path, { headers });
   if (!r.ok) {
     const txt = await r.text().catch(() => '');
-    throw new Error(`${path} → ${r.status}: ${txt.slice(0,160)}`);
+    throw new Error(`${path} → ${r.status}: ${txt.slice(0,200)}`);
   }
   return r.json();
+}
+
+// Probe: hits /health (no auth) then /v8/companies (auth required).
+// Reports CORS + auth state in plain English under the token field.
+async function testToken() {
+  const diag = document.getElementById('tokenDiag');
+  const tok = getBearer();
+  if (!tok) { diag.textContent = '⚠ No token in field — paste then test.'; return; }
+  diag.textContent = tokenFingerprint() + ' · testing /health…';
+  try {
+    const h = await fetch(API_BASE + '/health');
+    if (!h.ok) { diag.textContent = `⚠ /health failed (${h.status}) — API not reachable from this browser.`; return; }
+    diag.textContent = tokenFingerprint() + ' · /health OK · testing /v8/companies…';
+    const c = await fetch(API_BASE + '/v8/companies', {
+      headers: { 'Authorization': 'Bearer ' + tok }
+    });
+    if (c.ok) {
+      const arr = await c.json();
+      diag.innerHTML = `<span style="color:var(--green)">✓ /v8/companies OK · ${arr.length} companies returned</span> · ${tokenFingerprint()}`;
+    } else if (c.status === 401) {
+      diag.innerHTML = `<span style="color:var(--red-dark)">✗ /v8/companies 401 unauthorised</span> · ${tokenFingerprint()} · token rejected by API. Check Railway env API_KEY matches what you pasted (no extra chars).`;
+    } else {
+      const txt = await c.text().catch(() => '');
+      diag.innerHTML = `<span style="color:var(--red-dark)">✗ /v8/companies ${c.status}</span> · ${tokenFingerprint()} · ${escapeHtml(txt.slice(0,80))}`;
+    }
+  } catch (e) {
+    diag.innerHTML = `<span style="color:var(--red-dark)">✗ Network error: ${escapeHtml(e.message)}</span>`;
+  }
 }
 
 async function callClaude(prompt, maxTokens = 1500, system = null) {
