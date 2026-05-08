@@ -22,15 +22,13 @@ a{color:var(--fg);text-decoration:underline;text-decoration-thickness:1px;text-u
 button{font-family:inherit;cursor:pointer}
 
 /* ── Layout ── */
-/* grid: fixed 280px sidebar + remaining width for main.
-   minmax(0, 1fr) instead of plain 1fr is the canonical fix for
-   "grid item refuses to shrink": with plain 1fr the item's intrinsic
-   min-width is its content-based min-content, so any wide content
-   (long tokens, long URLs, code blocks) in main can blow the column
-   out and push aside to full viewport width.
-   min-width:0 on main belts-and-braces the same fix. */
-.app{display:grid;grid-template-columns:280px minmax(0, 1fr);min-height:100vh}
+/* Flex-based two-column. Aside is fixed 300px, main fills the rest.
+   Flex naturally handles fixed-aside + fluid-main without the grid
+   minmax(0,1fr) gotcha. */
+.app{display:flex;flex-direction:row;align-items:stretch;min-height:100vh}
 aside{
+  flex: 0 0 300px;          /* fixed 300px, no grow, no shrink */
+  width: 300px;             /* explicit width as belt-and-braces */
   background:var(--panel);
   border-right:1px solid var(--border);
   padding:20px;
@@ -41,23 +39,21 @@ aside{
   top:0;
   height:100vh;
   overflow-y:auto;
-  width:280px;          /* defensive; matches the grid track */
-  min-width:280px;
   box-sizing:border-box;
 }
 main{
+  flex: 1 1 auto;           /* take all remaining width */
+  min-width: 0;             /* allow children to wrap inside flex item */
   padding:24px 36px 80px;
   max-width:1200px;
-  width:100%;
-  min-width:0;          /* allow shrinking inside grid cell */
   box-sizing:border-box;
-  overflow-x:auto;       /* if a child still overflows, scroll inside main */
+  overflow-x:auto;
 }
 
 /* Stack on narrow viewports (sub-720px) — phones, narrow split screens. */
 @media (max-width: 720px) {
-  .app{grid-template-columns:1fr}
-  aside{position:static;height:auto;width:100%;min-width:0;border-right:none;border-bottom:1px solid var(--border)}
+  .app{flex-direction:column}
+  aside{flex:0 0 auto;position:static;height:auto;width:100%;border-right:none;border-bottom:1px solid var(--border)}
 }
 
 /* ── Sidebar ── */
