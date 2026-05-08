@@ -22,9 +22,43 @@ a{color:var(--fg);text-decoration:underline;text-decoration-thickness:1px;text-u
 button{font-family:inherit;cursor:pointer}
 
 /* ── Layout ── */
-.app{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
-aside{background:var(--panel);border-right:1px solid var(--border);padding:20px;display:flex;flex-direction:column;gap:18px;position:sticky;top:0;height:100vh;overflow-y:auto}
-main{padding:24px 36px 80px;max-width:1200px;width:100%}
+/* grid: fixed 280px sidebar + remaining width for main.
+   minmax(0, 1fr) instead of plain 1fr is the canonical fix for
+   "grid item refuses to shrink": with plain 1fr the item's intrinsic
+   min-width is its content-based min-content, so any wide content
+   (long tokens, long URLs, code blocks) in main can blow the column
+   out and push aside to full viewport width.
+   min-width:0 on main belts-and-braces the same fix. */
+.app{display:grid;grid-template-columns:280px minmax(0, 1fr);min-height:100vh}
+aside{
+  background:var(--panel);
+  border-right:1px solid var(--border);
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+  position:sticky;
+  top:0;
+  height:100vh;
+  overflow-y:auto;
+  width:280px;          /* defensive; matches the grid track */
+  min-width:280px;
+  box-sizing:border-box;
+}
+main{
+  padding:24px 36px 80px;
+  max-width:1200px;
+  width:100%;
+  min-width:0;          /* allow shrinking inside grid cell */
+  box-sizing:border-box;
+  overflow-x:auto;       /* if a child still overflows, scroll inside main */
+}
+
+/* Stack on narrow viewports (sub-720px) — phones, narrow split screens. */
+@media (max-width: 720px) {
+  .app{grid-template-columns:1fr}
+  aside{position:static;height:auto;width:100%;min-width:0;border-right:none;border-bottom:1px solid var(--border)}
+}
 
 /* ── Sidebar ── */
 .brand{font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;line-height:1.3}
