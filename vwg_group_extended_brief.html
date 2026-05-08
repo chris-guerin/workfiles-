@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Volkswagen Group — Extended Strategic Brief — Q1 2026</title>
+<style>
+:root{
+  --ink:#060a0f;--text:#e8eef5;--text-mid:#8fa3b5;--text-dim:#4a6278;
+  --panel:#0f1922;--panel2:#131f2b;--border:#1c2e3e;--border2:#243444;
+  --gold:#1B98FF;--cyan:#2dd4bf;--green:#22c55e;--amber:#f59e0b;
+  --red:#f05252;--blue:#1B98FF;--accent:#1B98FF;
+  --vw:#001E50;
+  --font-sans:Arial,Helvetica,sans-serif;--font-serif:Georgia,'Times New Roman',serif;
+  --font-mono:'Courier New',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--text);font-family:var(--font-sans);font-size:14px;line-height:1.6}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:9999}
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(6,10,15,0.95);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);display:flex;align-items:center;padding:0 32px;height:52px;gap:24px}
+.nav-brand{font-family:var(--font-mono);font-size:0.65rem;font-weight:700;color:var(--gold);letter-spacing:0.2em;text-transform:uppercase;border-right:1px solid var(--border);padding-right:24px;white-space:nowrap}
+.nav-links{display:flex;gap:4px;flex:1;overflow-x:auto;scrollbar-width:none}
+.nav-link{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);text-decoration:none;padding:6px 10px;white-space:nowrap}
+.nav-link:hover{color:var(--gold)}
+.nav-badge{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;color:var(--red);border:1px solid var(--red);padding:3px 8px;text-transform:uppercase}
+.posture-badge{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;color:var(--accent);border:1px solid var(--accent);padding:3px 8px;text-transform:uppercase}
+.page{max-width:1200px;margin:0 auto;padding:0 32px 80px}
+.hero{padding:110px 0 60px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.hero::before{content:'VWG';position:absolute;right:-30px;top:50%;transform:translateY(-50%);font-family:var(--font-serif);font-size:18rem;font-weight:900;color:rgba(27,152,255,0.05);line-height:1;pointer-events:none;letter-spacing:-0.05em}
+.hero-kicker{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.hero-kicker::before{content:'';width:32px;height:1px;background:var(--gold)}
+.hero-title{font-family:var(--font-serif);font-size:3.5rem;font-weight:900;line-height:1.05;color:var(--text);margin-bottom:16px;max-width:780px}
+.hero-title em{font-style:normal;color:var(--gold)}
+.hero-subtitle{font-family:var(--font-sans);font-size:1rem;color:var(--text-mid);max-width:760px;margin-bottom:36px;font-weight:300;line-height:1.7}
+.hero-meta{display:flex;gap:32px;flex-wrap:wrap}
+.meta-item{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase}
+.meta-label{color:var(--text-dim);margin-bottom:4px}
+.meta-value{color:var(--text);font-weight:700;font-size:0.72rem}
+.section{padding:56px 0 0}
+.section-head{display:flex;align-items:center;gap:16px;margin-bottom:32px}
+.section-num{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.2em;color:var(--text-dim);text-transform:uppercase;background:var(--panel);border:1px solid var(--border);padding:4px 8px}
+.section-title{font-family:var(--font-serif);font-size:1.8rem;font-weight:700;color:var(--text)}
+.section-rule{flex:1;height:1px;background:var(--border)}
+.info-box{background:var(--panel);border-left:3px solid var(--gold);padding:20px 24px;font-size:0.88rem;color:var(--text-mid);line-height:1.7;margin-bottom:24px}
+.callout{background:var(--panel2);border:1px solid var(--border2);border-left:3px solid var(--cyan);padding:20px 24px;font-size:0.88rem;color:var(--text);line-height:1.7;margin-bottom:24px}
+.facts-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:24px}
+.fact-cell{background:var(--panel);padding:18px}
+.fact-val{font-family:var(--font-mono);font-size:1.4rem;font-weight:700;color:var(--text);margin-bottom:4px}
+.fact-val.green{color:var(--green)}.fact-val.amber{color:var(--amber)}.fact-val.red{color:var(--red)}.fact-val.blue{color:var(--blue)}
+.fact-lbl{font-family:var(--font-sans);font-size:0.7rem;color:var(--text-mid)}
+.fact-sub{font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);margin-top:2px}
+@media(max-width:768px){.facts-grid{grid-template-columns:repeat(2,1fr)}.hero-title{font-size:2.2rem}}
+</style>
+</head>
+<body>
+<!-- v8-deprecation-banner -->
+<div style="background:#000;color:#fff;padding:14px 24px;font-family:Arial,Helvetica,sans-serif;font-size:13px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;border-bottom:2px solid #1B98FF">
+  <span style="font-family:'Courier New',monospace;font-size:10px;font-weight:700;letter-spacing:0.12em;color:#1B98FF">DEPRECATED</span>
+  <span style="flex:1;line-height:1.45">This brief has been superseded by the live account plan tool, which pulls hypotheses, ontology pairs, signal log and contacts directly from the catalogue.</span>
+  <a href="account_plans_v8.html?company=Volkswagen%20Group" style="background:#1B98FF;color:#fff;text-decoration:none;padding:7px 14px;font-weight:600;font-size:12px;letter-spacing:0.04em;white-space:nowrap">Open Volkswagen Group in v8 →</a>
+  <a href="account_plans_v8.html?company=VW%20Group%20Family" style="background:#fff;color:#000;text-decoration:none;padding:7px 14px;font-weight:600;font-size:12px;letter-spacing:0.04em;white-space:nowrap">Open VW Group (Family) in v8 →</a>
+</div>
+
+<div style="background:#0a1520;border-bottom:1px solid #1c2e3e;padding:8px 24px;display:flex;align-items:center;gap:12px">
+  <span style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.12em;font-weight:700;color:#22AE8A">● SIGNAL REFRESH</span>
+  <span style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278">May 2026 · Sources: VWG Q3 2025 results, CARIAD Oct 2025 reorg, Rivian RV Tech JV milestones, Xpeng CEA partnership, BYD Europe + China sales data, EU CO2 fleet regulation, IG Metall agreements, PowerCo Salzgitter ramp updates</span>
+  <span style="margin-left:auto;font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278">May 2026</span>
+</div>
+
+<nav class="nav">
+  <div class="nav-brand">FutureBridge // VWG Extended</div>
+  <div class="nav-links">
+    <a href="#snapshot" class="nav-link">Snapshot</a>
+    <a href="#hyp-sw" class="nav-link">SW-01</a>
+    <a href="#hyp-chn" class="nav-link">CHN-01</a>
+    <a href="#hyp-cost" class="nav-link">COST-01</a>
+    <a href="#hyp-bat" class="nav-link">BAT-01</a>
+    <a href="#hyp-ev" class="nav-link">EV-01</a>
+  </div>
+  <span class="posture-badge">REPOSITION</span>
+  <div class="nav-badge">Confidential</div>
+</nav>
+
+<div class="page">
+
+  <section class="hero" id="top">
+    <div class="hero-kicker">FutureBridge · Volkswagen Group · Extended hypothesis register</div>
+    <h1 class="hero-title">Volkswagen Group<br><em>Extended Strategic Brief</em></h1>
+    <p class="hero-subtitle">Five new group-level hypotheses extending the original VWG register (VW-01 IG Metall, VW-02 ID. SDV, VW-03 China share decline). Covers software delivery (CARIAD + Rivian + Xpeng), China defence (CMP + CEA), German cost reset (€10B), PowerCo battery independence, and European BEV demand recovery.</p>
+    <div class="hero-meta">
+      <div class="meta-item"><div class="meta-label">Scope</div><div class="meta-value">Group-level · 5 hypotheses · 20 components · 20 claims</div></div>
+      <div class="meta-item"><div class="meta-label">Date</div><div class="meta-value">May 2026 (data through Oct 2025)</div></div>
+      <div class="meta-item"><div class="meta-label">Avg confidence</div><div class="meta-value">0.48 (range 0.40 – 0.55)</div></div>
+      <div class="meta-item"><div class="meta-label">Prepared by</div><div class="meta-value">FutureBridge Advisory</div></div>
+    </div>
+  </section>
+
+  <section class="section" id="snapshot">
+    <div class="section-head"><span class="section-num">00</span><h2 class="section-title">Group Snapshot</h2><div class="section-rule"></div></div>
+    <div class="facts-grid">
+      <div class="fact-cell"><div class="fact-val red">2.93M</div><div class="fact-lbl">2024 China sales</div><div class="fact-sub">vs 4.23M peak 2019 · -34.5% BEV YoY H1 2025</div></div>
+      <div class="fact-cell"><div class="fact-val amber">€12B</div><div class="fact-lbl">CARIAD invested since inception</div><div class="fact-sub">Restructured Oct 2025 to integrator</div></div>
+      <div class="fact-cell"><div class="fact-val blue">€10B</div><div class="fact-lbl">Group cost-savings programme</div><div class="fact-sub">Target by 2027</div></div>
+      <div class="fact-cell"><div class="fact-val">+1yr</div><div class="fact-lbl">Audi Q8/A4 e-tron delay</div><div class="fact-sub">To mid-late 2028 · Porsche K1 indef</div></div>
+      <div class="fact-cell"><div class="fact-val red">+250%</div><div class="fact-lbl">BYD Europe sales Jan-Aug 2025</div><div class="fact-sub">From small base; Hungary plant 2026</div></div>
+      <div class="fact-cell"><div class="fact-val">>200</div><div class="fact-lbl">PowerCo target capacity GWh</div><div class="fact-sub">Salzgitter + Valencia + Canada by 2030s</div></div>
+      <div class="fact-cell"><div class="fact-val red">Halt</div><div class="fact-lbl">Zwickau / Emden BEV Oct 2025</div><div class="fact-sub">Demand slowdown · MEB amortisation risk</div></div>
+      <div class="fact-cell"><div class="fact-val">130</div><div class="fact-lbl">China NEV brands competing</div><div class="fact-sub">BYD 34% EV share · 2025 "rebuilding year"</div></div>
+    </div>
+    <div class="info-box">
+      <strong>Headline state.</strong> Five interlocking hypotheses define VWG's next 3-5 years. Software delivery (HYP_VWG_SW_001) is the single highest-execution-risk play, with the three-architecture strategy (CARIAD + Rivian + Xpeng) requiring three concurrent organisational + technical successes. China (CHN-01) and EU BEV demand (EV-01) are deteriorating; cost programme (COST-01) and PowerCo (BAT-01) are ramping.
+    </div>
+    <div class="callout">
+      <strong>Posture: REPOSITION</strong> — average confidence 0.48 reflects the multi-front execution challenge. The decision threshold for each hypothesis is captured in the live v2 catalogue (account_plans_v8 → Hypotheses tab). This brief is a snapshot; the catalogue tracks confidence drift and signal matching over time.
+    </div>
+  </section>
+
+  <!-- HYP_VWG_SW_001 -->
+  <section class="section" id="hyp-sw">
+    <div class="section-head"><span class="section-num">SW-01</span><h2 class="section-title">Software delivery — three-architecture stack by 2028</h2><div class="section-rule"></div></div>
+    <div class="info-box" style="border-left-color:var(--amber)">
+      <strong>Hypothesis.</strong> The three-architecture VWG software strategy (CARIAD Global + Rivian SDV West "RV Tech" + Xpeng SDV East) delivers a functional unified Group Software Stack across brands by 2028, with the VW ID.1 as the first production vehicle running Rivian-derived software (target: late 2027).
+    </div>
+    <p style="color:var(--text-mid);margin-bottom:14px">CARIAD restructured Oct 2025 from developer to integrator. €12B invested in CARIAD since inception. Rivian JV tensions: Audi Q8 e-tron and A4 e-tron delayed 1+ year to mid-late 2028. Porsche K1 postponed indefinitely.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;font-size:0.85rem">
+      <div style="background:var(--panel);border:1px solid var(--border);padding:14px"><strong style="color:var(--gold);font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase">WNTBT — All conditions hold</strong>
+        <ul style="margin-top:10px;padding-left:18px;color:var(--text-mid);line-height:1.65">
+          <li>VW ID.1 first production with Rivian-derived software achieved late 2027</li>
+          <li>Audi Q8/A4 e-tron launch holds for mid-late 2028 (no further slippage)</li>
+          <li>CARIAD operates as integrator (not core developer) consistently through 2028</li>
+          <li>Porsche K1 timing publicly re-committed by end-2027</li>
+          <li>No major Group Software Stack reset announced before end-2027</li>
+        </ul>
+      </div>
+      <div style="background:var(--panel);border:1px solid var(--border);padding:14px"><strong style="color:var(--gold);font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase">Components mapped (4)</strong>
+        <ul style="margin-top:10px;padding-left:18px;color:var(--text-mid);line-height:1.65">
+          <li>VWG_ZONAL_E3_ARCHITECTURE · tech</li>
+          <li>VWG_OTA_PLATFORM_GROUP · tech</li>
+          <li>VWG_ADAS_STACK_INTEGRATION · tech</li>
+          <li>RIVIAN_RV_TECH_JV · partner</li>
+        </ul>
+      </div>
+    </div>
+    <div style="display:flex;gap:24px;margin-top:14px;color:var(--text-mid);font-size:0.85rem">
+      <div><strong style="color:var(--text)">Confidence</strong>: 0.45 (execution risk high)</div>
+      <div><strong style="color:var(--text)">Horizon</strong>: H2 · 3-5yr</div>
+      <div><strong style="color:var(--text)">State</strong>: ambiguous · volatile trajectory</div>
+    </div>
+  </section>
+
+  <!-- HYP_VWG_CHN_001 -->
+  <section class="section" id="hyp-chn">
+    <div class="section-head"><span class="section-num">CHN-01</span><h2 class="section-title">China defence — units >2.5M / BEV share >10% by 2027</h2><div class="section-rule"></div></div>
+    <div class="info-box" style="border-left-color:var(--red)">
+      <strong>Hypothesis.</strong> VWG stabilises China unit sales above 2.5M/year and recovers BEV market share above 10% by 2027 via CMP platform (China-only, launch 2026) and China Electronic Architecture (CEA) with Xpeng (deploy 2027).
+    </div>
+    <p style="color:var(--text-mid);margin-bottom:14px">2024 China sales 2.93M (vs 4.23M peak 2019). BEV deliveries -34.5% YoY H1 2025. China operating margin 4.2% H1 2025. BYD at 34% China EV share. 130 brands competing. 2025 declared "rebuilding year" by VWG China boss.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;font-size:0.85rem">
+      <div style="background:var(--panel);border:1px solid var(--border);padding:14px"><strong style="color:var(--gold);font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase">WNTBT — All conditions hold</strong>
+        <ul style="margin-top:10px;padding-left:18px;color:var(--text-mid);line-height:1.65">
+          <li>China unit sales hold ≥2.5M/year through 2027</li>
+          <li>VWG BEV share in China recovers to ≥10% by FY2027</li>
+          <li>CMP platform launches 2026 with at least 2 nameplates</li>
+          <li>Xpeng CEA deploys 2027 in lead model</li>
+          <li>China operating margin holds ≥4% through 2026-2027 transition</li>
+          <li>No further BYD-driven share cliff (>5pp loss in any single year)</li>
+        </ul>
+      </div>
+      <div style="background:var(--panel);border:1px solid var(--border);padding:14px"><strong style="color:var(--gold);font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase">Components mapped (4)</strong>
+        <ul style="margin-top:10px;padding-left:18px;color:var(--text-mid);line-height:1.65">
+          <li>CMP_PLATFORM_CHINA · tech</li>
+          <li>XPENG_CEA_PARTNERSHIP · partner</li>
+          <li>CHINA_BEV_MARKET_SHARE_VWG · market</li>
+          <li>BYD_DOMESTIC_CHINA_PRESSURE · competitor</li>
+        </ul>
+      </div>
+    </div>
+    <div style="display:flex;gap:24px;margin-top:14px;color:var(--text-mid);font-size:0.85rem">
+      <div><strong style="color:var(--text)">Confidence</strong>: 0.40</div>
+      <div><strong style="color:var(--text)">Horizon</strong>: H2 · 3-5yr</div>
+      <div><strong style="color:var(--text)">State</strong>: weakening · deteriorating</div>
+    </div>
+  </section>
+
+  <!-- HYP_VWG_COST_001 -->
+  <section class="section" id="hyp-cost">
+    <div class="section-head"><span class="section-num">COST-01</span><h2 class="section-title">German manufacturing reset — €10B savings + maintained capacity by 2027</h2><div class="section-rule"></div></div>
+    <div class="info-box" style="border-left-color:var(--amber)">
+      <strong>Hypothesis.</strong> VWG executes €10B cost savings programme by 2027 while maintaining ICE capacity (Golf/Tiguan Wolfsburg backordered — weekend overtime running) and transitioning BEV factories (Zwickau/Emden production halted Oct 2025 citing demand slowdown).
+    </div>
+    <p style="color:var(--text-mid);margin-bottom:14px">€10B group cost-savings programme. Workforce restructuring negotiated with IG Metall. MEB platform amortisation across group volume hinges on EU BEV demand recovery (HYP_VWG_EV_001).</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;font-size:0.85rem">
+      <div style="background:var(--panel);border:1px solid var(--border);padding:14px"><strong style="color:var(--gold);font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase">WNTBT — All conditions hold</strong>
+        <ul style="margin-top:10px;padding-left:18px;color:var(--text-mid);line-height:1.65">
+          <li>€10B cost-savings run-rate achieved by end-2027 (≥€7B by end-2026)</li>
+          <li>ICE Wolfsburg / Tiguan / Golf production sustained without further cuts</li>
+          <li>Zwickau and Emden BEV production restarts and reaches >70% prior utilisation by H2 2026</li>
+          <li>No major IG Metall industrial action forced in 2026</li>
+          <li>MEB platform amortisation per-vehicle cost falls ≥15% from 2024 base by 2027</li>
+        </ul>
+      </div>
+      <div style="background:var(--panel);border:1px solid var(--border);padding:14px"><strong style="color:var(--gold);font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase">Components mapped (4)</strong>
+        <ul style="margin-top:10px;padding-left:18px;color:var(--text-mid);line-height:1.65">
+          <li>GERMAN_PLANT_UTILISATION_VWG · market</li>
+          <li>VWG_10B_COST_PROGRAMME · market</li>
+          <li>IG_METALL_RESTRUCTURING · regulation</li>
+          <li>MEB_PLATFORM_AMORTISATION · tech</li>
+        </ul>
+      </div>
+    </div>
+    <div style="display:flex;gap:24px;margin-top:14px;color:var(--text-mid);font-size:0.85rem">
+      <div><strong style="color:var(--text)">Confidence</strong>: 0.55</div>
+      <div><strong style="color:var(--text)">Horizon</strong>: H2 · 3-5yr</div>
+      <div><strong style="color:var(--text)">State</strong>: ambiguous · volatile</div>
+    </div>
+  </section>
+
+  <!-- HYP_VWG_BAT_001 -->
+  <section class="section" id="hyp-bat">
+    <div class="section-head"><span class="section-num">BAT-01</span><h2 class="section-title">PowerCo battery independence — competitive Salzgitter cells by 2028</h2><div class="section-rule"></div></div>
+    <div class="info-box" style="border-left-color:var(--blue)">
+      <strong>Hypothesis.</strong> PowerCo (VWG battery subsidiary) achieves cell production at competitive cost from Salzgitter gigafactory by 2028, reducing dependency on CATL/Samsung SDI for ID-family models. Group targeting >200 GWh capacity by early 2030s (Valencia + Salzgitter + Canada).
+    </div>
+    <p style="color:var(--text-mid);margin-bottom:14px">PowerCo first cells targeted 2025-26. Current ID-family supply: CATL/SK On (ID.4, ID.7). Multi-chemistry roadmap: LFP for entry, LMFP for mid, NMC for premium.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;font-size:0.85rem">
+      <div style="background:var(--panel);border:1px solid var(--border);padding:14px"><strong style="color:var(--gold);font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase">WNTBT — All conditions hold</strong>
+        <ul style="margin-top:10px;padding-left:18px;color:var(--text-mid);line-height:1.65">
+          <li>PowerCo Salzgitter delivers first commercial cells by end-2026</li>
+          <li>Cell cost-per-kWh within 10% of CATL benchmark by 2028</li>
+          <li>>200 GWh group capacity (Salzgitter + Valencia + Canada) committed and on schedule by 2028</li>
+          <li>≥30% of ID-family cells supplied internally (PowerCo) by 2028</li>
+        </ul>
+      </div>
+      <div style="background:var(--panel);border:1px solid var(--border);padding:14px"><strong style="color:var(--gold);font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase">Components mapped (4)</strong>
+        <ul style="margin-top:10px;padding-left:18px;color:var(--text-mid);line-height:1.65">
+          <li>POWERCO_SALZGITTER_RAMP · tech</li>
+          <li>CELL_CHEMISTRY_LFP_LMFP_VWG · tech</li>
+          <li>BATTERY_SUPPLY_INDEPENDENCE_VWG · market</li>
+          <li>CELL_COST_PER_KWH_POWERCO · market</li>
+        </ul>
+      </div>
+    </div>
+    <div style="display:flex;gap:24px;margin-top:14px;color:var(--text-mid);font-size:0.85rem">
+      <div><strong style="color:var(--text)">Confidence</strong>: 0.50</div>
+      <div><strong style="color:var(--text)">Horizon</strong>: H2 · 3-5yr</div>
+      <div><strong style="color:var(--text)">State</strong>: new · improving</div>
+    </div>
+  </section>
+
+  <!-- HYP_VWG_EV_001 -->
+  <section class="section" id="hyp-ev">
+    <div class="section-head"><span class="section-num">EV-01</span><h2 class="section-title">European BEV demand recovery — VWG share >30% by 2027</h2><div class="section-rule"></div></div>
+    <div class="info-box" style="border-left-color:var(--red)">
+      <strong>Hypothesis.</strong> European BEV share in VWG European sales reaches >30% by 2027, validating the Zwickau and Emden factory investments and the €10B+ MEB platform spend. Trigger: EU CO2 fleet regulations 2025 mandate and revised ZEV targets.
+    </div>
+    <p style="color:var(--text-mid);margin-bottom:14px">MEB factories halted Oct 2025. ICE/Golf/Tiguan backordered. BYD European sales +250% Jan-Aug 2025 (from small base). Hungary plant + dealer network expansion through 2026.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;font-size:0.85rem">
+      <div style="background:var(--panel);border:1px solid var(--border);padding:14px"><strong style="color:var(--gold);font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase">WNTBT — All conditions hold</strong>
+        <ul style="margin-top:10px;padding-left:18px;color:var(--text-mid);line-height:1.65">
+          <li>EU CO2 fleet regulations remain in force without softening through 2027</li>
+          <li>VWG European BEV share reaches ≥20% by FY2026, ≥30% by FY2027</li>
+          <li>ID family pricing held within 5% of BYD Atto 3 / Dolphin / Han equivalents in EU</li>
+          <li>Dealer EV readiness reaches ≥75% of network by FY2026</li>
+          <li>Zwickau + Emden return to >70% prior utilisation by H2 2026 (linked to COST-01)</li>
+        </ul>
+      </div>
+      <div style="background:var(--panel);border:1px solid var(--border);padding:14px"><strong style="color:var(--gold);font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase">Components mapped (4)</strong>
+        <ul style="margin-top:10px;padding-left:18px;color:var(--text-mid);line-height:1.65">
+          <li>EU_CO2_FLEET_REG_2025 · regulation</li>
+          <li>ID_FAMILY_PRICING_EU · market</li>
+          <li>BYD_EUROPEAN_RESPONSE · competitor</li>
+          <li>VWG_DEALER_EV_READINESS · ecosystem</li>
+        </ul>
+      </div>
+    </div>
+    <div style="display:flex;gap:24px;margin-top:14px;color:var(--text-mid);font-size:0.85rem">
+      <div><strong style="color:var(--text)">Confidence</strong>: 0.48</div>
+      <div><strong style="color:var(--text)">Horizon</strong>: H2 · 3-5yr</div>
+      <div><strong style="color:var(--text)">State</strong>: weakening · deteriorating</div>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

@@ -359,6 +359,22 @@ Layout fix on `account_plans_v8.html` (sidebar/main flex switch — commit `7520
 
 **Totals (P5 batch):** 14 briefs (~480-640 lines each), 14 populators, **42 new initiatives**, **168 new components**, **168 new claims_v2**, **24 new direct-link buttons on `index.html`**. Schema enum gotcha: `companies.sector` accepts only `energy/mobility/both/unknown` — semis classified as `mobility` (auto-focused) or `both` (Wolfspeed cross-cutting).
 
+---
+
+**As of 2026-05-08 — VWG group-level extended hypotheses**
+
+Five new VWG group-level hypotheses extending the original P2 set (which had 3: VW-01 IG Metall, VW-02 ID. SDV, VW-03 China share decline):
+
+| HYP ID | Title | Conf | Horizon | State / trajectory |
+|--------|-------|------|---------|---------------------|
+| HYP_VWG_SW_001 | Three-architecture software stack (CARIAD + Rivian + Xpeng) by 2028 | 0.45 | H2 | ambiguous · volatile |
+| HYP_VWG_CHN_001 | China unit sales >2.5M / BEV share >10% by 2027 (CMP + Xpeng CEA) | 0.40 | H2 | weakening · deteriorating |
+| HYP_VWG_COST_001 | €10B cost-savings programme by 2027 + ICE/BEV capacity reset | 0.55 | H2 | ambiguous · volatile |
+| HYP_VWG_BAT_001 | PowerCo Salzgitter cells competitive by 2028 (>200 GWh by 2030s) | 0.50 | H2 | new · improving |
+| HYP_VWG_EV_001 | European VWG BEV share >30% by 2027 (EU CO2 + dealer readiness) | 0.48 | H2 | weakening · deteriorating |
+
+Files: `vwg_group_extended_brief.html`, `db/population/P5_vwg_extended.mjs`. PG re-uses id=11. Adds 5 initiatives, 20 components, 20 claims to Volkswagen Group (now 8 total VWG initiatives in `catalogue.initiatives_v2`). Acceptance via `db/_accept_path_a.mjs` confirmed.
+
 `catalogue.initiatives_v2` row count post-P5: **57** initiatives across **22** companies (vs 43/13 pre-batch).
 
 ---
