@@ -469,8 +469,11 @@ function buildPairs(){
 }
 
 // ── Company aggregation / sort ───────────────────
+// GROUP_SECTORS: which sector each parent group belongs to (for top-of-section pinning)
+const GROUP_SECTORS = { 'Volkswagen Group': 'mobility' };
+
 function sortCompanies(){
-  const sectorRank = { energy:0, both:1, mobility:1, unknown:2 };
+  const sectorRank = { energy:0, both:1, mobility:2, unknown:3 };
   return [...state.companies].sort((a,b) => {
     const sa = sectorRank[a.sector] ?? 9;
     const sb = sectorRank[b.sector] ?? 9;
@@ -479,38 +482,46 @@ function sortCompanies(){
   });
 }
 
-// Inject group rollup rows + reorder children
+// Inject group rollup rows + reorder children. Group clusters (rollup +
+// parent + children) are pinned to the TOP of their sector, before the
+// other companies in the same sector — so VW Group appears at the top
+// of the mobility section, not alphabetically among the M-named brands.
 function buildRenderRows(){
   const sorted = sortCompanies();
   const byName = Object.fromEntries(state.companies.map(c => [c.name, c]));
-  const out = [], emitted = new Set();
-  for(const c of sorted){
-    if(CHILD_TO_PARENT[c.name]) continue;
-    if(emitted.has(c.name)) continue;
-    if(COMPANY_GROUPS[c.name]){
-      const childObjs = COMPANY_GROUPS[c.name].map(n => byName[n]).filter(Boolean)
-        .sort((a,b) => a.name.localeCompare(b.name));
-      out.push({ company:{ name:c.name, sector:c.sector, initiative_count:0 }, kind:'rollup', members:[c, ...childObjs] });
-      out.push({ company:c, kind:'parent', parentName:c.name });
-      for(const cc of childObjs){ out.push({ company:cc, kind:'child', parentName:c.name }); emitted.add(cc.name); }
-      emitted.add(c.name);
-    } else {
-      out.push({ company:c, kind:'normal' });
-    }
-  }
-  // Phantom parent (only children present in catalogue)
+  const childSet = new Set(Object.keys(CHILD_TO_PARENT));
+  const groupParentSet = new Set(Object.keys(COMPANY_GROUPS));
+
+  // 1. Build the per-sector group clusters first (pinned to top)
+  const sectorBuckets = { energy: [], both: [], mobility: [], unknown: [] };
+  const seen = new Set();
+
+  // For each known group, emit cluster into the group's pinned sector
   for(const parentName in COMPANY_GROUPS){
-    if(byName[parentName]) continue;
-    const childObjs = COMPANY_GROUPS[parentName].map(n => byName[n]).filter(Boolean);
-    if(!childObjs.length) continue;
-    out.push({ company:{ name:parentName, sector:'mobility', initiative_count:0 }, kind:'rollup', members:childObjs, parentMissing:true });
-    for(const cc of childObjs.sort((a,b) => a.name.localeCompare(b.name))){
-      if(emitted.has(cc.name)) continue;
-      out.push({ company:cc, kind:'child', parentName });
-      emitted.add(cc.name);
-    }
+    const parent = byName[parentName];
+    const childObjs = COMPANY_GROUPS[parentName]
+      .map(n => byName[n]).filter(Boolean)
+      .sort((a,b) => a.name.localeCompare(b.name));
+    if(!parent && !childObjs.length) continue;
+    const sec = GROUP_SECTORS[parentName] || (parent ? parent.sector : 'unknown') || 'unknown';
+    const bucket = sectorBuckets[sec] || sectorBuckets.unknown;
+    const members = parent ? [parent, ...childObjs] : childObjs;
+    bucket.push({ company:{ name:parentName, sector:sec, initiative_count:0 }, kind:'rollup', members, parentMissing:!parent });
+    if(parent){ bucket.push({ company:parent, kind:'parent', parentName }); seen.add(parent.name); }
+    for(const cc of childObjs){ bucket.push({ company:cc, kind:'child', parentName }); seen.add(cc.name); }
   }
-  return out;
+  // 2. Then append all other companies in alpha order within their sector
+  for(const c of sorted){
+    if(seen.has(c.name)) continue;
+    if(groupParentSet.has(c.name)) continue;
+    if(childSet.has(c.name)) continue;
+    const sec = c.sector || 'unknown';
+    const bucket = sectorBuckets[sec] || sectorBuckets.unknown;
+    bucket.push({ company:c, kind:'normal' });
+    seen.add(c.name);
+  }
+  // 3. Concatenate sector buckets in canonical order
+  return [...sectorBuckets.energy, ...sectorBuckets.both, ...sectorBuckets.mobility, ...sectorBuckets.unknown];
 }
 
 // ── Cell lookups ────────────────────────────────

@@ -71,6 +71,14 @@ main{
 .btn-ghost:hover{color:var(--fg);border-color:var(--fg)}
 
 .company-list{display:flex;flex-direction:column;gap:1px;flex:1;overflow-y:auto;border:1px solid var(--border);background:#fff}
+/* Family entry — special styling to distinguish from individual companies */
+.company-item.family{background:linear-gradient(90deg,#001E5008 0%,#fff 60%);border-left:3px solid #001E50;font-weight:600}
+.company-item.family.active{background:#001E50;color:#fff;border-left-color:#001E50}
+.company-item.family .ci-count{font-size:10px}
+/* Brand badges on hypothesis / signal / ontology rows when in family mode */
+.brand-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#fff;border-radius:2px;flex-shrink:0}
+.brand-chip{display:inline-block;padding:1px 6px;font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#fff;margin:1px 2px 1px 0;border-radius:2px}
+.tracked-by{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:#001E50;color:#fff;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;border-radius:2px}
 .company-list-empty{padding:14px;font-size:12px;color:var(--muted);font-style:italic}
 .company-item{padding:9px 12px;font-size:12px;cursor:pointer;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:8px}
 .company-item:last-child{border-bottom:none}
@@ -334,10 +342,43 @@ const TABS = [
   { id:'postmeeting',  label:'Post-Meeting', source:'claude' },
 ];
 
+// ══ FAMILY VIEWS (multi-brand consolidated) ═══════════════════════════
+// A family entry behaves like a synthetic company: parallel /v8 fanout
+// across the listed members, then merge + tag results with brand colours.
+const FAMILY_GROUPS = {
+  'VW Group Family': {
+    displayName: 'Volkswagen Group (Family)',
+    members: ['Volkswagen Group', 'Audi AG', 'Porsche AG', 'Skoda Auto', 'SEAT / CUPRA'],
+    brandColors: {
+      'Volkswagen Group': '#001E50',
+      'Skoda Auto':       '#1A8A1A',
+      'Audi AG':          '#BB0A14',
+      'Porsche AG':       '#C8263A',
+      'SEAT / CUPRA':     '#F05A28',
+    },
+  },
+};
+// Short labels for tight badges
+const BRAND_SHORT = {
+  'Volkswagen Group': 'VWG',
+  'Skoda Auto':       'SKD',
+  'Audi AG':          'AUD',
+  'Porsche AG':       'POR',
+  'SEAT / CUPRA':     'CUP',
+};
+function brandColor(name){
+  for(const k in FAMILY_GROUPS){ const c = FAMILY_GROUPS[k].brandColors[name]; if(c) return c; }
+  return '#4B4B55';
+}
+function brandShort(name){ return BRAND_SHORT[name] || name; }
+function familyOf(name){
+  return FAMILY_GROUPS[name] || null;
+}
+
 // ══ STATE ══════════════════════════════════════════════════════════════
 const state = {
   companies: [],
-  current: null,           // { id, name, sector, initiative_count }
+  current: null,           // { id, name, sector, initiative_count, _isFamily? }
   data: {                  // per-company live data
     hypotheses: null,      // null = not loaded; [] = empty; [...] = loaded
     ontology: null,
@@ -574,6 +615,25 @@ async function loadCompanies() {
   try {
     const cos = await apiGet('/v8/companies');
     state.companies = cos;
+    // Inject family pseudo-companies at the top of the list
+    for(const fname in FAMILY_GROUPS){
+      const f = FAMILY_GROUPS[fname];
+      const ic = f.members.reduce((s,m) => {
+        const co = cos.find(c => c.name === m);
+        return s + (co ? (co.initiative_count||0) : 0);
+      }, 0);
+      // Idempotent — skip if already injected
+      if(!state.companies.some(c => c.name === fname)){
+        state.companies.unshift({
+          id: '__family_' + fname.replace(/\s+/g,'_'),
+          name: fname,
+          sector: 'mobility',
+          initiative_count: ic,
+          _isFamily: true,
+          _familyConfig: f,
+        });
+      }
+    }
     renderCompanyList();
     diag.innerHTML = `<span style="color:var(--green)">✓ ${cos.length} companies loaded</span>`;
     // URL parameter direct linking
@@ -599,12 +659,16 @@ function renderCompanyList() {
     list.innerHTML = '<div class="company-list-empty">No companies returned.</div>';
     return;
   }
-  list.innerHTML = state.companies.map(c => `
-    <div class="company-item ${state.current && state.current.id===c.id?'active':''}" onclick='selectCompany(${JSON.stringify(c).replace(/'/g,"\\'")})'>
-      <span>${escapeHtml(c.name)}</span>
+  list.innerHTML = state.companies.map(c => {
+    const cls = (state.current && state.current.id===c.id) ? 'active' : '';
+    const fam = c._isFamily ? 'family' : '';
+    const display = c._isFamily ? (c._familyConfig?.displayName || c.name) : c.name;
+    return `
+    <div class="company-item ${cls} ${fam}" onclick='selectCompany(${JSON.stringify(c).replace(/'/g,"\\'")})'>
+      <span>${escapeHtml(display)}</span>
       <span class="ci-count">${c.initiative_count}</span>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 // ══ COMPANY SELECTION ══════════════════════════════════════════════════
@@ -618,11 +682,90 @@ async function selectCompany(co) {
   const url = new URL(window.location);
   url.searchParams.set('company', co.name);
   history.replaceState({}, '', url);
-  // Parallel fetch of all 4 PG endpoints (each independent — failures show per-section)
-  loadHypotheses();
-  loadOntology();
-  loadSignals();
-  loadContacts();
+  if(co._isFamily){
+    loadFamilyData(co);
+  } else {
+    // Parallel fetch of all 4 PG endpoints (each independent — failures show per-section)
+    loadHypotheses();
+    loadOntology();
+    loadSignals();
+    loadContacts();
+  }
+}
+
+// ══ FAMILY DATA LOAD ═══════════════════════════════════════════════════
+// For a family pseudo-company, fan out /v8/hypotheses, /v8/ontology-pairs
+// and /v8/signals across all member brands in parallel; tag each row with
+// its source brand and merge.
+async function loadFamilyData(co){
+  const f = co._familyConfig;
+  if(!f){ console.error('[v8] family config missing'); return; }
+  // Hypotheses — fanout, tag _brand
+  Promise.all(f.members.map(async m => {
+    try {
+      const rows = await apiGet('/v8/hypotheses?company=' + encodeURIComponent(m));
+      return (rows || []).map(r => ({...r, _brand: m}));
+    } catch(e){
+      console.warn('[v8 family] hypotheses failed for', m, e.message);
+      return [];
+    }
+  })).then(arrs => {
+    state.data.hypotheses = arrs.flat();
+    if(['hypotheses','overview','strategy','painpoints','weaksignals'].includes(state.activeTab)) renderTab();
+  });
+  // Ontology — fanout, tag _brand, then dedupe by (technology+application) and accumulate brand list
+  Promise.all(f.members.map(async m => {
+    try {
+      const rows = await apiGet('/v8/ontology-pairs?company=' + encodeURIComponent(m));
+      return (rows || []).map(r => ({...r, _brand: m}));
+    } catch(e){
+      console.warn('[v8 family] ontology failed for', m, e.message);
+      return [];
+    }
+  })).then(arrs => {
+    const all = arrs.flat();
+    const byKey = new Map();
+    for(const p of all){
+      const key = `${p.technology}__||__${p.application}`;
+      let entry = byKey.get(key);
+      if(!entry){
+        entry = { ...p, _brands: new Set([p._brand]) };
+        byKey.set(key, entry);
+      } else {
+        entry._brands.add(p._brand);
+        // promote any cross-client edge
+        if(p.is_cross_client_edge) entry.is_cross_client_edge = true;
+        // promote highest hard_evidence_count
+        entry.hard_evidence_count = Math.max(entry.hard_evidence_count||0, p.hard_evidence_count||0);
+      }
+    }
+    state.data.ontology = [...byKey.values()].map(e => ({ ...e, _brands: [...e._brands] }));
+    if(state.activeTab === 'technologies' || state.activeTab === 'weaksignals') renderTab();
+  });
+  // Signals — fanout, tag _brand, sort by recency, top 100
+  Promise.all(f.members.map(async m => {
+    try {
+      const rows = await apiGet('/v8/signals?company=' + encodeURIComponent(m) + '&limit=50');
+      return (rows || []).map(r => ({...r, _brand: m}));
+    } catch(e){
+      console.warn('[v8 family] signals failed for', m, e.message);
+      return [];
+    }
+  })).then(arrs => {
+    const all = arrs.flat();
+    all.sort((a,b) => {
+      const ta = new Date(a.published_at || a.created_at || a.signal_date || 0).getTime();
+      const tb = new Date(b.published_at || b.created_at || b.signal_date || 0).getTime();
+      return tb - ta;
+    });
+    state.data.signals = all.slice(0, 100);
+    if(state.activeTab === 'signals') renderTab();
+  });
+  // Contacts — for the family view, fetch contacts for the parent brand only
+  // (contacts aren't really brand-segmented per individual sub-brand here)
+  apiGet('/v8/contacts?company=Volkswagen%20Group&limit=200')
+    .then(rows => { state.data.contacts = rows; if(['contacts','premeeting'].includes(state.activeTab)) renderTab(); })
+    .catch(e => { state.data.contacts = { error: e.message }; });
 }
 
 async function loadHypotheses() {
@@ -662,16 +805,15 @@ async function loadContacts() {
 function renderMain() {
   if (!state.current) return;
   const co = state.current;
+  const headingName = co._isFamily ? (co._familyConfig?.displayName || co.name) : co.name;
+  const meta = co._isFamily
+    ? `Family view · ${co._familyConfig.members.length} brands · ${co.initiative_count} total initiatives <span class="sep">·</span> merged across ${co._familyConfig.members.map(escapeHtml).join(', ')}`
+    : `${escapeHtml(co.sector)} <span class="sep">·</span> ${co.initiative_count} initiative${co.initiative_count===1?'':'s'} <span class="sep">·</span> live from catalogue.initiatives_v2`;
   document.getElementById('mainContent').innerHTML = `
     <div class="main-header">
       <div class="mh-left">
-        <h1>${escapeHtml(co.name)}</h1>
-        <div class="mh-meta">
-          ${escapeHtml(co.sector)} <span class="sep">·</span>
-          ${co.initiative_count} initiative${co.initiative_count===1?'':'s'}
-          <span class="sep">·</span>
-          live from catalogue.initiatives_v2
-        </div>
+        <h1>${escapeHtml(headingName)}</h1>
+        <div class="mh-meta">${meta}</div>
       </div>
       <div class="mh-right">
         <button class="btn-ghost" onclick="window.print()">Print / PDF</button>
@@ -871,6 +1013,38 @@ function renderHypothesesTab(c) {
   if (d === null) { c.innerHTML = loadingBlock('Loading hypotheses from /v8/hypotheses…'); return; }
   if (d.error)    { c.innerHTML = errorBlock('Hypotheses unavailable — check API token in sidebar', d.error); return; }
   if (!d.length)  { c.innerHTML = `<div class="state-block"><div class="msg">No hypotheses populated for ${escapeHtml(state.current.name)}.</div></div>`; return; }
+
+  // Family mode: group by brand
+  if (state.current._isFamily) {
+    const f = state.current._familyConfig;
+    const byBrand = {};
+    for (const h of d) {
+      const b = h._brand || 'Unattributed';
+      (byBrand[b] || (byBrand[b] = [])).push(h);
+    }
+    let html = `
+      <div class="section">
+        <div class="section-head">
+          <div><h2>Hypotheses</h2><div class="sub">${d.length} initiative${d.length===1?'':'s'} across ${Object.keys(byBrand).length} brands · grouped by brand</div></div>
+          <div class="section-head-right"><span class="section-source">PG · live · merged</span></div>
+        </div>`;
+    for (const m of f.members) {
+      const rows = byBrand[m] || [];
+      if (!rows.length) continue;
+      const col = brandColor(m);
+      html += `
+        <div style="margin:18px 0 10px;display:flex;align-items:center;gap:10px">
+          <span class="brand-badge" style="background:${col}">${escapeHtml(brandShort(m))}</span>
+          <span style="font-weight:600;color:var(--fg)">${escapeHtml(m)}</span>
+          <span style="font-family:var(--mono);font-size:11px;color:var(--muted)">${rows.length} initiative${rows.length===1?'':'s'}</span>
+        </div>
+        ${rows.map(renderHypothesisCard).join('')}`;
+    }
+    html += `</div>`;
+    c.innerHTML = html;
+    return;
+  }
+
   c.innerHTML = `
     <div class="section">
       <div class="section-head">
@@ -885,10 +1059,13 @@ function renderHypothesisCard(h) {
   const conf = Math.round((h.confidence_level || 0) * 100);
   const arr = arrow(h.trajectory);
   const compsCount = (h.components || []).length;
+  const brandBadge = h._brand
+    ? `<span class="brand-badge" style="background:${brandColor(h._brand)}" title="${escapeHtml(h._brand)}">${escapeHtml(brandShort(h._brand))}</span>`
+    : '';
   return `
     <div class="hyp-card">
       <div class="hyp-card-head">
-        <div class="hyp-card-name">${escapeHtml(h.initiative_name)}</div>
+        <div class="hyp-card-name">${brandBadge}${brandBadge?' ':''}${escapeHtml(h.initiative_name)}</div>
         <div style="display:flex;gap:5px;flex-wrap:wrap;flex-shrink:0">
           ${badge(h.horizon, 'h')}
           ${badge(h.persona)}
@@ -951,11 +1128,16 @@ function renderTechnologiesTab(c) {
         <div class="tech-horizon-head">${badge(horizon,'h')} <span>${horizon === 'H1' ? 'Current commercial operation' : horizon === 'H2' ? '3–7 year viability' : '5+ year structural'}</span> <span style="color:var(--muted-light);font-family:var(--mono);font-size:10px">${rows.length} pair${rows.length===1?'':'s'}</span></div>
         ${rows.map(p => {
           const arr = arrow(p.trajectory);
+          const brandsList = (p._brands && p._brands.length > 0) ? p._brands : null;
+          const trackedByHtml = brandsList
+            ? `<div style="margin-top:6px;display:flex;flex-wrap:wrap;align-items:center;gap:4px"><span class="tracked-by">tracked by ${brandsList.length}</span>${brandsList.map(b => `<span class="brand-chip" style="background:${brandColor(b)}" title="${escapeHtml(b)}">${escapeHtml(brandShort(b))}</span>`).join('')}</div>`
+            : '';
           return `
             <div class="tech-pair">
               <div>
                 <div class="tech-pair-label">${escapeHtml(p.pair_label)}</div>
                 <div class="tech-pair-tech">${escapeHtml(p.technology)} × ${escapeHtml(p.application)} · hard_evidence_count=${p.hard_evidence_count}</div>
+                ${trackedByHtml}
               </div>
               <div class="tech-pair-meta">
                 ${badge(p.confidence)}
@@ -1005,11 +1187,14 @@ function renderSignalCard(s) {
   const cls = (s.overall_classification || '').toLowerCase();
   const labels = (s.matched_hypothesis_labels || []).map(l =>
     `<span class="signal-hyp-tag">${escapeHtml(l)}</span>`).join('');
+  const brandBadge = s._brand
+    ? `<span class="brand-badge" style="background:${brandColor(s._brand)};margin-right:6px;vertical-align:middle" title="${escapeHtml(s._brand)}">${escapeHtml(brandShort(s._brand))}</span>`
+    : '';
   return `
     <div class="signal-card">
       <div class="signal-head">
         <div>
-          <div class="signal-title">${escapeHtml(s.signal_title || s.signal_id)}</div>
+          <div class="signal-title">${brandBadge}${escapeHtml(s.signal_title || s.signal_id)}</div>
           ${s.signal_summary ? `<div class="card body" style="margin-top:6px">${escapeHtml(s.signal_summary)}</div>` : ''}
         </div>
         <span class="signal-class ${cls || 'ignore'}">${escapeHtml(s.overall_classification || '—')}</span>
