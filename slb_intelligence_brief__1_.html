@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SLB — Account Intelligence Brief — May 2026</title>
+<style>
+  :root{
+    --bg:#0a0e15; --panel:#0f1620; --panel-2:#131c28; --border:#1e2a3a;
+    --text:#e6edf3; --muted:#8b9bb0; --dim:#65778c;
+    --accent:#00b8e0; --accent-2:#00e0a8; --warn:#ff9a3c; --warn-2:#ffd166; --bad:#ff5d6e;
+    --good:#4ade80; --hyp:#a78bfa; --neutral:#94a3b8;
+    --sig-strong:rgba(0,184,224,.18); --sig-mid:rgba(0,184,224,.10); --sig-weak:rgba(255,154,60,.18);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:14px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  a{color:var(--accent)}
+  .wrap{max-width:1200px;margin:0 auto;padding:28px 22px 80px}
+  .v8-banner{background:linear-gradient(90deg,rgba(0,184,224,.14),rgba(0,184,224,.05));border:1px solid rgba(0,184,224,.4);border-radius:10px;padding:14px 18px;margin:0 0 22px;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+  .v8-banner .lbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700}
+  .v8-banner .msg{color:var(--text);font-size:13px}
+  .v8-banner a.cta{background:var(--accent);color:#001018;padding:8px 14px;border-radius:6px;text-decoration:none;font-weight:700;font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+  header.hero{background:linear-gradient(135deg,#0d1623 0%,#10202f 60%,#0d1623 100%);border:1px solid var(--border);border-radius:14px;padding:30px 32px;margin-bottom:22px;position:relative;overflow:hidden}
+  header.hero::after{content:"";position:absolute;top:0;right:0;width:240px;height:100%;background:radial-gradient(circle at 70% 35%,rgba(0,184,224,.20),transparent 65%)}
+  .crumbs{font-size:11px;letter-spacing:.16em;color:var(--accent);text-transform:uppercase;font-weight:700;margin-bottom:14px}
+  h1{font-size:30px;margin:0 0 6px;letter-spacing:-.01em}
+  .sub{color:var(--muted);font-size:14px;max-width:780px}
+  .meta-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:18px;font-size:12px;color:var(--dim)}
+  .meta-row .pill{background:#101a26;border:1px solid var(--border);padding:6px 12px;border-radius:30px}
+  section{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:24px 28px;margin-bottom:18px}
+  h2{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin:0 0 12px;font-weight:700}
+  h3{font-size:18px;margin:0 0 10px;color:var(--text)}
+  p{margin:0 0 10px;color:var(--text)}
+  .pl{color:var(--muted)}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .card{background:var(--panel-2);border:1px solid var(--border);border-radius:10px;padding:16px}
+  .stat .n{font-size:24px;font-weight:700;color:var(--accent);display:block}
+  .stat .l{font-size:11px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-top:4px}
+  .tag{display:inline-block;background:#0e1a26;border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700}
+  .tag.warn{color:var(--warn);border-color:rgba(255,154,60,.4)}
+  .tag.good{color:var(--good);border-color:rgba(74,222,128,.4)}
+  .tag.bad{color:var(--bad);border-color:rgba(255,93,110,.4)}
+  .tag.hyp{color:var(--hyp);border-color:rgba(167,139,250,.4)}
+  .tag.h1{color:var(--good);border-color:rgba(74,222,128,.4)}
+  .tag.h2{color:var(--warn-2);border-color:rgba(255,209,102,.4)}
+  .tag.h3{color:var(--bad);border-color:rgba(255,93,110,.4)}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+  th{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:700}
+  .src{font-size:11px;color:var(--dim);font-style:italic}
+  .src a{color:var(--dim);text-decoration:underline dotted}
+  ul.tight{margin:6px 0 0 18px;padding:0}
+  ul.tight li{margin:3px 0}
+  .hyp-card{background:linear-gradient(135deg,rgba(167,139,250,.06),rgba(0,184,224,.03));border:1px solid rgba(167,139,250,.3);border-radius:12px;padding:18px;margin-bottom:12px}
+  .hyp-card .hd{display:flex;justify-content:space-between;gap:14px;margin-bottom:10px;flex-wrap:wrap}
+  .hyp-card .hd h4{margin:0;font-size:15px;color:var(--text)}
+  .hyp-card .hd .meta{font-size:11px;color:var(--muted);text-align:right}
+  .hyp-card .conf{display:inline-block;background:#0e1a26;border:1px solid rgba(167,139,250,.3);padding:3px 10px;border-radius:20px;font-size:11px;color:var(--hyp);font-weight:700;margin-left:6px}
+  .hyp-card .stmt{font-style:italic;color:var(--text);margin:8px 0;padding:10px 14px;border-left:3px solid var(--hyp);background:rgba(167,139,250,.05);border-radius:0 6px 6px 0}
+  .drv{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:10px 0}
+  .drv .d{background:#0d1620;border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:12px}
+  .drv .d.signal{border-color:rgba(0,184,224,.5);background:var(--sig-strong)}
+  .drv .d.weak{border-color:rgba(255,154,60,.4);background:var(--sig-weak)}
+  .drv .d .lbl{font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:700;display:block;margin-bottom:3px}
+  .wntbt{background:#0a1421;border:1px dashed rgba(167,139,250,.35);border-radius:8px;padding:12px 14px;margin-top:10px;font-size:12px;color:var(--muted)}
+  .wntbt .ttl{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--hyp);font-weight:700;margin-bottom:6px}
+  .impl{margin-top:10px;padding:10px 14px;background:rgba(0,184,224,.06);border:1px solid rgba(0,184,224,.25);border-radius:8px;font-size:12px}
+  .impl .ttl{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);font-weight:700;margin-bottom:4px}
+  footer{margin-top:30px;padding-top:18px;border-top:1px solid var(--border);font-size:11px;color:var(--dim);text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="v8-banner">
+    <div>
+      <div class="lbl">Account Plans v8 · live</div>
+      <div class="msg">Hypothesis cards in this brief are mirrored in the live <strong>v8 catalogue</strong> with confidence trend over time and weak-signal triage.</div>
+    </div>
+    <a class="cta" href="account_plans_v8.html?company=SLB">Open SLB in v8 →</a>
+  </div>
+
+  <header class="hero">
+    <div class="crumbs">FutureBridge Advisory · Account Intelligence · Energy · OFS</div>
+    <h1>SLB — From Field-Service Cycle to Production + Digital Platform</h1>
+    <div class="sub">First-cut hypothesis register for the world's largest oilfield services group, post-ChampionX. Three load-bearing strategy hypotheses spanning portfolio re-mix (Production Systems / less cyclical), Digital &amp; Integration scaling (Lumi + Delfi + Autonomous Drilling), and Middle East normalisation post Q1 2026 disruption.</div>
+    <div class="meta-row">
+      <span class="pill">Brief #1 · May 2026</span>
+      <span class="pill">3 hypotheses · 12 components · 12 claims</span>
+      <span class="pill">NYSE: SLB · CEO Olivier Le Peuch</span>
+      <span class="pill">FY2025 rev ~$36.3B</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>01 · Snapshot</h2>
+    <div class="grid-3">
+      <div class="card stat"><span class="n">$8.72B</span><span class="l">Q1 2026 revenue (+3% YoY)</span></div>
+      <div class="card stat"><span class="n">$1.77B</span><span class="l">Q1 2026 adj EBITDA (margin 20.3%, -12% YoY)</span></div>
+      <div class="card stat"><span class="n">$7.8B</span><span class="l">ChampionX deal closed Jul 16 2025</span></div>
+      <div class="card stat"><span class="n">$838M</span><span class="l">ChampionX Q1 2026 revenue contribution</span></div>
+      <div class="card stat"><span class="n">$400M</span><span class="l">3-yr ChampionX synergy target</span></div>
+      <div class="card stat"><span class="n">~30%</span><span class="l">Drilling time cut · Autonomous Directional Drilling 2026</span></div>
+    </div>
+    <p style="margin-top:14px" class="pl">Sources: SLB Q1 2026 Results press release; SLB / ChampionX merger close announcements; Lumi platform launch (Sep 2024).</p>
+  </section>
+
+  <section>
+    <h2>02 · Strategic posture (May 2026)</h2>
+    <p>SLB's three-leg strategy: (a) <strong>Core OFS</strong> (Well Construction + Reservoir Performance) — the historical cycle-exposed business now under Middle East disruption pressure; (b) <strong>Production Systems / ChampionX</strong> — a deliberate pivot into less-cyclical, capital-light production chemicals + artificial lift + emissions tech, lifted to ~35% of revenue mix post-merger; (c) <strong>Digital &amp; Integration</strong> — the Lumi + Delfi platform layer, with new agentic capabilities (Autonomous Directional Drilling, geosteering AI) and major customer wins (ONGC enterprise deployment).</p>
+    <p>The Q1 2026 EPS preannouncement — citing Red Sea logistics bottlenecks and NOC project recalibration — exposes the cost of SLB's Middle East concentration. CEO commentary frames the disruption as transient, but the FY2026 trajectory now turns on whether normalisation lands by H2 2026.</p>
+  </section>
+
+  <section>
+    <h2>03 · Peer landscape</h2>
+    <table>
+      <tr><th>Peer</th><th>FY2025 rev</th><th>Production / chem mix</th><th>Digital posture</th></tr>
+      <tr><td><strong>SLB</strong></td><td>~$36B</td><td>~35% (post-ChampionX)</td><td>Lumi + Delfi platform; Autonomous Drilling 2026</td></tr>
+      <tr><td>Halliburton</td><td>~$22B</td><td>Pressure pumping core; lower production-chem mix</td><td>iEnergy + DecisionSpace</td></tr>
+      <tr><td>Baker Hughes</td><td>~$28B</td><td>Industrial &amp; Energy Tech (turbomachinery, LNG)</td><td>Cordant suite</td></tr>
+      <tr><td>Weatherford</td><td>~$5B</td><td>Production-focused</td><td>Modest digital footprint</td></tr>
+      <tr><td>NOV</td><td>~$8.5B</td><td>Equipment OEM</td><td>NOVOS automation</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>04 · Live initiatives</h2>
+    <div class="grid-2">
+      <div class="card">
+        <span class="tag good">Closed</span>
+        <h3>ChampionX integration</h3>
+        <p>$7.8B all-stock close Jul 16 2025. Q1 2026: $838M revenue + $199M adj EBITDA contribution. $400M annual pretax synergy target within 3 years (revenue + cost). Strengthens production chemicals + artificial lift + emissions tech, particularly in North America.</p>
+      </div>
+      <div class="card">
+        <span class="tag">Active</span>
+        <h3>Lumi AI platform + Delfi</h3>
+        <p>Lumi launched Sep 2024 as the AI / data foundation layer integrating with Delfi cognitive E&amp;P. Autonomous Directional Drilling rolled out early 2026 (~30% drilling time reduction). Major win: ONGC enterprise-wide Lumi deployment.</p>
+      </div>
+      <div class="card">
+        <span class="tag warn">Pressure</span>
+        <h3>Middle East — Red Sea / NOC recalibration</h3>
+        <p>Q1 2026 negative preannouncement: 6-9¢ EPS hit. Logistics bottlenecks in Red Sea + NOC tactical project recalibration. SLB began demobilising select country operations to safeguard personnel.</p>
+      </div>
+      <div class="card">
+        <span class="tag good">Won</span>
+        <h3>Aramco unconventional gas — 5yr</h3>
+        <p>Late Dec 2025: SLB awarded 5-year stimulation + digital services contract for Saudi Arabia's unconventional gas program (Jafurah). Multi-billion-$ programme; strengthens long-term Saudi footprint despite Q1 disruption.</p>
+      </div>
+      <div class="card">
+        <span class="tag">Active</span>
+        <h3>Capital returns</h3>
+        <p>Q1 2026 CFO $487M; FCF -$23M (working capital + ChampionX integration). Buyback + dividend guidance maintained but FCF ramp dependent on H2 2026 Middle East normalisation.</p>
+      </div>
+      <div class="card">
+        <span class="tag">Watch</span>
+        <h3>Data center / power markets adjacency</h3>
+        <p>Management commentary points to "data centre solutions" as adjacent growth — reservoir / subsurface modelling capabilities applied to geothermal + carbon storage, plus power-systems exposure via Production Systems.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>06 · Weak signals (this brief)</h2>
+    <div class="grid-2">
+      <div class="card"><span class="tag warn">Q1 2026</span><h3>NOC project recalibration</h3><p class="pl">Beyond Red Sea logistics, NOC clients are tactically deferring projects — a structural shift, not just transient. Tracking which NOCs (Aramco, ADNOC, KOC, NOC Libya) re-pace into 2027.</p></div>
+      <div class="card"><span class="tag">Q4 2025</span><h3>Aramco unconventional gas mega-contract</h3><p class="pl">5-yr stimulation + digital wrap on Jafurah signals long-term Saudi commitment despite short-term disruption — supportive of structural Middle East thesis.</p></div>
+      <div class="card"><span class="tag">2026</span><h3>Autonomous Directional Drilling</h3><p class="pl">~30% drilling-time reduction = step change. If adoption broadens beyond pilots, lifts margin and changes competitive dynamics with HAL / BKR.</p></div>
+      <div class="card"><span class="tag warn">2026</span><h3>ChampionX integration tail risk</h3><p class="pl">Production Systems Q1 lifted by ChampionX, but margin compression suggests integration friction. Watch for synergy-realisation profile vs $400M target.</p></div>
+    </div>
+  </section>
+
+  <section style="background:linear-gradient(135deg,rgba(167,139,250,.04),rgba(0,184,224,.02));border-color:rgba(167,139,250,.25)">
+    <h2 style="color:var(--hyp)">07 · Hypothesis register · 3 cards</h2>
+    <p class="pl" style="margin-bottom:18px">Three load-bearing hypotheses anchoring SLB scouting in 2026.</p>
+
+    <div class="hyp-card">
+      <div class="hd">
+        <h4>SLB-01 · ChampionX integration delivers ≥$400M synergies and grows Production Systems toward 35-40% of revenue by 2028</h4>
+        <div class="meta"><span class="tag h2">H2 · 3-5yr</span><span class="conf">72%</span></div>
+      </div>
+      <p class="pl">Less-cyclical mix shift is the explicit ChampionX rationale. If realised it structurally re-rates SLB EBITDA quality.</p>
+      <div class="stmt">SLB realises ≥$400M annual pretax ChampionX synergies within 3 years post-close, with Production Systems share of revenue stabilising at 35-40% (vs ~28-30% pre-close), establishing a structurally less-cyclical earnings base.</div>
+      <div class="drv">
+        <div class="d signal"><span class="lbl">Economics — SIGNAL</span>$199M ChampionX adj EBITDA Q1 2026; $400M synergy target tracked in disclosures.</div>
+        <div class="d signal"><span class="lbl">Market — SIGNAL</span>Production-chem + artificial lift demand growing; less price-cycle exposure than pressure pumping.</div>
+        <div class="d"><span class="lbl">Ecosystem</span>North America customer base unlocked via ChampionX's land relationships.</div>
+        <div class="d"><span class="lbl">Competition</span>HAL / BKR not equivalently positioned in production chemicals scale.</div>
+      </div>
+      <div class="wntbt">
+        <div class="ttl">What needs to be true</div>
+        <ul class="tight">
+          <li>Synergy run-rate ≥ $300M by end-2027 (75% of 3-year target).</li>
+          <li>Production Systems revenue share &gt; 35% of total by FY2028.</li>
+          <li>No material customer attrition in ChampionX legacy book through 2027.</li>
+          <li>EBITDA margin in Production Systems holds &gt; 22% through integration.</li>
+        </ul>
+      </div>
+      <div class="impl"><div class="ttl">Engagement implication</div>Production-chem benchmarking + artificial-lift competitive positioning are the highest-priority scouting categories for SLB through 2027.</div>
+    </div>
+
+    <div class="hyp-card">
+      <div class="hd">
+        <h4>SLB-02 · Lumi + Delfi + Autonomous Drilling drives Digital &amp; Integration to ≥25% of revenue by 2028</h4>
+        <div class="meta"><span class="tag h2">H2 · 3-5yr</span><span class="conf">64%</span></div>
+      </div>
+      <p class="pl">Digital is the highest-margin SLB segment. Reaching 25% mix would lift group margin meaningfully and shift the equity narrative.</p>
+      <div class="stmt">Lumi platform adoption (enterprise wins like ONGC) + Delfi expansion + Autonomous Directional Drilling rollout grows Digital &amp; Integration revenue to ≥25% of group by FY2028, with EBITDA margin holding &gt; 30%.</div>
+      <div class="drv">
+        <div class="d signal"><span class="lbl">Technology — SIGNAL</span>Autonomous Directional Drilling 30% time-reduction proof point; enterprise Lumi deployments.</div>
+        <div class="d signal"><span class="lbl">Market — SIGNAL</span>NOC + IOC digital-procurement budgets compounding; ChampionX customer base unlock.</div>
+        <div class="d weak"><span class="lbl">Competition — WEAK</span>HAL iEnergy + BKR Cordant credible alternatives; data-platform competition with hyperscalers.</div>
+        <div class="d"><span class="lbl">Ecosystem</span>Microsoft + NVIDIA partnerships under Lumi; cross-industry data + AI partnerships.</div>
+      </div>
+      <div class="wntbt">
+        <div class="ttl">What needs to be true</div>
+        <ul class="tight">
+          <li>Digital &amp; Integration share rises from current ~13-15% to ≥20% by end-2027 and ≥25% by end-2028.</li>
+          <li>Autonomous Directional Drilling moves from pilot to ≥10 commercial deployments by end-2027.</li>
+          <li>Enterprise Lumi wins continue at ≥3 NOC / IOC announcements per year through 2027.</li>
+          <li>D&amp;I segment EBITDA margin remains &gt; 30%.</li>
+        </ul>
+      </div>
+      <div class="impl"><div class="ttl">Engagement implication</div>Track NOC + IOC digital procurement decisions, hyperscaler partnerships, and Autonomous Drilling adoption pace.</div>
+    </div>
+
+    <div class="hyp-card">
+      <div class="hd">
+        <h4>SLB-03 · Middle East disruption is transient — operations normalise by H2 2026, supporting FY2027 EBITDA growth</h4>
+        <div class="meta"><span class="tag h1">H1 · 1-2yr</span><span class="conf">56%</span></div>
+      </div>
+      <p class="pl">The Q1 2026 negative preannouncement is the single largest swing factor on FY2026 results. Geopolitical risk = lower base confidence.</p>
+      <div class="stmt">Red Sea logistics + NOC project recalibration are tactical / transient — Middle East run-rate revenue normalises by H2 2026, supporting FY2027 group EBITDA growth and reaffirming SLB's structural Middle East advantage (anchored by Aramco 5-yr unconventional gas wrap).</div>
+      <div class="drv">
+        <div class="d signal"><span class="lbl">Geopolitics — SIGNAL</span>Red Sea bottlenecks + NOC tactical recalibration; demobilised operations in select countries.</div>
+        <div class="d signal"><span class="lbl">Customer — SIGNAL</span>Aramco 5-yr Jafurah award (Dec 2025) signals long-term Saudi commitment.</div>
+        <div class="d weak"><span class="lbl">Risk — WEAK</span>Iran / Houthi escalation could extend disruption; broader regional recalibration may be structural.</div>
+        <div class="d"><span class="lbl">Economics</span>Q1 EBITDA -12% YoY; FCF -$23M Q1 — recovery profile turns on Middle East volume restart.</div>
+      </div>
+      <div class="wntbt">
+        <div class="ttl">What needs to be true</div>
+        <ul class="tight">
+          <li>Middle East revenue stabilises in Q2 2026 and grows sequentially in Q3 + Q4 2026.</li>
+          <li>No further demobilisations announced in H2 2026.</li>
+          <li>Aramco Jafurah project ramps on schedule (visible in 2027).</li>
+          <li>FY2027 group EBITDA grows YoY (vs FY2026 disruption-impaired base).</li>
+        </ul>
+      </div>
+      <div class="impl"><div class="ttl">Engagement implication</div>Middle East operations weekly tracking; NOC contract repacing intelligence is the most time-sensitive category for SLB account team.</div>
+    </div>
+  </section>
+
+  <footer>
+    SLB Account Intelligence Brief · v1 · May 2026 · FutureBridge Advisory · Author: signal-engine v8 · 3 hypotheses populated to v2 catalogue · See <a href="account_plans_v8.html?company=SLB">SLB live in v8</a>
+  </footer>
+
+</div>
+</body>
+</html>
