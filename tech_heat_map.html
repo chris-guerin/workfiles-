@@ -6,277 +6,304 @@
 <title>Technology Heat Map — FutureBridge</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
 :root{
-  --black:#000;--white:#fff;--grey:#4B4B55;--grey-light:#e6e6e8;--grey-50:#f6f6f7;
-  --bg:#fff;--ink:#000;--muted:#4B4B55;--border:#e6e6e8;--surface:#fafafa;
-  --h1:#1f7a3a;--h2:#a36100;--h3:#274ea0;
-  --hi:#000;--med:#4B4B55;--lo:#a8a8b0;
-  --imp:#1f7a3a;--stab:#4B4B55;--det:#a13b3b;--vol:#a36100;--unk:#a8a8b0;
+  --black:#000;--white:#fff;--grey:#4B4B55;--grey-light:#e6e6e8;--grey-50:#f6f6f7;--red:#F84E5D;
+  --h1-pri:#22AE8A;--h1-sec:#A8DDD4;
+  --h2-pri:#FDCF41;--h2-sec:#FDE89A;
+  --h3-pri:#9D7AD2;--h3-sec:#CDB9EB;
+  --energy:#22AE8A;--mobility:#9D7AD2;--cross:#F84E5D;
+  --ink:#000;--muted:#4B4B55;--border:#e6e6e8;--surface:#fafafa;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',system-ui,sans-serif;font-size:13px;color:var(--ink);background:var(--bg);line-height:1.45}
-a{color:var(--ink)}
-button{font-family:inherit;font-size:13px;cursor:pointer;border:1px solid var(--border);background:#fff;padding:7px 14px;font-weight:500}
+html,body{height:100%}
+body{font-family:'DM Sans',system-ui,sans-serif;font-size:13px;color:var(--ink);background:var(--white);line-height:1.45}
+.mono{font-family:'DM Mono',monospace}
+button{font-family:inherit;font-size:13px;cursor:pointer;border:1px solid var(--border);background:#fff;padding:7px 14px;font-weight:500;letter-spacing:.01em}
 button:hover{background:var(--grey-50)}
 button.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
 button.primary:hover{background:#222}
-input[type=text],input[type=password],input[type=search]{font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border);width:100%;color:var(--ink);background:#fff}
+button.danger{border-color:var(--red);color:var(--red)}
+button.danger:hover{background:#fff5f6}
+input{font-family:inherit;font-size:13px;padding:8px 12px;border:1px solid var(--border);width:100%;color:var(--ink);background:#fff}
 input:focus{outline:none;border-color:var(--ink)}
-.layout{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
-.layout.collapsed{grid-template-columns:48px 1fr}
+a{color:var(--ink)}
 
-aside{border-right:1px solid var(--border);background:var(--surface);padding:24px 20px;display:flex;flex-direction:column;gap:18px;position:sticky;top:0;height:100vh;overflow-y:auto}
-aside .brand{font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--ink)}
-aside h1{font-size:14px;font-weight:600;color:var(--ink);margin-top:4px}
-aside .desc{font-size:12px;color:var(--muted);line-height:1.55}
-aside section{display:flex;flex-direction:column;gap:8px}
-aside section .lbl{font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--muted)}
-aside .row{display:flex;gap:6px}
-aside .nav{display:flex;flex-direction:column;gap:6px;margin-top:auto;padding-top:12px;border-top:1px solid var(--border);font-size:12px}
-aside .nav a{display:block;padding:6px 8px;color:var(--muted);text-decoration:none;border:1px solid transparent}
-aside .nav a:hover{color:var(--ink);background:#fff;border-color:var(--border)}
-aside .nav a.active{color:var(--ink);font-weight:600;background:#fff;border-color:var(--border)}
-aside .toggle{position:absolute;top:14px;right:-13px;width:26px;height:26px;border-radius:50%;background:#fff;border:1px solid var(--border);font-size:14px;display:flex;align-items:center;justify-content:center;padding:0;line-height:1;z-index:5}
-aside .status{font-size:11px;color:var(--muted);font-family:'DM Sans',monospace}
-aside .status .ok{color:var(--imp);font-weight:600}
-aside .status .err{color:var(--det);font-weight:600}
+/* Topbar */
+.topbar{background:var(--black);color:var(--white);height:54px;display:flex;align-items:center;padding:0 24px;gap:24px;position:sticky;top:0;z-index:50}
+.topbar .brand{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;font-weight:500}
+.topbar .nav{display:flex;gap:14px;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.topbar .nav a{color:rgba(255,255,255,.6);text-decoration:none;padding:4px 0;border-bottom:1px solid transparent}
+.topbar .nav a:hover{color:#fff}
+.topbar .nav a.active{color:#fff;border-bottom-color:var(--white)}
+.topbar .pagename{margin-left:auto;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.7)}
+.topbar .token-pill{display:flex;align-items:center;gap:8px;font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.85);padding:4px 10px;border:1px solid rgba(255,255,255,.2)}
+.topbar .token-pill button{background:transparent;color:rgba(255,255,255,.7);border:none;padding:0 0 0 4px;cursor:pointer;font-size:10px}
+.topbar .token-pill button:hover{color:#fff;background:transparent}
+.topbar .token-pill .dot{width:6px;height:6px;border-radius:50%;background:var(--h1-pri)}
+.topbar .token-pill .dot.err{background:var(--red)}
 
-main{padding:28px 36px 80px;min-width:0;overflow-x:auto}
-.h-row{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:18px}
-.h-row .left h2{font-size:24px;font-weight:700;letter-spacing:-.01em}
-.h-row .left .sub{font-size:13px;color:var(--muted);margin-top:4px;max-width:760px}
-.h-row .right{display:flex;gap:8px;flex-wrap:wrap}
+/* Config panel (shown when no token) */
+.config-overlay{padding:48px 24px;background:#fff;display:flex;justify-content:center;align-items:flex-start;min-height:calc(100vh - 54px)}
+.config-card{max-width:560px;width:100%;border:1px solid var(--ink);padding:32px 36px;background:#fff}
+.config-card h1{font-size:20px;font-weight:700;margin-bottom:8px}
+.config-card .lead{color:var(--muted);margin-bottom:24px;font-size:13px;line-height:1.6}
+.config-card label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:500;color:var(--muted);display:block;margin-bottom:6px}
+.config-card .row{display:flex;gap:8px;margin-top:14px}
+.config-card .help{font-size:11px;color:var(--muted);margin-top:14px;line-height:1.55}
+.config-card .help code{font-family:'DM Mono',monospace;background:var(--grey-50);padding:1px 5px}
+.config-card .err-msg{color:var(--red);font-size:12px;margin-top:10px;display:none}
 
-.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:14px 16px;border:1px solid var(--border);margin-bottom:14px;background:#fff}
-.controls .field{display:flex;flex-direction:column;gap:4px;min-width:200px;flex:1}
-.controls .field .lbl{font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--muted)}
-.controls .field input,.controls .field select{font-family:inherit;font-size:13px;padding:7px 10px;border:1px solid var(--border);background:#fff}
-.controls .field select{cursor:pointer}
-.controls .stat{font-size:11px;color:var(--muted);padding:6px 10px;border:1px solid var(--border);background:#fff;font-family:'DM Sans',monospace}
-.controls .stat strong{color:var(--ink);font-weight:600}
+/* Filter bar */
+.filter-bar{position:sticky;top:54px;z-index:40;background:#fff;border-bottom:1px solid var(--border);padding:14px 24px;display:flex;flex-wrap:wrap;align-items:center;gap:14px}
+.filter-bar .group{display:flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.filter-bar .group .lbl{color:var(--muted);font-weight:500}
+.filter-bar .toggle{padding:5px 10px;border:1px solid var(--border);background:#fff;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;color:var(--muted)}
+.filter-bar .toggle.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.filter-bar .toggle:hover:not(.active){background:var(--grey-50);color:var(--ink)}
+.filter-bar .h1.active{background:var(--h1-pri);border-color:var(--h1-pri);color:#000}
+.filter-bar .h2.active{background:var(--h2-pri);border-color:var(--h2-pri);color:#000}
+.filter-bar .h3.active{background:var(--h3-pri);border-color:var(--h3-pri);color:#000}
+.filter-bar .energy.active{background:var(--energy);border-color:var(--energy);color:#000}
+.filter-bar .mobility.active{background:var(--mobility);border-color:var(--mobility);color:#fff}
+.filter-bar .cross.active{background:var(--red);border-color:var(--red);color:#fff}
+.filter-bar .spacer{flex:1}
+.filter-bar .stats{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);display:flex;gap:14px}
+.filter-bar .stats strong{color:var(--ink);font-weight:600}
+.filter-bar .stats .sw{display:inline-block;width:8px;height:8px;margin-right:4px;vertical-align:middle}
+.filter-bar input[type=search]{font-family:inherit;font-size:12px;padding:6px 10px;border:1px solid var(--border);width:200px;font-weight:500}
 
-.legend{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:11px;color:var(--muted);margin-bottom:14px;padding:10px 14px;border:1px solid var(--border);background:var(--surface)}
-.legend .item{display:flex;align-items:center;gap:6px}
-.legend .swatch{width:12px;height:12px;border:1px solid var(--border)}
-.legend .sw-h1{background:var(--h1)}
-.legend .sw-h2{background:var(--h2)}
-.legend .sw-h3{background:var(--h3)}
-.legend .sw-cross{background:repeating-linear-gradient(45deg,var(--ink),var(--ink) 2px,#fff 2px,#fff 4px)}
+/* Stats strip */
+.stats-strip{padding:10px 24px;border-bottom:1px solid var(--border);font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);display:flex;gap:18px;flex-wrap:wrap;background:var(--grey-50)}
+.stats-strip .stat strong{color:var(--ink);font-weight:600}
+.stats-strip .progress{color:var(--ink);font-weight:600}
 
-.matrix-wrap{overflow:auto;border:1px solid var(--border);background:#fff}
-table.heat{border-collapse:collapse;font-size:11px;font-family:'DM Sans',monospace}
-table.heat thead th{position:sticky;top:0;z-index:3;background:#fff;border-bottom:2px solid var(--ink);padding:8px 6px;font-weight:600;font-size:10px;text-align:left;white-space:nowrap;letter-spacing:.04em;color:var(--ink)}
-table.heat thead th.sticky-corner{position:sticky;left:0;z-index:5;border-right:1px solid var(--border);min-width:200px;background:#fff}
-table.heat thead th.tech-header{vertical-align:bottom;padding:0;background:#fff;border-right:1px solid var(--border);height:160px}
-table.heat thead th.tech-header .label{transform:rotate(-60deg);transform-origin:left bottom;width:160px;display:inline-block;padding:0 8px;line-height:1.25;font-weight:500;color:var(--ink)}
-table.heat thead th.tech-header .tech-name{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600;margin-bottom:2px}
-table.heat tbody td.sticky-row{position:sticky;left:0;background:#fff;border-right:1px solid var(--border);font-weight:600;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:12px;padding:8px 12px;min-width:200px;z-index:2}
-table.heat tbody td.sticky-row .sub{display:block;font-size:9px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
-table.heat tbody td.cell{width:18px;height:24px;text-align:center;border-right:1px solid var(--grey-light);border-bottom:1px solid var(--grey-light);cursor:pointer;position:relative}
-table.heat tbody td.cell:hover{outline:1px solid var(--ink);z-index:1;outline-offset:-1px}
-table.heat tbody tr:hover td.sticky-row{background:var(--surface)}
-table.heat tbody tr.dimmed{opacity:.25}
+/* Matrix */
+.matrix-wrap{overflow:auto;background:#fff;max-height:calc(100vh - 54px - 56px - 41px - 60px)}
+table.heat{border-collapse:collapse;font-family:'DM Mono',monospace;font-size:10px}
+table.heat th, table.heat td{vertical-align:bottom}
+
+/* sticky corner — spans 3 header rows */
+table.heat thead th.corner{position:sticky;left:0;top:0;z-index:7;background:#fff;border-right:1px solid var(--ink);border-bottom:2px solid var(--ink);padding:8px 12px;text-align:left;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--ink);min-width:240px;max-width:240px;letter-spacing:.04em;text-transform:uppercase}
+
+/* Domain header (row 1 of thead) */
+table.heat thead tr.domain th{position:sticky;top:0;z-index:5;padding:8px 12px;text-align:left;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:#000;letter-spacing:.04em;text-transform:uppercase;border-right:1px solid #fff;border-bottom:1px solid var(--ink)}
+table.heat thead tr.domain th.dom-energy{background:var(--energy);color:#000}
+table.heat thead tr.domain th.dom-mobility{background:var(--mobility);color:#fff}
+table.heat thead tr.domain th.dom-empty{background:#fff;border-right:none;border-bottom:1px solid var(--border)}
+
+/* Horizon sub-header (row 2 of thead) */
+table.heat thead tr.horizon-row th{position:sticky;top:33px;z-index:5;padding:5px 6px;text-align:center;font-family:'DM Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;border-right:1px solid #fff;border-bottom:1px solid var(--ink)}
+table.heat thead tr.horizon-row th.h1{background:var(--h1-sec);color:#06554a}
+table.heat thead tr.horizon-row th.h2{background:var(--h2-sec);color:#7a5b00}
+table.heat thead tr.horizon-row th.h3{background:var(--h3-sec);color:#3e2a72}
+table.heat thead tr.horizon-row th.empty{background:#fff;border-right:none;border-bottom:1px solid var(--border)}
+
+/* Technology label (row 3 of thead) */
+table.heat thead tr.tech th{position:sticky;top:62px;z-index:4;padding:0;background:#fff;border-right:1px solid var(--grey-light);border-bottom:2px solid var(--ink);height:148px;width:64px;min-width:64px;max-width:64px}
+table.heat thead tr.tech th .label{transform:rotate(-60deg) translateX(-4px);transform-origin:left bottom;display:block;width:160px;padding:6px 8px 0 0;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;color:var(--ink);line-height:1.2;white-space:normal}
+table.heat thead tr.tech th .app{display:block;font-size:9px;color:var(--muted);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em;margin-top:1px}
+
+/* Body rows */
+table.heat tbody td.row-head{position:sticky;left:0;z-index:3;background:#fff;border-right:1px solid var(--ink);padding:8px 12px 8px 14px;min-width:240px;max-width:240px;border-bottom:1px solid var(--grey-light);font-family:'DM Sans',sans-serif}
+table.heat tbody td.row-head .name{font-weight:600;font-size:12px;color:var(--ink)}
+table.heat tbody td.row-head .sub{display:block;font-size:9px;color:var(--muted);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+table.heat tbody td.row-head.energy{border-left:3px solid var(--energy)}
+table.heat tbody td.row-head.mobility{border-left:3px solid var(--mobility)}
+table.heat tbody td.row-head.both{border-left:3px solid var(--grey)}
+table.heat tbody td.row-head.unknown{border-left:3px solid var(--grey-light)}
+
+/* Cells */
+table.heat tbody td.cell{width:64px;height:30px;border-right:1px solid var(--grey-light);border-bottom:1px solid var(--grey-light);text-align:center;cursor:pointer;position:relative;background:#fff}
+table.heat tbody td.cell:hover{outline:1px solid var(--ink);outline-offset:-1px;z-index:2}
+table.heat tbody td.cell .fill{display:block;width:100%;height:100%;position:absolute;inset:0}
+table.heat tbody td.cell.cross::after{content:'';position:absolute;inset:0;border:2px solid var(--red);pointer-events:none}
+table.heat tbody td.cell.pending{color:var(--grey-light);font-size:10px}
+table.heat tbody td.cell.pending::before{content:'·'}
+table.heat tbody td.cell.err{color:var(--red);font-size:10px;font-weight:700}
+table.heat tbody td.cell.err::before{content:'×'}
+
+/* Row backgrounds */
+table.heat tbody tr.domain-energy td.row-head{background:#f4faf8}
+table.heat tbody tr.domain-mobility td.row-head{background:#f9f6fc}
+
 /* Group rollup row */
-table.heat tbody tr.group-rollup td{background:#ececef;border-bottom:1px solid var(--ink)}
-table.heat tbody tr.group-rollup:hover td.sticky-row{background:#dedee2}
-table.heat tbody tr.group-rollup td.sticky-row{font-weight:700;border-left:3px solid var(--ink)}
-table.heat tbody tr.group-rollup td.cell .dot{outline:1px dashed var(--ink);outline-offset:1px}
-/* Child rows of a group: subtle left indent indicator */
-table.heat tbody tr.group-child td.sticky-row{padding-left:18px;border-left:3px solid var(--grey-light)}
-table.heat tbody tr.group-child td.sticky-row::before{content:'└';position:absolute;left:6px;color:var(--muted);font-family:monospace;font-weight:400}
-/* Group parent row (the parent itself, separate from rollup) */
-table.heat tbody tr.group-parent td.sticky-row{border-left:3px solid var(--grey-light)}
-.dot{display:block;width:10px;height:10px;margin:0 auto;border:1px solid rgba(0,0,0,.25)}
-.dot.h1{background:var(--h1)}
-.dot.h2{background:var(--h2)}
-.dot.h3{background:var(--h3)}
-.dot.cross{outline:2px solid var(--ink);outline-offset:1px}
-.cell.confidence-medium .dot{opacity:.65}
-.cell.confidence-low .dot{opacity:.4}
-td.cell .err{color:var(--det);font-size:10px;font-weight:700}
-td.cell .err::before{content:'×'}
-td.cell .pending{color:var(--lo);font-size:10px}
-td.cell .pending::before{content:'…'}
-.row-status{font-size:10px;color:var(--muted);font-family:'DM Sans',monospace;padding:0 6px}
+table.heat tbody tr.group-rollup td{background:#ececef!important;border-bottom:1px solid var(--ink)!important}
+table.heat tbody tr.group-rollup td.row-head{background:#e6e6ea!important;border-left:3px solid var(--ink)!important}
+table.heat tbody tr.group-rollup td.row-head .name::after{content:' (group)';color:var(--muted);font-weight:500;font-size:10px}
+table.heat tbody tr.group-rollup td.cell .fill{outline:1px dashed rgba(0,0,0,.45);outline-offset:-3px}
+table.heat tbody tr.group-child td.row-head{padding-left:26px;border-left:3px solid var(--grey-light)!important;position:sticky;left:0}
+table.heat tbody tr.group-child td.row-head::before{content:'└';position:absolute;left:8px;top:8px;color:var(--muted);font-family:monospace}
 
-.detail{position:fixed;right:24px;bottom:24px;width:380px;max-height:60vh;overflow:auto;background:#fff;border:1px solid var(--ink);box-shadow:0 8px 24px rgba(0,0,0,.12);padding:18px 20px;display:none;z-index:50}
-.detail.open{display:block}
-.detail .close{position:absolute;top:10px;right:12px;background:none;border:none;font-size:18px;color:var(--muted);cursor:pointer;padding:0}
-.detail h3{font-size:14px;font-weight:700;margin-bottom:4px;padding-right:24px}
-.detail .small{font-size:11px;color:var(--muted);margin-bottom:14px}
-.detail dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:12px}
-.detail dt{color:var(--muted);font-weight:500}
-.detail dd{color:var(--ink)}
-.detail .reasoning{margin-top:14px;padding-top:12px;border-top:1px solid var(--border);font-size:12px;line-height:1.5;color:var(--muted)}
+/* Detail bar */
+.detail-bar{position:fixed;left:0;right:0;bottom:0;background:#000;color:#fff;padding:14px 24px;display:none;z-index:60;font-family:'DM Mono',monospace;font-size:12px;align-items:center;gap:16px;border-top:2px solid var(--red)}
+.detail-bar.open{display:flex}
+.detail-bar .lbl{color:rgba(255,255,255,.5);font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+.detail-bar .val{color:#fff;margin-left:4px;margin-right:14px}
+.detail-bar .val.h1{color:var(--h1-pri)}
+.detail-bar .val.h2{color:var(--h2-pri)}
+.detail-bar .val.h3{color:var(--h3-pri)}
+.detail-bar .val.cross{color:var(--red);font-weight:600}
+.detail-bar .close{margin-left:auto;background:transparent;border:1px solid rgba(255,255,255,.3);color:#fff;padding:5px 10px;font-size:10px;cursor:pointer;font-family:inherit;letter-spacing:.06em;text-transform:uppercase}
+.detail-bar .close:hover{background:rgba(255,255,255,.1)}
 
+/* Empty state */
 .empty{padding:60px 20px;text-align:center;color:var(--muted)}
 .empty h3{font-size:18px;color:var(--ink);font-weight:600;margin-bottom:8px}
+
+/* tag for derivation indicators */
+.tag-source{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);font-weight:500}
+.tag-source.api{color:var(--h1-pri)}
+.tag-source.derived{color:var(--h2-pri)}
 </style>
 </head>
 <body>
 
-<div class="layout" id="layout">
-
-  <aside id="sidebar">
-    <div class="brand">FutureBridge</div>
-    <h1>Technology Heat Map</h1>
-    <div class="desc">Live client × technology-pair matrix. Pulls from <code style="font-size:11px">/v8/ontology-pairs</code> per company in parallel.</div>
-
-    <section>
-      <div class="lbl">Signal Engine API token</div>
-      <input id="tokenInput" type="password" placeholder="Bearer token" autocomplete="off" />
-      <div class="row">
-        <button class="primary" id="saveToken" style="flex:1">Save &amp; load</button>
-        <button id="clearToken" title="Clear stored token">Clear</button>
-      </div>
-      <div class="status" id="tokenStatus">No token saved.</div>
-    </section>
-
-    <section>
-      <div class="lbl">Status</div>
-      <div class="status" id="loadStatus">Idle</div>
-    </section>
-
-    <div class="nav">
-      <a href="index.html">← All tools</a>
-      <a href="tech_heat_map.html" class="active">Heat Map</a>
-      <a href="tech_tracker.html">Technology Tracker</a>
-      <a href="account_plans_v8.html">Account Plans v8</a>
-    </div>
-  </aside>
-
-  <main>
-    <div class="h-row">
-      <div class="left">
-        <h2>Technology Heat Map</h2>
-        <div class="sub">Companies down rows, technology-application pairs across columns. Cell colour = horizon · solid outline = cross-client edge. Click any cell for details. Filters apply live.</div>
-      </div>
-      <div class="right">
-        <button id="refresh">Refresh data</button>
-        <button id="exportCsv">Export CSV</button>
-      </div>
-    </div>
-
-    <div class="controls" id="controls" style="display:none">
-      <div class="field">
-        <span class="lbl">Search company</span>
-        <input id="qCompany" type="search" placeholder="e.g. Shell, NXP, Wolfspeed…" />
-      </div>
-      <div class="field">
-        <span class="lbl">Search technology / pair</span>
-        <input id="qPair" type="search" placeholder="e.g. SiC, hydrogen, radar…" />
-      </div>
-      <div class="field" style="max-width:160px">
-        <span class="lbl">Horizon</span>
-        <select id="fHorizon">
-          <option value="">all</option>
-          <option value="H1">H1 only</option>
-          <option value="H2">H2 only</option>
-          <option value="H3">H3 only</option>
-        </select>
-      </div>
-      <div class="field" style="max-width:170px">
-        <span class="lbl">Confidence</span>
-        <select id="fConf">
-          <option value="">all</option>
-          <option value="high">High</option>
-          <option value="medium">Medium</option>
-          <option value="low">Low</option>
-        </select>
-      </div>
-      <div class="field" style="max-width:170px">
-        <span class="lbl">Cross-client only</span>
-        <select id="fCross">
-          <option value="">all</option>
-          <option value="1">cross-client only</option>
-        </select>
-      </div>
-      <div class="stat" id="statSummary">…</div>
-    </div>
-
-    <div class="legend" id="legend" style="display:none">
-      <div class="item"><span class="swatch sw-h1"></span> H1 (1–2yr)</div>
-      <div class="item"><span class="swatch sw-h2"></span> H2 (3–5yr)</div>
-      <div class="item"><span class="swatch sw-h3"></span> H3 (6yr+)</div>
-      <div class="item"><span class="swatch" style="outline:2px solid #000;background:#fff"></span> cross-client edge</div>
-      <div class="item">opacity = confidence (high → low)</div>
-      <div class="item"><span class="swatch" style="background:#ececef;border-left:3px solid #000"></span> group consolidated row · <span style="color:#000">dashed outline cell</span> = aggregated</div>
-    </div>
-
-    <div id="content">
-      <div class="empty" id="emptyState">
-        <h3>Enter your Signal Engine token</h3>
-        <p>Use the sidebar to paste your bearer token, then press <strong>Save &amp; load</strong>. The matrix builds from live PG data.</p>
-      </div>
-    </div>
-  </main>
+<div class="topbar">
+  <div class="brand">FUTUREBRIDGE</div>
+  <div class="nav">
+    <a href="index.html">Home</a>
+    <a href="tech_heat_map.html" class="active">Heat Map</a>
+    <a href="tech_tracker.html">Technology Tracker</a>
+    <a href="account_plans_v8.html">Account Plans v8</a>
+  </div>
+  <div class="pagename">Technology Heat Map</div>
+  <div id="tokenPill" class="token-pill" style="display:none">
+    <span class="dot"></span>
+    <span id="tokenMasked"></span>
+    <button id="tokenEdit" title="Change token">[edit]</button>
+  </div>
 </div>
 
-<div class="detail" id="detail">
-  <button class="close" id="detailClose">×</button>
-  <h3 id="dTitle"></h3>
-  <div class="small" id="dSub"></div>
-  <dl id="dList"></dl>
-  <div class="reasoning" id="dReason"></div>
+<!-- Config card (shown when no token) -->
+<div id="configOverlay" class="config-overlay" style="display:none">
+  <div class="config-card">
+    <h1>Connect to the Signal Engine</h1>
+    <div class="lead">Paste your bearer token below to load live ontology data from the Signal Engine API. The token is stored in <code class="mono">localStorage</code> on this device only.</div>
+    <label for="tokenInput">API token</label>
+    <input id="tokenInput" type="password" placeholder="Bearer token" autocomplete="off" />
+    <div class="row">
+      <button class="primary" id="saveToken" style="flex:1">Save &amp; load</button>
+      <button class="danger" id="clearToken">Clear</button>
+    </div>
+    <div class="err-msg" id="errMsg">Check token — last request failed.</div>
+    <div class="help">
+      Endpoint: <code>https://signal-engine-api-production-0cf1.up.railway.app</code><br>
+      Reads: <code>/v8/companies</code> and <code>/v8/ontology-pairs?company=&lt;name&gt;</code> for each company in parallel.<br>
+      Auto-load: append <code>?token=&lt;value&gt;</code> to the URL on first visit.
+    </div>
+  </div>
+</div>
+
+<!-- Main UI (shown when token present) -->
+<div id="mainUi" style="display:none">
+  <div class="filter-bar">
+    <div class="group">
+      <span class="lbl">Horizon</span>
+      <button class="toggle active" data-h="">All</button>
+      <button class="toggle h1" data-h="H1">H1</button>
+      <button class="toggle h2" data-h="H2">H2</button>
+      <button class="toggle h3" data-h="H3">H3</button>
+    </div>
+    <div class="group">
+      <span class="lbl">Sector</span>
+      <button class="toggle energy active" data-sec="energy">Energy</button>
+      <button class="toggle mobility active" data-sec="mobility">Mobility</button>
+    </div>
+    <div class="group">
+      <button class="toggle cross" id="fCross">Cross-client only</button>
+    </div>
+    <div class="group">
+      <input id="qSearch" type="search" placeholder="search company / pair…" />
+    </div>
+    <div class="spacer"></div>
+    <button id="exportCsv">Export CSV</button>
+    <button id="refresh">Refresh</button>
+  </div>
+
+  <div class="stats-strip" id="stats">
+    <span class="stat progress" id="loadProg">Idle</span>
+  </div>
+
+  <div id="content"><div class="empty"><h3>Loading…</h3></div></div>
+</div>
+
+<div class="detail-bar" id="detailBar">
+  <span><span class="lbl">Company</span><span class="val" id="dCompany"></span></span>
+  <span><span class="lbl">Pair</span><span class="val" id="dPair"></span></span>
+  <span><span class="lbl">Horizon</span><span class="val" id="dHorizon"></span></span>
+  <span><span class="lbl">Confidence</span><span class="val" id="dConf"></span></span>
+  <span><span class="lbl">Trajectory</span><span class="val" id="dTraj"></span></span>
+  <span><span class="lbl">Link type</span><span class="val" id="dLink"></span></span>
+  <span><span class="lbl">Cross-client</span><span class="val" id="dCross"></span></span>
+  <span><span class="lbl">Evidence</span><span class="val" id="dEv"></span></span>
+  <button class="close" id="dClose">Close ✕</button>
 </div>
 
 <script>
+// ── Config ─────────────────────────────────────────
 const API = 'https://signal-engine-api-production-0cf1.up.railway.app';
 const STORAGE_KEY = 'se_token';
 
-const els = {
-  tokenInput: document.getElementById('tokenInput'),
-  tokenStatus: document.getElementById('tokenStatus'),
-  saveToken: document.getElementById('saveToken'),
-  clearToken: document.getElementById('clearToken'),
-  loadStatus: document.getElementById('loadStatus'),
-  refresh: document.getElementById('refresh'),
-  exportCsv: document.getElementById('exportCsv'),
-  controls: document.getElementById('controls'),
-  legend: document.getElementById('legend'),
-  qCompany: document.getElementById('qCompany'),
-  qPair: document.getElementById('qPair'),
-  fHorizon: document.getElementById('fHorizon'),
-  fConf: document.getElementById('fConf'),
-  fCross: document.getElementById('fCross'),
-  statSummary: document.getElementById('statSummary'),
-  content: document.getElementById('content'),
-  emptyState: document.getElementById('emptyState'),
-  detail: document.getElementById('detail'),
-  detailClose: document.getElementById('detailClose'),
-  dTitle: document.getElementById('dTitle'),
-  dSub: document.getElementById('dSub'),
-  dList: document.getElementById('dList'),
-  dReason: document.getElementById('dReason'),
-};
-
-// ── Group rollup config ─────────────────────────────
-// Multi-brand groups in the catalogue. Add more entries here as needed.
-// The consolidated row fills if ANY child OR the parent itself tracks the pair.
 const COMPANY_GROUPS = {
   'Volkswagen Group': ['Audi AG', 'Porsche AG', 'Skoda Auto', 'SEAT / CUPRA'],
 };
-
 const CHILD_TO_PARENT = (() => {
   const m = {};
-  for(const parent in COMPANY_GROUPS){
-    for(const child of COMPANY_GROUPS[parent]) m[child] = parent;
-  }
+  for(const p in COMPANY_GROUPS) for(const c of COMPANY_GROUPS[p]) m[c] = p;
   return m;
 })();
 
-// State
+// Domain keyword lists per spec
+const ENERGY_KEYWORDS = ['hydrogen','carbon','wind','storage','electrolysis','capture','gas','nuclear','offshore','bioenergy','geothermal','fusion','methane','oil','lng','ccus','blue h2','green h2','solar','grid','power','renewable','energy','petrochem','refinery','upstream','downstream','exploration','production'];
+const MOBILITY_KEYWORDS = ['vehicle','ev','bev','adas','sic','automotive','sdv','ota','v2g','battery electric','tire','tyre','tier-1','autonomous','radar','lidar','infotainment','powertrain','drivetrain','zonal','semis','semiconductor','mcu','chip','foundry','soc','imaging','sensor','mobility'];
+
+// Trajectory mapping API → spec
+const TRAJ_MAP = { improving:'up', deteriorating:'down', stable:'stable', volatile:'stable', unknown:'stable' };
+
+// Link type mapping
+const LINK_MAP = { principal:'primary', enabling:'secondary', external_threat:'secondary' };
+
+// ── State ─────────────────────────────────────────
 const state = {
   token: null,
-  companies: [],          // [{id,name,sector,initiative_count}]
-  pairsByCompany: {},     // name -> array of pair rows
-  errorsByCompany: {},    // name -> error string
-  loadingByCompany: {},   // name -> true while in flight
+  companies: [],            // [{id,name,sector,initiative_count}]
+  pairsByCompany: {},       // name -> [pair rows]
+  errorsByCompany: {},      // name -> error string
+  loadingByCompany: {},     // name -> bool
+  loadedCount: 0,
+  totalCount: 0,
+  filters: { horizon:'', cross:false, energy:true, mobility:true, search:'' },
+  selectedCell: null,
 };
 
-// ── Token handling ─────────────────────────────────
+// ── Element refs ─────────────────────────────────
+const $ = id => document.getElementById(id);
+const els = {
+  configOverlay: $('configOverlay'),
+  mainUi: $('mainUi'),
+  tokenInput: $('tokenInput'),
+  saveToken: $('saveToken'),
+  clearToken: $('clearToken'),
+  tokenPill: $('tokenPill'),
+  tokenMasked: $('tokenMasked'),
+  tokenEdit: $('tokenEdit'),
+  errMsg: $('errMsg'),
+  loadProg: $('loadProg'),
+  stats: $('stats'),
+  content: $('content'),
+  qSearch: $('qSearch'),
+  fCross: $('fCross'),
+  exportCsv: $('exportCsv'),
+  refresh: $('refresh'),
+  detailBar: $('detailBar'),
+  dCompany: $('dCompany'), dPair: $('dPair'), dHorizon: $('dHorizon'),
+  dConf: $('dConf'), dTraj: $('dTraj'), dLink: $('dLink'),
+  dCross: $('dCross'), dEv: $('dEv'),
+};
+
+// ── Token handling ───────────────────────────────
 function readUrlToken(){
   const u = new URL(location.href);
   const t = u.searchParams.get('token');
@@ -288,440 +315,451 @@ function readUrlToken(){
   }
   return null;
 }
-function loadToken(){
-  return readUrlToken() || localStorage.getItem(STORAGE_KEY) || '';
+function loadToken(){ return readUrlToken() || localStorage.getItem(STORAGE_KEY) || ''; }
+function showConfig(err){
+  els.mainUi.style.display = 'none';
+  els.configOverlay.style.display = 'flex';
+  els.tokenPill.style.display = 'none';
+  if(err){ els.errMsg.textContent = err; els.errMsg.style.display = 'block'; }
+  else { els.errMsg.style.display = 'none'; }
 }
-function setTokenStatus(){
-  if(state.token){
-    const masked = state.token.length > 8 ? state.token.slice(0,4)+'…'+state.token.slice(-4) : '••••';
-    els.tokenStatus.innerHTML = `<span class="ok">●</span> Token saved (${masked})`;
-  } else {
-    els.tokenStatus.innerHTML = `<span class="err">●</span> No token saved.`;
-  }
+function showMain(){
+  els.configOverlay.style.display = 'none';
+  els.mainUi.style.display = 'block';
+  els.tokenPill.style.display = 'flex';
+  const masked = state.token.length > 8 ? state.token.slice(0,8) + '…' : state.token;
+  els.tokenMasked.textContent = masked;
 }
-
 els.saveToken.addEventListener('click', () => {
   const t = els.tokenInput.value.trim();
   if(!t){ alert('Paste a token first.'); return; }
   localStorage.setItem(STORAGE_KEY, t);
   state.token = t;
   els.tokenInput.value = '';
-  setTokenStatus();
+  showMain();
   loadAll();
 });
 els.clearToken.addEventListener('click', () => {
   localStorage.removeItem(STORAGE_KEY);
   state.token = null;
-  setTokenStatus();
-  els.content.innerHTML = '';
-  els.content.appendChild(els.emptyState);
+  state.companies = []; state.pairsByCompany = {};
+  showConfig();
 });
+els.tokenEdit.addEventListener('click', () => showConfig());
 
-// ── API client ────────────────────────────────────
+// ── API ──────────────────────────────────────────
 async function api(path){
-  const r = await fetch(API + path, {
-    headers: { 'Authorization': 'Bearer ' + state.token },
-  });
-  if(!r.ok){
-    const msg = `HTTP ${r.status}`;
-    throw new Error(msg);
-  }
+  const r = await fetch(API + path, { headers:{ 'Authorization': 'Bearer ' + state.token } });
+  if(!r.ok) throw new Error('HTTP ' + r.status);
   return r.json();
 }
 
-// ── Load ───────────────────────────────────────────
+// ── Load ─────────────────────────────────────────
 async function loadAll(){
-  if(!state.token){ els.loadStatus.textContent = 'No token'; return; }
-  els.loadStatus.textContent = 'Fetching companies…';
-  state.pairsByCompany = {};
-  state.errorsByCompany = {};
-  state.loadingByCompany = {};
-
+  state.pairsByCompany = {}; state.errorsByCompany = {}; state.loadingByCompany = {};
+  state.loadedCount = 0;
+  els.loadProg.textContent = 'Loading companies…';
+  els.content.innerHTML = '<div class="empty"><h3>Connecting…</h3></div>';
   let companies;
-  try {
-    companies = await api('/v8/companies');
-  } catch(e){
-    els.loadStatus.innerHTML = `<span class="err">●</span> Companies failed: ${e.message}`;
+  try { companies = await api('/v8/companies'); }
+  catch(e){
+    if(/401|403/.test(e.message)){ showConfig('Check token — auth failed.'); return; }
+    els.loadProg.innerHTML = '<span style="color:var(--red)">●</span> Companies failed: ' + e.message;
     return;
   }
   state.companies = companies;
-  els.loadStatus.textContent = `Loaded ${companies.length} companies. Fetching ontology pairs…`;
-  els.controls.style.display = 'flex';
-  els.legend.style.display = 'flex';
-  render(); // first render with pending cells
+  state.totalCount = companies.length;
+  els.loadProg.textContent = `Loading 0 of ${companies.length} companies…`;
+  render(); // initial render with pending cells
 
-  // parallel fetch all companies
-  const t0 = performance.now();
   await Promise.all(companies.map(async c => {
     state.loadingByCompany[c.name] = true;
     try {
-      const rows = await api('/v8/ontology-pairs?company=' + encodeURIComponent(c.name));
-      state.pairsByCompany[c.name] = rows;
+      state.pairsByCompany[c.name] = await api('/v8/ontology-pairs?company=' + encodeURIComponent(c.name));
     } catch(e){
       state.errorsByCompany[c.name] = e.message;
     } finally {
       state.loadingByCompany[c.name] = false;
+      state.loadedCount++;
+      els.loadProg.textContent = `Loaded ${state.loadedCount} of ${state.totalCount}…`;
       render();
     }
   }));
-  const dt = ((performance.now()-t0)/1000).toFixed(1);
   const errCount = Object.keys(state.errorsByCompany).length;
-  els.loadStatus.innerHTML = errCount
-    ? `<span class="err">●</span> Loaded with ${errCount} error(s) in ${dt}s`
-    : `<span class="ok">●</span> Loaded all in ${dt}s`;
+  els.loadProg.innerHTML = errCount
+    ? `<span style="color:var(--red)">●</span> Loaded all (${errCount} errored)`
+    : `<span style="color:var(--h1-pri)">●</span> Loaded all ${state.totalCount} companies`;
 }
 
 els.refresh.addEventListener('click', loadAll);
 
-// ── Render ────────────────────────────────────────
-function uniquePairs(){
-  // Build set of pair_label across all companies' loaded rows.
-  // Keep one canonical row to drive header label + tech_name.
-  const map = new Map(); // pair_label -> {pair_label, technology, technology_name, application, application_domain}
+// ── Filter wiring ───────────────────────────────
+document.querySelectorAll('.filter-bar [data-h]').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.filter-bar [data-h]').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    state.filters.horizon = b.dataset.h;
+    render();
+  });
+});
+document.querySelectorAll('.filter-bar [data-sec]').forEach(b => {
+  b.addEventListener('click', () => {
+    b.classList.toggle('active');
+    state.filters.energy = document.querySelector('[data-sec=energy]').classList.contains('active');
+    state.filters.mobility = document.querySelector('[data-sec=mobility]').classList.contains('active');
+    render();
+  });
+});
+els.fCross.addEventListener('click', () => {
+  els.fCross.classList.toggle('active');
+  state.filters.cross = els.fCross.classList.contains('active');
+  render();
+});
+els.qSearch.addEventListener('input', () => {
+  state.filters.search = els.qSearch.value.trim().toLowerCase();
+  render();
+});
+
+// ── Domain detection ─────────────────────────────
+function detectDomain(pair){
+  const hay = ((pair.application_domain||'') + ' ' + (pair.application||'') + ' ' + (pair.technology||'')).toLowerCase();
+  for(const k of MOBILITY_KEYWORDS) if(hay.includes(k)) return 'mobility';
+  for(const k of ENERGY_KEYWORDS) if(hay.includes(k)) return 'energy';
+  return 'energy'; // default fallback (most catalogue pairs are energy)
+}
+
+// ── Pair aggregation ────────────────────────────
+// Build the deduplicated, sorted list of pairs across all loaded companies.
+function buildPairs(){
+  const map = new Map(); // key -> {key, pair_label, technology, application, domain, horizon, crossClient}
   for(const company in state.pairsByCompany){
     for(const r of state.pairsByCompany[company] || []){
-      if(!map.has(r.pair_label)){
-        map.set(r.pair_label, {
-          pair_label: r.pair_label,
-          technology: r.technology,
-          technology_name: r.technology_name,
-          application: r.application,
-          application_name: r.application_name,
-          application_domain: r.application_domain,
-        });
+      const tech = r.technology || r.technology_name || '?';
+      const app = r.application || r.application_name || '?';
+      const key = `${tech} × ${app}`;
+      let entry = map.get(key);
+      if(!entry){
+        entry = {
+          key, pair_label: r.pair_label || key,
+          technology: tech, application: app,
+          domain: detectDomain(r),
+          horizon: r.horizon || 'H2',
+          crossClient: !!r.is_cross_client_edge,
+        };
+        map.set(key, entry);
+      } else {
+        if(r.is_cross_client_edge) entry.crossClient = true;
+        // dominant horizon: prefer H1 over H2 over H3 — most near-term wins
+        const hp = { H1:0, H2:1, H3:2 };
+        if((hp[r.horizon] ?? 9) < (hp[entry.horizon] ?? 9)) entry.horizon = r.horizon;
       }
     }
   }
-  // sort by technology, then application
+  // Sort: domain (energy first, then mobility), horizon (H1<H2<H3), tech alpha
   return [...map.values()].sort((a,b) => {
-    const tA = (a.technology||'').toLowerCase();
-    const tB = (b.technology||'').toLowerCase();
-    if(tA !== tB) return tA < tB ? -1 : 1;
-    const aA = (a.application||'').toLowerCase();
-    const aB = (b.application||'').toLowerCase();
-    return aA < aB ? -1 : aA > aB ? 1 : 0;
+    const dA = a.domain === 'energy' ? 0 : 1;
+    const dB = b.domain === 'energy' ? 0 : 1;
+    if(dA !== dB) return dA - dB;
+    const hp = { H1:0, H2:1, H3:2 };
+    const ha = hp[a.horizon] ?? 9;
+    const hb = hp[b.horizon] ?? 9;
+    if(ha !== hb) return ha - hb;
+    return a.technology.localeCompare(b.technology) || a.application.localeCompare(b.application);
   });
 }
 
-function getCellRow(companyName, pairLabel){
-  const rows = state.pairsByCompany[companyName] || [];
-  // multiple link_role rows possible — prefer principal/enabling, else first
-  const matches = rows.filter(r => r.pair_label === pairLabel);
-  if(!matches.length) return null;
-  const order = {principal:0, enabling:1, external_threat:2};
-  matches.sort((a,b) => (order[a.link_type]||9) - (order[b.link_type]||9));
-  return matches[0];
+// ── Company aggregation / sort ───────────────────
+function sortCompanies(){
+  const sectorRank = { energy:0, both:1, mobility:1, unknown:2 };
+  return [...state.companies].sort((a,b) => {
+    const sa = sectorRank[a.sector] ?? 9;
+    const sb = sectorRank[b.sector] ?? 9;
+    if(sa !== sb) return sa - sb;
+    return a.name.localeCompare(b.name);
+  });
 }
 
-function passFilters(row){
-  const fH = els.fHorizon.value;
-  const fC = els.fConf.value;
-  const fX = els.fCross.value;
-  if(fH && row.horizon !== fH) return false;
-  if(fC && row.confidence !== fC) return false;
-  if(fX === '1' && !row.is_cross_client_edge) return false;
-  return true;
-}
-
-// Build the ordered render list, injecting consolidated rollup rows above
-// each parent + child cluster. Returns:
-//   [{ company:{name,sector,initiative_count}, kind:'normal'|'rollup'|'parent'|'child',
-//      members?:[companyObj] }, ...]
+// Inject group rollup rows + reorder children
 function buildRenderRows(){
+  const sorted = sortCompanies();
   const byName = Object.fromEntries(state.companies.map(c => [c.name, c]));
-  const sorted = [...state.companies].sort((a,b) => a.name.localeCompare(b.name));
-  const out = [];
-  const emitted = new Set();
+  const out = [], emitted = new Set();
   for(const c of sorted){
-    if(CHILD_TO_PARENT[c.name]) continue; // emitted under parent
+    if(CHILD_TO_PARENT[c.name]) continue;
     if(emitted.has(c.name)) continue;
     if(COMPANY_GROUPS[c.name]){
-      const childObjs = COMPANY_GROUPS[c.name]
-        .map(n => byName[n]).filter(Boolean)
+      const childObjs = COMPANY_GROUPS[c.name].map(n => byName[n]).filter(Boolean)
         .sort((a,b) => a.name.localeCompare(b.name));
-      out.push({
-        company: { name: c.name, sector: c.sector || 'group', initiative_count: 0 },
-        kind: 'rollup',
-        members: [c, ...childObjs],
-      });
-      out.push({ company: c, kind: 'parent', parentName: c.name });
-      for(const cc of childObjs){
-        out.push({ company: cc, kind: 'child', parentName: c.name });
-        emitted.add(cc.name);
-      }
+      out.push({ company:{ name:c.name, sector:c.sector, initiative_count:0 }, kind:'rollup', members:[c, ...childObjs] });
+      out.push({ company:c, kind:'parent', parentName:c.name });
+      for(const cc of childObjs){ out.push({ company:cc, kind:'child', parentName:c.name }); emitted.add(cc.name); }
       emitted.add(c.name);
     } else {
-      out.push({ company: c, kind: 'normal' });
+      out.push({ company:c, kind:'normal' });
     }
   }
-  // Edge case: parent declared in COMPANY_GROUPS but absent from /v8/companies
+  // Phantom parent (only children present in catalogue)
   for(const parentName in COMPANY_GROUPS){
-    if(byName[parentName]) continue; // already handled above
+    if(byName[parentName]) continue;
     const childObjs = COMPANY_GROUPS[parentName].map(n => byName[n]).filter(Boolean);
     if(!childObjs.length) continue;
-    out.push({
-      company: { name: parentName, sector: 'group', initiative_count: 0 },
-      kind: 'rollup',
-      members: childObjs,
-      parentMissing: true,
-    });
+    out.push({ company:{ name:parentName, sector:'mobility', initiative_count:0 }, kind:'rollup', members:childObjs, parentMissing:true });
     for(const cc of childObjs.sort((a,b) => a.name.localeCompare(b.name))){
       if(emitted.has(cc.name)) continue;
-      out.push({ company: cc, kind: 'child', parentName });
+      out.push({ company:cc, kind:'child', parentName });
       emitted.add(cc.name);
     }
   }
   return out;
 }
 
-// For a rollup row, find the first member that has a row matching this pair
-// AND passes the active filters. Member precedence: parent first, then children
-// alphabetically (already sorted in buildRenderRows).
-function getRollupCellRow(rollupRow, pairLabel){
+// ── Cell lookups ────────────────────────────────
+function getCellRow(companyName, pair){
+  const rows = state.pairsByCompany[companyName] || [];
+  // match by tech + app (the dedup key), not pair_label
+  const matches = rows.filter(r => {
+    const tech = r.technology || r.technology_name || '?';
+    const app = r.application || r.application_name || '?';
+    return tech === pair.technology && app === pair.application;
+  });
+  if(!matches.length) return null;
+  const order = { principal:0, enabling:1, external_threat:2 };
+  matches.sort((a,b) => (order[a.link_type]||9) - (order[b.link_type]||9));
+  return matches[0];
+}
+function getRollupCellRow(rollupRow, pair){
   const contributors = [];
   for(const m of rollupRow.members){
-    const r = getCellRow(m.name, pairLabel);
-    if(r && passFilters(r)) contributors.push({ row: r, sourceCompany: m.name });
+    const r = getCellRow(m.name, pair);
+    if(r && passFilters(r)) contributors.push({ row:r, source:m.name });
   }
   if(!contributors.length) return null;
-  return { primary: contributors[0], all: contributors };
+  return { primary:contributors[0], all:contributors };
 }
 
-function rollupRowStatus(rollupRow){
-  let loading = 0, errors = 0, pairs = 0;
-  const seen = new Set();
-  for(const m of rollupRow.members){
-    if(state.loadingByCompany[m.name]) loading++;
-    if(state.errorsByCompany[m.name]) errors++;
-    for(const r of state.pairsByCompany[m.name] || []){ seen.add(r.pair_label); }
+// ── Filters ─────────────────────────────────────
+function passFilters(r){
+  const f = state.filters;
+  if(f.horizon && r.horizon !== f.horizon) return false;
+  if(f.cross && !r.is_cross_client_edge) return false;
+  return true;
+}
+function pairVisible(p){
+  const f = state.filters;
+  if(f.horizon && p.horizon !== f.horizon) return false;
+  if(p.domain === 'energy' && !f.energy) return false;
+  if(p.domain === 'mobility' && !f.mobility) return false;
+  if(f.search && !(p.key.toLowerCase().includes(f.search))) return false;
+  return true;
+}
+function rowMatchesSearch(rowObj){
+  const f = state.filters;
+  if(!f.search) return true;
+  const c = rowObj.company;
+  if(c.name.toLowerCase().includes(f.search)) return true;
+  if(rowObj.kind === 'rollup'){
+    return rowObj.members.some(m => m.name.toLowerCase().includes(f.search));
   }
-  pairs = seen.size;
-  return { loading, errors, pairs, members: rollupRow.members.length };
+  return false;
 }
 
-function pairMatchesQuery(p, q){
-  if(!q) return true;
-  const s = (p.pair_label + ' ' + (p.technology||'') + ' ' + (p.technology_name||'') + ' ' + (p.application||'')).toLowerCase();
-  return s.includes(q.toLowerCase());
-}
-
+// ── Render ──────────────────────────────────────
 function render(){
-  const allPairs = uniquePairs();
-  const qC = els.qCompany.value.trim().toLowerCase();
-  const qP = els.qPair.value.trim().toLowerCase();
-  const pairs = allPairs.filter(p => pairMatchesQuery(p, qP));
+  if(!state.companies.length){ return; }
+  const allPairs = buildPairs();
+  const pairs = allPairs.filter(pairVisible);
 
-  // Stats (count actual links from real companies; rollup cells are derived)
-  let totalLinks = 0, crossLinks = 0;
+  // Stats
+  let totalLinks = 0, h1Links = 0, h2Links = 0, h3Links = 0, crossLinks = 0;
   for(const c of state.companies){
     for(const r of state.pairsByCompany[c.name] || []){
-      if(passFilters(r) && pairMatchesQuery({pair_label:r.pair_label,technology:r.technology,application:r.application,technology_name:r.technology_name}, qP)){
-        totalLinks++;
-        if(r.is_cross_client_edge) crossLinks++;
-      }
+      const tech = r.technology || r.technology_name || '?';
+      const app = r.application || r.application_name || '?';
+      const key = `${tech} × ${app}`;
+      const p = pairs.find(x => x.key === key);
+      if(!p) continue;
+      if(!passFilters(r)) continue;
+      totalLinks++;
+      if(r.horizon === 'H1') h1Links++;
+      else if(r.horizon === 'H2') h2Links++;
+      else if(r.horizon === 'H3') h3Links++;
+      if(r.is_cross_client_edge) crossLinks++;
     }
   }
-  const rows = buildRenderRows();
-  const rollupCount = rows.filter(r => r.kind === 'rollup').length;
-  els.statSummary.innerHTML = `<strong>${state.companies.length}</strong> companies${rollupCount?` + <strong>${rollupCount}</strong> group rollup`:''} · <strong>${pairs.length}</strong> pairs · <strong>${totalLinks}</strong> links${crossLinks?` · <strong>${crossLinks}</strong> cross-client`:''}`;
+  const energyPairs = pairs.filter(p => p.domain === 'energy');
+  const mobilityPairs = pairs.filter(p => p.domain === 'mobility');
+  els.stats.innerHTML = ''
+    + `<span class="stat progress" id="loadProg">${els.loadProg.innerHTML}</span>`
+    + `<span class="stat"><span class="sw" style="background:var(--energy)"></span>Energy <strong>${energyPairs.length}</strong> pairs</span>`
+    + `<span class="stat"><span class="sw" style="background:var(--mobility)"></span>Mobility <strong>${mobilityPairs.length}</strong> pairs</span>`
+    + `<span class="stat"><strong>${state.companies.length}</strong> companies</span>`
+    + `<span class="stat"><strong>${totalLinks}</strong> coverage nodes</span>`
+    + `<span class="stat"><span class="sw" style="background:var(--h1-pri)"></span>H1 <strong>${h1Links}</strong></span>`
+    + `<span class="stat"><span class="sw" style="background:var(--h2-pri)"></span>H2 <strong>${h2Links}</strong></span>`
+    + `<span class="stat"><span class="sw" style="background:var(--h3-pri)"></span>H3 <strong>${h3Links}</strong></span>`
+    + `<span class="stat"><span class="sw" style="background:var(--red)"></span>Cross-client <strong>${crossLinks}</strong></span>`;
 
-  if(!state.companies.length){ return; }
-
-  // Table
-  let html = '<div class="matrix-wrap"><table class="heat"><thead><tr>';
-  html += '<th class="sticky-corner">Company</th>';
-  let lastTech = null;
-  for(const p of pairs){
-    const showTech = p.technology !== lastTech;
-    lastTech = p.technology;
-    html += `<th class="tech-header" title="${escapeAttr(p.pair_label)}">`
-         + `<div class="label">`
-         + (showTech?`<span class="tech-name">${escapeHtml(p.technology||p.technology_name||'')}</span>`:'')
-         + escapeHtml(p.application || p.pair_label)
-         + `</div></th>`;
+  if(!pairs.length){
+    els.content.innerHTML = '<div class="empty"><h3>No pairs match your filters</h3><p>Try widening horizon, sector, or cross-client filters.</p></div>';
+    return;
   }
-  html += '<th class="sticky-corner" style="left:auto;right:0;border-left:1px solid var(--border);min-width:80px">Status</th>';
+
+  // Domain header counts
+  const energyByH = countByHorizon(energyPairs);
+  const mobilityByH = countByHorizon(mobilityPairs);
+
+  // Build header rows
+  let html = '<div class="matrix-wrap"><table class="heat"><thead>';
+  // row 1: domain headers (corner spans 3 rows on left)
+  html += '<tr class="domain"><th class="corner" rowspan="3">Company</th>';
+  if(energyPairs.length) html += `<th class="dom-energy" colspan="${energyPairs.length}">Energy portfolio · ${energyPairs.length} pairs</th>`;
+  if(mobilityPairs.length) html += `<th class="dom-mobility" colspan="${mobilityPairs.length}">Mobility portfolio · ${mobilityPairs.length} pairs</th>`;
+  html += '</tr>';
+  // row 2: horizon sub-headers
+  html += '<tr class="horizon-row">';
+  for(const dom of [['energy', energyByH], ['mobility', mobilityByH]]){
+    if(!dom[1].total) continue;
+    for(const h of ['H1','H2','H3']){
+      if(dom[1][h]) html += `<th class="${h.toLowerCase()}" colspan="${dom[1][h]}">${h} · ${dom[1][h]}</th>`;
+    }
+  }
+  html += '</tr>';
+  // row 3: tech labels
+  html += '<tr class="tech">';
+  for(const p of pairs){
+    html += `<th title="${escapeAttr(p.key)}"><span class="label">${escapeHtml(p.technology)}<span class="app">${escapeHtml(p.application)}</span></span></th>`;
+  }
   html += '</tr></thead><tbody>';
 
+  // Body rows
+  const rows = buildRenderRows();
   for(const row of rows){
     const c = row.company;
-    // visibility: rollup rows match if either parent name OR any child name matches the search
-    let visible = true;
-    if(qC){
-      if(row.kind === 'rollup'){
-        visible = c.name.toLowerCase().includes(qC) || row.members.some(m => m.name.toLowerCase().includes(qC));
-      } else {
-        visible = c.name.toLowerCase().includes(qC);
-      }
-    }
-    if(!visible) continue;
-
+    if(!rowMatchesSearch(row)) continue;
     const trCls = row.kind === 'rollup' ? 'group-rollup'
-              : row.kind === 'parent'  ? 'group-parent'
-              : row.kind === 'child'   ? 'group-child' : '';
-    const stickyTitle = row.kind === 'rollup'
-      ? `${c.name} (group consolidated) — fills if any of: ${row.members.map(m => m.name).join(', ')} tracks the pair`
-      : `${c.name} · ${c.sector||'?'} · ${c.initiative_count||0} initiative(s)`;
-    const stickySub = row.kind === 'rollup' ? `<span class="sub">group consolidated · ${row.members.length} entities</span>`
-                    : row.kind === 'parent' ? `<span class="sub">parent · own pairs only</span>`
-                    : '';
-    html += `<tr class="${trCls}"><td class="sticky-row" title="${escapeAttr(stickyTitle)}">${escapeHtml(c.name)}${stickySub}</td>`;
-
+                : row.kind === 'parent'  ? 'group-parent'
+                : row.kind === 'child'   ? 'group-child'
+                : (c.sector === 'energy' ? 'domain-energy' : c.sector === 'mobility' ? 'domain-mobility' : '');
+    const sectorCls = c.sector || 'unknown';
+    const subText = row.kind === 'rollup' ? `consolidated · ${row.members.length} entities`
+                  : row.kind === 'parent' ? `parent · own data`
+                  : `${c.initiative_count||0} initiatives`;
+    html += `<tr class="${trCls}"><td class="row-head ${sectorCls}" title="${escapeAttr(c.name)}"><span class="name">${escapeHtml(c.name)}</span><span class="sub">${escapeHtml(subText)}</span></td>`;
     for(const p of pairs){
       if(row.kind === 'rollup'){
-        const rolled = getRollupCellRow(row, p.pair_label);
+        const rolled = getRollupCellRow(row, p);
         if(rolled){
-          const r = rolled.primary.row;
-          const cls = `cell confidence-${r.confidence||'unknown'}`;
-          const dot = `<span class="dot ${(r.horizon||'h1').toLowerCase()} ${r.is_cross_client_edge?'cross':''}"></span>`;
-          const contribCount = rolled.all.length;
-          const tt = `${p.pair_label} · from ${rolled.primary.sourceCompany}${contribCount>1?` (+${contribCount-1} other)`:''} · ${r.horizon} · ${r.confidence||'?'} · ${r.trajectory||'?'} · evid ${r.hard_evidence_count||0}${r.is_cross_client_edge?' · cross-client':''}`;
-          html += `<td class="${cls}" data-rollup="${escapeAttr(c.name)}" data-pair="${escapeAttr(p.pair_label)}" title="${escapeAttr(tt)}">${dot}</td>`;
+          html += renderCell(rolled.primary.row, p, c.name, true, rolled.primary.source, rolled.all.length);
         } else {
-          // any member loading?
           const anyLoading = row.members.some(m => state.loadingByCompany[m.name]);
-          if(anyLoading){
-            html += `<td class="cell"><span class="pending"></span></td>`;
-          } else {
-            html += `<td class="cell"></td>`;
-          }
+          html += `<td class="cell ${anyLoading?'pending':''}"></td>`;
         }
-        continue;
-      }
-      // normal / parent / child row — same cell logic as before
-      const r = getCellRow(c.name, p.pair_label);
-      if(state.loadingByCompany[c.name] && !r){
-        html += `<td class="cell"><span class="pending"></span></td>`;
-      } else if(state.errorsByCompany[c.name] && !r){
-        html += `<td class="cell" title="${escapeAttr(state.errorsByCompany[c.name])}"><span class="err"></span></td>`;
-      } else if(r && passFilters(r)){
-        const cls = `cell confidence-${r.confidence||'unknown'}`;
-        const dot = `<span class="dot ${(r.horizon||'h1').toLowerCase()} ${r.is_cross_client_edge?'cross':''}"></span>`;
-        const tt = `${p.pair_label} · ${r.horizon} · ${r.confidence||'?'} · ${r.trajectory||'?'} · evid ${r.hard_evidence_count||0}${r.is_cross_client_edge?' · cross-client':''}`;
-        html += `<td class="${cls}" data-company="${escapeAttr(c.name)}" data-pair="${escapeAttr(p.pair_label)}" title="${escapeAttr(tt)}">${dot}</td>`;
       } else {
-        html += `<td class="cell"></td>`;
+        const r = getCellRow(c.name, p);
+        if(state.loadingByCompany[c.name] && !r){
+          html += `<td class="cell pending"></td>`;
+        } else if(state.errorsByCompany[c.name] && !r){
+          html += `<td class="cell err" title="${escapeAttr(state.errorsByCompany[c.name])}"></td>`;
+        } else if(r && passFilters(r)){
+          html += renderCell(r, p, c.name, false);
+        } else {
+          html += `<td class="cell"></td>`;
+        }
       }
     }
-
-    // Status cell
-    let st;
-    if(row.kind === 'rollup'){
-      const s = rollupRowStatus(row);
-      const txt = s.loading ? `${s.loading}/${s.members}…` : (s.errors ? `${s.errors} err` : `${s.pairs} pairs`);
-      const col = s.errors ? 'var(--det)' : 'var(--ink)';
-      st = `<span class="row-status" style="color:${col}" title="rollup of ${s.members} entities · ${s.pairs} unique pairs${s.loading?` · ${s.loading} loading`:''}${s.errors?` · ${s.errors} errored`:''}">${txt}</span>`;
-    } else if(state.loadingByCompany[c.name]){ st = '<span class="row-status">…</span>'; }
-    else if(state.errorsByCompany[c.name]){ st = `<span class="row-status" style="color:var(--det)" title="${escapeAttr(state.errorsByCompany[c.name])}">err</span>`; }
-    else { st = `<span class="row-status">${(state.pairsByCompany[c.name]||[]).length}</span>`; }
-    html += `<td class="sticky-row" style="left:auto;right:0;text-align:center;border-right:none;border-left:1px solid var(--border);min-width:60px">${st}</td>`;
     html += '</tr>';
   }
   html += '</tbody></table></div>';
-
   els.content.innerHTML = html;
-  // attach cell handlers
-  els.content.querySelectorAll('td.cell[data-company]').forEach(td => {
-    td.addEventListener('click', () => openDetail(td.dataset.company, td.dataset.pair));
-  });
-  els.content.querySelectorAll('td.cell[data-rollup]').forEach(td => {
-    td.addEventListener('click', () => openRollupDetail(td.dataset.rollup, td.dataset.pair));
+
+  // Wire cell clicks
+  els.content.querySelectorAll('td.cell[data-co]').forEach(td => {
+    td.addEventListener('click', () => openDetail(td));
   });
 }
 
-function openDetail(company, pairLabel){
-  const r = getCellRow(company, pairLabel);
+function countByHorizon(pairs){
+  const c = { H1:0, H2:0, H3:0 };
+  for(const p of pairs) c[p.horizon] = (c[p.horizon]||0) + 1;
+  c.total = pairs.length;
+  return c;
+}
+
+function renderCell(r, pair, companyName, isRollup, sourceCo, contribCount){
+  const linkClass = LINK_MAP[r.link_type] || 'secondary';
+  const conf = r.confidence || 'medium';
+  const opacity = conf === 'high' ? 1 : conf === 'medium' ? 0.7 : 0.4;
+  const horizonKey = (r.horizon || 'H2').toLowerCase();
+  const colorVar = `var(--${horizonKey}-${linkClass === 'primary' ? 'pri' : 'sec'})`;
+  const crossCls = r.is_cross_client_edge ? ' cross' : '';
+  const tipPrefix = isRollup ? `from ${sourceCo}${contribCount>1?` (+${contribCount-1})`:''} · ` : '';
+  const tip = `${tipPrefix}${pair.key} · ${r.horizon} · ${conf} · ${r.trajectory||'?'} · ${r.link_type||'?'}${r.is_cross_client_edge?' · cross-client':''}`;
+  return `<td class="cell${crossCls}" data-co="${escapeAttr(companyName)}" data-pair-key="${escapeAttr(pair.key)}" title="${escapeAttr(tip)}"><span class="fill" style="background:${colorVar};opacity:${opacity}"></span></td>`;
+}
+
+// ── Detail bar ──────────────────────────────────
+function openDetail(td){
+  const company = td.dataset.co;
+  const pairKey = td.dataset.pairKey;
+  // Try to find matching pair
+  const allPairs = buildPairs();
+  const pair = allPairs.find(p => p.key === pairKey);
+  if(!pair){ return; }
+  // For rollup row, find primary contributor row; for normal row, just use that company
+  let r = getCellRow(company, pair);
+  let displayCompany = company;
+  if(!r){
+    // It's a rollup — find the primary contributor
+    const rows = buildRenderRows();
+    const rollup = rows.find(x => x.kind === 'rollup' && x.company.name === company);
+    if(rollup){
+      const rolled = getRollupCellRow(rollup, pair);
+      if(rolled){ r = rolled.primary.row; displayCompany = `${company} → ${rolled.primary.source}`; }
+    }
+  }
   if(!r) return;
-  els.dTitle.textContent = r.pair_label;
-  els.dSub.textContent = `${company} · ${r.technology || r.technology_name || ''} → ${r.application || r.application_name || ''}`;
-  els.dList.innerHTML = `
-    <dt>Horizon</dt><dd>${r.horizon||'?'}</dd>
-    <dt>Confidence</dt><dd>${r.confidence||'?'}</dd>
-    <dt>Trajectory</dt><dd>${r.trajectory||'?'}</dd>
-    <dt>Hard evidence</dt><dd>${r.hard_evidence_count ?? 0}</dd>
-    <dt>Cross-client</dt><dd>${r.is_cross_client_edge?'yes':'no'}</dd>
-    <dt>Link type</dt><dd>${r.link_type||'?'}</dd>
-    <dt>Domain</dt><dd>${r.application_domain||'?'}</dd>
-    <dt>Flagged</dt><dd>${r.is_flagged_for_review?'yes':'no'}</dd>
-  `;
-  els.dReason.textContent = r.link_reasoning || '(no reasoning text in API)';
-  els.detail.classList.add('open');
+  els.dCompany.textContent = displayCompany;
+  els.dPair.textContent = pair.key;
+  els.dHorizon.textContent = r.horizon || '?';
+  els.dHorizon.className = 'val ' + (r.horizon||'').toLowerCase();
+  els.dConf.textContent = r.confidence || '?';
+  els.dTraj.textContent = r.trajectory || '?';
+  els.dLink.textContent = r.link_type || '?';
+  els.dCross.textContent = r.is_cross_client_edge ? 'YES' : 'no';
+  els.dCross.className = 'val ' + (r.is_cross_client_edge?'cross':'');
+  els.dEv.textContent = r.hard_evidence_count ?? 0;
+  els.detailBar.classList.add('open');
 }
-function openRollupDetail(parentName, pairLabel){
-  const rows = buildRenderRows();
-  const rollup = rows.find(r => r.kind === 'rollup' && r.company.name === parentName);
-  if(!rollup) return;
-  const rolled = getRollupCellRow(rollup, pairLabel);
-  if(!rolled) return;
-  const r = rolled.primary.row;
-  els.dTitle.textContent = r.pair_label;
-  els.dSub.textContent = `${parentName} (group consolidated) · ${r.technology || r.technology_name || ''} → ${r.application || r.application_name || ''}`;
-  els.dList.innerHTML = `
-    <dt>Primary source</dt><dd>${escapeHtml(rolled.primary.sourceCompany)}</dd>
-    <dt>Contributing entities</dt><dd>${rolled.all.length} of ${rollup.members.length}</dd>
-    <dt>Horizon</dt><dd>${r.horizon||'?'}</dd>
-    <dt>Confidence</dt><dd>${r.confidence||'?'} <span style="color:var(--muted);font-size:11px">(primary)</span></dd>
-    <dt>Trajectory</dt><dd>${r.trajectory||'?'}</dd>
-    <dt>Hard evidence</dt><dd>${r.hard_evidence_count ?? 0}</dd>
-    <dt>Cross-client</dt><dd>${r.is_cross_client_edge?'yes':'no'}</dd>
-    <dt>Link type</dt><dd>${r.link_type||'?'}</dd>
-  `;
-  // Per-contributor detail block
-  const contribHtml = rolled.all.map(co => {
-    const cr = co.row;
-    return `<div style="padding:6px 0;border-top:1px solid var(--border);font-size:11px"><strong>${escapeHtml(co.sourceCompany)}</strong> · ${cr.horizon||'?'} · ${cr.confidence||'?'} · ${cr.trajectory||'?'} · evid ${cr.hard_evidence_count||0}${cr.is_cross_client_edge?' · cross':''}</div>`;
-  }).join('');
-  els.dReason.innerHTML = `<div style="margin-bottom:8px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--muted)">Per-entity coverage</div>${contribHtml}<div style="margin-top:14px;padding-top:8px;border-top:1px solid var(--border);font-size:11px;color:var(--muted)">Primary reasoning: ${escapeHtml(r.link_reasoning || '(no reasoning text)')}</div>`;
-  els.detail.classList.add('open');
-}
+$('dClose').addEventListener('click', () => els.detailBar.classList.remove('open'));
 
-els.detailClose.addEventListener('click', () => els.detail.classList.remove('open'));
-
-// ── Filters ──────────────────────────────────────
-['input','change'].forEach(ev => {
-  els.qCompany.addEventListener(ev, render);
-  els.qPair.addEventListener(ev, render);
-  els.fHorizon.addEventListener(ev, render);
-  els.fConf.addEventListener(ev, render);
-  els.fCross.addEventListener(ev, render);
-});
-
-// ── CSV ──────────────────────────────────────────
+// ── CSV ─────────────────────────────────────────
 els.exportCsv.addEventListener('click', () => {
-  const renderRows = buildRenderRows();
-  const allPairs = uniquePairs();
-  const out = [['company','is_group_rollup','source_entity','pair_label','technology','application','horizon','confidence','trajectory','hard_evidence_count','is_cross_client_edge','link_type']];
-  for(const row of renderRows){
+  const rows = buildRenderRows();
+  const allPairs = buildPairs().filter(pairVisible);
+  const out = [['company','is_group_rollup','source_entity','technology','application','domain','horizon','confidence','trajectory','link_type','hard_evidence_count','is_cross_client_edge']];
+  for(const row of rows){
     const c = row.company;
     if(row.kind === 'rollup'){
       for(const p of allPairs){
-        const rolled = getRollupCellRow(row, p.pair_label);
+        const rolled = getRollupCellRow(row, p);
         if(!rolled) continue;
         const r = rolled.primary.row;
-        out.push([
-          c.name, 1, rolled.primary.sourceCompany,
-          r.pair_label, r.technology||r.technology_name||'',
-          r.application||r.application_name||'', r.horizon||'', r.confidence||'',
-          r.trajectory||'', r.hard_evidence_count||0,
-          r.is_cross_client_edge?1:0, r.link_type||'',
-        ]);
+        out.push([c.name, 1, rolled.primary.source, p.technology, p.application, p.domain, r.horizon||'', r.confidence||'', r.trajectory||'', r.link_type||'', r.hard_evidence_count||0, r.is_cross_client_edge?1:0]);
       }
     } else {
       for(const r of state.pairsByCompany[c.name] || []){
         if(!passFilters(r)) continue;
-        out.push([
-          c.name, 0, c.name,
-          r.pair_label, r.technology||r.technology_name||'',
-          r.application||r.application_name||'', r.horizon||'', r.confidence||'',
-          r.trajectory||'', r.hard_evidence_count||0,
-          r.is_cross_client_edge?1:0, r.link_type||'',
-        ]);
+        const tech = r.technology || r.technology_name || '?';
+        const app = r.application || r.application_name || '?';
+        const key = `${tech} × ${app}`;
+        const p = allPairs.find(x => x.key === key);
+        if(!p) continue;
+        out.push([c.name, 0, c.name, tech, app, p.domain, r.horizon||'', r.confidence||'', r.trajectory||'', r.link_type||'', r.hard_evidence_count||0, r.is_cross_client_edge?1:0]);
       }
     }
   }
   const csv = out.map(r => r.map(v => {
-    const s = String(v ?? '');
-    return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+    const s = String(v ?? ''); return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
   }).join(',')).join('\n');
   const blob = new Blob([csv], {type:'text/csv'});
   const a = document.createElement('a');
@@ -730,16 +768,16 @@ els.exportCsv.addEventListener('click', () => {
   a.click();
 });
 
-// ── Helpers ──────────────────────────────────────
+// ── Helpers ─────────────────────────────────────
 function escapeHtml(s){
   return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 function escapeAttr(s){ return escapeHtml(s); }
 
-// ── Boot ─────────────────────────────────────────
+// ── Boot ────────────────────────────────────────
 state.token = loadToken();
-setTokenStatus();
-if(state.token){ loadAll(); }
+if(state.token){ showMain(); loadAll(); }
+else { showConfig(); }
 </script>
 </body>
 </html>

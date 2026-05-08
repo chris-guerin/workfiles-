@@ -6,227 +6,282 @@
 <title>Technology Tracker — FutureBridge</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
 :root{
-  --black:#000;--white:#fff;--grey:#4B4B55;--grey-light:#e6e6e8;--grey-50:#f6f6f7;
-  --bg:#fff;--ink:#000;--muted:#4B4B55;--border:#e6e6e8;--surface:#fafafa;
-  --h1:#1f7a3a;--h2:#a36100;--h3:#274ea0;
-  --imp:#1f7a3a;--stab:#4B4B55;--det:#a13b3b;--vol:#a36100;--unk:#a8a8b0;
+  --black:#000;--white:#fff;--grey:#4B4B55;--grey-light:#e6e6e8;--grey-50:#f6f6f7;--red:#F84E5D;
+  --h1-pri:#22AE8A;--h1-sec:#A8DDD4;
+  --h2-pri:#FDCF41;--h2-sec:#FDE89A;
+  --h3-pri:#9D7AD2;--h3-sec:#CDB9EB;
+  --energy:#22AE8A;--mobility:#9D7AD2;--cross:#F84E5D;
+  --hot:#F84E5D;--warm:#FDCF41;--cool:#9D7AD2;
+  --ink:#000;--muted:#4B4B55;--border:#e6e6e8;--surface:#fafafa;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',system-ui,sans-serif;font-size:13px;color:var(--ink);background:var(--bg);line-height:1.45}
-button{font-family:inherit;font-size:13px;cursor:pointer;border:1px solid var(--border);background:#fff;padding:7px 14px;font-weight:500}
+html,body{height:100%}
+body{font-family:'DM Sans',system-ui,sans-serif;font-size:13px;color:var(--ink);background:var(--white);line-height:1.45}
+.mono{font-family:'DM Mono',monospace}
+button{font-family:inherit;font-size:13px;cursor:pointer;border:1px solid var(--border);background:#fff;padding:7px 14px;font-weight:500;letter-spacing:.01em}
 button:hover{background:var(--grey-50)}
 button.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
 button.primary:hover{background:#222}
-input{font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border);width:100%;color:var(--ink);background:#fff}
+button.danger{border-color:var(--red);color:var(--red)}
+button.danger:hover{background:#fff5f6}
+input{font-family:inherit;font-size:13px;padding:8px 12px;border:1px solid var(--border);width:100%;color:var(--ink);background:#fff}
 input:focus{outline:none;border-color:var(--ink)}
-.layout{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+a{color:var(--ink)}
 
-aside{border-right:1px solid var(--border);background:var(--surface);padding:24px 20px;display:flex;flex-direction:column;gap:18px;position:sticky;top:0;height:100vh;overflow-y:auto}
-aside .brand{font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--ink)}
-aside h1{font-size:14px;font-weight:600;color:var(--ink);margin-top:4px}
-aside .desc{font-size:12px;color:var(--muted);line-height:1.55}
-aside section{display:flex;flex-direction:column;gap:8px}
-aside section .lbl{font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--muted)}
-aside .row{display:flex;gap:6px}
-aside .nav{display:flex;flex-direction:column;gap:6px;margin-top:auto;padding-top:12px;border-top:1px solid var(--border);font-size:12px}
-aside .nav a{display:block;padding:6px 8px;color:var(--muted);text-decoration:none;border:1px solid transparent}
-aside .nav a:hover{color:var(--ink);background:#fff;border-color:var(--border)}
-aside .nav a.active{color:var(--ink);font-weight:600;background:#fff;border-color:var(--border)}
-aside .status{font-size:11px;color:var(--muted);font-family:'DM Sans',monospace}
-aside .status .ok{color:var(--imp);font-weight:600}
-aside .status .err{color:var(--det);font-weight:600}
+/* Topbar — matches heat map */
+.topbar{background:var(--black);color:var(--white);height:54px;display:flex;align-items:center;padding:0 24px;gap:24px;position:sticky;top:0;z-index:50}
+.topbar .brand{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;font-weight:500}
+.topbar .nav{display:flex;gap:14px;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.topbar .nav a{color:rgba(255,255,255,.6);text-decoration:none;padding:4px 0;border-bottom:1px solid transparent}
+.topbar .nav a:hover{color:#fff}
+.topbar .nav a.active{color:#fff;border-bottom-color:var(--white)}
+.topbar .pagename{margin-left:auto;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.7)}
+.topbar .token-pill{display:flex;align-items:center;gap:8px;font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.85);padding:4px 10px;border:1px solid rgba(255,255,255,.2)}
+.topbar .token-pill button{background:transparent;color:rgba(255,255,255,.7);border:none;padding:0 0 0 4px;cursor:pointer;font-size:10px}
+.topbar .token-pill button:hover{color:#fff;background:transparent}
+.topbar .token-pill .dot{width:6px;height:6px;border-radius:50%;background:var(--h1-pri)}
 
-main{padding:28px 36px 80px;min-width:0}
-.h-row{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:18px}
-.h-row .left h2{font-size:24px;font-weight:700;letter-spacing:-.01em}
-.h-row .left .sub{font-size:13px;color:var(--muted);margin-top:4px;max-width:760px}
-.h-row .right{display:flex;gap:8px;flex-wrap:wrap}
+/* Config card */
+.config-overlay{padding:48px 24px;background:#fff;display:flex;justify-content:center;align-items:flex-start;min-height:calc(100vh - 54px)}
+.config-card{max-width:560px;width:100%;border:1px solid var(--ink);padding:32px 36px}
+.config-card h1{font-size:20px;font-weight:700;margin-bottom:8px}
+.config-card .lead{color:var(--muted);margin-bottom:24px;font-size:13px;line-height:1.6}
+.config-card label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:500;color:var(--muted);display:block;margin-bottom:6px}
+.config-card .row{display:flex;gap:8px;margin-top:14px}
+.config-card .help{font-size:11px;color:var(--muted);margin-top:14px;line-height:1.55}
+.config-card .help code{font-family:'DM Mono',monospace;background:var(--grey-50);padding:1px 5px}
+.config-card .err-msg{color:var(--red);font-size:12px;margin-top:10px;display:none}
 
-.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;padding:14px 16px;border:1px solid var(--border);margin-bottom:14px;background:#fff}
-.controls .field{display:flex;flex-direction:column;gap:4px;min-width:200px;flex:1}
-.controls .field .lbl{font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--muted)}
-.controls select{font-family:inherit;font-size:13px;padding:7px 10px;border:1px solid var(--border);background:#fff;cursor:pointer}
-.controls .stat{font-size:11px;color:var(--muted);padding:6px 10px;border:1px solid var(--border);background:#fff;font-family:'DM Sans',monospace}
-.controls .stat strong{color:var(--ink);font-weight:600}
+/* Filter bar */
+.filter-bar{position:sticky;top:54px;z-index:40;background:#fff;border-bottom:1px solid var(--border);padding:14px 24px;display:flex;flex-wrap:wrap;align-items:center;gap:14px}
+.filter-bar .group{display:flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.filter-bar .group .lbl{color:var(--muted);font-weight:500}
+.filter-bar .toggle{padding:5px 10px;border:1px solid var(--border);background:#fff;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;color:var(--muted)}
+.filter-bar .toggle.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.filter-bar .toggle:hover:not(.active){background:var(--grey-50);color:var(--ink)}
+.filter-bar .energy.active{background:var(--energy);border-color:var(--energy);color:#000}
+.filter-bar .mobility.active{background:var(--mobility);border-color:var(--mobility);color:#fff}
+.filter-bar .hot.active{background:var(--red);border-color:var(--red);color:#fff}
+.filter-bar input[type=search]{font-family:inherit;font-size:12px;padding:6px 10px;border:1px solid var(--border);width:240px;font-weight:500}
+.filter-bar .spacer{flex:1}
 
-.disclaimer{padding:10px 14px;border:1px dashed var(--border);background:var(--surface);font-size:11px;color:var(--muted);margin-bottom:14px;line-height:1.5}
-.disclaimer strong{color:var(--ink);font-weight:600}
+/* Stats strip */
+.stats-strip{padding:10px 24px;border-bottom:1px solid var(--border);font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);display:flex;gap:18px;flex-wrap:wrap;background:var(--grey-50)}
+.stats-strip .stat strong{color:var(--ink);font-weight:600}
 
-table.tracker{width:100%;border-collapse:collapse;border:1px solid var(--border);background:#fff;font-size:12px}
-table.tracker thead th{position:sticky;top:0;background:#fff;border-bottom:2px solid var(--ink);padding:10px 12px;text-align:left;font-weight:600;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);cursor:pointer;user-select:none;white-space:nowrap}
-table.tracker thead th .arrow{font-size:9px;color:var(--muted);margin-left:4px}
+/* Methodology note */
+.method-note{padding:8px 24px;background:#fff;border-bottom:1px solid var(--border);font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.04em}
+.method-note strong{color:var(--ink);font-weight:600}
+.method-note a{color:var(--ink);text-decoration:underline dotted}
+.method-note .legend{display:inline-block;margin-left:14px}
+.method-note .legend .api{color:var(--h1-pri);font-weight:600}
+.method-note .legend .est{color:var(--h2-pri);font-weight:600}
+
+/* Table */
+.tbl-wrap{padding:16px 24px 80px;background:#fff}
+table.tracker{width:100%;border-collapse:collapse;background:#fff;font-size:12px;border:1px solid var(--border)}
+table.tracker thead th{position:sticky;top:148px;background:#fff;z-index:10;border-bottom:2px solid var(--ink);padding:10px 10px;text-align:left;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;cursor:pointer;user-select:none;white-space:nowrap}
+table.tracker thead th .arrow{font-size:9px;color:var(--ink);margin-left:4px}
 table.tracker tbody tr{border-top:1px solid var(--grey-light);cursor:pointer}
-table.tracker tbody tr:hover{background:var(--surface)}
-table.tracker tbody tr.expanded{background:var(--surface)}
-table.tracker tbody td{padding:10px 12px;vertical-align:top}
-table.tracker tbody td.tech{font-weight:600;color:var(--ink);min-width:200px}
-table.tracker tbody td.tech .slug{display:block;font-size:10px;color:var(--muted);font-weight:400;font-family:'DM Sans',monospace;margin-top:2px}
-table.tracker tbody td .pill{display:inline-block;padding:2px 7px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;border:1px solid var(--border)}
-.pill.h1{background:rgba(31,122,58,.12);color:var(--h1);border-color:rgba(31,122,58,.4)}
-.pill.h2{background:rgba(163,97,0,.12);color:var(--h2);border-color:rgba(163,97,0,.4)}
-.pill.h3{background:rgba(39,78,160,.12);color:var(--h3);border-color:rgba(39,78,160,.4)}
-.pill.high{background:rgba(0,0,0,.85);color:#fff;border-color:#000}
-.pill.medium{background:rgba(75,75,85,.18);color:#000}
-.pill.low{background:#fff;color:var(--muted)}
-.pill.improving{background:rgba(31,122,58,.12);color:var(--imp);border-color:rgba(31,122,58,.4)}
-.pill.deteriorating{background:rgba(161,59,59,.12);color:var(--det);border-color:rgba(161,59,59,.4)}
-.pill.volatile{background:rgba(163,97,0,.12);color:var(--vol);border-color:rgba(163,97,0,.4)}
-.pill.stable{background:#fff;color:var(--muted)}
-.pill.unknown{background:#fff;color:var(--unk)}
-.pill.cross{background:#000;color:#fff;border-color:#000}
-.client-chip{display:inline-block;padding:2px 7px;margin:1px 3px 1px 0;font-size:10px;background:var(--surface);border:1px solid var(--border);font-weight:500}
+table.tracker tbody tr:hover{background:var(--grey-50)}
+table.tracker tbody tr.expanded{background:var(--grey-50)}
+table.tracker tbody td{padding:10px 10px;vertical-align:middle}
+table.tracker td.rank{font-family:'DM Mono',monospace;color:var(--muted);font-size:11px;width:36px}
+table.tracker td.tech{font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;min-width:200px;color:var(--ink)}
+table.tracker td.tech .slug{display:block;font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:500;margin-top:2px}
+table.tracker td.tech .badges{margin-top:4px;display:flex;gap:4px;flex-wrap:wrap}
+table.tracker td.tech .badges .b{font-family:'DM Mono',monospace;font-size:9px;font-weight:600;padding:1px 6px;border:1px solid var(--border);text-transform:uppercase;letter-spacing:.06em}
+table.tracker td.tech .badges .b.dom-energy{background:var(--energy);color:#000;border-color:var(--energy)}
+table.tracker td.tech .badges .b.dom-mobility{background:var(--mobility);color:#fff;border-color:var(--mobility)}
+table.tracker td.tech .badges .b.cross{background:var(--red);color:#fff;border-color:var(--red)}
 
-td.expand-row{padding:0!important;background:var(--surface);border-top:none}
-.expand-inner{padding:18px 20px;border-top:1px dashed var(--grey-light);display:grid;grid-template-columns:1fr 1fr;gap:24px;font-size:12px;line-height:1.55}
-.expand-inner h4{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;font-weight:600}
-.expand-inner .block{display:flex;flex-direction:column;gap:6px}
-.expand-inner .pair{display:flex;justify-content:space-between;gap:12px;padding:6px 8px;background:#fff;border:1px solid var(--border);font-size:11px}
-.expand-inner .pair .lbl{font-weight:500;color:var(--ink)}
-.expand-inner .pair .meta{color:var(--muted);font-family:'DM Sans',monospace;font-size:10px;white-space:nowrap}
-.expand-inner .wntbt{padding:10px 12px;background:#fff;border:1px dashed var(--ink);color:var(--muted);font-size:11px}
+/* Heat score column */
+table.tracker td.heat{width:160px;font-family:'DM Mono',monospace;font-size:12px}
+.heat-bar{position:relative;height:14px;background:var(--grey-light);width:120px;display:inline-block;vertical-align:middle;margin-right:8px}
+.heat-bar .fill{position:absolute;top:0;left:0;bottom:0;background:var(--cool)}
+.heat-bar .fill.warm{background:var(--warm)}
+.heat-bar .fill.hot{background:var(--hot)}
+.heat-num{display:inline-block;font-weight:600;color:var(--ink);font-size:13px;font-variant-numeric:tabular-nums}
 
+/* Horizon badge */
+.h-badge{display:inline-block;padding:3px 8px;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.06em;border:1px solid var(--border)}
+.h-badge.h1{background:var(--h1-pri);color:#000;border-color:var(--h1-pri)}
+.h-badge.h2{background:var(--h2-pri);color:#000;border-color:var(--h2-pri)}
+.h-badge.h3{background:var(--h3-pri);color:#fff;border-color:var(--h3-pri)}
+
+/* TRL bar */
+.trl-bar{position:relative;width:130px;height:18px;background:linear-gradient(to right,#fff,#fff 11%,var(--grey-light) 11%,var(--grey-light) 22%,#fff 22%,#fff 33%,var(--grey-light) 33%,var(--grey-light) 44%,#fff 44%,#fff 55%,var(--grey-light) 55%,var(--grey-light) 66%,#fff 66%,#fff 77%,var(--grey-light) 77%,var(--grey-light) 88%,#fff 88%);border:1px solid var(--border);font-family:'DM Mono',monospace;font-size:9px}
+.trl-bar .range{position:absolute;top:0;bottom:0;background:var(--ink);opacity:.7}
+.trl-bar .label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;text-shadow:0 0 2px #000;font-size:10px;letter-spacing:.04em;pointer-events:none}
+table.tracker td.trl{width:140px}
+table.tracker td.trl .src{display:block;font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-top:2px}
+
+table.tracker td.ttm{width:90px;font-family:'DM Mono',monospace;font-size:11px;color:var(--ink);font-weight:600}
+table.tracker td.ttm .src{display:block;font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);font-weight:400;margin-top:2px}
+
+table.tracker td.dis{width:110px;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)}
+table.tracker td.dis .placeholder{color:var(--muted)}
+
+table.tracker td.vel{width:140px;font-family:'DM Mono',monospace;font-size:11px;font-weight:600}
+.vel.up{color:var(--h1-pri)}
+.vel.stable{color:var(--muted)}
+.vel.down{color:var(--red)}
+
+table.tracker td.cli{width:80px;text-align:center;font-family:'DM Mono',monospace;font-size:13px;font-weight:600;color:var(--ink)}
+table.tracker td.cli .total{display:block;font-size:9px;color:var(--muted);font-weight:500;margin-top:2px}
+
+/* Expanded row */
+table.tracker tr.expand-row{background:var(--grey-50)}
+table.tracker tr.expand-row td{padding:0;border-top:none;border-bottom:1px solid var(--border)}
+.expand-content{padding:18px 22px;display:grid;grid-template-columns:2fr 1fr;gap:24px}
+.expand-content h4{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;font-weight:600}
+.expand-content .placeholder-block{padding:14px 16px;border:1px dashed var(--border);background:#fff;font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:14px}
+.expand-content .placeholder-block strong{color:var(--ink);font-weight:600}
+.expand-content .pair{display:flex;justify-content:space-between;gap:12px;padding:6px 8px;background:#fff;border:1px solid var(--border);font-size:11px;font-family:'DM Mono',monospace;margin-bottom:4px}
+.expand-content .pair .lbl{color:var(--ink)}
+.expand-content .pair .meta{color:var(--muted);font-size:10px;white-space:nowrap}
+.expand-content .clients{display:flex;flex-wrap:wrap;gap:4px}
+.expand-content .clients .chip{font-family:'DM Mono',monospace;font-size:10px;padding:2px 8px;background:#fff;border:1px solid var(--border);color:var(--ink);font-weight:500}
+.expand-content .data-fact{padding:6px 0;font-family:'DM Mono',monospace;font-size:11px;color:var(--ink);border-bottom:1px solid var(--border)}
+.expand-content .data-fact .lbl{color:var(--muted);margin-right:8px}
+
+/* Source indicator chips */
+.src-api{color:var(--h1-pri);font-weight:600}
+.src-est{color:var(--h2-pri);font-weight:600}
+.src-na{color:var(--muted);font-weight:500}
+
+/* Empty state */
 .empty{padding:60px 20px;text-align:center;color:var(--muted)}
 .empty h3{font-size:18px;color:var(--ink);font-weight:600;margin-bottom:8px}
 </style>
 </head>
 <body>
 
-<div class="layout">
+<div class="topbar">
+  <div class="brand">FUTUREBRIDGE</div>
+  <div class="nav">
+    <a href="index.html">Home</a>
+    <a href="tech_heat_map.html">Heat Map</a>
+    <a href="tech_tracker.html" class="active">Technology Tracker</a>
+    <a href="account_plans_v8.html">Account Plans v8</a>
+  </div>
+  <div class="pagename">Technology Tracker</div>
+  <div id="tokenPill" class="token-pill" style="display:none">
+    <span class="dot"></span>
+    <span id="tokenMasked"></span>
+    <button id="tokenEdit" title="Change token">[edit]</button>
+  </div>
+</div>
 
-  <aside>
-    <div class="brand">FutureBridge</div>
-    <h1>Technology Tracker</h1>
-    <div class="desc">Live per-technology view. Aggregates ontology pairs across all clients into one row per technology, with TRL/TTT estimates derived from horizon.</div>
-
-    <section>
-      <div class="lbl">Signal Engine API token</div>
-      <input id="tokenInput" type="password" placeholder="Bearer token" autocomplete="off" />
-      <div class="row">
-        <button class="primary" id="saveToken" style="flex:1">Save &amp; load</button>
-        <button id="clearToken">Clear</button>
-      </div>
-      <div class="status" id="tokenStatus">No token saved.</div>
-    </section>
-
-    <section>
-      <div class="lbl">Status</div>
-      <div class="status" id="loadStatus">Idle</div>
-    </section>
-
-    <div class="nav">
-      <a href="index.html">← All tools</a>
-      <a href="tech_heat_map.html">Heat Map</a>
-      <a href="tech_tracker.html" class="active">Technology Tracker</a>
-      <a href="account_plans_v8.html">Account Plans v8</a>
+<div id="configOverlay" class="config-overlay" style="display:none">
+  <div class="config-card">
+    <h1>Connect to the Signal Engine</h1>
+    <div class="lead">Paste your bearer token below to load live ontology data. Stored in <code class="mono">localStorage</code> on this device only.</div>
+    <label for="tokenInput">API token</label>
+    <input id="tokenInput" type="password" placeholder="Bearer token" autocomplete="off" />
+    <div class="row">
+      <button class="primary" id="saveToken" style="flex:1">Save &amp; load</button>
+      <button class="danger" id="clearToken">Clear</button>
     </div>
-  </aside>
-
-  <main>
-    <div class="h-row">
-      <div class="left">
-        <h2>Technology Tracker</h2>
-        <div class="sub">One row per technology. Aggregates client coverage, horizon, confidence, trajectory and evidence count from live ontology pairs. TRL and TTT are derived from horizon and labelled as estimates — validate with the analyst before quoting externally.</div>
-      </div>
-      <div class="right">
-        <button id="refresh">Refresh data</button>
-        <button id="exportCsv">Export CSV</button>
-      </div>
+    <div class="err-msg" id="errMsg">Check token — last request failed.</div>
+    <div class="help">
+      Endpoint: <code>https://signal-engine-api-production-0cf1.up.railway.app</code><br>
+      Reads: <code>/v8/companies</code> and <code>/v8/ontology-pairs</code> for each company in parallel.
     </div>
+  </div>
+</div>
 
-    <div class="controls" id="controls" style="display:none">
-      <div class="field">
-        <span class="lbl">Search technology / application</span>
-        <input id="qSearch" type="search" placeholder="e.g. SiC, hydrogen, radar, autonomous…" />
-      </div>
-      <div class="field" style="max-width:200px">
-        <span class="lbl">Client</span>
-        <select id="fClient"><option value="">all clients</option></select>
-      </div>
-      <div class="field" style="max-width:160px">
-        <span class="lbl">Horizon</span>
-        <select id="fHorizon">
-          <option value="">all</option>
-          <option value="H1">H1 only</option>
-          <option value="H2">H2 only</option>
-          <option value="H3">H3 only</option>
-        </select>
-      </div>
-      <div class="field" style="max-width:170px">
-        <span class="lbl">Confidence</span>
-        <select id="fConf">
-          <option value="">all</option>
-          <option value="high">High</option>
-          <option value="medium">Medium</option>
-          <option value="low">Low</option>
-        </select>
-      </div>
-      <div class="field" style="max-width:170px">
-        <span class="lbl">Cross-client</span>
-        <select id="fCross">
-          <option value="">all</option>
-          <option value="1">cross-client only</option>
-        </select>
-      </div>
-      <div class="stat" id="statSummary">…</div>
+<div id="mainUi" style="display:none">
+  <div class="filter-bar">
+    <div class="group">
+      <span class="lbl">Domain</span>
+      <button class="toggle active" data-dom="">All</button>
+      <button class="toggle energy" data-dom="energy">Energy</button>
+      <button class="toggle mobility" data-dom="mobility">Mobility</button>
     </div>
+    <div class="group">
+      <button class="toggle hot" id="fHot">Hot only (≥7)</button>
+    </div>
+    <div class="group">
+      <input id="qSearch" type="search" placeholder="search technology / application…" />
+    </div>
+    <div class="spacer"></div>
+    <button id="exportCsv">Export CSV</button>
+    <button id="refresh">Refresh</button>
+  </div>
 
-    <div class="disclaimer" id="disclaimer" style="display:none">
-      <strong>Estimated fields.</strong> TRL and time-to-truth (TTT) are derived from horizon
-      (H1 → TRL 7–9, 0–2yr · H2 → TRL 5–7, 3–6yr · H3 → TRL 2–5, 7–12yr). Validate with the analyst before quoting.
-      WNTBT thresholds are not yet exposed via the API — placeholder shown in expanded view.
-    </div>
+  <div class="stats-strip" id="stats">
+    <span class="stat" id="loadProg">Idle</span>
+  </div>
 
-    <div id="content">
-      <div class="empty" id="emptyState">
-        <h3>Enter your Signal Engine token</h3>
-        <p>Paste the token in the sidebar and press <strong>Save &amp; load</strong>. The tracker pulls live ontology pairs across every client.</p>
-      </div>
-    </div>
-  </main>
+  <div class="method-note">
+    <strong>FutureBridge signal engine score</strong> ·
+    horizonBase × confMult × trajMult + clientBonus + crossBonus + evidenceBonus, capped at 10.
+    <span class="legend">
+      <span class="api">✓</span> API-sourced ·
+      <span class="est">~</span> derived estimate ·
+      placeholder = analyst input required
+    </span>
+  </div>
+
+  <div class="tbl-wrap" id="content"><div class="empty"><h3>Loading…</h3></div></div>
 </div>
 
 <script>
+// ── Config ─────────────────────────────────────────
 const API = 'https://signal-engine-api-production-0cf1.up.railway.app';
 const STORAGE_KEY = 'se_token';
 
-const els = {
-  tokenInput: document.getElementById('tokenInput'),
-  tokenStatus: document.getElementById('tokenStatus'),
-  saveToken: document.getElementById('saveToken'),
-  clearToken: document.getElementById('clearToken'),
-  loadStatus: document.getElementById('loadStatus'),
-  refresh: document.getElementById('refresh'),
-  exportCsv: document.getElementById('exportCsv'),
-  controls: document.getElementById('controls'),
-  disclaimer: document.getElementById('disclaimer'),
-  qSearch: document.getElementById('qSearch'),
-  fClient: document.getElementById('fClient'),
-  fHorizon: document.getElementById('fHorizon'),
-  fConf: document.getElementById('fConf'),
-  fCross: document.getElementById('fCross'),
-  statSummary: document.getElementById('statSummary'),
-  content: document.getElementById('content'),
-  emptyState: document.getElementById('emptyState'),
-};
+const ENERGY_KEYWORDS = ['hydrogen','carbon','wind','storage','electrolysis','capture','gas','nuclear','offshore','bioenergy','geothermal','fusion','methane','oil','lng','ccus','blue h2','green h2','solar','grid','power','renewable','energy','petrochem','refinery','upstream','downstream','exploration','production'];
+const MOBILITY_KEYWORDS = ['vehicle','ev','bev','adas','sic','automotive','sdv','ota','v2g','battery electric','tire','tyre','tier-1','autonomous','radar','lidar','infotainment','powertrain','drivetrain','zonal','semis','semiconductor','mcu','chip','foundry','soc','imaging','sensor','mobility'];
 
+const TRAJ_MAP = { improving:'up', deteriorating:'down', stable:'stable', volatile:'stable', unknown:'stable' };
+const HORIZON_TRL = { H1:[7,9], H2:[5,7], H3:[2,5] };
+const HORIZON_TTM = { H1:'Now', H2:'2–5yr', H3:'6–12yr' };
+
+// Heat score formula constants per spec
+const HORIZON_BASE = { H1:3.0, H2:2.0, H3:1.0 };
+const CONF_MULT   = { high:1.5, medium:1.0, low:0.6 };
+const TRAJ_MULT   = { up:1.4, stable:1.0, down:0.5 };
+
+// ── State ─────────────────────────────────────────
 const state = {
   token: null,
   companies: [],
   pairsByCompany: {},
   errorsByCompany: {},
   loadingByCompany: {},
-  sortKey: 'tech',
-  sortDir: 'asc',
+  loadedCount: 0, totalCount: 0,
+  filters: { domain:'', hot:false, search:'' },
+  sortKey: 'score', sortDir: 'desc',
   expanded: new Set(),
 };
 
-const HORIZON_TO_TRL = { H1:'7–9', H2:'5–7', H3:'2–5' };
-const HORIZON_TO_TTT = { H1:'0–2 yr', H2:'3–6 yr', H3:'7–12 yr' };
+// ── Element refs ──────────────────────────────────
+const $ = id => document.getElementById(id);
+const els = {
+  configOverlay: $('configOverlay'),
+  mainUi: $('mainUi'),
+  tokenInput: $('tokenInput'),
+  saveToken: $('saveToken'),
+  clearToken: $('clearToken'),
+  tokenPill: $('tokenPill'),
+  tokenMasked: $('tokenMasked'),
+  tokenEdit: $('tokenEdit'),
+  errMsg: $('errMsg'),
+  loadProg: $('loadProg'),
+  stats: $('stats'),
+  content: $('content'),
+  qSearch: $('qSearch'),
+  fHot: $('fHot'),
+  exportCsv: $('exportCsv'),
+  refresh: $('refresh'),
+};
 
-// ── Token ─────────────────────────────────
+// ── Token handling ────────────────────────────────
 function readUrlToken(){
   const u = new URL(location.href);
   const t = u.searchParams.get('token');
@@ -239,13 +294,19 @@ function readUrlToken(){
   return null;
 }
 function loadToken(){ return readUrlToken() || localStorage.getItem(STORAGE_KEY) || ''; }
-function setTokenStatus(){
-  if(state.token){
-    const masked = state.token.length > 8 ? state.token.slice(0,4)+'…'+state.token.slice(-4) : '••••';
-    els.tokenStatus.innerHTML = `<span class="ok">●</span> Token saved (${masked})`;
-  } else {
-    els.tokenStatus.innerHTML = `<span class="err">●</span> No token saved.`;
-  }
+function showConfig(err){
+  els.mainUi.style.display = 'none';
+  els.configOverlay.style.display = 'flex';
+  els.tokenPill.style.display = 'none';
+  if(err){ els.errMsg.textContent = err; els.errMsg.style.display = 'block'; }
+  else { els.errMsg.style.display = 'none'; }
+}
+function showMain(){
+  els.configOverlay.style.display = 'none';
+  els.mainUi.style.display = 'block';
+  els.tokenPill.style.display = 'flex';
+  const masked = state.token.length > 8 ? state.token.slice(0,8) + '…' : state.token;
+  els.tokenMasked.textContent = masked;
 }
 els.saveToken.addEventListener('click', () => {
   const t = els.tokenInput.value.trim();
@@ -253,50 +314,41 @@ els.saveToken.addEventListener('click', () => {
   localStorage.setItem(STORAGE_KEY, t);
   state.token = t;
   els.tokenInput.value = '';
-  setTokenStatus();
+  showMain();
   loadAll();
 });
 els.clearToken.addEventListener('click', () => {
   localStorage.removeItem(STORAGE_KEY);
   state.token = null;
-  setTokenStatus();
-  els.content.innerHTML = '';
-  els.content.appendChild(els.emptyState);
+  state.companies = []; state.pairsByCompany = {};
+  showConfig();
 });
+els.tokenEdit.addEventListener('click', () => showConfig());
 
-// ── API ───────────────────────────────────
+// ── API ───────────────────────────────────────────
 async function api(path){
-  const r = await fetch(API + path, {
-    headers: { 'Authorization': 'Bearer ' + state.token },
-  });
-  if(!r.ok) throw new Error(`HTTP ${r.status}`);
+  const r = await fetch(API + path, { headers:{ 'Authorization': 'Bearer ' + state.token } });
+  if(!r.ok) throw new Error('HTTP ' + r.status);
   return r.json();
 }
 
-// ── Load ──────────────────────────────────
+// ── Load ──────────────────────────────────────────
 async function loadAll(){
-  if(!state.token){ return; }
-  els.loadStatus.textContent = 'Fetching companies…';
-  state.pairsByCompany = {};
-  state.errorsByCompany = {};
-  state.loadingByCompany = {};
-
+  state.pairsByCompany = {}; state.errorsByCompany = {}; state.loadingByCompany = {};
+  state.loadedCount = 0;
+  els.loadProg.textContent = 'Loading companies…';
+  els.content.innerHTML = '<div class="empty"><h3>Connecting…</h3></div>';
   let companies;
   try { companies = await api('/v8/companies'); }
   catch(e){
-    els.loadStatus.innerHTML = `<span class="err">●</span> Companies failed: ${e.message}`;
+    if(/401|403/.test(e.message)){ showConfig('Check token — auth failed.'); return; }
+    els.loadProg.innerHTML = '<span style="color:var(--red)">●</span> Companies failed: ' + e.message;
     return;
   }
   state.companies = companies;
-  // Populate client filter
-  els.fClient.innerHTML = '<option value="">all clients</option>' +
-    companies.map(c => `<option value="${escapeAttr(c.name)}">${escapeHtml(c.name)}</option>`).join('');
+  state.totalCount = companies.length;
+  els.loadProg.textContent = `Loading 0 of ${companies.length} companies…`;
 
-  els.controls.style.display = 'flex';
-  els.disclaimer.style.display = 'block';
-  els.loadStatus.textContent = `Loaded ${companies.length} companies. Fetching ontology pairs…`;
-
-  const t0 = performance.now();
   await Promise.all(companies.map(async c => {
     state.loadingByCompany[c.name] = true;
     try {
@@ -305,140 +357,188 @@ async function loadAll(){
       state.errorsByCompany[c.name] = e.message;
     } finally {
       state.loadingByCompany[c.name] = false;
+      state.loadedCount++;
+      els.loadProg.textContent = `Loaded ${state.loadedCount} of ${state.totalCount}…`;
       render();
     }
   }));
-  const dt = ((performance.now()-t0)/1000).toFixed(1);
   const errCount = Object.keys(state.errorsByCompany).length;
-  els.loadStatus.innerHTML = errCount
-    ? `<span class="err">●</span> Loaded with ${errCount} error(s) in ${dt}s`
-    : `<span class="ok">●</span> Loaded all in ${dt}s`;
-  render();
+  els.loadProg.innerHTML = errCount
+    ? `<span style="color:var(--red)">●</span> Loaded all (${errCount} errored)`
+    : `<span style="color:var(--h1-pri)">●</span> Loaded all ${state.totalCount} companies`;
 }
 
 els.refresh.addEventListener('click', loadAll);
 
-// ── Aggregate ────────────────────────────
-function buildTechnologies(){
-  // tech_name -> {tech_name, technology, pairs:[{...,company}], clients:Set}
+// ── Filters ───────────────────────────────────────
+document.querySelectorAll('.filter-bar [data-dom]').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.filter-bar [data-dom]').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    state.filters.domain = b.dataset.dom;
+    render();
+  });
+});
+els.fHot.addEventListener('click', () => {
+  els.fHot.classList.toggle('active');
+  state.filters.hot = els.fHot.classList.contains('active');
+  render();
+});
+els.qSearch.addEventListener('input', () => {
+  state.filters.search = els.qSearch.value.trim().toLowerCase();
+  render();
+});
+
+// ── Domain detection ──────────────────────────────
+function detectDomain(pair){
+  const hay = ((pair.application_domain||'') + ' ' + (pair.application||'') + ' ' + (pair.technology||'')).toLowerCase();
+  for(const k of MOBILITY_KEYWORDS) if(hay.includes(k)) return 'mobility';
+  for(const k of ENERGY_KEYWORDS) if(hay.includes(k)) return 'energy';
+  return 'energy';
+}
+
+// ── Aggregate per-technology ──────────────────────
+function buildTechs(){
+  // tech name → entry
   const map = new Map();
   for(const company in state.pairsByCompany){
     for(const r of state.pairsByCompany[company] || []){
-      const key = r.technology_name || r.technology;
-      if(!key) continue;
-      let entry = map.get(key);
-      if(!entry){
-        entry = {
-          technology_name: r.technology_name,
-          technology: r.technology || r.technology_name,
-          pairs: [],
+      const techName = r.technology || r.technology_name || '?';
+      let e = map.get(techName);
+      if(!e){
+        e = {
+          name: techName, slug: r.technology_name || techName,
+          domain: detectDomain(r),
+          horizons: { H1:0, H2:0, H3:0 },
+          confidence: { high:0, medium:0, low:0 },
+          trajectory: { up:0, stable:0, down:0 },
+          evidence: 0,
+          cross: false,
           clients: new Set(),
-          horizons: {H1:0,H2:0,H3:0},
-          confidence: {high:0, medium:0, low:0, unknown:0},
-          trajectory: {},
-          evidenceTotal: 0,
-          maxEvidence: 0,
-          crossClient: false,
+          pairs: [],
+          applications: new Set(),
         };
-        map.set(key, entry);
+        map.set(techName, e);
       }
-      entry.pairs.push({ ...r, company });
-      entry.clients.add(company);
-      if(entry.horizons[r.horizon] !== undefined) entry.horizons[r.horizon]++;
-      const conf = r.confidence || 'unknown';
-      entry.confidence[conf] = (entry.confidence[conf]||0) + 1;
-      const traj = r.trajectory || 'unknown';
-      entry.trajectory[traj] = (entry.trajectory[traj]||0) + 1;
-      const ev = r.hard_evidence_count || 0;
-      entry.evidenceTotal += ev;
-      if(ev > entry.maxEvidence) entry.maxEvidence = ev;
-      if(r.is_cross_client_edge) entry.crossClient = true;
+      e.clients.add(company);
+      if(r.horizon && e.horizons[r.horizon] !== undefined) e.horizons[r.horizon]++;
+      const conf = r.confidence || 'medium';
+      if(e.confidence[conf] !== undefined) e.confidence[conf]++;
+      const traj = TRAJ_MAP[r.trajectory] || 'stable';
+      e.trajectory[traj]++;
+      e.evidence += (r.hard_evidence_count || 0);
+      if(r.is_cross_client_edge) e.cross = true;
+      const app = r.application || r.application_name || '?';
+      e.applications.add(app);
+      e.pairs.push({ company, application:app, horizon:r.horizon, confidence:r.confidence, trajectory:r.trajectory, hard_evidence_count:r.hard_evidence_count, is_cross_client_edge:r.is_cross_client_edge, link_type:r.link_type });
     }
   }
-  // Compute aggregates: dominant horizon, confidence, trajectory
+  // Compute summary fields per tech
   for(const e of map.values()){
-    e.dominantHorizon = pickMax(e.horizons);
-    e.dominantConfidence = pickMax(e.confidence);
-    e.dominantTrajectory = pickMax(e.trajectory);
-    e.applications = [...new Set(e.pairs.map(p => p.application || p.application_name).filter(Boolean))].sort();
+    // dominant horizon = most-near-term horizon present (H1 > H2 > H3)
+    e.horizon = e.horizons.H1 ? 'H1' : e.horizons.H2 ? 'H2' : 'H3';
+    // dominant confidence = most-frequent
+    e.dominantConf = pickMax(e.confidence);
+    // dominant trajectory = up wins ties over stable wins ties over down
+    const trajRank = { up:1, stable:2, down:3 };
+    let topT = 'stable', topCount = -1;
+    for(const k of ['up','stable','down']){
+      const v = e.trajectory[k] || 0;
+      if(v > topCount || (v === topCount && trajRank[k] < trajRank[topT])){
+        topCount = v; topT = k;
+      }
+    }
+    e.dominantTraj = topT;
+    e.score = computeScore(e);
   }
   return [...map.values()];
 }
 function pickMax(obj){
   let max = -1, key = null;
-  for(const k in obj){
-    if(obj[k] > max){ max = obj[k]; key = k; }
-  }
+  for(const k in obj){ if(obj[k] > max){ max = obj[k]; key = k; } }
   return key;
 }
-
-// ── Filters ──────────────────────────────
-function passFilters(tech){
-  const q = els.qSearch.value.trim().toLowerCase();
-  const fC = els.fClient.value;
-  const fH = els.fHorizon.value;
-  const fConf = els.fConf.value;
-  const fCross = els.fCross.value;
-  if(q){
-    const hay = (tech.technology + ' ' + tech.technology_name + ' ' + tech.applications.join(' ')).toLowerCase();
-    if(!hay.includes(q)) return false;
-  }
-  if(fC && !tech.clients.has(fC)) return false;
-  if(fH){
-    // Pass if any pair under this tech has the horizon (per-pair filter approach)
-    if(!tech.pairs.some(p => p.horizon === fH)) return false;
-  }
-  if(fConf){
-    if(!tech.pairs.some(p => p.confidence === fConf)) return false;
-  }
-  if(fCross === '1' && !tech.crossClient) return false;
-  return true;
+function computeScore(t){
+  const hb = HORIZON_BASE[t.horizon] || 1.0;
+  const cm = CONF_MULT[t.dominantConf] || 1.0;
+  const tm = TRAJ_MULT[t.dominantTraj] || 1.0;
+  const clientBonus = t.clients.size * 0.18;
+  const crossBonus = t.cross ? 0.4 : 0;
+  const evidenceBonus = Math.min(t.evidence / 20, 0.4);
+  const raw = (hb * cm * tm) + clientBonus + crossBonus + evidenceBonus;
+  return Math.min(10, raw / 1.2);
 }
 
-// ── Sort ─────────────────────────────────
+// ── Filter / sort ─────────────────────────────────
+function passFilter(t){
+  const f = state.filters;
+  if(f.domain && t.domain !== f.domain) return false;
+  if(f.hot && t.score < 7) return false;
+  if(f.search){
+    const hay = (t.name + ' ' + [...t.applications].join(' ')).toLowerCase();
+    if(!hay.includes(f.search)) return false;
+  }
+  return true;
+}
 const SORT_FNS = {
-  tech: t => (t.technology||'').toLowerCase(),
-  horizon: t => ({H1:1,H2:2,H3:3}[t.dominantHorizon] || 9),
-  trl: t => ({H1:1,H2:2,H3:3}[t.dominantHorizon] || 9),
-  ttt: t => ({H1:1,H2:2,H3:3}[t.dominantHorizon] || 9),
-  confidence: t => ({high:1,medium:2,low:3,unknown:4}[t.dominantConfidence] || 5),
-  trajectory: t => t.dominantTrajectory || 'zz',
+  rank: t => 0,
+  tech: t => t.name.toLowerCase(),
+  score: t => -t.score,
+  horizon: t => ({H1:0,H2:1,H3:2}[t.horizon] ?? 9),
+  trl: t => -(HORIZON_TRL[t.horizon] ? HORIZON_TRL[t.horizon][1] : 0),
+  ttm: t => ({H1:0,H2:1,H3:2}[t.horizon] ?? 9),
+  dis: t => 0,
+  vel: t => ({up:0,stable:1,down:2}[t.dominantTraj] ?? 9),
   clients: t => -t.clients.size,
-  evidence: t => -t.evidenceTotal,
 };
 function sortTechs(arr){
-  const fn = SORT_FNS[state.sortKey] || SORT_FNS.tech;
+  const fn = SORT_FNS[state.sortKey] || SORT_FNS.score;
   const dir = state.sortDir === 'asc' ? 1 : -1;
   return [...arr].sort((a,b) => {
     const va = fn(a), vb = fn(b);
     if(va < vb) return -1*dir;
-    if(va > vb) return 1*dir;
+    if(va > vb) return  1*dir;
     return 0;
   });
 }
 
-// ── Render ───────────────────────────────
+// ── Render ────────────────────────────────────────
 function render(){
   if(!state.companies.length){ return; }
-  const allTechs = buildTechnologies();
-  const filtered = allTechs.filter(passFilters);
+  const all = buildTechs();
+  const filtered = all.filter(passFilter);
   const sorted = sortTechs(filtered);
-
+  const totalScored = filtered.length;
+  const hotCount = filtered.filter(t => t.score >= 7).length;
+  const energyCount = filtered.filter(t => t.domain === 'energy').length;
+  const mobilityCount = filtered.filter(t => t.domain === 'mobility').length;
+  const crossCount = filtered.filter(t => t.cross).length;
   const totalPairs = filtered.reduce((s,t) => s + t.pairs.length, 0);
-  const crossCount = filtered.filter(t => t.crossClient).length;
-  els.statSummary.innerHTML = `<strong>${sorted.length}</strong> technologies · <strong>${totalPairs}</strong> pairs · <strong>${crossCount}</strong> cross-client`;
+  els.stats.innerHTML = ''
+    + `<span class="stat" id="loadProg">${els.loadProg.innerHTML}</span>`
+    + `<span class="stat"><strong>${totalScored}</strong> technologies</span>`
+    + `<span class="stat"><strong>${energyCount}</strong> energy</span>`
+    + `<span class="stat"><strong>${mobilityCount}</strong> mobility</span>`
+    + `<span class="stat"><strong>${hotCount}</strong> hot (≥7)</span>`
+    + `<span class="stat"><strong>${crossCount}</strong> cross-client</span>`
+    + `<span class="stat"><strong>${totalPairs}</strong> total pairs</span>`;
+
+  if(!sorted.length){
+    els.content.innerHTML = '<div class="empty"><h3>No technologies match your filters</h3></div>';
+    return;
+  }
 
   const cols = [
-    {key:'tech',label:'Technology'},
-    {key:'horizon',label:'Horizon'},
-    {key:'trl',label:'TRL (est)'},
-    {key:'ttt',label:'TTT (est)'},
-    {key:'confidence',label:'Confidence'},
-    {key:'trajectory',label:'Trajectory'},
-    {key:'clients',label:'Clients'},
-    {key:'evidence',label:'Evidence'},
+    {key:'rank', label:'#'},
+    {key:'tech', label:'Technology'},
+    {key:'score', label:'Heat score'},
+    {key:'horizon', label:'Horizon'},
+    {key:'trl', label:'TRL range'},
+    {key:'ttm', label:'TTM'},
+    {key:'dis', label:'Disruption'},
+    {key:'vel', label:'Velocity'},
+    {key:'clients', label:'Clients'},
   ];
-
   let html = '<table class="tracker"><thead><tr>';
   for(const c of cols){
     const arrow = state.sortKey === c.key ? `<span class="arrow">${state.sortDir==='asc'?'▲':'▼'}</span>` : '';
@@ -446,42 +546,63 @@ function render(){
   }
   html += '</tr></thead><tbody>';
 
-  for(const t of sorted){
-    const isExp = state.expanded.has(t.technology_name || t.technology);
-    const trl = HORIZON_TO_TRL[t.dominantHorizon] || '?';
-    const ttt = HORIZON_TO_TTT[t.dominantHorizon] || '?';
-    html += `<tr class="${isExp?'expanded':''}" data-key="${escapeAttr(t.technology_name||t.technology)}">`
-         + `<td class="tech">${escapeHtml(t.technology||t.technology_name)}<span class="slug">${escapeHtml(t.technology_name||'')}</span>${t.crossClient?'<br><span class="pill cross">cross-client</span>':''}</td>`
-         + `<td><span class="pill ${(t.dominantHorizon||'h1').toLowerCase()}">${t.dominantHorizon||'?'}</span></td>`
-         + `<td>${trl}</td>`
-         + `<td>${ttt}</td>`
-         + `<td><span class="pill ${t.dominantConfidence||'unknown'}">${t.dominantConfidence||'?'}</span></td>`
-         + `<td><span class="pill ${(t.dominantTrajectory||'unknown').toLowerCase()}">${t.dominantTrajectory||'?'}</span></td>`
-         + `<td>${t.clients.size}</td>`
-         + `<td>${t.evidenceTotal}${t.maxEvidence!==t.evidenceTotal?` <span style="color:var(--muted);font-size:10px">(max ${t.maxEvidence})</span>`:''}</td>`
-         + `</tr>`;
+  sorted.forEach((t, i) => {
+    const isExp = state.expanded.has(t.name);
+    const trlRange = HORIZON_TRL[t.horizon] || [0,0];
+    const trlLow = trlRange[0]*11, trlHigh = trlRange[1]*11;
+    const trlWidth = trlHigh - trlLow;
+    const ttm = HORIZON_TTM[t.horizon] || '?';
+    const scoreClass = t.score >= 7 ? 'hot' : t.score >= 5 ? 'warm' : 'cool';
+    const velArrow = { up:'↑', stable:'→', down:'↓' }[t.dominantTraj] || '·';
+    const velLabel = { up:'Advancing', stable:'Stable', down:'Declining' }[t.dominantTraj] || '?';
+    html += `<tr class="${isExp?'expanded':''}" data-key="${escapeAttr(t.name)}">`
+      + `<td class="rank">${i+1}</td>`
+      + `<td class="tech">${escapeHtml(t.name)}<span class="slug">${escapeHtml(t.slug)} <span class="src-api">✓</span></span>`
+      + `<div class="badges"><span class="b dom-${t.domain}">${t.domain}</span>${t.cross?'<span class="b cross">cross-client</span>':''}</div></td>`
+      + `<td class="heat"><div class="heat-bar"><div class="fill ${scoreClass}" style="width:${Math.min(100,t.score*10)}%"></div></div><span class="heat-num">${t.score.toFixed(1)}</span></td>`
+      + `<td><span class="h-badge ${t.horizon.toLowerCase()}">${t.horizon}</span></td>`
+      + `<td class="trl"><div class="trl-bar"><div class="range" style="left:${trlLow}%;width:${trlWidth}%"></div><span class="label">${trlRange[0]}–${trlRange[1]}</span></div><span class="src">~ derived from horizon</span></td>`
+      + `<td class="ttm">${ttm}<span class="src">~ estimated</span></td>`
+      + `<td class="dis"><span class="placeholder" title="Requires analyst input">–</span></td>`
+      + `<td class="vel ${t.dominantTraj}">${velArrow} ${velLabel}</td>`
+      + `<td class="cli">${t.clients.size}<span class="total">of ${state.companies.length}</span></td>`
+      + `</tr>`;
     if(isExp){
-      const clientChips = [...t.clients].sort().map(c => `<span class="client-chip">${escapeHtml(c)}</span>`).join('');
-      const pairs = t.pairs.slice().sort((a,b) => (a.application||'').localeCompare(b.application||''))
-        .map(p => `<div class="pair"><span class="lbl">${escapeHtml(p.application||p.application_name||'?')} <span style="color:var(--muted);font-weight:400">· ${escapeHtml(p.company)}</span></span><span class="meta">${p.horizon||'?'} · ${p.confidence||'?'} · evid ${p.hard_evidence_count||0}${p.is_cross_client_edge?' · cross':''}</span></div>`).join('');
-      html += `<tr><td colspan="${cols.length}" class="expand-row"><div class="expand-inner">`
-           + `<div class="block"><h4>Description</h4><div>${escapeHtml(t.technology)} — derived from technology label. Clients vary in framing and horizon.</div>`
-           + `<h4 style="margin-top:14px">WNTBT (what needs to be true)</h4><div class="wntbt"><strong style="color:var(--ink)">Validate with analyst.</strong> WNTBT thresholds are stored on initiatives_v2 / claims_v2, not on ontology pairs. Use account_plans_v8 → Hypotheses tab for the analyst-curated WNTBT per client.</div>`
-           + `<h4 style="margin-top:14px">Clients (${t.clients.size})</h4><div>${clientChips}</div>`
-           + `</div>`
-           + `<div class="block"><h4>Pair coverage (${t.pairs.length})</h4>${pairs}</div>`
-           + `</div></td></tr>`;
+      const apps = [...t.applications].sort();
+      const clients = [...t.clients].sort();
+      const pairsHtml = t.pairs.slice().sort((a,b) => (a.application||'').localeCompare(b.application||''))
+        .map(p => `<div class="pair"><span class="lbl">${escapeHtml(p.application)} · ${escapeHtml(p.company)}</span><span class="meta">${p.horizon||'?'} · ${p.confidence||'?'} · ${TRAJ_MAP[p.trajectory]||'?'} · evid ${p.hard_evidence_count||0}${p.is_cross_client_edge?' · cross':''}</span></div>`).join('');
+      html += `<tr class="expand-row"><td colspan="${cols.length}"><div class="expand-content">`
+        + `<div>`
+        + `<h4>Application pairs <span class="src-api">✓ from API</span> (${t.pairs.length})</h4>${pairsHtml}`
+        + `</div>`
+        + `<div>`
+        + `<h4>Clients tracking <span class="src-api">✓ from API</span> (${clients.length})</h4>`
+        + `<div class="clients">${clients.map(c => `<span class="chip">${escapeHtml(c)}</span>`).join('')}</div>`
+        + `<h4 style="margin-top:14px">API facts <span class="src-api">✓</span></h4>`
+        + `<div class="data-fact"><span class="lbl">evidence</span>${t.evidence}</div>`
+        + `<div class="data-fact"><span class="lbl">cross-client</span>${t.cross?'YES':'no'}</div>`
+        + `<div class="data-fact"><span class="lbl">conf-mix</span>H ${t.confidence.high} · M ${t.confidence.medium} · L ${t.confidence.low}</div>`
+        + `<div class="data-fact"><span class="lbl">traj-mix</span>↑${t.trajectory.up} →${t.trajectory.stable} ↓${t.trajectory.down}</div>`
+        + `<h4 style="margin-top:14px">Function description <span class="src-na">analyst input required</span></h4>`
+        + `<div class="placeholder-block">Function description requires analyst input. <strong>Technology:</strong> ${escapeHtml(t.name)} · <strong>Applications:</strong> ${apps.map(escapeHtml).join(', ')}</div>`
+        + `<h4>Markets <span class="src-na">analyst input required</span></h4>`
+        + `<div class="placeholder-block">Markets cannot be derived from current API. Expand this row in the analyst console to add market sizing and growth.</div>`
+        + `<h4>Ecosystem players <span class="src-na">analyst input required</span></h4>`
+        + `<div class="placeholder-block">Ecosystem players cannot be derived from current API. Expand this row in the analyst console to add OEM, IDM, supplier, and academic players.</div>`
+        + `</div>`
+        + `</div></td></tr>`;
     }
-  }
+  });
   html += '</tbody></table>';
   els.content.innerHTML = html;
 
-  // Sort handlers
+  // Wire sort handlers
   els.content.querySelectorAll('thead th[data-sort]').forEach(th => {
     th.addEventListener('click', () => {
       const k = th.dataset.sort;
       if(state.sortKey === k){ state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc'; }
-      else { state.sortKey = k; state.sortDir = 'asc'; }
+      else { state.sortKey = k; state.sortDir = (k === 'score' || k === 'clients' || k === 'trl') ? 'desc' : 'asc'; }
       render();
     });
   });
@@ -496,32 +617,21 @@ function render(){
   });
 }
 
-['input','change'].forEach(ev => {
-  els.qSearch.addEventListener(ev, render);
-  els.fClient.addEventListener(ev, render);
-  els.fHorizon.addEventListener(ev, render);
-  els.fConf.addEventListener(ev, render);
-  els.fCross.addEventListener(ev, render);
-});
-
-// ── CSV ─────────────────────────────────
+// ── CSV ──────────────────────────────────────────
 els.exportCsv.addEventListener('click', () => {
-  const techs = sortTechs(buildTechnologies().filter(passFilters));
-  const rows = [['technology','technology_name','dominant_horizon','TRL_est','TTT_est','dominant_confidence','dominant_trajectory','clients_count','clients','evidence_total','evidence_max','cross_client','pair_count','applications']];
-  for(const t of techs){
-    rows.push([
-      t.technology, t.technology_name||'',
-      t.dominantHorizon||'', HORIZON_TO_TRL[t.dominantHorizon]||'', HORIZON_TO_TTT[t.dominantHorizon]||'',
-      t.dominantConfidence||'', t.dominantTrajectory||'',
+  const techs = sortTechs(buildTechs().filter(passFilter));
+  const out = [['rank','technology','technology_slug','domain','heat_score','horizon','TRL_low_est','TRL_high_est','TTM_est','dominant_confidence','dominant_trajectory','clients_count','clients','pair_count','evidence_total','cross_client','applications']];
+  techs.forEach((t,i) => {
+    const trl = HORIZON_TRL[t.horizon] || [0,0];
+    out.push([i+1, t.name, t.slug, t.domain, t.score.toFixed(2),
+      t.horizon, trl[0], trl[1], HORIZON_TTM[t.horizon] || '',
+      t.dominantConf, t.dominantTraj,
       t.clients.size, [...t.clients].sort().join('; '),
-      t.evidenceTotal, t.maxEvidence,
-      t.crossClient?1:0, t.pairs.length,
-      t.applications.join('; '),
-    ]);
-  }
-  const csv = rows.map(r => r.map(v => {
-    const s = String(v ?? '');
-    return /[",\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s;
+      t.pairs.length, t.evidence, t.cross?1:0,
+      [...t.applications].sort().join('; ')]);
+  });
+  const csv = out.map(r => r.map(v => {
+    const s = String(v ?? ''); return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
   }).join(',')).join('\n');
   const blob = new Blob([csv], {type:'text/csv'});
   const a = document.createElement('a');
@@ -530,16 +640,16 @@ els.exportCsv.addEventListener('click', () => {
   a.click();
 });
 
-// ── Helpers ──────────────────────────────
+// ── Helpers ─────────────────────────────────────
 function escapeHtml(s){
   return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 function escapeAttr(s){ return escapeHtml(s); }
 
-// ── Boot ────────────────────────────────
+// ── Boot ────────────────────────────────────────
 state.token = loadToken();
-setTokenStatus();
-if(state.token){ loadAll(); }
+if(state.token){ showMain(); loadAll(); }
+else { showConfig(); }
 </script>
 </body>
 </html>
