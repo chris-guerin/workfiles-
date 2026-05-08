@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>onsemi — Account Intelligence Brief — May 2026</title>
+<style>
+:root{
+  --ink:#060a0f;--text:#e8eef5;--text-mid:#8fa3b5;--text-dim:#4a6278;
+  --panel:#0f1922;--panel2:#131f2b;--border:#1c2e3e;--border2:#243444;
+  --gold:#a78bfa;--cyan:#2dd4bf;--green:#22c55e;--amber:#f59e0b;
+  --red:#f05252;--blue:#38bdf8;--accent:#a78bfa;
+  --font-sans:Arial,Helvetica,sans-serif;--font-serif:Georgia,'Times New Roman',serif;
+  --font-mono:'Courier New',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--text);font-family:var(--font-sans);font-size:14px;line-height:1.6}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:9999}
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(6,10,15,0.95);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);display:flex;align-items:center;padding:0 32px;height:52px;gap:24px}
+.nav-brand{font-family:var(--font-mono);font-size:0.65rem;font-weight:700;color:var(--gold);letter-spacing:0.2em;text-transform:uppercase;border-right:1px solid var(--border);padding-right:24px;white-space:nowrap}
+.nav-links{display:flex;gap:4px;flex:1;overflow-x:auto;scrollbar-width:none}
+.nav-link{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);text-decoration:none;padding:6px 10px;white-space:nowrap}
+.nav-link:hover{color:var(--gold)}
+.nav-badge{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;color:var(--red);border:1px solid var(--red);padding:3px 8px;text-transform:uppercase}
+.posture-badge{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;color:var(--accent);border:1px solid var(--accent);padding:3px 8px;text-transform:uppercase}
+.page{max-width:1200px;margin:0 auto;padding:0 32px 80px}
+.hero{padding:110px 0 60px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.hero::before{content:'ON';position:absolute;right:-30px;top:50%;transform:translateY(-50%);font-family:var(--font-serif);font-size:18rem;font-weight:900;color:rgba(167,139,250,0.05);line-height:1;pointer-events:none;letter-spacing:-0.05em}
+.hero-kicker{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.hero-kicker::before{content:'';width:32px;height:1px;background:var(--gold)}
+.hero-title{font-family:var(--font-serif);font-size:3.5rem;font-weight:900;line-height:1.05;color:var(--text);margin-bottom:16px;max-width:700px}
+.hero-title em{font-style:normal;color:var(--gold)}
+.hero-subtitle{font-family:var(--font-sans);font-size:1rem;color:var(--text-mid);max-width:580px;margin-bottom:36px;font-weight:300;line-height:1.7}
+.hero-meta{display:flex;gap:32px;flex-wrap:wrap}
+.meta-item{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase}
+.meta-label{color:var(--text-dim);margin-bottom:4px}
+.meta-value{color:var(--text);font-weight:700;font-size:0.72rem}
+.section{padding:56px 0 0}
+.section-head{display:flex;align-items:center;gap:16px;margin-bottom:32px}
+.section-num{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.2em;color:var(--text-dim);text-transform:uppercase;background:var(--panel);border:1px solid var(--border);padding:4px 8px}
+.section-title{font-family:var(--font-serif);font-size:1.8rem;font-weight:700;color:var(--text)}
+.section-rule{flex:1;height:1px;background:var(--border)}
+.snapshot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:24px}
+.snap-cell{background:var(--panel);padding:20px}
+.snap-val{font-family:var(--font-mono);font-size:1.6rem;font-weight:700;color:var(--text);margin-bottom:4px}
+.snap-val.green{color:var(--green)}.snap-val.amber{color:var(--amber)}.snap-val.cyan{color:var(--cyan)}.snap-val.red{color:var(--red)}.snap-val.blue{color:var(--blue)}
+.snap-lbl{font-family:var(--font-sans);font-size:0.75rem;color:var(--text-mid);margin-bottom:2px}
+.snap-sub{font-family:var(--font-mono);font-size:0.58rem;color:var(--text-dim)}
+.info-box{background:var(--panel);border-left:3px solid var(--gold);padding:20px 24px;font-size:0.88rem;color:var(--text-mid);line-height:1.7;margin-bottom:24px}
+.callout{background:var(--panel2);border:1px solid var(--border2);border-left:3px solid var(--cyan);padding:20px 24px;font-size:0.88rem;color:var(--text);line-height:1.7;margin-bottom:24px}
+.strategy-box{background:var(--panel);border:1px solid var(--border);padding:24px;margin-bottom:24px}
+.strategy-two-col{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:24px}
+.strategy-col-head{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.strategy-col-head::after{content:'';flex:1;height:1px;background:var(--border)}
+.bullet-list{list-style:none;padding:0}
+.bullet-list li{font-size:0.85rem;color:var(--text-mid);padding:5px 0 5px 16px;position:relative;line-height:1.5;border-bottom:1px solid rgba(28,46,62,0.5)}
+.bullet-list li::before{content:'▸';position:absolute;left:0;color:var(--gold);font-size:0.7rem;top:7px}
+.bullet-list li strong{color:var(--text)}
+.peer-table{width:100%;border-collapse:collapse;font-size:0.78rem;margin-bottom:24px}
+.peer-table th{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);background:var(--panel)}
+.peer-table td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);vertical-align:middle}
+.peer-table .highlight-row td{background:var(--panel2);color:var(--text)}
+.co-name{font-weight:600;color:var(--text);font-size:0.82rem}
+.ticker{font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim)}
+.badge{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.06em;text-transform:uppercase;padding:2px 7px;border-radius:2px;display:inline-block}
+.badge-green{background:rgba(34,197,94,0.15);color:var(--green)}
+.badge-amber{background:rgba(245,158,11,0.15);color:var(--amber)}
+.badge-red{background:rgba(240,82,82,0.15);color:var(--red)}
+.badge-blue{background:rgba(56,189,248,0.15);color:var(--blue)}
+.badge-cyan{background:rgba(45,212,191,0.15);color:var(--cyan)}
+.badge-gold{background:rgba(167,139,250,0.15);color:var(--gold)}
+.initiatives-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:24px}
+.init-card{background:var(--panel);border:1px solid var(--border);padding:20px}
+.init-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:12px}
+.init-name{font-family:var(--font-sans);font-weight:600;font-size:0.88rem;color:var(--text)}
+.init-desc{font-size:0.8rem;color:var(--text-mid);line-height:1.55;margin-bottom:14px}
+.signals-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:24px}
+.signal-card{background:var(--panel);border:1px solid var(--border);padding:20px}
+.signal-num{font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);margin-bottom:6px}
+.signal-name{font-family:var(--font-serif);font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px}
+.signal-trl{font-family:var(--font-mono);font-size:0.58rem;color:var(--gold);margin-bottom:10px}
+.signal-desc{font-size:0.8rem;color:var(--text-mid);line-height:1.55;margin-bottom:12px}
+.signal-why{font-family:var(--font-mono);font-size:0.6rem;color:var(--text-dim)}
+@media(max-width:768px){.snapshot-grid{grid-template-columns:repeat(2,1fr)}.strategy-two-col,.initiatives-grid,.signals-grid{grid-template-columns:1fr}.hero-title{font-size:2.2rem}}
+</style>
+</head>
+<body>
+<!-- v8-deprecation-banner -->
+<div style="background:#000;color:#fff;padding:14px 24px;font-family:Arial,Helvetica,sans-serif;font-size:13px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;border-bottom:2px solid #a78bfa">
+  <span style="font-family:'Courier New',monospace;font-size:10px;font-weight:700;letter-spacing:0.12em;color:#a78bfa">DEPRECATED</span>
+  <span style="flex:1;line-height:1.45">This brief has been superseded by the live account plan tool, which pulls hypotheses, ontology pairs, signal log and contacts directly from the catalogue.</span>
+  <a href="account_plans_v8.html?company=onsemi" style="background:#a78bfa;color:#fff;text-decoration:none;padding:7px 14px;font-weight:600;font-size:12px;letter-spacing:0.04em;white-space:nowrap">Open onsemi in v8 →</a>
+</div>
+
+<div style="background:#0a1520;border-bottom:1px solid #1c2e3e;padding:8px 24px;display:flex;align-items:center;gap:12px">
+  <span style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.12em;font-weight:700;color:#22AE8A">● SIGNAL REFRESH</span>
+  <span style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278">May 2026 · Sources: onsemi Q1 2026 results (4 May 2026), 2026 Beijing Auto Show NIO ES9 EliteSiC, Vitesco / Magna / ZEEKR / NIO LTSAs</span>
+  <span style="margin-left:auto;font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278">May 2026</span>
+</div>
+
+<nav class="nav">
+  <div class="nav-brand">FutureBridge // ON Brief</div>
+  <div class="nav-links">
+    <a href="#overview" class="nav-link">Overview</a>
+    <a href="#strategy" class="nav-link">Strategy</a>
+    <a href="#peers" class="nav-link">Peers</a>
+    <a href="#initiatives" class="nav-link">Initiatives</a>
+    <a href="#signals" class="nav-link">Signals</a>
+    <a href="#hypotheses" class="nav-link">Hypotheses</a>
+  </div>
+  <span class="posture-badge">EXPAND</span>
+  <div class="nav-badge">Confidential</div>
+</nav>
+
+<div class="page">
+
+  <section class="hero" id="top">
+    <div class="hero-kicker">Intelligence Brief · Semiconductors — Auto SiC, GaN & AI Data Center</div>
+    <h1 class="hero-title">onsemi (ON Semiconductor)<br><em>Strategic Intelligence</em></h1>
+    <p class="hero-subtitle">Phoenix-based power-and-sensing IDM. Q1 2026 inflection point — auto +5% YoY (first growth after 7 quarters of decline), AI data center +30% sequential, Treo platform 2.5x sequential, GM expanding for the third consecutive quarter to 38.5%.</p>
+    <div class="hero-meta">
+      <div class="meta-item"><div class="meta-label">Sector</div><div class="meta-value">Auto SiC · GaN · Power · AI Data Center · Sensors</div></div>
+      <div class="meta-item"><div class="meta-label">Date</div><div class="meta-value">May 2026</div></div>
+      <div class="meta-item"><div class="meta-label">Posture</div><div class="meta-value" style="color:#22c55e">EXPAND</div></div>
+      <div class="meta-item"><div class="meta-label">Prepared by</div><div class="meta-value">FutureBridge Advisory</div></div>
+    </div>
+  </section>
+
+  <section class="section" id="overview">
+    <div class="section-head"><span class="section-num">01</span><h2 class="section-title">Company Snapshot</h2><div class="section-rule"></div></div>
+    <div class="snapshot-grid">
+      <div class="snap-cell"><div class="snap-val">$1.51B</div><div class="snap-lbl">Q1 2026 revenue</div><div class="snap-sub">Beat midpoint · NASDAQ: ON</div></div>
+      <div class="snap-cell"><div class="snap-val green">38.5%</div><div class="snap-lbl">Q1 2026 GM</div><div class="snap-sub">3rd consecutive quarter expansion</div></div>
+      <div class="snap-cell"><div class="snap-val cyan">+5%</div><div class="snap-lbl">Auto YoY</div><div class="snap-sub">First growth after 7 quarters of decline</div></div>
+      <div class="snap-cell"><div class="snap-val green">~55%</div><div class="snap-lbl">SiC share Beijing 2026 new EVs</div><div class="snap-sub">EliteSiC in NIO ES9 flagship</div></div>
+      <div class="snap-cell"><div class="snap-val cyan">2.5x</div><div class="snap-lbl">Treo platform sequential</div><div class="snap-sub">GaN funnel >$1.5B; GM target 60-70%</div></div>
+      <div class="snap-cell"><div class="snap-val">+30%</div><div class="snap-lbl">AI data center QoQ</div><div class="snap-sub">On track to double YoY</div></div>
+      <div class="snap-cell"><div class="snap-val blue">$1.535-1.635B</div><div class="snap-lbl">Q2 2026 guidance</div><div class="snap-sub">+7% ex non-core exits</div></div>
+      <div class="snap-cell"><div class="snap-val">$1.9B</div><div class="snap-lbl">Vitesco LTSA</div><div class="snap-sub">+ NIO 900V, Magna eDrive, ZEEKR</div></div>
+    </div>
+    <div class="info-box">
+      <strong>Headline state.</strong> Q1 2026 marks a clear cyclical inflection — auto reverses 7-quarter decline, AI data center surges, Treo platform accelerates. Three structural plays: Treo high-margin platform monetisation, China SiC leadership, AI data center scaling. Each tracked as a load-bearing hypothesis below.
+    </div>
+  </section>
+
+  <section class="section" id="strategy">
+    <div class="section-head"><span class="section-num">02</span><h2 class="section-title">Strategic Posture</h2><div class="section-rule"></div></div>
+    <div class="strategy-box">
+      <div class="strategy-two-col">
+        <div>
+          <div class="strategy-col-head">Where onsemi is investing</div>
+          <ul class="bullet-list">
+            <li><strong>Treo high-margin platform.</strong> Analog + mixed-signal family. 60-70% GM target. Q1 +2.5x sequential. Design wins span zonal architectures (10BASE-T1S + SmartFETs), ADAS park assist, humanoid-robotics inductive position sensing.</li>
+            <li><strong>SiC China leadership.</strong> ~55% SiC share among new EV models at 2026 Beijing Auto Show. NIO 900V (ES9 flagship), ZEEKR, Vitesco $1.9B LTSA, Magna eDrive — multi-OEM lock-in.</li>
+            <li><strong>AI data center power.</strong> +30% QoQ; on track to double YoY. GaN solutions for 48V architectures + AI server PSU. GaN funnel >$1.5B.</li>
+            <li><strong>Czech + New Hampshire SiC fabs.</strong> Capacity expansion supported by Magna $40M and Vitesco $250M co-investment.</li>
+          </ul>
+        </div>
+        <div>
+          <div class="strategy-col-head">What's under pressure</div>
+          <ul class="bullet-list">
+            <li><strong>Inventory build.</strong> Q1 inventory build flagged in earnings — discipline required as auto recovers.</li>
+            <li><strong>Non-core exits.</strong> Q2 guide includes ~7% drag from non-core exits — restructuring continues.</li>
+            <li><strong>SiC pricing pressure.</strong> Chinese IDM (BYD Semi, CRRC) competing on wafer pricing; NIO 900V evolution puts onsemi under continuous tech-pace pressure.</li>
+            <li><strong>European auto destock.</strong> Recovery uneven — Europe slower than China.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="callout">
+        <strong>Strategic posture: EXPAND</strong> — Q1 inflection across three growth drivers (Treo, SiC China, AI data center) supports thesis. Three hypotheses below test sustainability through 2026-2027.
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="peers">
+    <div class="section-head"><span class="section-num">03</span><h2 class="section-title">Peer Landscape</h2><div class="section-rule"></div></div>
+    <table class="peer-table">
+      <tr><th>Company</th><th>FY2025 rev</th><th>SiC posture</th><th>GaN posture</th><th>Posture</th></tr>
+      <tr class="highlight-row"><td><span class="co-name">onsemi</span><br><span class="ticker">NASDAQ: ON</span></td><td>~$7.3B</td><td>Czech / NH SiC; ~55% China new-EV share</td><td>Treo + EliteSiC GaN; funnel >$1.5B</td><td><span class="badge badge-green">Inflection</span></td></tr>
+      <tr><td><span class="co-name">Infineon Technologies</span><br><span class="ticker">XETRA: IFX</span></td><td>~€15.2B</td><td>Dresden + Malaysia €5B; ~60% modules</td><td>Strong; AI server PSU lead</td><td><span class="badge badge-green">Recovering</span></td></tr>
+      <tr><td><span class="co-name">STMicroelectronics</span><br><span class="ticker">NYSE: STM</span></td><td>~$13.3B</td><td>Catania 200mm ramp</td><td>Modest; AI infra build-out</td><td><span class="badge badge-amber">Trough</span></td></tr>
+      <tr><td><span class="co-name">Wolfspeed</span><br><span class="ticker">NYSE: WOLF</span></td><td>~$0.9B</td><td>Mohawk Valley 200mm sole pure-play</td><td>None core</td><td><span class="badge badge-red">Restructuring</span></td></tr>
+      <tr><td><span class="co-name">Renesas Electronics</span><br><span class="ticker">TYO: 6723</span></td><td>~¥1.4T</td><td>Wolfspeed equity + Transphorm GaN</td><td>Transphorm GaN</td><td><span class="badge badge-green">Beat</span></td></tr>
+      <tr><td><span class="co-name">Power Integrations</span><br><span class="ticker">NASDAQ: POWI</span></td><td>~$420M</td><td>Modest</td><td>InnoSwitch + GaN HV pure-play</td><td><span class="badge badge-amber">Recovering</span></td></tr>
+    </table>
+  </section>
+
+  <section class="section" id="initiatives">
+    <div class="section-head"><span class="section-num">04</span><h2 class="section-title">Live Initiatives</h2><div class="section-rule"></div></div>
+    <div class="initiatives-grid">
+      <div class="init-card"><div class="init-head"><div class="init-name">Treo high-margin platform</div><span class="badge badge-cyan">Active</span></div><div class="init-desc">Analog + mixed-signal family. Q1 2026 +2.5x sequential. GM target 60-70%. Design wins: zonal architectures (10BASE-T1S + SmartFETs), ADAS park assist, humanoid-robotics inductive position sensing.</div></div>
+      <div class="init-card"><div class="init-head"><div class="init-name">EliteSiC China NIO 900V</div><span class="badge badge-green">Won</span></div><div class="init-desc">EliteSiC enhanced M3e in NIO upcoming lineup including ES9 flagship at 2026 Beijing Auto Show. Evolution from NIO 400V → 900V platforms. ~55% China new-EV SiC share.</div></div>
+      <div class="init-card"><div class="init-head"><div class="init-name">AI data center GaN ramp</div><span class="badge badge-cyan">Surging</span></div><div class="init-desc">+30% QoQ; on track to double YoY. GaN solutions for 48V architectures + AI server PSU. GaN funnel >$1.5B.</div></div>
+      <div class="init-card"><div class="init-head"><div class="init-name">Vitesco $1.9B LTSA</div><span class="badge badge-green">Locked</span></div><div class="init-desc">Vitesco Technologies $1.9B SiC LTSA + $250M co-invest in onsemi capacity. Anchor European auto SiC volume.</div></div>
+      <div class="init-card"><div class="init-head"><div class="init-name">Magna eDrive integration</div><span class="badge badge-green">Active</span></div><div class="init-desc">Magna eDrive integrating EliteSiC; $40M co-invest at NH + Czech facilities. Provides Tier-1 channel access to multiple OEMs.</div></div>
+      <div class="init-card"><div class="init-head"><div class="init-name">Czech + NH SiC capacity</div><span class="badge badge-cyan">Build</span></div><div class="init-desc">Czech Republic + New Hampshire SiC facilities — vertically integrated 200mm ramp. Customer-co-funded capacity reduces stranded-capacity risk.</div></div>
+    </div>
+  </section>
+
+  <section class="section" id="signals">
+    <div class="section-head"><span class="section-num">06</span><h2 class="section-title">Weak Signals</h2><div class="section-rule"></div></div>
+    <div class="signals-grid">
+      <div class="signal-card"><div class="signal-num">SIG-01</div><div class="signal-name">Treo design-win flow</div><div class="signal-trl">UPSIDE · 2026-2027</div><div class="signal-desc">Treo Q1 +2.5x sequential — early-stage compounding. Watch for design-win disclosure pattern + GM contribution.</div><div class="signal-why">→ Watch: onsemi quarterly Treo disclosures + design-win press releases</div></div>
+      <div class="signal-card"><div class="signal-num">SIG-02</div><div class="signal-name">Chinese SiC IDM pricing</div><div class="signal-trl">PRESSURE · 2026</div><div class="signal-desc">BYD Semi, CRRC, Sanan — Chinese SiC capacity expanding. onsemi China share at risk if Chinese IDMs out-price + qualify into mass-market China EVs.</div><div class="signal-why">→ Watch: SiC wafer spot pricing + Chinese IDM design-win announcements</div></div>
+      <div class="signal-card"><div class="signal-num">SIG-03</div><div class="signal-name">AI server PSU competitive intensity</div><div class="signal-trl">UPSIDE · 2026-2027</div><div class="signal-desc">Infineon + STM + Power Integrations all competing for AI server PSU GaN slots. onsemi Treo + EliteSiC GaN positioning — share contest underway.</div><div class="signal-why">→ Watch: hyperscaler PSU vendor selection announcements</div></div>
+      <div class="signal-card"><div class="signal-num">SIG-04</div><div class="signal-name">European auto destock pace</div><div class="signal-trl">DRAG · 2026</div><div class="signal-desc">European auto destock recovery slower than China. Vitesco LTSA + Magna eDrive deliveries dependent on European EV demand recovery.</div><div class="signal-why">→ Watch: European auto production data + Vitesco / Magna order book</div></div>
+    </div>
+  </section>
+
+<!-- ══ HYPOTHESIS REGISTER ══ -->
+<section id="hypotheses" class="section">
+<div style="max-width:1200px;margin:0 auto;padding:56px 0 80px">
+
+  <div class="section-head"><span class="section-num">HYP</span><h2 class="section-title">Hypothesis Register</h2><div class="section-rule"></div></div>
+
+  <div class="info-box" style="margin-bottom:32px">
+    Three load-bearing hypotheses anchor onsemi scouting through 2027. Each is stated as a directional belief with explicit WNTBT thresholds — the conditions that must hold for the hypothesis to confirm.
+  </div>
+
+  <!-- Summary strip -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:40px">
+    <div style="background:var(--panel);padding:16px"><div style="font-family:var(--font-mono);font-size:1.4rem;font-weight:700;color:var(--text);margin-bottom:2px">3</div><div style="font-size:0.75rem;color:var(--text-mid)">Active hypotheses</div><div style="font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);margin-top:2px">May 2026</div></div>
+    <div style="background:var(--panel);padding:16px"><div style="font-family:var(--font-mono);font-size:1.4rem;font-weight:700;color:var(--text);margin-bottom:2px">64%</div><div style="font-size:0.75rem;color:var(--text-mid)">Average probability</div><div style="font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);margin-top:2px">Across 3 hypotheses</div></div>
+    <div style="background:var(--panel);padding:16px"><div style="font-family:var(--font-mono);font-size:1.4rem;font-weight:700;color:var(--gold);margin-bottom:2px">4</div><div style="font-size:0.75rem;color:var(--text-mid)">Signal drivers tracked</div><div style="font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);margin-top:2px">Economics · Market · Technology · Policy</div></div>
+  </div>
+
+  <!-- ON-01 -->
+  <div style="margin:0 0 44px 0;border:1px solid #243444;border-top:2px solid var(--gold)">
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#131f2b;border-bottom:1px solid #1c2e3e">
+      <span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--gold);font-weight:700">ON-01</span>
+      <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;border:1px solid #1c2e3e;padding:2px 8px">H1 · 1-2yr</span>
+      <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;margin-left:auto">Confidence: Mid-High</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1.3fr 1.6fr 1.2fr;border-bottom:1px solid #1c2e3e">
+      <div style="padding:14px 12px;border-right:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:10px">SOURCES</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.75rem;color:#4a6278;margin-bottom:10px;font-style:italic">Raw and undifferentiated</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ onsemi quarterly Treo disclosures</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ Treo design-win press releases</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ Hyperscaler GaN PSU vendor selection</div>
+      </div>
+      <div style="border-right:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">SYSTEM DRIVERS</div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(167,139,250,0.12);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:var(--gold)">Economics<span style="background:rgba(167,139,250,0.22);color:var(--gold);font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">Treo GM 60-70% target lifts portfolio mix</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(72,184,231,0.12);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#48B8E7;flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:#48B8E7">Market<span style="background:rgba(72,184,231,0.22);color:#48B8E7;font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">Treo design-win flow + cross-vertical adoption</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#22AE8A;flex-shrink:0;margin-top:4px;opacity:0.4"></span><div><div style="font-size:0.8rem;color:#4a6278">Technology</div><div style="font-size:0.72rem;color:#4a6278">Analog + mixed-signal IP differentiation vs ADI / TI</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px"><span style="width:8px;height:8px;border-radius:50%;background:#9D7AD2;flex-shrink:0;margin-top:4px;opacity:0.35"></span><div><div style="font-size:0.8rem;color:#4a6278">Policy</div><div style="font-size:0.72rem;color:#4a6278">Auto cybersecurity / SDV interface mandates</div></div></div>
+      </div>
+      <div style="padding:16px;border-right:1px solid #1c2e3e;display:flex;flex-direction:column;justify-content:center">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:12px">HYPOTHESIS</div>
+        <div style="font-family:Georgia,serif;font-size:1.05rem;font-style:italic;color:#e8eef5;line-height:1.55;margin-bottom:16px">Treo platform reaches &gt;$500M annual run-rate by FY2027 with segment GM 60-70%, becoming onsemi's principal high-margin growth engine and lifting group GM beyond 40% by exit-2027.</div>
+        <div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:3px;background:#1c2e3e;border-radius:2px"><div style="width:65%;height:100%;background:var(--gold);border-radius:2px"></div></div><span style="font-family:Courier New,monospace;font-size:0.65rem;color:var(--gold);font-weight:700">65%</span></div>
+      </div>
+      <div>
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">DECISIONS</div>
+        <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#9D7AD2;background:rgba(157,122,210,0.18);padding:2px 8px;border-radius:10px">6 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Quarterly Treo run-rate + design-win disclosure tracking.</div></div>
+        <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#22AE8A;background:rgba(34,174,138,0.18);padding:2px 8px;border-radius:10px">12 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Treo competitive map vs ADI / TI / Microchip analog mixed-signal.</div></div>
+        <div style="padding:10px 12px"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:var(--gold);background:rgba(61,163,255,0.18);padding:2px 8px;border-radius:10px">18 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Annual Treo segment review + ARR.</div></div>
+      </div>
+    </div>
+    <div style="background:#0f1922">
+      <div style="display:flex;align-items:center;gap:16px;padding:12px 16px 8px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.1em;font-weight:700;color:var(--gold)">WHAT NEEDS TO BE TRUE</span><span style="flex:1;height:1px;background:#1c2e3e"></span><span style="font-family:Arial,sans-serif;font-size:0.65rem;color:#4a6278">All conditions hold</span></div>
+      <div style="padding:4px 16px 12px">
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">Treo annual run-rate reaches ≥$500M by exit-2027.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">Treo segment GM in 60-70% range as guided.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">Group GM exits 2027 ≥40%.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">No major Treo design-win loss to ADI / TI / Microchip alternatives.</span></div>
+      </div>
+      <div style="padding:10px 16px 14px;border-top:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.5rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:5px">ENGAGEMENT IMPLICATION</div>
+        <div style="font-size:0.82rem;color:#8fa3b5;line-height:1.6;padding-left:12px;border-left:2px solid var(--gold)">Treo design-win pipeline + analog mixed-signal competitive map are the highest-priority inputs for onsemi's mixed-signal BU.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ON-02 -->
+  <div style="margin:0 0 44px 0;border:1px solid #243444;border-top:2px solid var(--gold)">
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#131f2b;border-bottom:1px solid #1c2e3e">
+      <span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--gold);font-weight:700">ON-02</span>
+      <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;border:1px solid #1c2e3e;padding:2px 8px">H1 · 1-2yr</span>
+      <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;margin-left:auto">Confidence: Mid-High</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1.3fr 1.6fr 1.2fr;border-bottom:1px solid #1c2e3e">
+      <div style="padding:14px 12px;border-right:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:10px">SOURCES</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.75rem;color:#4a6278;margin-bottom:10px;font-style:italic">Raw and undifferentiated</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ Beijing Auto Show new-EV SiC content disclosure</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ NIO / ZEEKR / Vitesco / Magna LTSA reporting</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ Chinese IDM SiC qualification announcements</div>
+      </div>
+      <div style="border-right:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">SYSTEM DRIVERS</div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(72,184,231,0.12);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#48B8E7;flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:#48B8E7">Market<span style="background:rgba(72,184,231,0.22);color:#48B8E7;font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">China new-EV SiC content + 900V platform adoption</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(167,139,250,0.10);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:var(--gold)">Economics<span style="background:rgba(167,139,250,0.22);color:var(--gold);font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">SiC ASP + LTSA pricing discipline</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#22AE8A;flex-shrink:0;margin-top:4px;opacity:0.4"></span><div><div style="font-size:0.8rem;color:#4a6278">Technology</div><div style="font-size:0.72rem;color:#4a6278">EliteSiC enhanced M3e roadmap vs Chinese IDMs</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px"><span style="width:8px;height:8px;border-radius:50%;background:#9D7AD2;flex-shrink:0;margin-top:4px;opacity:0.35"></span><div><div style="font-size:0.8rem;color:#4a6278">Policy</div><div style="font-size:0.72rem;color:#4a6278">Chinese EV subsidy + procurement preferences</div></div></div>
+      </div>
+      <div style="padding:16px;border-right:1px solid #1c2e3e;display:flex;flex-direction:column;justify-content:center">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:12px">HYPOTHESIS</div>
+        <div style="font-family:Georgia,serif;font-size:1.05rem;font-style:italic;color:#e8eef5;line-height:1.55;margin-bottom:16px">onsemi sustains ≥40% SiC share among Chinese new EV platforms through 2027, with NIO 900V flagship halo + Vitesco / Magna / ZEEKR LTSAs anchoring multi-OEM lock-in.</div>
+        <div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:3px;background:#1c2e3e;border-radius:2px"><div style="width:68%;height:100%;background:var(--gold);border-radius:2px"></div></div><span style="font-family:Courier New,monospace;font-size:0.65rem;color:var(--gold);font-weight:700">68%</span></div>
+      </div>
+      <div>
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">DECISIONS</div>
+        <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#9D7AD2;background:rgba(157,122,210,0.18);padding:2px 8px;border-radius:10px">6 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Track NIO ES9 + 900V launches; Vitesco / Magna order book.</div></div>
+        <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#22AE8A;background:rgba(34,174,138,0.18);padding:2px 8px;border-radius:10px">12 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">China SiC competitive map (onsemi / Infineon / STM / Chinese IDMs).</div></div>
+        <div style="padding:10px 12px"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:var(--gold);background:rgba(61,163,255,0.18);padding:2px 8px;border-radius:10px">18 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Annual SiC global share + ASP tracker.</div></div>
+      </div>
+    </div>
+    <div style="background:#0f1922">
+      <div style="display:flex;align-items:center;gap:16px;padding:12px 16px 8px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.1em;font-weight:700;color:var(--gold)">WHAT NEEDS TO BE TRUE</span><span style="flex:1;height:1px;background:#1c2e3e"></span><span style="font-family:Arial,sans-serif;font-size:0.65rem;color:#4a6278">All conditions hold</span></div>
+      <div style="padding:4px 16px 12px">
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">onsemi SiC share among Chinese new-EV platforms remains ≥40% through 2027.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">NIO ES9 + 900V flagship launches on schedule with EliteSiC.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">No major Chinese IDM (BYD Semi / Sanan / CRRC) replaces onsemi as primary supplier on a flagship Chinese OEM platform before 2027.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">Vitesco / Magna / ZEEKR LTSAs deliver volume in line with contracted schedules.</span></div>
+      </div>
+      <div style="padding:10px 16px 14px;border-top:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.5rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:5px">ENGAGEMENT IMPLICATION</div>
+        <div style="font-size:0.82rem;color:#8fa3b5;line-height:1.6;padding-left:12px;border-left:2px solid var(--gold)">China new-EV SiC pipeline tracking + LTSA delivery monitoring is the highest-priority engagement input.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ON-03 -->
+  <div style="margin:0 0 44px 0;border:1px solid #243444;border-top:2px solid var(--gold)">
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#131f2b;border-bottom:1px solid #1c2e3e">
+      <span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--gold);font-weight:700">ON-03</span>
+      <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;border:1px solid #1c2e3e;padding:2px 8px">H2 · 3-5yr</span>
+      <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;margin-left:auto">Confidence: Mid</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1.3fr 1.6fr 1.2fr;border-bottom:1px solid #1c2e3e">
+      <div style="padding:14px 12px;border-right:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:10px">SOURCES</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.75rem;color:#4a6278;margin-bottom:10px;font-style:italic">Raw and undifferentiated</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ onsemi AI data center segment disclosure</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ GaN funnel pipeline progression</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ Hyperscaler 48V architecture vendor selection</div>
+      </div>
+      <div style="border-right:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">SYSTEM DRIVERS</div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(72,184,231,0.12);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#48B8E7;flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:#48B8E7">Market<span style="background:rgba(72,184,231,0.22);color:#48B8E7;font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">AI server PSU + 48V architecture demand</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(34,174,138,0.10);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#22AE8A;flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:#22AE8A">Technology<span style="background:rgba(34,174,138,0.22);color:#22AE8A;font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">GaN solutions roadmap + Treo high-margin attach</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:4px;opacity:0.4"></span><div><div style="font-size:0.8rem;color:#4a6278">Economics</div><div style="font-size:0.72rem;color:#4a6278">AI data center segment GM vs corporate average</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px"><span style="width:8px;height:8px;border-radius:50%;background:#9D7AD2;flex-shrink:0;margin-top:4px;opacity:0.35"></span><div><div style="font-size:0.8rem;color:#4a6278">Policy</div><div style="font-size:0.72rem;color:#4a6278">Data center power efficiency mandates</div></div></div>
+      </div>
+      <div style="padding:16px;border-right:1px solid #1c2e3e;display:flex;flex-direction:column;justify-content:center">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:12px">HYPOTHESIS</div>
+        <div style="font-family:Georgia,serif;font-size:1.05rem;font-style:italic;color:#e8eef5;line-height:1.55;margin-bottom:16px">AI data center revenue scales from ~$300M FY2026 to &gt;$700M FY2027 as GaN funnel converts and onsemi captures Tier-1 hyperscaler 48V PSU slots.</div>
+        <div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:3px;background:#1c2e3e;border-radius:2px"><div style="width:60%;height:100%;background:var(--gold);border-radius:2px"></div></div><span style="font-family:Courier New,monospace;font-size:0.65rem;color:var(--gold);font-weight:700">60%</span></div>
+      </div>
+      <div>
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">DECISIONS</div>
+        <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#9D7AD2;background:rgba(157,122,210,0.18);padding:2px 8px;border-radius:10px">6 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Track AI data center quarterly disclosure + GaN funnel conversion.</div></div>
+        <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#22AE8A;background:rgba(34,174,138,0.18);padding:2px 8px;border-radius:10px">12 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Hyperscaler 48V PSU vendor map (onsemi vs Infineon vs STM vs POWI).</div></div>
+        <div style="padding:10px 12px"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:var(--gold);background:rgba(61,163,255,0.18);padding:2px 8px;border-radius:10px">18 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Annual AI data center segment review.</div></div>
+      </div>
+    </div>
+    <div style="background:#0f1922">
+      <div style="display:flex;align-items:center;gap:16px;padding:12px 16px 8px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.1em;font-weight:700;color:var(--gold)">WHAT NEEDS TO BE TRUE</span><span style="flex:1;height:1px;background:#1c2e3e"></span><span style="font-family:Arial,sans-serif;font-size:0.65rem;color:#4a6278">All conditions hold</span></div>
+      <div style="padding:4px 16px 12px">
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">AI data center FY2026 revenue ≥ $300M (consistent with doubling YoY trajectory).</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">FY2027 AI data center ≥ $700M.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">GaN funnel converts ≥30% of $1.5B+ pipeline by end-2027.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">At least one named Tier-1 hyperscaler 48V PSU win disclosed by end-2026.</span></div>
+      </div>
+      <div style="padding:10px 16px 14px;border-top:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.5rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:5px">ENGAGEMENT IMPLICATION</div>
+        <div style="font-size:0.82rem;color:#8fa3b5;line-height:1.6;padding-left:12px;border-left:2px solid var(--gold)">Hyperscaler PSU vendor selection + GaN funnel-to-revenue conversion are the highest-leverage scouting inputs for onsemi data center BU.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+</div>
+</body>
+</html>
