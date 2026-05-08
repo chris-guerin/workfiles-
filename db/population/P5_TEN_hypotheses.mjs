@@ -260,9 +260,9 @@ const initiatives = [
         description: 'Petrochemical IRA + EU CBAM impact on capex timing. Policy driver per brief.',
         component_type: 'regulation', vector: 'regulation', cross_industry: true,
         source_citation: `${BRIEF} HYP TEN-03 (Policy — Petrochemical IRA / EU CBAM impact on capex timing); WNTBT bullet 4`,
-        state: 'volatile', trajectory: 'unknown',
-        state_reasoning: 'IRA US + EU CBAM Phase 2 in flux — affects capex timing decisions across petrochemical operators.',
-        trajectory_reasoning: 'Policy clarity 2026 will reset capex pause vs restart.',
+        state: 'ambiguous', trajectory: 'volatile',
+        state_reasoning: 'IRA US + EU CBAM Phase 2 in flux — affects capex timing decisions across petrochemical operators. State ambiguous because direction depends on which policy lever lands first.',
+        trajectory_reasoning: 'Policy clarity 2026 will reset capex pause vs restart. Volatile until Q1-Q2 2026.',
       },
     ],
     claims: [
