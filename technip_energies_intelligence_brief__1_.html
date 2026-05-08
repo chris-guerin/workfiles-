@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Technip Energies Intelligence Brief — FutureBridge Advisory</title>
+<style>
+:root {
+  --ink: #060a0f; --surface: #0b1219; --panel: #0f1922; --panel2: #131f2b;
+  --border: #1c2e3e; --border2: #243444;
+  --gold: #d4a230; --gold2: #f0c060; --cyan: #2dd4bf; --red: #f05252;
+  --green: #22c55e; --amber: #f59e0b; --blue: #38bdf8;
+  --text: #e8eef5; --text-mid: #8fa3b5; --text-dim: #4a6278;
+  --accent: #00b4d8;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+  --font-sans: 'IBM Plex Sans', sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ink);color:var(--text);font-family:var(--font-sans),system-ui,Helvetica,Arial,sans-serif;font-size:14px;line-height:1.6}
+.page{max-width:1200px;margin:0 auto;padding:0 32px 80px}
+.hero{padding:60px 0 40px;border-bottom:1px solid var(--border)}
+.hero-kicker{font-family:var(--font-mono),monospace;font-size:0.6rem;letter-spacing:0.3em;color:var(--accent);text-transform:uppercase;margin-bottom:16px}
+.hero-title{font-family:Georgia,serif;font-size:3rem;font-weight:900;line-height:1.05;margin-bottom:14px}
+.hero-title em{font-style:normal;color:var(--accent)}
+.hero-subtitle{color:var(--text-mid);max-width:580px;margin-bottom:30px;font-weight:300}
+.hero-meta{display:flex;gap:32px;flex-wrap:wrap}
+.meta-item{font-family:var(--font-mono),monospace;font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase}
+.meta-label{color:var(--text-dim);margin-bottom:4px}
+.meta-value{color:var(--text);font-weight:700;font-size:0.72rem}
+.section{padding:48px 0 0}
+.section-head{display:flex;align-items:center;gap:16px;margin-bottom:28px}
+.section-num{font-family:var(--font-mono),monospace;font-size:0.55rem;letter-spacing:0.2em;color:var(--text-dim);text-transform:uppercase;background:var(--panel);border:1px solid var(--border);padding:4px 8px}
+.section-title{font-family:Georgia,serif;font-size:1.6rem;font-weight:700}
+.section-rule{flex:1;height:1px;background:var(--border)}
+.snapshot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:24px}
+.snap-cell{background:var(--panel);padding:18px}
+.snap-val{font-family:var(--font-mono),monospace;font-size:1.5rem;font-weight:700;margin-bottom:4px}
+.snap-val.green{color:var(--green)} .snap-val.amber{color:var(--amber)} .snap-val.cyan{color:var(--accent)} .snap-val.red{color:var(--red)}
+.snap-lbl{font-size:0.75rem;color:var(--text-mid)}
+.snap-sub{font-family:var(--font-mono),monospace;font-size:0.58rem;color:var(--text-dim);margin-top:3px}
+.callout{background:var(--panel2);border:1px solid var(--border2);border-left:3px solid var(--accent);padding:18px 22px;font-size:0.88rem;color:var(--text);line-height:1.7;margin-bottom:20px}
+.strategy-box{background:var(--panel);border:1px solid var(--border);padding:22px;margin-bottom:20px}
+.strategy-two-col{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:20px}
+.strategy-col-head{font-family:var(--font-mono),monospace;font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+.bullet-list{list-style:none;padding:0}
+.bullet-list li{font-size:0.85rem;color:var(--text-mid);padding:5px 0 5px 16px;position:relative;line-height:1.5;border-bottom:1px solid rgba(28,46,62,0.5)}
+.bullet-list li::before{content:'▸';position:absolute;left:0;color:var(--accent);font-size:0.7rem;top:7px}
+.bullet-list li strong{color:var(--text)}
+.peer-table{width:100%;border-collapse:collapse;font-size:0.78rem;margin-bottom:24px}
+.peer-table th{font-family:var(--font-mono),monospace;font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);padding:8px 10px;text-align:left;border-bottom:1px solid var(--border);background:var(--panel)}
+.peer-table td{padding:9px 10px;border-bottom:1px solid var(--border);color:var(--text-mid)}
+.peer-table .highlight-row td{background:var(--panel2);color:var(--text)}
+.co-name{font-weight:600;color:var(--text);font-size:0.82rem}
+.badge{font-family:var(--font-mono),monospace;font-size:0.58rem;letter-spacing:0.06em;text-transform:uppercase;padding:2px 7px;border-radius:2px;display:inline-block}
+.badge-green{background:rgba(34,197,94,0.15);color:var(--green)}
+.badge-amber{background:rgba(245,158,11,0.15);color:var(--amber)}
+.badge-blue{background:rgba(56,189,248,0.15);color:var(--blue)}
+.badge-cyan{background:rgba(0,180,216,0.18);color:var(--accent)}
+
+.init-card{background:var(--panel);border:1px solid var(--border);padding:18px;margin-bottom:14px}
+.init-head{display:flex;justify-content:space-between;gap:12px;margin-bottom:8px}
+.init-name{font-weight:600;font-size:0.9rem}
+.init-desc{font-size:0.82rem;color:var(--text-mid);line-height:1.55}
+
+.signals-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:24px}
+.signal-card{background:var(--panel);border:1px solid var(--border);padding:18px}
+.signal-num{font-family:var(--font-mono),monospace;font-size:0.55rem;color:var(--text-dim)}
+.signal-name{font-family:Georgia,serif;font-size:1rem;font-weight:700;margin:6px 0}
+.signal-desc{font-size:0.82rem;color:var(--text-mid);line-height:1.55;margin:8px 0 8px}
+
+.hyp-card{margin:0 0 36px 0;border:1px solid var(--border2);border-top:2px solid var(--accent)}
+.hyp-head{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--panel2);border-bottom:1px solid var(--border)}
+.hyp-code{font-family:var(--font-mono),monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--accent);font-weight:700}
+.hyp-meta{font-family:var(--font-mono),monospace;font-size:0.55rem;color:var(--text-dim);border:1px solid var(--border);padding:2px 8px}
+.hyp-conf{font-family:var(--font-mono),monospace;font-size:0.55rem;color:var(--text-dim);margin-left:auto}
+.hyp-grid{display:grid;grid-template-columns:1.4fr 1.6fr 1.2fr;border-bottom:1px solid var(--border)}
+.hyp-col{padding:14px 16px;border-right:1px solid var(--border)}
+.hyp-col:last-child{border-right:none}
+.hyp-col-label{font-family:var(--font-mono),monospace;font-size:0.55rem;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:10px}
+.hyp-driver{padding:6px 0;border-bottom:1px solid rgba(28,46,62,0.5);font-size:0.78rem}
+.hyp-driver:last-child{border-bottom:none}
+.hyp-driver.signal{color:var(--accent);font-weight:700}
+.hyp-driver.signal::after{content:' · SIGNAL';font-family:var(--font-mono),monospace;font-size:0.5rem;color:var(--accent);background:rgba(0,180,216,0.18);padding:2px 6px;border-radius:10px;margin-left:4px;font-weight:700;letter-spacing:0.06em}
+.hyp-statement{font-family:Georgia,Times,serif;font-size:1.02rem;font-style:italic;color:var(--text);line-height:1.55;margin-bottom:14px}
+.hyp-prob{display:flex;align-items:center;gap:8px}
+.hyp-prob-bar{flex:1;height:3px;background:var(--border);border-radius:2px}
+.hyp-prob-fill{height:100%;background:var(--accent);border-radius:2px}
+.hyp-prob-val{font-family:var(--font-mono),monospace;font-size:0.65rem;color:var(--accent);font-weight:700}
+.hyp-decision{padding:8px 0;border-bottom:1px solid rgba(28,46,62,0.5);font-size:0.78rem}
+.hyp-decision:last-child{border-bottom:none}
+.hyp-decision-tag{font-family:var(--font-mono),monospace;font-size:0.6rem;font-weight:700;color:var(--accent);background:rgba(0,180,216,0.18);padding:2px 8px;border-radius:10px;margin-right:8px}
+.hyp-wntbt{background:var(--panel)}
+.hyp-wntbt-head{padding:12px 16px 8px;border-bottom:1px solid var(--border);font-family:var(--font-mono),monospace;font-size:0.6rem;letter-spacing:0.1em;font-weight:700;color:var(--accent)}
+.hyp-wntbt-list{padding:8px 16px}
+.hyp-wntbt-item{padding:8px 0;border-bottom:1px solid rgba(28,46,62,0.5);font-size:0.82rem;line-height:1.55;display:flex;gap:10px}
+.hyp-wntbt-item:last-child{border-bottom:none}
+.hyp-wntbt-item::before{content:'☐';color:var(--accent)}
+.hyp-engagement{padding:10px 16px 14px;border-top:1px solid var(--border);font-size:0.82rem;color:var(--text-mid);line-height:1.6}
+.hyp-engagement-label{font-family:var(--font-mono),monospace;font-size:0.5rem;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:5px}
+.hyp-engagement-text{padding-left:12px;border-left:2px solid var(--accent)}
+
+a{color:var(--accent)}
+.refresh-strip{background:#0a1520;border-bottom:1px solid var(--border);padding:8px 24px;display:flex;align-items:center;gap:12px}
+.refresh-strip span:first-child{font-family:var(--font-mono),monospace;font-size:0.55rem;letter-spacing:0.12em;font-weight:700;color:var(--accent)}
+.refresh-strip span:nth-child(2){font-size:0.72rem;color:var(--text-dim);flex:1}
+.refresh-strip span:last-child{font-family:var(--font-mono),monospace;font-size:0.55rem;color:var(--text-dim)}
+@media(max-width:768px){.snapshot-grid{grid-template-columns:repeat(2,1fr)}.strategy-two-col,.signals-grid{grid-template-columns:1fr}.hyp-grid{grid-template-columns:1fr}.hero-title{font-size:2rem}}
+</style>
+</head>
+<body>
+<!-- v8-deprecation-banner -->
+<div style="background:#000;color:#fff;padding:14px 24px;font-family:Arial,Helvetica,sans-serif;font-size:13px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;border-bottom:2px solid #F84E5D">
+  <span style="font-family:'Courier New',monospace;font-size:10px;font-weight:700;letter-spacing:0.12em;color:#F84E5D">DEPRECATED</span>
+  <span style="flex:1;line-height:1.45">This brief has been superseded by the live account plan tool, which pulls hypotheses, ontology pairs, signal log and contacts directly from the catalogue.</span>
+  <a href="account_plans_v8.html?company=Technip%20Energies" style="background:#F84E5D;color:#fff;text-decoration:none;padding:7px 14px;font-weight:600;font-size:12px;letter-spacing:0.04em;white-space:nowrap">Open Technip Energies in v8 →</a>
+</div>
+
+<div class="refresh-strip">
+  <span>● SIGNAL REFRESH</span>
+  <span>Q1 2026 · Sources: Technip Energies Q3 2025 earnings call, Energy Connects Pieton interview Sep 2025, Technip Energies SnapLNG / BlueH₂ / Canopy product disclosures, Net Zero Teesside operator updates</span>
+  <span>May 2026</span>
+</div>
+
+<div class="page">
+
+  <section class="hero">
+    <div class="hero-kicker">— Intelligence brief · Energy engineering &amp; technology</div>
+    <h1 class="hero-title">Technip Energies<br><em>Strategic Intelligence</em></h1>
+    <p class="hero-subtitle">Independent French engineering &amp; technology company spun off from TechnipFMC in 2021. Three commercial bets: dominate next-cycle modular LNG via SnapLNG, scale the Technology Products &amp; Services (TPS) recovery as ethylene reawakens, build the second leg in CCS + low-carbon hydrogen.</p>
+    <div class="hero-meta">
+      <div class="meta-item"><div class="meta-label">Listed</div><div class="meta-value">Euronext Paris · TE</div></div>
+      <div class="meta-item"><div class="meta-label">Date</div><div class="meta-value">May 2026</div></div>
+      <div class="meta-item"><div class="meta-label">Posture</div><div class="meta-value" style="color:#00b4d8">EXPAND</div></div>
+      <div class="meta-item"><div class="meta-label">Prepared by</div><div class="meta-value">FutureBridge Advisory</div></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><span class="section-num">01</span><h2 class="section-title">Company Snapshot</h2><div class="section-rule"></div></div>
+    <div class="snapshot-grid">
+      <div class="snap-cell"><div class="snap-val">€5.4B</div><div class="snap-lbl">Q3 2025 Revenue</div><div class="snap-sub">+9% YoY · Q3 2025 earnings call</div></div>
+      <div class="snap-cell"><div class="snap-val green">€15B+</div><div class="snap-lbl">Backlog</div><div class="snap-sub">~3× FY 2024 revenue · Q3 2025</div></div>
+      <div class="snap-cell"><div class="snap-val cyan">~$7B</div><div class="snap-lbl">2026 Execution Visibility</div><div class="snap-sub">scheduled revenue · Q3 2025 disclosure</div></div>
+      <div class="snap-cell"><div class="snap-val amber">€1.8-2.0B</div><div class="snap-lbl">TPS 2025 Guidance</div><div class="snap-sub">tracking lower half · macro headwinds</div></div>
+    </div>
+    <div class="callout">Technip Energies is a pure-play engineering &amp; technology business: no upstream exposure, no commodity risk, no asset ownership. Earnings come from EPC for LNG / hydrogen / chemicals plus high-margin Technology Products &amp; Services (TPS) — process tech, proprietary licences, advanced materials. Spin-off from TechnipFMC (Feb 2021) freed both companies to specialise: TechnipFMC retains subsea, T.EN retains onshore process tech.</div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><span class="section-num">02</span><h2 class="section-title">Strategy &amp; Intelligence</h2><div class="section-rule"></div></div>
+    <div class="strategy-box">
+      <div class="strategy-two-col">
+        <div>
+          <div class="strategy-col-head">LNG dominance via modular technology</div>
+          <ul class="bullet-list">
+            <li><strong>SnapLNG by T.EN</strong> — fully modular, electrified 2.5 Mtpa liquefaction solution. Deployed at Commonwealth LNG Louisiana (6 trains, 9.5 Mtpa).</li>
+            <li><strong>Marsa LNG (Oman) + Ruwais LNG (UAE)</strong> — electric-driven motors powered by renewable energy; positioned as among the lowest-carbon-intensity LNG plants globally.</li>
+            <li><strong>105+ Mtpa installed</strong> liquefaction capacity to date — ~20% of global LNG infrastructure (T.EN disclosure).</li>
+            <li><strong>900 Mtpa</strong> liquefaction capacity required by mid-decade per Pieton (Q3 2025 call) — structurally bullish on next-cycle awards.</li>
+          </ul>
+        </div>
+        <div>
+          <div class="strategy-col-head">Energy transition services as second leg</div>
+          <ul class="bullet-list">
+            <li><strong>Net Zero Teesside Power (UK)</strong> — world's first commercial-scale gas-fired power station with carbon capture; designed for 2 Mtpa CO₂ capture. Flagship Canopy by T.EN deployment.</li>
+            <li><strong>BlueH₂ by T.EN</strong> — low-carbon H2 with up to 99% CO₂ capture rate. Q1 2025 blue ammonia award in US.</li>
+            <li><strong>Largest green ammonia project globally</strong> awarded India 2024 (T.EN execution); Pieton notes "momentum is not a very recurring trend of awards."</li>
+            <li><strong>Rejoule + Ecoplanta</strong> — circular economy play (rPET yarn, Spain waste-to-methanol with Repsol).</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="strategy-two-col">
+      <div>
+        <div class="strategy-col-head">Pure-play structure creates a hedged bet</div>
+        <ul class="bullet-list">
+          <li>"We are <strong>naturally hedged and positioned to thrive in any energy scenario</strong>" — Pieton, Q3 2025.</li>
+          <li>No upstream exposure → unaffected by oil price swings; revenue tracks capex cycle of operators.</li>
+          <li>The transition is a <strong>"game of resilience"</strong>: Pieton's framing favours pragmatism over forced commitment to a single tech.</li>
+          <li>Recent TPS softness — backlog -16% from year start — reflects low-carbon capex pause, not LNG cycle.</li>
+        </ul>
+      </div>
+      <div>
+        <div class="strategy-col-head">Where FutureBridge can engage</div>
+        <ul class="bullet-list">
+          <li>Carbon capture engineering services scaling — competitive intelligence on Sulzer, Mitsubishi MHI, Aker Carbon Capture, Honeywell UOP.</li>
+          <li>SnapLNG modular references — differentiation vs Bechtel, Saipem, McDermott in next-cycle FOAK awards.</li>
+          <li>Ethylene cycle re-baseline — order intake timing and competitive lock-in (vs Lummus, KBR, ABB).</li>
+          <li>AM&amp;C acquisition integration — diligence on traditional + future ethylene growth markets.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><span class="section-num">03</span><h2 class="section-title">Peer Landscape</h2><div class="section-rule"></div></div>
+    <table class="peer-table">
+      <thead><tr><th>Company</th><th>Profile</th><th>LNG capacity installed</th><th>CCS / H₂ position</th><th>2025 backlog visibility</th><th>Risk profile</th></tr></thead>
+      <tbody>
+        <tr class="highlight-row">
+          <td><div class="co-name">Technip Energies</div></td>
+          <td>Pure-play onshore process EPC + tech licensing</td>
+          <td>105+ Mtpa</td>
+          <td>Net Zero Teesside flagship; BlueH₂ + Canopy</td>
+          <td>€15B (3× annual revenue)</td>
+          <td><span class="badge badge-cyan">Hedged</span></td>
+        </tr>
+        <tr><td><div class="co-name">Bechtel</div></td><td>Diversified EPC; private US-headquartered</td><td>~80 Mtpa</td><td>Selective</td><td>Strong</td><td><span class="badge badge-amber">Cyclical</span></td></tr>
+        <tr><td><div class="co-name">Saipem</div></td><td>Italian EPC; offshore + onshore mix</td><td>~30 Mtpa</td><td>CCS partnerships</td><td>Recovery</td><td><span class="badge badge-amber">Volatile</span></td></tr>
+        <tr><td><div class="co-name">McDermott Intl</div></td><td>Post-restructure US EPC</td><td>~25 Mtpa</td><td>CCS via Aker</td><td>Modest</td><td><span class="badge badge-amber">Recovering</span></td></tr>
+        <tr><td><div class="co-name">Honeywell UOP</div></td><td>Process tech licensing</td><td>n/a</td><td>Hydrogen + CCS tech</td><td>Strong</td><td><span class="badge badge-green">Disciplined</span></td></tr>
+        <tr><td><div class="co-name">KBR</div></td><td>Tech-led EPC; ammonia &amp; H₂ leader</td><td>n/a</td><td>Strong ammonia + green H₂ position</td><td>Strong</td><td><span class="badge badge-green">Disciplined</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><span class="section-num">04</span><h2 class="section-title">Key Initiatives &amp; Progress</h2><div class="section-rule"></div></div>
+    <div class="init-card"><div class="init-head"><div class="init-name">Commonwealth LNG (US, Louisiana)</div><span class="badge badge-cyan">SnapLNG FOAK</span></div><div class="init-desc">6 trains × ~1.6 Mtpa each = 9.5 Mtpa capacity using SnapLNG modular liquefaction. Limited notice to proceed awarded; awaiting full FID. Reference plant for next-cycle SnapLNG sales — if successful, repeats globally.</div></div>
+    <div class="init-card"><div class="init-head"><div class="init-name">Net Zero Teesside Power (UK)</div><span class="badge badge-cyan">CCS flagship</span></div><div class="init-desc">World's first commercial-scale gas-fired power station with CCS, designed for 2 Mtpa CO₂ capture. T.EN delivers Canopy carbon capture (post-combustion, Shell CANSOLV-licensed) and EPC. UK Track-1 cluster anchor.</div></div>
+    <div class="init-card"><div class="init-head"><div class="init-name">Coral Norte FLNG (Mozambique)</div><span class="badge badge-amber">FID taken</span></div><div class="init-desc">Floating LNG unit; FID achieved, awaiting administrative completion before execution. T.EN lead EPC contractor; second Coral after Coral South delivered 2022.</div></div>
+    <div class="init-card"><div class="init-head"><div class="init-name">Rovuma LNG (Mozambique)</div><span class="badge badge-blue">FEED stage</span></div><div class="init-desc">FEED executed by T.EN; competing for execution-phase award. Onshore facility ~15+ Mtpa scale; FID expected 2026-2027 dependent on Rovuma security situation.</div></div>
+    <div class="init-card"><div class="init-head"><div class="init-name">Marsa LNG (Oman) + Ruwais LNG (UAE)</div><span class="badge badge-green">Execution</span></div><div class="init-desc">Electric-driven liquefaction trains powered by renewable / low-carbon energy; among the lowest carbon-intensity LNG facilities globally. Showcase for SnapLNG decarbonised modular pattern.</div></div>
+    <div class="init-card"><div class="init-head"><div class="init-name">India green ammonia (largest globally)</div><span class="badge badge-green">2024 award</span></div><div class="init-desc">Largest green ammonia project worldwide by capacity at award; T.EN selected to execute. Shows green-H₂ economics work at the right scale + geography but Pieton calls out: order momentum has not become recurring.</div></div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><span class="section-num">06</span><h2 class="section-title">Weak Signals — FutureBridge Intelligence</h2><div class="section-rule"></div></div>
+    <div class="signals-grid">
+      <div class="signal-card"><div class="signal-num">S-01</div><div class="signal-name">Ethylene cycle re-baseline 2026</div><div class="signal-desc">Pieton calls out "early signs of recovery" with anticipated 2026 order intake; ethylene 3-4% per annum growth driver. AM&amp;C acquisition positions T.EN for both traditional + future ethylene markets. Timing is the question.</div></div>
+      <div class="signal-card"><div class="signal-num">S-02</div><div class="signal-name">SnapLNG FOAK risk at Commonwealth</div><div class="signal-desc">First six-train modular plant globally. Successful execution = template for next-cycle wins. Slippage or cost overrun = setback for the modular thesis.</div></div>
+      <div class="signal-card"><div class="signal-num">S-03</div><div class="signal-name">Green hydrogen pace softer than expected</div><div class="signal-desc">Largest global green ammonia award delivered, but Pieton: "momentum is not a very recurring trend of awards." Implies pipeline weaker than 2022-2023 expectations; timing for second commercial wave unclear.</div></div>
+      <div class="signal-card"><div class="signal-num">S-04</div><div class="signal-name">TPS macro pause</div><div class="signal-desc">TPS backlog -16% from year start; trending bottom of €1.8-2.0B 2025 guidance. Recovery dependent on low-carbon capex restart + ethylene cycle. Watch Q1-Q2 2026 awards as the inflection.</div></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><span class="section-num">HYP</span><h2 class="section-title">Hypothesis Register</h2><div class="section-rule"></div></div>
+    <p style="color:var(--text-mid);max-width:780px;margin-bottom:32px;font-size:0.88rem">Three structured hypotheses for engagement targeting, modelled on the FutureBridge framework: sources → system drivers → hypothesis → decision gates + what-needs-to-be-true conditions.</p>
+
+    <!-- TEN-01 -->
+    <div class="hyp-card">
+      <div class="hyp-head"><span class="hyp-code">TEN-01</span><span class="hyp-meta">H2 · 3-5yr</span><span class="hyp-conf">Confidence: High</span></div>
+      <div class="hyp-grid">
+        <div class="hyp-col"><div class="hyp-col-label">System drivers</div>
+          <div class="hyp-driver signal">Market — LNG cycle next-decade demand</div>
+          <div class="hyp-driver">Economics — SnapLNG capex/MTPA vs stick-built</div>
+          <div class="hyp-driver signal">Technology — Modular electric liquefaction yield + schedule</div>
+          <div class="hyp-driver">Policy — IMO GHG + EU CBAM gas import rules</div>
+        </div>
+        <div class="hyp-col"><div class="hyp-col-label">Hypothesis</div>
+          <div class="hyp-statement">SnapLNG modular liquefaction will become the dominant new-build LNG technology globally by 2030, capturing more than 30% of post-2025 FOAK FIDs and re-baselining T.EN as the reference licensor for the next LNG cycle.</div>
+          <div class="hyp-prob"><div class="hyp-prob-bar"><div class="hyp-prob-fill" style="width:74%"></div></div><span class="hyp-prob-val">74%</span></div>
+        </div>
+        <div class="hyp-col"><div class="hyp-col-label">Decisions</div>
+          <div class="hyp-decision"><span class="hyp-decision-tag">6M</span>Track Commonwealth LNG schedule + cost intelligence.</div>
+          <div class="hyp-decision"><span class="hyp-decision-tag">12M</span>Map SnapLNG vs stick-built + competing modular references.</div>
+          <div class="hyp-decision"><span class="hyp-decision-tag">18M</span>Propose SnapLNG competitive intelligence retainer.</div>
+        </div>
+      </div>
+      <div class="hyp-wntbt">
+        <div class="hyp-wntbt-head">WHAT NEEDS TO BE TRUE</div>
+        <div class="hyp-wntbt-list">
+          <div class="hyp-wntbt-item">Commonwealth LNG receives full notice to proceed and reaches financial close before end-2026.</div>
+          <div class="hyp-wntbt-item">At least 2 additional SnapLNG awards by end-2027 outside of Commonwealth (validates the template).</div>
+          <div class="hyp-wntbt-item">SnapLNG capex per Mtpa demonstrates ≥15% advantage vs equivalent stick-built reference at FOAK.</div>
+          <div class="hyp-wntbt-item">Global LNG demand trajectory toward 900 Mtpa by mid-decade (Pieton) holds without sharp price collapse.</div>
+        </div>
+        <div class="hyp-engagement"><div class="hyp-engagement-label">ENGAGEMENT IMPLICATION</div><div class="hyp-engagement-text">Modular LNG capex economics, SnapLNG vs incumbent stick-built references, and electric-driven liquefaction performance benchmarks are the technology intelligence categories T.EN's strategy team is most active on.</div></div>
+      </div>
+    </div>
+
+    <!-- TEN-02 -->
+    <div class="hyp-card">
+      <div class="hyp-head"><span class="hyp-code">TEN-02</span><span class="hyp-meta">H2 · 3-7yr</span><span class="hyp-conf">Confidence: Medium</span></div>
+      <div class="hyp-grid">
+        <div class="hyp-col"><div class="hyp-col-label">System drivers</div>
+          <div class="hyp-driver">Economics — CCS cost / tonne at scale</div>
+          <div class="hyp-driver signal">Market — Net Zero Teesside execution + UK Track-1 expansion</div>
+          <div class="hyp-driver">Technology — Canopy + CANSOLV scale-up</div>
+          <div class="hyp-driver signal">Policy — EU CBAM Phase 2 + UK CCS CfD continuation</div>
+        </div>
+        <div class="hyp-col"><div class="hyp-col-label">Hypothesis</div>
+          <div class="hyp-statement">Energy transition services (CCS + low-carbon hydrogen) becomes T.EN's second-leg revenue engine by 2028, generating €2B+ annual TPS revenue with margin parity to LNG.</div>
+          <div class="hyp-prob"><div class="hyp-prob-bar"><div class="hyp-prob-fill" style="width:58%"></div></div><span class="hyp-prob-val">58%</span></div>
+        </div>
+        <div class="hyp-col"><div class="hyp-col-label">Decisions</div>
+          <div class="hyp-decision"><span class="hyp-decision-tag">6M</span>Map UK CCS Track-1/Track-2 award timeline; T.EN positioning.</div>
+          <div class="hyp-decision"><span class="hyp-decision-tag">12M</span>Deliver CCS + BlueH₂ competitive intelligence (Sulzer, MHI, Aker, Honeywell).</div>
+          <div class="hyp-decision"><span class="hyp-decision-tag">18M</span>Propose ongoing energy transition services intelligence programme.</div>
+        </div>
+      </div>
+      <div class="hyp-wntbt">
+        <div class="hyp-wntbt-head">WHAT NEEDS TO BE TRUE</div>
+        <div class="hyp-wntbt-list">
+          <div class="hyp-wntbt-item">Net Zero Teesside Power reaches full FID + EPC execution kickoff before end-2026.</div>
+          <div class="hyp-wntbt-item">UK CCS CfD framework holds + Track-2 awards announced before mid-2026.</div>
+          <div class="hyp-wntbt-item">≥2 commercial BlueH₂ by T.EN awards in addition to existing pipeline by end-2027.</div>
+          <div class="hyp-wntbt-item">TPS revenue recovers above €2.0B annual run-rate in 2026 or 2027.</div>
+        </div>
+        <div class="hyp-engagement"><div class="hyp-engagement-label">ENGAGEMENT IMPLICATION</div><div class="hyp-engagement-text">Carbon capture engineering services at FOAK commercial scale and BlueH₂ economics vs stand-alone green H₂ are the active scouting questions in T.EN's energy transition team.</div></div>
+      </div>
+    </div>
+
+    <!-- TEN-03 -->
+    <div class="hyp-card">
+      <div class="hyp-head"><span class="hyp-code">TEN-03</span><span class="hyp-meta">H1 · 1-2yr</span><span class="hyp-conf">Confidence: Medium</span></div>
+      <div class="hyp-grid">
+        <div class="hyp-col"><div class="hyp-col-label">System drivers</div>
+          <div class="hyp-driver signal">Economics — Ethylene capacity utilisation + capex cycle restart</div>
+          <div class="hyp-driver">Market — TPS backlog rebuild trajectory</div>
+          <div class="hyp-driver signal">Technology — Low-emission ethylene furnace + AM&amp;C integration</div>
+          <div class="hyp-driver">Policy — Petrochemical IRA / EU CBAM impact on capex timing</div>
+        </div>
+        <div class="hyp-col"><div class="hyp-col-label">Hypothesis</div>
+          <div class="hyp-statement">TPS rebuilds backlog to ≥€2.0B by end-2026 driven by ethylene cycle re-baseline + AM&amp;C-enabled wins, restoring full €1.8-2.0B revenue range and resuming double-digit segment EBITDA growth.</div>
+          <div class="hyp-prob"><div class="hyp-prob-bar"><div class="hyp-prob-fill" style="width:62%"></div></div><span class="hyp-prob-val">62%</span></div>
+        </div>
+        <div class="hyp-col"><div class="hyp-col-label">Decisions</div>
+          <div class="hyp-decision"><span class="hyp-decision-tag">6M</span>Track ethylene FID announcements globally; T.EN/Lummus/KBR mix.</div>
+          <div class="hyp-decision"><span class="hyp-decision-tag">12M</span>Deliver low-emission furnace + circular feedstock competitive intelligence.</div>
+          <div class="hyp-decision"><span class="hyp-decision-tag">18M</span>Propose TPS pipeline + competitive intelligence quarterly.</div>
+        </div>
+      </div>
+      <div class="hyp-wntbt">
+        <div class="hyp-wntbt-head">WHAT NEEDS TO BE TRUE</div>
+        <div class="hyp-wntbt-list">
+          <div class="hyp-wntbt-item">Ethylene order intake materialises Q1-Q2 2026 with at least 1 announced T.EN award.</div>
+          <div class="hyp-wntbt-item">AM&amp;C integration delivers traditional + future ethylene growth pipeline in 2026.</div>
+          <div class="hyp-wntbt-item">TPS book-to-bill returns above 1.0 for two consecutive quarters by mid-2026.</div>
+          <div class="hyp-wntbt-item">No major TPS customer pause in low-carbon capex (recycling, sustainable chemistry) extends beyond Q2 2026.</div>
+        </div>
+        <div class="hyp-engagement"><div class="hyp-engagement-label">ENGAGEMENT IMPLICATION</div><div class="hyp-engagement-text">Ethylene cycle timing intelligence + AM&amp;C synergies + circular feedstock economics are the inputs T.EN's TPS team needs to confirm the recovery thesis.</div></div>
+      </div>
+    </div>
+
+  </section>
+
+</div>
+</body>
+</html>
