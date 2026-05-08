@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STMicroelectronics — Account Intelligence Brief — May 2026</title>
+<style>
+:root{
+  --ink:#060a0f;--text:#e8eef5;--text-mid:#8fa3b5;--text-dim:#4a6278;
+  --panel:#0f1922;--panel2:#131f2b;--border:#1c2e3e;--border2:#243444;
+  --gold:#3da3ff;--cyan:#2dd4bf;--green:#22c55e;--amber:#f59e0b;
+  --red:#f05252;--blue:#38bdf8;--accent:#3da3ff;
+  --font-sans:Arial,Helvetica,sans-serif;--font-serif:Georgia,'Times New Roman',serif;
+  --font-mono:'Courier New',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--text);font-family:var(--font-sans);font-size:14px;line-height:1.6}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:9999}
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(6,10,15,0.95);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);display:flex;align-items:center;padding:0 32px;height:52px;gap:24px}
+.nav-brand{font-family:var(--font-mono);font-size:0.65rem;font-weight:700;color:var(--gold);letter-spacing:0.2em;text-transform:uppercase;border-right:1px solid var(--border);padding-right:24px;white-space:nowrap}
+.nav-links{display:flex;gap:4px;flex:1;overflow-x:auto;scrollbar-width:none}
+.nav-link{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);text-decoration:none;padding:6px 10px;white-space:nowrap}
+.nav-link:hover{color:var(--gold)}
+.nav-badge{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;color:var(--red);border:1px solid var(--red);padding:3px 8px;text-transform:uppercase}
+.posture-badge{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;color:var(--accent);border:1px solid var(--accent);padding:3px 8px;text-transform:uppercase}
+.page{max-width:1200px;margin:0 auto;padding:0 32px 80px}
+.hero{padding:110px 0 60px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.hero::before{content:'STM';position:absolute;right:-30px;top:50%;transform:translateY(-50%);font-family:var(--font-serif);font-size:18rem;font-weight:900;color:rgba(61,163,255,0.05);line-height:1;pointer-events:none;letter-spacing:-0.05em}
+.hero-kicker{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.hero-kicker::before{content:'';width:32px;height:1px;background:var(--gold)}
+.hero-title{font-family:var(--font-serif);font-size:3.5rem;font-weight:900;line-height:1.05;color:var(--text);margin-bottom:16px;max-width:700px}
+.hero-title em{font-style:normal;color:var(--gold)}
+.hero-subtitle{font-family:var(--font-sans);font-size:1rem;color:var(--text-mid);max-width:580px;margin-bottom:36px;font-weight:300;line-height:1.7}
+.hero-meta{display:flex;gap:32px;flex-wrap:wrap}
+.meta-item{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase}
+.meta-label{color:var(--text-dim);margin-bottom:4px}
+.meta-value{color:var(--text);font-weight:700;font-size:0.72rem}
+.section{padding:56px 0 0}
+.section-head{display:flex;align-items:center;gap:16px;margin-bottom:32px}
+.section-num{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.2em;color:var(--text-dim);text-transform:uppercase;background:var(--panel);border:1px solid var(--border);padding:4px 8px}
+.section-title{font-family:var(--font-serif);font-size:1.8rem;font-weight:700;color:var(--text)}
+.section-rule{flex:1;height:1px;background:var(--border)}
+.snapshot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:24px}
+.snap-cell{background:var(--panel);padding:20px}
+.snap-val{font-family:var(--font-mono);font-size:1.6rem;font-weight:700;color:var(--text);margin-bottom:4px}
+.snap-val.green{color:var(--green)}.snap-val.amber{color:var(--amber)}.snap-val.cyan{color:var(--cyan)}.snap-val.red{color:var(--red)}.snap-val.blue{color:var(--blue)}
+.snap-lbl{font-family:var(--font-sans);font-size:0.75rem;color:var(--text-mid);margin-bottom:2px}
+.snap-sub{font-family:var(--font-mono);font-size:0.58rem;color:var(--text-dim)}
+.info-box{background:var(--panel);border-left:3px solid var(--gold);padding:20px 24px;font-size:0.88rem;color:var(--text-mid);line-height:1.7;margin-bottom:24px}
+.callout{background:var(--panel2);border:1px solid var(--border2);border-left:3px solid var(--cyan);padding:20px 24px;font-size:0.88rem;color:var(--text);line-height:1.7;margin-bottom:24px}
+.strategy-box{background:var(--panel);border:1px solid var(--border);padding:24px;margin-bottom:24px}
+.strategy-two-col{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:24px}
+.strategy-col-head{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.strategy-col-head::after{content:'';flex:1;height:1px;background:var(--border)}
+.bullet-list{list-style:none;padding:0}
+.bullet-list li{font-size:0.85rem;color:var(--text-mid);padding:5px 0 5px 16px;position:relative;line-height:1.5;border-bottom:1px solid rgba(28,46,62,0.5)}
+.bullet-list li::before{content:'▸';position:absolute;left:0;color:var(--gold);font-size:0.7rem;top:7px}
+.bullet-list li strong{color:var(--text)}
+.peer-table{width:100%;border-collapse:collapse;font-size:0.78rem;margin-bottom:24px}
+.peer-table th{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);background:var(--panel)}
+.peer-table td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);vertical-align:middle}
+.peer-table .highlight-row td{background:var(--panel2);color:var(--text)}
+.co-name{font-weight:600;color:var(--text);font-size:0.82rem}
+.ticker{font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim)}
+.badge{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.06em;text-transform:uppercase;padding:2px 7px;border-radius:2px;display:inline-block}
+.badge-green{background:rgba(34,197,94,0.15);color:var(--green)}
+.badge-amber{background:rgba(245,158,11,0.15);color:var(--amber)}
+.badge-red{background:rgba(240,82,82,0.15);color:var(--red)}
+.badge-blue{background:rgba(56,189,248,0.15);color:var(--blue)}
+.badge-cyan{background:rgba(45,212,191,0.15);color:var(--cyan)}
+.badge-gold{background:rgba(61,163,255,0.15);color:var(--gold)}
+.initiatives-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:24px}
+.init-card{background:var(--panel);border:1px solid var(--border);padding:20px}
+.init-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:12px}
+.init-name{font-family:var(--font-sans);font-weight:600;font-size:0.88rem;color:var(--text)}
+.init-desc{font-size:0.8rem;color:var(--text-mid);line-height:1.55;margin-bottom:14px}
+.signals-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:24px}
+.signal-card{background:var(--panel);border:1px solid var(--border);padding:20px}
+.signal-num{font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);margin-bottom:6px}
+.signal-name{font-family:var(--font-serif);font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px}
+.signal-trl{font-family:var(--font-mono);font-size:0.58rem;color:var(--gold);margin-bottom:10px}
+.signal-desc{font-size:0.8rem;color:var(--text-mid);line-height:1.55;margin-bottom:12px}
+.signal-why{font-family:var(--font-mono);font-size:0.6rem;color:var(--text-dim)}
+@media(max-width:768px){.snapshot-grid{grid-template-columns:repeat(2,1fr)}.strategy-two-col,.initiatives-grid,.signals-grid{grid-template-columns:1fr}.hero-title{font-size:2.2rem}}
+</style>
+</head>
+<body>
+<!-- v8-deprecation-banner -->
+<div style="background:#000;color:#fff;padding:14px 24px;font-family:Arial,Helvetica,sans-serif;font-size:13px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;border-bottom:2px solid #3da3ff">
+  <span style="font-family:'Courier New',monospace;font-size:10px;font-weight:700;letter-spacing:0.12em;color:#3da3ff">DEPRECATED</span>
+  <span style="flex:1;line-height:1.45">This brief has been superseded by the live account plan tool, which pulls hypotheses, ontology pairs, signal log and contacts directly from the catalogue.</span>
+  <a href="account_plans_v8.html?company=STMicroelectronics" style="background:#3da3ff;color:#fff;text-decoration:none;padding:7px 14px;font-weight:600;font-size:12px;letter-spacing:0.04em;white-space:nowrap">Open STMicroelectronics in v8 →</a>
+</div>
+
+<div style="background:#0a1520;border-bottom:1px solid #1c2e3e;padding:8px 24px;display:flex;align-items:center;gap:12px">
+  <span style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.12em;font-weight:700;color:#22AE8A">● SIGNAL REFRESH</span>
+  <span style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278">May 2026 · Sources: STM Q1 2026 results (23 Apr 2026), STM Catania SiC campus updates, STM-AWS strategic collaboration (Feb 2026)</span>
+  <span style="margin-left:auto;font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278">May 2026</span>
+</div>
+
+<nav class="nav">
+  <div class="nav-brand">FutureBridge // STM Brief</div>
+  <div class="nav-links">
+    <a href="#overview" class="nav-link">Overview</a>
+    <a href="#strategy" class="nav-link">Strategy</a>
+    <a href="#peers" class="nav-link">Peers</a>
+    <a href="#initiatives" class="nav-link">Initiatives</a>
+    <a href="#signals" class="nav-link">Signals</a>
+    <a href="#hypotheses" class="nav-link">Hypotheses</a>
+  </div>
+  <span class="posture-badge">EXPAND</span>
+  <div class="nav-badge">Confidential</div>
+</nav>
+
+<div class="page">
+
+  <section class="hero" id="top">
+    <div class="hero-kicker">Intelligence Brief · Semiconductors — Power, Automotive & AI Infra</div>
+    <h1 class="hero-title">STMicroelectronics<br><em>Strategic Intelligence</em></h1>
+    <p class="hero-subtitle">Franco-Italian IDM rebuilding through a 200mm SiC ramp at Catania, datacenter / AI-power inflection via the AWS multi-billion-dollar collaboration, and a margin recovery from the Q1 2026 trough.</p>
+    <div class="hero-meta">
+      <div class="meta-item"><div class="meta-label">Sector</div><div class="meta-value">Power Semis · Automotive · MCU · AI Infra</div></div>
+      <div class="meta-item"><div class="meta-label">Date</div><div class="meta-value">May 2026</div></div>
+      <div class="meta-item"><div class="meta-label">Posture</div><div class="meta-value" style="color:#22c55e">EXPAND</div></div>
+      <div class="meta-item"><div class="meta-label">Prepared by</div><div class="meta-value">FutureBridge Advisory</div></div>
+    </div>
+  </section>
+
+  <section class="section" id="overview">
+    <div class="section-head"><span class="section-num">01</span><h2 class="section-title">Company Snapshot</h2><div class="section-rule"></div></div>
+    <div class="snapshot-grid">
+      <div class="snap-cell"><div class="snap-val">$3.10B</div><div class="snap-lbl">Q1 2026 revenue</div><div class="snap-sub">+23.0% YoY · -7.0% QoQ · NYSE: STM</div></div>
+      <div class="snap-cell"><div class="snap-val amber">33.8%</div><div class="snap-lbl">Q1 2026 gross margin</div><div class="snap-sub">vs guided 33.5% · unused-capacity charge ~10%</div></div>
+      <div class="snap-cell"><div class="snap-val cyan">$3.45B</div><div class="snap-lbl">Q2 2026 guidance midpoint</div><div class="snap-sub">+11.6% sequential · GM 34.8%</div></div>
+      <div class="snap-cell"><div class="snap-val green">€5B</div><div class="snap-lbl">Catania SiC campus capex</div><div class="snap-sub">200mm; €2B EU Chips Act support</div></div>
+      <div class="snap-cell"><div class="snap-val cyan">>$500M</div><div class="snap-lbl">Datacenter revenue 2026</div><div class="snap-sub">>$1B target 2027 · AWS multi-year deal Feb 2026</div></div>
+      <div class="snap-cell"><div class="snap-val">~30%</div><div class="snap-lbl">Global automotive SiC share</div><div class="snap-sub">Co-leader with Infineon</div></div>
+      <div class="snap-cell"><div class="snap-val blue">Q4'25</div><div class="snap-lbl">Catania first 200mm wafers</div><div class="snap-sub">Ramp through 2026-2033 to 15k wfr/wk</div></div>
+      <div class="snap-cell"><div class="snap-val red">$37M</div><div class="snap-lbl">Q1 2026 net income</div><div class="snap-sub">Margin trough; recovery profile loaded H2 2026</div></div>
+    </div>
+    <div class="info-box">
+      <strong>Headline state.</strong> Margin trough in Q1 2026 with utilisation pressure offset by accelerating bookings — Q2 guide signals sequential recovery. Three structural plays in motion: Catania 200mm SiC ramp, AWS-led datacenter expansion, and renewed automotive design-in pipeline. Each carries its own load-bearing hypothesis below.
+    </div>
+  </section>
+
+  <section class="section" id="strategy">
+    <div class="section-head"><span class="section-num">02</span><h2 class="section-title">Strategic Posture</h2><div class="section-rule"></div></div>
+    <div class="strategy-box">
+      <div class="strategy-two-col">
+        <div>
+          <div class="strategy-col-head">Where STM is investing</div>
+          <ul class="bullet-list">
+            <li><strong>Catania SiC campus.</strong> €5B (€2B state-supported) for fully integrated 200mm SiC fab — substrate, epi, front-end, packaging in one site. First wafers Q4 2025; ramp to 15k wfr/wk by 2033.</li>
+            <li><strong>Crolles 300mm Phase 2.</strong> Continued Franco-Italian state-supported MCU + Imaging build-out.</li>
+            <li><strong>Datacenter / AI infra.</strong> Multi-year, multi-billion-dollar strategic collaboration with AWS announced Feb 2026 across power management + sensing.</li>
+            <li><strong>Automotive MCU + sensors.</strong> Stellar MCU family + ToF / FlightSense sensors design-in pipeline rebuilding into 2026-2027 model years.</li>
+          </ul>
+        </div>
+        <div>
+          <div class="strategy-col-head">What's under pressure</div>
+          <ul class="bullet-list">
+            <li><strong>Automotive SiC pricing.</strong> Wafer prices below $300 per 200mm-equivalent; Chinese IDM (BYD Semi, CRRC, Sanan) capacity expanding aggressively.</li>
+            <li><strong>Industrial inventory.</strong> Discrete-power channel inventory still elevated — destocking has stretched into 2026.</li>
+            <li><strong>Margin profile.</strong> Q1 2026 GM 33.8% vs 50%+ peak — utilisation charges + price competition.</li>
+            <li><strong>Mobileye / Tesla optical exposure.</strong> Indirect, but ToF / FlightSense competitive with smartphone + auto-vision incumbents.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="callout">
+        <strong>Strategic posture: EXPAND</strong> — STM's three structural plays (Catania ramp, AWS datacenter, automotive design-in) are loaded into the H2 2026 / FY2027 trajectory. Margin recovery confirms the platform; missing it pushes the equity narrative back to a defensive cycle.
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="peers">
+    <div class="section-head"><span class="section-num">03</span><h2 class="section-title">Peer Landscape</h2><div class="section-rule"></div></div>
+    <table class="peer-table">
+      <tr><th>Company</th><th>FY2025 rev</th><th>SiC posture</th><th>Datacenter posture</th><th>Margin signal</th></tr>
+      <tr class="highlight-row"><td><span class="co-name">STMicroelectronics</span><br><span class="ticker">NYSE: STM</span></td><td>~$13.3B</td><td>Catania 200mm ramp; ~30% global auto SiC</td><td>AWS multi-year; >$500M 2026 → >$1B 2027</td><td><span class="badge badge-amber">Trough Q1 2026</span></td></tr>
+      <tr><td><span class="co-name">Infineon Technologies</span><br><span class="ticker">XETRA: IFX</span></td><td>~€15.2B</td><td>Dresden + Malaysia €5B; ~60% SiC modules</td><td>AI server power expanding</td><td><span class="badge badge-green">Recovering</span></td></tr>
+      <tr><td><span class="co-name">onsemi</span><br><span class="ticker">NASDAQ: ON</span></td><td>~$7.3B</td><td>Czech / NH SiC; T7M LTAs intact</td><td>Niche</td><td><span class="badge badge-amber">Inventory drag</span></td></tr>
+      <tr><td><span class="co-name">Wolfspeed</span><br><span class="ticker">NYSE: WOLF</span></td><td>~$0.9B</td><td>Mohawk Valley 200mm sole pure-play</td><td>None</td><td><span class="badge badge-red">Stress</span></td></tr>
+      <tr><td><span class="co-name">NXP</span><br><span class="ticker">NASDAQ: NXPI</span></td><td>~$12.6B</td><td>Limited SiC; auto MCU + radar focus</td><td>None core</td><td><span class="badge badge-green">Stable</span></td></tr>
+      <tr><td><span class="co-name">Renesas</span><br><span class="ticker">TYO: 6723</span></td><td>~¥1.4T</td><td>Modest SiC; auto MCU + power IP</td><td>None core</td><td><span class="badge badge-amber">Mixed</span></td></tr>
+    </table>
+  </section>
+
+  <section class="section" id="initiatives">
+    <div class="section-head"><span class="section-num">04</span><h2 class="section-title">Live Initiatives</h2><div class="section-rule"></div></div>
+    <div class="initiatives-grid">
+      <div class="init-card"><div class="init-head"><div class="init-name">Catania 200mm SiC campus</div><span class="badge badge-cyan">Active</span></div><div class="init-desc">€5B (€2B state-backed) fully integrated SiC site — substrate / epi / front-end / pack. First 200mm wafers Q4 2025. Full build-out 15k wfr/wk by 2033. Critical to defending automotive SiC share and unlocking 200mm cost curve.</div></div>
+      <div class="init-card"><div class="init-head"><div class="init-name">AWS strategic collaboration</div><span class="badge badge-green">Won</span></div><div class="init-desc">Multi-year, multi-billion-dollar engagement announced Feb 2026 — power management, sensing, custom ICs for AWS data centres + edge devices. Anchor account for the >$1B 2027 datacenter revenue target.</div></div>
+      <div class="init-card"><div class="init-head"><div class="init-name">Crolles 300mm Phase 2</div><span class="badge badge-cyan">Build</span></div><div class="init-desc">Franco-Italian state-supported MCU / Imaging build-out alongside GlobalFoundries. Capacity dedicated to automotive MCU + ToF + FlightSense families — rebuilds STM-specific 300mm capability outside East Asian fabs.</div></div>
+      <div class="init-card"><div class="init-head"><div class="init-name">Stellar MCU + automotive design wins</div><span class="badge badge-cyan">Active</span></div><div class="init-desc">Stellar MCU family targeted at SDV + zonal compute architectures. Design-in pipeline rebuilding for 2026-2027 model years following 2024-2025 OEM destocking.</div></div>
+      <div class="init-card"><div class="init-head"><div class="init-name">Restructuring + cost programme</div><span class="badge badge-amber">In flight</span></div><div class="init-desc">~$300M annual cost-savings programme through manufacturing footprint optimisation announced 2025. Realisation profile critical to gross margin recovery toward 38%+ exit-2026.</div></div>
+      <div class="init-card"><div class="init-head"><div class="init-name">GaN power expansion</div><span class="badge badge-cyan">Watch</span></div><div class="init-desc">GaN-on-Si power devices targeting AI server PSUs + high-density industrial. Smaller scale than SiC but margin profile attractive; competitive vs Power Integrations + Infineon.</div></div>
+    </div>
+  </section>
+
+  <section class="section" id="signals">
+    <div class="section-head"><span class="section-num">06</span><h2 class="section-title">Weak Signals</h2><div class="section-rule"></div></div>
+    <div class="signals-grid">
+      <div class="signal-card"><div class="signal-num">SIG-01</div><div class="signal-name">Chinese SiC IDM ramp</div><div class="signal-trl">PRESSURE · 2026</div><div class="signal-desc">BYD Semi, CRRC, Sanan, JinkoSolar — Chinese SiC capacity expanding aggressively at 200mm. Pressure on STM + Infineon automotive share through 2027.</div><div class="signal-why">→ Watch: customer qualification announcements outside China</div></div>
+      <div class="signal-card"><div class="signal-num">SIG-02</div><div class="signal-name">AWS datacenter ramp profile</div><div class="signal-trl">UPSIDE · 2026-2027</div><div class="signal-desc">Multi-year deal disclosed Feb 2026; phased revenue recognition. Critical to >$1B 2027 datacenter target — first revenue inflection should be visible by Q3-Q4 2026.</div><div class="signal-why">→ Watch: STM datacenter segment disclosure granularity</div></div>
+      <div class="signal-card"><div class="signal-num">SIG-03</div><div class="signal-name">Catania 200mm yield ramp</div><div class="signal-trl">EXECUTION · 2026</div><div class="signal-desc">First 200mm production Q4 2025 → ramp toward design-rule yield through 2026. Each yield-improvement milestone reduces wafer cost vs Wolfspeed Mohawk Valley.</div><div class="signal-why">→ Watch: STM technology + reliability disclosures + customer audit results</div></div>
+      <div class="signal-card"><div class="signal-num">SIG-04</div><div class="signal-name">Margin recovery profile</div><div class="signal-trl">CRITICAL · H2 2026</div><div class="signal-desc">Q1 2026 GM 33.8% trough; Q2 guide 34.8%. Path to 38%+ exit-2026 turns on utilisation + cost programme — single largest equity narrative driver.</div><div class="signal-why">→ Watch: quarterly utilisation commentary + cost programme run-rate</div></div>
+    </div>
+  </section>
+
+<!-- ══ HYPOTHESIS REGISTER ══ -->
+<section id="hypotheses" class="section">
+<div style="max-width:1200px;margin:0 auto;padding:56px 0 80px">
+
+  <div class="section-head"><span class="section-num">HYP</span><h2 class="section-title">Hypothesis Register</h2><div class="section-rule"></div></div>
+
+  <div class="info-box" style="margin-bottom:32px">
+    Three load-bearing hypotheses anchor STM scouting through 2027. Each is stated as a directional belief with explicit WNTBT thresholds — the conditions that must hold for the hypothesis to confirm. Sources are raw and undifferentiated; a source becomes a signal only when it moves one of the four system drivers.
+  </div>
+
+  <!-- Summary strip -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:40px">
+    <div style="background:var(--panel);padding:16px"><div style="font-family:var(--font-mono);font-size:1.4rem;font-weight:700;color:var(--text);margin-bottom:2px">3</div><div style="font-size:0.75rem;color:var(--text-mid)">Active hypotheses</div><div style="font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);margin-top:2px">May 2026</div></div>
+    <div style="background:var(--panel);padding:16px"><div style="font-family:var(--font-mono);font-size:1.4rem;font-weight:700;color:var(--text);margin-bottom:2px">66%</div><div style="font-size:0.75rem;color:var(--text-mid)">Average probability</div><div style="font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);margin-top:2px">Across 3 hypotheses</div></div>
+    <div style="background:var(--panel);padding:16px"><div style="font-family:var(--font-mono);font-size:1.4rem;font-weight:700;color:var(--gold);margin-bottom:2px">4</div><div style="font-size:0.75rem;color:var(--text-mid)">Signal drivers tracked</div><div style="font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);margin-top:2px">Economics · Market · Technology · Policy</div></div>
+  </div>
+
+  <!-- STM-01 -->
+  <div style="margin:0 0 44px 0;border:1px solid #243444;border-top:2px solid var(--gold)">
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#131f2b;border-bottom:1px solid #1c2e3e">
+      <span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--gold);font-weight:700">STM-01</span>
+      <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;border:1px solid #1c2e3e;padding:2px 8px">H2 · 3-5yr</span>
+      <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;margin-left:auto">Confidence: Mid</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1.3fr 1.6fr 1.2fr;border-bottom:1px solid #1c2e3e">
+      <div style="padding:14px 12px;border-right:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:10px">SOURCES</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.75rem;color:#4a6278;margin-bottom:10px;font-style:italic">Raw and undifferentiated</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ STM Catania capex + first-wafer announcements</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ BYD Semi / CRRC / Sanan customer qualification news</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ SiC wafer spot pricing</div>
+      </div>
+      <div style="border-right:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">SYSTEM DRIVERS</div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(61,163,255,0.12);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:var(--gold)">Economics<span style="background:rgba(61,163,255,0.22);color:var(--gold);font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">SiC MOSFET wafer price per 200mm equivalent</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(72,184,231,0.12);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#48B8E7;flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:#48B8E7">Market<span style="background:rgba(72,184,231,0.22);color:#48B8E7;font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">Chinese IDM and Infineon automotive SiC share</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#22AE8A;flex-shrink:0;margin-top:4px;opacity:0.35"></span><div><div style="font-size:0.8rem;color:#4a6278">Technology</div><div style="font-size:0.72rem;color:#4a6278">Catania 200mm yield + reliability proof points</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px"><span style="width:8px;height:8px;border-radius:50%;background:#9D7AD2;flex-shrink:0;margin-top:4px;opacity:0.35"></span><div><div style="font-size:0.8rem;color:#4a6278">Policy</div><div style="font-size:0.72rem;color:#4a6278">EU Chips Act + non-China sourcing preferences</div></div></div>
+      </div>
+      <div style="padding:16px;border-right:1px solid #1c2e3e;display:flex;flex-direction:column;justify-content:center">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:12px">HYPOTHESIS</div>
+        <div style="font-family:Georgia,serif;font-size:1.05rem;font-style:italic;color:#e8eef5;line-height:1.55;margin-bottom:16px">STM defends ≥30% global automotive SiC market share through 2027 by ramping Catania 200mm to design-rule yield, holding ASPs above the Chinese-IDM benchmark via European OEM lock-in.</div>
+        <div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:3px;background:#1c2e3e;border-radius:2px"><div style="width:65%;height:100%;background:var(--gold);border-radius:2px"></div></div><span style="font-family:Courier New,monospace;font-size:0.65rem;color:var(--gold);font-weight:700">65%</span></div>
+      </div>
+      <div>
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">DECISIONS</div>
+        <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#9D7AD2;background:rgba(157,122,210,0.18);padding:2px 8px;border-radius:10px">6 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Map Catania ramp + Chinese SiC IDM customer-qualification status.</div></div>
+        <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#22AE8A;background:rgba(34,174,138,0.18);padding:2px 8px;border-radius:10px">12 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Deliver SiC competitive landscape — STM, Infineon, onsemi, Wolfspeed, Chinese IDMs.</div></div>
+        <div style="padding:10px 12px"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:var(--gold);background:rgba(61,163,255,0.18);padding:2px 8px;border-radius:10px">18 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Quarterly SiC competitive intelligence + ASP tracker programme.</div></div>
+      </div>
+    </div>
+    <div style="background:#0f1922">
+      <div style="display:flex;align-items:center;gap:16px;padding:12px 16px 8px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.1em;font-weight:700;color:var(--gold)">WHAT NEEDS TO BE TRUE</span><span style="flex:1;height:1px;background:#1c2e3e"></span><span style="font-family:Arial,sans-serif;font-size:0.65rem;color:#4a6278">All conditions hold</span></div>
+      <div style="padding:4px 16px 12px">
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">Catania 200mm reaches design-rule yield by end-2026 with first OEM-qualified parts shipping in volume.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">No European OEM dual-sources SiC inverters with a Chinese IDM as primary supplier before 2027.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">STM SiC ASP holds above $300 / 200mm-equivalent through 2027.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">EU Chips Act funding remains in force; no reversal of non-China sourcing preferences.</span></div>
+      </div>
+      <div style="padding:10px 16px 14px;border-top:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.5rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:5px">ENGAGEMENT IMPLICATION</div>
+        <div style="font-size:0.82rem;color:#8fa3b5;line-height:1.6;padding-left:12px;border-left:2px solid var(--gold)">A rigorous SiC competitive landscape — Catania ramp, Chinese-IDM qualification status, OEM dual-source intelligence — is the engagement anchor for STM's automotive + power strategy team.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STM-02 -->
+  <div style="margin:0 0 44px 0;border:1px solid #243444;border-top:2px solid var(--gold)">
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#131f2b;border-bottom:1px solid #1c2e3e">
+      <span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--gold);font-weight:700">STM-02</span>
+      <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;border:1px solid #1c2e3e;padding:2px 8px">H1 · 1-2yr</span>
+      <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;margin-left:auto">Confidence: High</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1.3fr 1.6fr 1.2fr;border-bottom:1px solid #1c2e3e">
+      <div style="padding:14px 12px;border-right:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:10px">SOURCES</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.75rem;color:#4a6278;margin-bottom:10px;font-style:italic">Raw and undifferentiated</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ STM-AWS strategic collaboration disclosure</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ STM datacenter segment quarterly disclosure</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ Hyperscaler power-density + custom-silicon trends</div>
+      </div>
+      <div style="border-right:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">SYSTEM DRIVERS</div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(72,184,231,0.12);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#48B8E7;flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:#48B8E7">Market<span style="background:rgba(72,184,231,0.22);color:#48B8E7;font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">AWS multi-billion engagement disclosure + ramp profile</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(34,174,138,0.10);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#22AE8A;flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:#22AE8A">Technology<span style="background:rgba(34,174,138,0.22);color:#22AE8A;font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">GaN + SiC power for AI server PSU + 48V architectures</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:4px;opacity:0.4"></span><div><div style="font-size:0.8rem;color:#4a6278">Economics</div><div style="font-size:0.72rem;color:#4a6278">Datacenter $/W margin profile vs commodity power</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px"><span style="width:8px;height:8px;border-radius:50%;background:#9D7AD2;flex-shrink:0;margin-top:4px;opacity:0.35"></span><div><div style="font-size:0.8rem;color:#4a6278">Policy</div><div style="font-size:0.72rem;color:#4a6278">Datacenter power efficiency mandates</div></div></div>
+      </div>
+      <div style="padding:16px;border-right:1px solid #1c2e3e;display:flex;flex-direction:column;justify-content:center">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:12px">HYPOTHESIS</div>
+        <div style="font-family:Georgia,serif;font-size:1.05rem;font-style:italic;color:#e8eef5;line-height:1.55;margin-bottom:16px">STM datacenter segment scales from &gt;$500M FY2026 to &gt;$1B FY2027, anchored by the AWS multi-year deal and second hyperscaler win, becoming the highest-margin growth pillar in the portfolio.</div>
+        <div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:3px;background:#1c2e3e;border-radius:2px"><div style="width:70%;height:100%;background:var(--gold);border-radius:2px"></div></div><span style="font-family:Courier New,monospace;font-size:0.65rem;color:var(--gold);font-weight:700">70%</span></div>
+      </div>
+      <div>
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">DECISIONS</div>
+        <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#9D7AD2;background:rgba(157,122,210,0.18);padding:2px 8px;border-radius:10px">6 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Track AWS engagement ramp + datacenter segment disclosure granularity.</div></div>
+        <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#22AE8A;background:rgba(34,174,138,0.18);padding:2px 8px;border-radius:10px">12 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Map STM hyperscaler funnel — second + third anchor accounts.</div></div>
+        <div style="padding:10px 12px"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:var(--gold);background:rgba(61,163,255,0.18);padding:2px 8px;border-radius:10px">18 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Annual datacenter / AI infra position vs Infineon + ON.</div></div>
+      </div>
+    </div>
+    <div style="background:#0f1922">
+      <div style="display:flex;align-items:center;gap:16px;padding:12px 16px 8px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.1em;font-weight:700;color:var(--gold)">WHAT NEEDS TO BE TRUE</span><span style="flex:1;height:1px;background:#1c2e3e"></span><span style="font-family:Arial,sans-serif;font-size:0.65rem;color:#4a6278">All conditions hold</span></div>
+      <div style="padding:4px 16px 12px">
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">STM 2026 datacenter revenue confirmed &gt;$500M (in-line with guidance).</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">2027 datacenter revenue &gt;$1B as guided.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">At least one second hyperscaler engagement disclosed by end-2026.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">Datacenter segment gross margin in line with corporate average or above.</span></div>
+      </div>
+      <div style="padding:10px 16px 14px;border-top:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.5rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:5px">ENGAGEMENT IMPLICATION</div>
+        <div style="font-size:0.82rem;color:#8fa3b5;line-height:1.6;padding-left:12px;border-left:2px solid var(--gold)">Hyperscaler power-platform intelligence (NVIDIA + Microsoft + Google + Meta + Oracle) is the most commercially valuable input for STM's datacenter strategy team.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STM-03 -->
+  <div style="margin:0 0 44px 0;border:1px solid #243444;border-top:2px solid var(--gold)">
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#131f2b;border-bottom:1px solid #1c2e3e">
+      <span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--gold);font-weight:700">STM-03</span>
+      <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;border:1px solid #1c2e3e;padding:2px 8px">H1 · 1-2yr</span>
+      <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;margin-left:auto">Confidence: Mid</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1.3fr 1.6fr 1.2fr;border-bottom:1px solid #1c2e3e">
+      <div style="padding:14px 12px;border-right:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:10px">SOURCES</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.75rem;color:#4a6278;margin-bottom:10px;font-style:italic">Raw and undifferentiated</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ Quarterly STM utilisation commentary</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ STM cost-savings programme run-rate disclosure</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ Industrial / automotive book-to-bill</div>
+      </div>
+      <div style="border-right:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">SYSTEM DRIVERS</div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(61,163,255,0.12);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:var(--gold)">Economics<span style="background:rgba(61,163,255,0.22);color:var(--gold);font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">Gross margin trajectory + utilisation rate</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(72,184,231,0.10);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#48B8E7;flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:#48B8E7">Market<span style="background:rgba(72,184,231,0.22);color:#48B8E7;font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">Industrial inventory destocking + automotive design-in</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#22AE8A;flex-shrink:0;margin-top:4px;opacity:0.4"></span><div><div style="font-size:0.8rem;color:#4a6278">Technology</div><div style="font-size:0.72rem;color:#4a6278">Stellar MCU + ToF / FlightSense pipeline</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px"><span style="width:8px;height:8px;border-radius:50%;background:#9D7AD2;flex-shrink:0;margin-top:4px;opacity:0.35"></span><div><div style="font-size:0.8rem;color:#4a6278">Policy</div><div style="font-size:0.72rem;color:#4a6278">EU + Italian state-aid for footprint optimisation</div></div></div>
+      </div>
+      <div style="padding:16px;border-right:1px solid #1c2e3e;display:flex;flex-direction:column;justify-content:center">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:12px">HYPOTHESIS</div>
+        <div style="font-family:Georgia,serif;font-size:1.05rem;font-style:italic;color:#e8eef5;line-height:1.55;margin-bottom:16px">STM gross margin recovers from the Q1 2026 trough (33.8%) to ≥38% exit-2026, lifted by sequential utilisation improvement, $300M cost-savings programme and a normalised industrial channel.</div>
+        <div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:3px;background:#1c2e3e;border-radius:2px"><div style="width:62%;height:100%;background:var(--gold);border-radius:2px"></div></div><span style="font-family:Courier New,monospace;font-size:0.65rem;color:var(--gold);font-weight:700">62%</span></div>
+      </div>
+      <div>
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">DECISIONS</div>
+        <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#9D7AD2;background:rgba(157,122,210,0.18);padding:2px 8px;border-radius:10px">6 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Track Q2 + Q3 2026 GM + utilisation; benchmark vs Infineon + onsemi.</div></div>
+        <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#22AE8A;background:rgba(34,174,138,0.18);padding:2px 8px;border-radius:10px">12 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Industrial inventory + automotive design-in pipeline analysis.</div></div>
+        <div style="padding:10px 12px"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:var(--gold);background:rgba(61,163,255,0.18);padding:2px 8px;border-radius:10px">18 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">FY2027 margin trajectory vs cost programme realisation.</div></div>
+      </div>
+    </div>
+    <div style="background:#0f1922">
+      <div style="display:flex;align-items:center;gap:16px;padding:12px 16px 8px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.1em;font-weight:700;color:var(--gold)">WHAT NEEDS TO BE TRUE</span><span style="flex:1;height:1px;background:#1c2e3e"></span><span style="font-family:Arial,sans-serif;font-size:0.65rem;color:#4a6278">All conditions hold</span></div>
+      <div style="padding:4px 16px 12px">
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">Q2 2026 GM in line with 34.8% guidance.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">Q4 2026 GM ≥ 38% confirming the recovery profile.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">$300M cost-savings programme reaches ≥75% run-rate by end-2026.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">Industrial book-to-bill above 1.0x by Q3 2026.</span></div>
+      </div>
+      <div style="padding:10px 16px 14px;border-top:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.5rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:5px">ENGAGEMENT IMPLICATION</div>
+        <div style="font-size:0.82rem;color:#8fa3b5;line-height:1.6;padding-left:12px;border-left:2px solid var(--gold)">Quarterly margin + utilisation tracking with peer benchmarking is the FY2026 ambient scout — directly informs CFO + investor relations narrative.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+</div>
+</body>
+</html>
