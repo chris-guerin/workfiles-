@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Continental AG — Account Intelligence Brief — May 2026</title>
+<style>
+:root{
+  --ink:#060a0f;--text:#e8eef5;--text-mid:#8fa3b5;--text-dim:#4a6278;
+  --panel:#0f1922;--panel2:#131f2b;--border:#1c2e3e;--border2:#243444;
+  --gold:#ffd400;--cyan:#2dd4bf;--green:#22c55e;--amber:#f59e0b;
+  --red:#f05252;--blue:#38bdf8;--accent:#ffd400;
+  --font-sans:Arial,Helvetica,sans-serif;--font-serif:Georgia,'Times New Roman',serif;
+  --font-mono:'Courier New',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--text);font-family:var(--font-sans);font-size:14px;line-height:1.6}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:9999}
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(6,10,15,0.95);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);display:flex;align-items:center;padding:0 32px;height:52px;gap:24px}
+.nav-brand{font-family:var(--font-mono);font-size:0.65rem;font-weight:700;color:var(--gold);letter-spacing:0.2em;text-transform:uppercase;border-right:1px solid var(--border);padding-right:24px;white-space:nowrap}
+.nav-links{display:flex;gap:4px;flex:1;overflow-x:auto;scrollbar-width:none}
+.nav-link{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);text-decoration:none;padding:6px 10px;white-space:nowrap}
+.nav-link:hover{color:var(--gold)}
+.nav-badge{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;color:var(--red);border:1px solid var(--red);padding:3px 8px;text-transform:uppercase}
+.posture-badge{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;color:var(--accent);border:1px solid var(--accent);padding:3px 8px;text-transform:uppercase}
+.page{max-width:1200px;margin:0 auto;padding:0 32px 80px}
+.hero{padding:110px 0 60px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.hero::before{content:'CON';position:absolute;right:-30px;top:50%;transform:translateY(-50%);font-family:var(--font-serif);font-size:18rem;font-weight:900;color:rgba(255,212,0,0.05);line-height:1;pointer-events:none;letter-spacing:-0.05em}
+.hero-kicker{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.hero-kicker::before{content:'';width:32px;height:1px;background:var(--gold)}
+.hero-title{font-family:var(--font-serif);font-size:3.5rem;font-weight:900;line-height:1.05;color:var(--text);margin-bottom:16px;max-width:700px}
+.hero-title em{font-style:normal;color:var(--gold)}
+.hero-subtitle{font-family:var(--font-sans);font-size:1rem;color:var(--text-mid);max-width:580px;margin-bottom:36px;font-weight:300;line-height:1.7}
+.hero-meta{display:flex;gap:32px;flex-wrap:wrap}
+.meta-item{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase}
+.meta-label{color:var(--text-dim);margin-bottom:4px}
+.meta-value{color:var(--text);font-weight:700;font-size:0.72rem}
+.section{padding:56px 0 0}
+.section-head{display:flex;align-items:center;gap:16px;margin-bottom:32px}
+.section-num{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.2em;color:var(--text-dim);text-transform:uppercase;background:var(--panel);border:1px solid var(--border);padding:4px 8px}
+.section-title{font-family:var(--font-serif);font-size:1.8rem;font-weight:700;color:var(--text)}
+.section-rule{flex:1;height:1px;background:var(--border)}
+.snapshot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:24px}
+.snap-cell{background:var(--panel);padding:20px}
+.snap-val{font-family:var(--font-mono);font-size:1.6rem;font-weight:700;color:var(--text);margin-bottom:4px}
+.snap-val.green{color:var(--green)}.snap-val.amber{color:var(--amber)}.snap-val.cyan{color:var(--cyan)}.snap-val.red{color:var(--red)}.snap-val.blue{color:var(--blue)}
+.snap-lbl{font-family:var(--font-sans);font-size:0.75rem;color:var(--text-mid);margin-bottom:2px}
+.snap-sub{font-family:var(--font-mono);font-size:0.58rem;color:var(--text-dim)}
+.info-box{background:var(--panel);border-left:3px solid var(--gold);padding:20px 24px;font-size:0.88rem;color:var(--text-mid);line-height:1.7;margin-bottom:24px}
+.callout{background:var(--panel2);border:1px solid var(--border2);border-left:3px solid var(--cyan);padding:20px 24px;font-size:0.88rem;color:var(--text);line-height:1.7;margin-bottom:24px}
+.strategy-box{background:var(--panel);border:1px solid var(--border);padding:24px;margin-bottom:24px}
+.strategy-two-col{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:24px}
+.strategy-col-head{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.strategy-col-head::after{content:'';flex:1;height:1px;background:var(--border)}
+.bullet-list{list-style:none;padding:0}
+.bullet-list li{font-size:0.85rem;color:var(--text-mid);padding:5px 0 5px 16px;position:relative;line-height:1.5;border-bottom:1px solid rgba(28,46,62,0.5)}
+.bullet-list li::before{content:'▸';position:absolute;left:0;color:var(--gold);font-size:0.7rem;top:7px}
+.bullet-list li strong{color:var(--text)}
+.peer-table{width:100%;border-collapse:collapse;font-size:0.78rem;margin-bottom:24px}
+.peer-table th{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);background:var(--panel)}
+.peer-table td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);vertical-align:middle}
+.peer-table .highlight-row td{background:var(--panel2);color:var(--text)}
+.co-name{font-weight:600;color:var(--text);font-size:0.82rem}
+.ticker{font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim)}
+.badge{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.06em;text-transform:uppercase;padding:2px 7px;border-radius:2px;display:inline-block}
+.badge-green{background:rgba(34,197,94,0.15);color:var(--green)}
+.badge-amber{background:rgba(245,158,11,0.15);color:var(--amber)}
+.badge-red{background:rgba(240,82,82,0.15);color:var(--red)}
+.badge-blue{background:rgba(56,189,248,0.15);color:var(--blue)}
+.badge-cyan{background:rgba(45,212,191,0.15);color:var(--cyan)}
+.badge-gold{background:rgba(255,212,0,0.15);color:var(--gold)}
+.initiatives-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:24px}
+.init-card{background:var(--panel);border:1px solid var(--border);padding:20px}
+.init-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:12px}
+.init-name{font-family:var(--font-sans);font-weight:600;font-size:0.88rem;color:var(--text)}
+.init-desc{font-size:0.8rem;color:var(--text-mid);line-height:1.55;margin-bottom:14px}
+.signals-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:24px}
+.signal-card{background:var(--panel);border:1px solid var(--border);padding:20px}
+.signal-num{font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);margin-bottom:6px}
+.signal-name{font-family:var(--font-serif);font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px}
+.signal-trl{font-family:var(--font-mono);font-size:0.58rem;color:var(--gold);margin-bottom:10px}
+.signal-desc{font-size:0.8rem;color:var(--text-mid);line-height:1.55;margin-bottom:12px}
+.signal-why{font-family:var(--font-mono);font-size:0.6rem;color:var(--text-dim)}
+@media(max-width:768px){.snapshot-grid{grid-template-columns:repeat(2,1fr)}.strategy-two-col,.initiatives-grid,.signals-grid{grid-template-columns:1fr}.hero-title{font-size:2.2rem}}
+</style>
+</head>
+<body>
+<!-- v8-deprecation-banner -->
+<div style="background:#000;color:#fff;padding:14px 24px;font-family:Arial,Helvetica,sans-serif;font-size:13px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;border-bottom:2px solid #ffd400">
+  <span style="font-family:'Courier New',monospace;font-size:10px;font-weight:700;letter-spacing:0.12em;color:#ffd400">DEPRECATED</span>
+  <span style="flex:1;line-height:1.45">This brief has been superseded by the live account plan tool, which pulls hypotheses, ontology pairs, signal log and contacts directly from the catalogue.</span>
+  <a href="account_plans_v8.html?company=Continental%20AG" style="background:#ffd400;color:#000;text-decoration:none;padding:7px 14px;font-weight:600;font-size:12px;letter-spacing:0.04em;white-space:nowrap">Open Continental AG in v8 →</a>
+</div>
+
+<div style="background:#0a1520;border-bottom:1px solid #1c2e3e;padding:8px 24px;display:flex;align-items:center;gap:12px">
+  <span style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.12em;font-weight:700;color:#22AE8A">● SIGNAL REFRESH</span>
+  <span style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278">May 2026 · Sources: Continental Q1 2026 results (6 May 2026), Aumovio Frankfurt listing Sept 2025, FY2025 results press release (Mar 2026), planned ContiTech sale 2026</span>
+  <span style="margin-left:auto;font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278">May 2026</span>
+</div>
+
+<nav class="nav">
+  <div class="nav-brand">FutureBridge // CON Brief</div>
+  <div class="nav-links">
+    <a href="#overview" class="nav-link">Overview</a>
+    <a href="#strategy" class="nav-link">Strategy</a>
+    <a href="#peers" class="nav-link">Peers</a>
+    <a href="#initiatives" class="nav-link">Initiatives</a>
+    <a href="#signals" class="nav-link">Signals</a>
+    <a href="#hypotheses" class="nav-link">Hypotheses</a>
+  </div>
+  <span class="posture-badge">REPOSITION</span>
+  <div class="nav-badge">Confidential</div>
+</nav>
+
+<div class="page">
+
+  <section class="hero" id="top">
+    <div class="hero-kicker">Intelligence Brief · Mobility — Tier-1 → Pure-Play Tire</div>
+    <h1 class="hero-title">Continental AG<br><em>Strategic Intelligence</em></h1>
+    <p class="hero-subtitle">Hanover-based Tier-1 group transforming into a pure-play tire manufacturer. Aumovio (Automotive) spun off Sept 2025; OESL sold Feb 2026; ContiTech sale planned 2026. Tires Q1 2026 EBIT margin 14.4% despite tariffs + FX headwinds.</p>
+    <div class="hero-meta">
+      <div class="meta-item"><div class="meta-label">Sector</div><div class="meta-value">Tires · ContiTech (sale planned 2026) · Mobility services</div></div>
+      <div class="meta-item"><div class="meta-label">Date</div><div class="meta-value">May 2026</div></div>
+      <div class="meta-item"><div class="meta-label">Posture</div><div class="meta-value" style="color:#f59e0b">REPOSITION</div></div>
+      <div class="meta-item"><div class="meta-label">Prepared by</div><div class="meta-value">FutureBridge Advisory</div></div>
+    </div>
+  </section>
+
+  <section class="section" id="overview">
+    <div class="section-head"><span class="section-num">01</span><h2 class="section-title">Company Snapshot</h2><div class="section-rule"></div></div>
+    <div class="snapshot-grid">
+      <div class="snap-cell"><div class="snap-val">€4.4B</div><div class="snap-lbl">Q1 2026 group sales</div><div class="snap-sub">-10.4% YoY · ETR: CON</div></div>
+      <div class="snap-cell"><div class="snap-val green">€3.3B</div><div class="snap-lbl">Q1 2026 Tires sales</div><div class="snap-sub">14.4% adj EBIT margin (improved YoY)</div></div>
+      <div class="snap-cell"><div class="snap-val amber">€1.2B</div><div class="snap-lbl">Q1 2026 ContiTech</div><div class="snap-sub">-24.4% (OESL sale + FX); 7.9% EBIT margin</div></div>
+      <div class="snap-cell"><div class="snap-val cyan">€17.3-18.9B</div><div class="snap-lbl">FY 2026 sales guidance</div><div class="snap-sub">11.0-12.5% adj EBIT margin</div></div>
+      <div class="snap-cell"><div class="snap-val">€4.1B</div><div class="snap-lbl">Aumovio market cap (Sept 2025)</div><div class="snap-sub">Frankfurt listing post-spin</div></div>
+      <div class="snap-cell"><div class="snap-val blue">2026</div><div class="snap-lbl">Planned ContiTech sale</div><div class="snap-sub">Final realignment step → pure-play tire</div></div>
+      <div class="snap-cell"><div class="snap-val">>10%</div><div class="snap-lbl">Tires sustained operating margin</div><div class="snap-sub">Premium 18"+ growth + APAC expansion</div></div>
+      <div class="snap-cell"><div class="snap-val">26.3%</div><div class="snap-lbl">Equity ratio</div><div class="snap-sub">Post-Aumovio spin impact</div></div>
+    </div>
+    <div class="info-box">
+      <strong>Headline state.</strong> Continental's strategic transformation from Tier-1 group to pure-play tire manufacturer is in its final phase — Aumovio spun off (Sept 2025), OESL sold (Feb 2026), ContiTech sale planned 2026. Tires margin discipline (14.4% Q1) and premium 18"+ growth are the load-bearing trajectories.
+    </div>
+  </section>
+
+  <section class="section" id="strategy">
+    <div class="section-head"><span class="section-num">02</span><h2 class="section-title">Strategic Posture</h2><div class="section-rule"></div></div>
+    <div class="strategy-box">
+      <div class="strategy-two-col">
+        <div>
+          <div class="strategy-col-head">Where Continental is investing</div>
+          <ul class="bullet-list">
+            <li><strong>Premium 18"+ tires.</strong> Strong growth in 18-inch-plus premium tire segment driving Q1 2026 margin uplift. APAC expansion + EV / all-season demand.</li>
+            <li><strong>Realignment completion 2026.</strong> ContiTech sale planned 2026 = final step toward pure-play tire. Aumovio (Sept 2025) + OESL (Feb 2026) already executed.</li>
+            <li><strong>Mid-single-digit unit growth.</strong> Sustained &gt;10% Tires operating margin while pursuing volume in premium / EV-ready segments.</li>
+            <li><strong>Industrial recovery in H2 2026.</strong> ContiTech profitability improving despite weak market — operational flexibility ahead of sale.</li>
+          </ul>
+        </div>
+        <div>
+          <div class="strategy-col-head">What's under pressure</div>
+          <ul class="bullet-list">
+            <li><strong>Tariff burden.</strong> Q1 2026 Tires margin lifted "despite burdens from tariffs" — US trade environment a continuing headwind.</li>
+            <li><strong>FX headwinds.</strong> EUR strength + non-EUR exposure compresses both Tires and ContiTech reported sales.</li>
+            <li><strong>ContiTech sale execution.</strong> 2026 sale process pending — value realisation depends on industrial-cycle timing + buyer interest.</li>
+            <li><strong>Equity ratio compression.</strong> Aumovio spin took equity ratio to 26.3% — balance-sheet flexibility narrower.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="callout">
+        <strong>Strategic posture: REPOSITION</strong> — Continental is mid-transformation from diversified Tier-1 to focused tire pure-play. Three hypotheses below test transformation completion, Tires margin durability, and premium-tire / APAC growth thesis.
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="peers">
+    <div class="section-head"><span class="section-num">03</span><h2 class="section-title">Peer Landscape</h2><div class="section-rule"></div></div>
+    <table class="peer-table">
+      <tr><th>Company</th><th>FY2025 rev</th><th>Tires posture</th><th>Other businesses</th><th>Posture</th></tr>
+      <tr class="highlight-row"><td><span class="co-name">Continental AG</span><br><span class="ticker">ETR: CON</span></td><td>€39.7B FY2025; ~€18B FY2026e (post-Aumovio)</td><td>14%+ EBIT margin; premium 18"+ growth</td><td>ContiTech (sale 2026); pure-play tire ahead</td><td><span class="badge badge-amber">Reposition</span></td></tr>
+      <tr><td><span class="co-name">Michelin</span><br><span class="ticker">EPA: ML</span></td><td>~€28B</td><td>Premium tire leader; high-tech materials adj</td><td>Beyond Tires (services + materials)</td><td><span class="badge badge-green">Stable</span></td></tr>
+      <tr><td><span class="co-name">Bridgestone</span><br><span class="ticker">TYO: 5108</span></td><td>~¥4.4T</td><td>Global #1; Firestone US + premium EU</td><td>Diversified incl. mining + industrial</td><td><span class="badge badge-green">Stable</span></td></tr>
+      <tr><td><span class="co-name">Goodyear</span><br><span class="ticker">NASDAQ: GT</span></td><td>~$19B</td><td>Goodyear Forward restructuring</td><td>None core post-divestments</td><td><span class="badge badge-amber">Restructuring</span></td></tr>
+      <tr><td><span class="co-name">Pirelli</span><br><span class="ticker">MIL: PIRC</span></td><td>~€7B</td><td>Premium / luxury / motorsport tire focus</td><td>None</td><td><span class="badge badge-green">Premium</span></td></tr>
+      <tr><td><span class="co-name">Aumovio (former Continental Auto)</span><br><span class="ticker">ETR: AUMO</span></td><td>~€18B</td><td>None</td><td>Tier-1 ADAS / SDV components</td><td><span class="badge badge-blue">Spinout</span></td></tr>
+    </table>
+  </section>
+
+  <section class="section" id="initiatives">
+    <div class="section-head"><span class="section-num">04</span><h2 class="section-title">Live Initiatives</h2><div class="section-rule"></div></div>
+    <div class="initiatives-grid">
+      <div class="init-card"><div class="init-head"><div class="init-name">ContiTech sale 2026</div><span class="badge badge-amber">In flight</span></div><div class="init-desc">Final realignment step. ContiTech (industrial) being prepared for sale in 2026. Value depends on industrial-cycle recovery + buyer interest. Completion = pure-play tire emergence.</div></div>
+      <div class="init-card"><div class="init-head"><div class="init-name">Aumovio post-spin governance</div><span class="badge badge-green">Closed</span></div><div class="init-desc">Aumovio (former Automotive) listed Frankfurt Sept 2025, ~€4.1B market cap. Continental retained no operational stake. Aumovio now competes independently in Tier-1 ADAS / SDV components.</div></div>
+      <div class="init-card"><div class="init-head"><div class="init-name">OESL sale Feb 2026</div><span class="badge badge-green">Closed</span></div><div class="init-desc">ContiTech Original Equipment Solutions divested Feb 2026 — partial realignment ahead of full ContiTech sale.</div></div>
+      <div class="init-card"><div class="init-head"><div class="init-name">Premium 18"+ tire growth</div><span class="badge badge-cyan">Active</span></div><div class="init-desc">Strong growth in premium 18"+ segment driving Q1 2026 margin uplift. EV-ready tires for SDV / electric vehicle volume. APAC expansion + all-season demand.</div></div>
+      <div class="init-card"><div class="init-head"><div class="init-name">Tires APAC expansion</div><span class="badge badge-cyan">Active</span></div><div class="init-desc">Selective deepening in high-growth APAC markets — China + India + South-East Asia. EV + all-season demand drivers.</div></div>
+      <div class="init-card"><div class="init-head"><div class="init-name">Industrial recovery H2 2026</div><span class="badge badge-cyan">Watch</span></div><div class="init-desc">FY2026 guidance assumes industrial-market recovery in H2 2026 + raw material price decline. Critical to ContiTech operational performance ahead of sale.</div></div>
+    </div>
+  </section>
+
+  <section class="section" id="signals">
+    <div class="section-head"><span class="section-num">06</span><h2 class="section-title">Weak Signals</h2><div class="section-rule"></div></div>
+    <div class="signals-grid">
+      <div class="signal-card"><div class="signal-num">SIG-01</div><div class="signal-name">ContiTech sale process</div><div class="signal-trl">CRITICAL · 2026</div><div class="signal-desc">ContiTech sale 2026 = transformation completion. Buyer interest + valuation key. PE / strategic options + carve-out structure all open.</div><div class="signal-why">→ Watch: Continental press releases + M&A market commentary</div></div>
+      <div class="signal-card"><div class="signal-num">SIG-02</div><div class="signal-name">Tires margin durability vs tariffs</div><div class="signal-trl">PRESSURE · 2026</div><div class="signal-desc">14.4% Q1 2026 EBIT margin held despite US tariffs + FX. Sustainability through 2026-2027 dependent on US trade environment + premium-mix shift.</div><div class="signal-why">→ Watch: US tariff developments + Continental quarterly margin trajectory</div></div>
+      <div class="signal-card"><div class="signal-num">SIG-03</div><div class="signal-name">APAC EV-tire share</div><div class="signal-trl">UPSIDE · 2026-2027</div><div class="signal-desc">Continental APAC expansion targeting EV + all-season tires. China-domestic tire competition (Linglong, Sailun) intense — share gains require premium positioning.</div><div class="signal-why">→ Watch: APAC tire share data + EV tire OE wins</div></div>
+      <div class="signal-card"><div class="signal-num">SIG-04</div><div class="signal-name">Industrial cycle H2 2026</div><div class="signal-trl">DRAG · 2026</div><div class="signal-desc">FY2026 guidance assumes industrial recovery H2 2026. Slippage would compress ContiTech operational performance ahead of sale + dent valuation.</div><div class="signal-why">→ Watch: European industrial PMI + ContiTech end-market disclosures</div></div>
+    </div>
+  </section>
+
+<!-- ══ HYPOTHESIS REGISTER ══ -->
+<section id="hypotheses" class="section">
+<div style="max-width:1200px;margin:0 auto;padding:56px 0 80px">
+
+  <div class="section-head"><span class="section-num">HYP</span><h2 class="section-title">Hypothesis Register</h2><div class="section-rule"></div></div>
+
+  <div class="info-box" style="margin-bottom:32px">
+    Three load-bearing hypotheses anchor Continental scouting through 2026-2027. Transformation from Tier-1 group to pure-play tire manufacturer is the dominant strategic theme.
+  </div>
+
+  <!-- Summary strip -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:40px">
+    <div style="background:var(--panel);padding:16px"><div style="font-family:var(--font-mono);font-size:1.4rem;font-weight:700;color:var(--text);margin-bottom:2px">3</div><div style="font-size:0.75rem;color:var(--text-mid)">Active hypotheses</div><div style="font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);margin-top:2px">May 2026</div></div>
+    <div style="background:var(--panel);padding:16px"><div style="font-family:var(--font-mono);font-size:1.4rem;font-weight:700;color:var(--text);margin-bottom:2px">65%</div><div style="font-size:0.75rem;color:var(--text-mid)">Average probability</div><div style="font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);margin-top:2px">Across 3 hypotheses</div></div>
+    <div style="background:var(--panel);padding:16px"><div style="font-family:var(--font-mono);font-size:1.4rem;font-weight:700;color:var(--gold);margin-bottom:2px">4</div><div style="font-size:0.75rem;color:var(--text-mid)">Signal drivers tracked</div><div style="font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);margin-top:2px">Economics · Market · Technology · Policy</div></div>
+  </div>
+
+  <!-- CON-01 -->
+  <div style="margin:0 0 44px 0;border:1px solid #243444;border-top:2px solid var(--gold)">
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#131f2b;border-bottom:1px solid #1c2e3e">
+      <span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--gold);font-weight:700">CON-01</span>
+      <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;border:1px solid #1c2e3e;padding:2px 8px">H1 · 1-2yr</span>
+      <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;margin-left:auto">Confidence: Mid-High</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1.3fr 1.6fr 1.2fr;border-bottom:1px solid #1c2e3e">
+      <div style="padding:14px 12px;border-right:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:10px">SOURCES</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.75rem;color:#4a6278;margin-bottom:10px;font-style:italic">Raw and undifferentiated</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ Continental press releases + investor disclosures</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ ContiTech sale process M&A commentary</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ European industrial PMI</div>
+      </div>
+      <div style="border-right:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">SYSTEM DRIVERS</div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(72,184,231,0.12);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#48B8E7;flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:#48B8E7">Market<span style="background:rgba(72,184,231,0.22);color:#48B8E7;font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">ContiTech sale process status + buyer interest</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(255,212,0,0.10);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:var(--gold)">Economics<span style="background:rgba(255,212,0,0.22);color:var(--gold);font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">ContiTech valuation + industrial cycle</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#22AE8A;flex-shrink:0;margin-top:4px;opacity:0.4"></span><div><div style="font-size:0.8rem;color:#4a6278">Technology</div><div style="font-size:0.72rem;color:#4a6278">ContiTech industrial product portfolio carve-out</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px"><span style="width:8px;height:8px;border-radius:50%;background:#9D7AD2;flex-shrink:0;margin-top:4px;opacity:0.35"></span><div><div style="font-size:0.8rem;color:#4a6278">Policy</div><div style="font-size:0.72rem;color:#4a6278">EU regulatory approvals for divestment</div></div></div>
+      </div>
+      <div style="padding:16px;border-right:1px solid #1c2e3e;display:flex;flex-direction:column;justify-content:center">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:12px">HYPOTHESIS</div>
+        <div style="font-family:Georgia,serif;font-size:1.05rem;font-style:italic;color:#e8eef5;line-height:1.55;margin-bottom:16px">Continental completes its transformation to pure-play tire manufacturer by end-2026 through ContiTech divestment, anchoring a focused FY2027+ profile around Tires + sustained &gt;10% operating margin.</div>
+        <div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:3px;background:#1c2e3e;border-radius:2px"><div style="width:70%;height:100%;background:var(--gold);border-radius:2px"></div></div><span style="font-family:Courier New,monospace;font-size:0.65rem;color:var(--gold);font-weight:700">70%</span></div>
+      </div>
+      <div>
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">DECISIONS</div>
+        <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#9D7AD2;background:rgba(157,122,210,0.18);padding:2px 8px;border-radius:10px">6 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Track ContiTech sale process announcements + bidder interest.</div></div>
+        <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#22AE8A;background:rgba(34,174,138,0.18);padding:2px 8px;border-radius:10px">12 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Pure-play tire benchmarking vs Michelin / Bridgestone / Pirelli.</div></div>
+        <div style="padding:10px 12px"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:var(--gold);background:rgba(255,212,0,0.18);padding:2px 8px;border-radius:10px">18 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Post-divestment Continental capital allocation review.</div></div>
+      </div>
+    </div>
+    <div style="background:#0f1922">
+      <div style="display:flex;align-items:center;gap:16px;padding:12px 16px 8px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.1em;font-weight:700;color:var(--gold)">WHAT NEEDS TO BE TRUE</span><span style="flex:1;height:1px;background:#1c2e3e"></span><span style="font-family:Arial,sans-serif;font-size:0.65rem;color:#4a6278">All conditions hold</span></div>
+      <div style="padding:4px 16px 12px">
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">ContiTech sale signed by end-2026.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">No material Aumovio claw-back / unwind risk before end-2026.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">EU regulatory approvals achieved without material remedies.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">Post-divestment FY2027+ Tires-only group operates with sustained &gt;10% EBIT margin.</span></div>
+      </div>
+      <div style="padding:10px 16px 14px;border-top:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.5rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:5px">ENGAGEMENT IMPLICATION</div>
+        <div style="font-size:0.82rem;color:#8fa3b5;line-height:1.6;padding-left:12px;border-left:2px solid var(--gold)">ContiTech sale-process tracking is the highest-priority engagement input through 2026.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CON-02 -->
+  <div style="margin:0 0 44px 0;border:1px solid #243444;border-top:2px solid var(--gold)">
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#131f2b;border-bottom:1px solid #1c2e3e">
+      <span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--gold);font-weight:700">CON-02</span>
+      <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;border:1px solid #1c2e3e;padding:2px 8px">H1 · 1-2yr</span>
+      <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;margin-left:auto">Confidence: Mid</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1.3fr 1.6fr 1.2fr;border-bottom:1px solid #1c2e3e">
+      <div style="padding:14px 12px;border-right:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:10px">SOURCES</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.75rem;color:#4a6278;margin-bottom:10px;font-style:italic">Raw and undifferentiated</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ Continental Tires segment quarterly disclosure</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ US tariff + EU FX developments</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ Premium 18"+ market share data</div>
+      </div>
+      <div style="border-right:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">SYSTEM DRIVERS</div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(255,212,0,0.12);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:var(--gold)">Economics<span style="background:rgba(255,212,0,0.22);color:var(--gold);font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">Tires EBIT margin trajectory + raw material costs</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(72,184,231,0.10);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#48B8E7;flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:#48B8E7">Market<span style="background:rgba(72,184,231,0.22);color:#48B8E7;font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">Premium 18"+ tire mix + EV-ready demand</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#9D7AD2;flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:#9D7AD2">Policy<span style="background:rgba(157,122,210,0.22);color:#9D7AD2;font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">US tariff + EU regulatory environment</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px"><span style="width:8px;height:8px;border-radius:50%;background:#22AE8A;flex-shrink:0;margin-top:4px;opacity:0.35"></span><div><div style="font-size:0.8rem;color:#4a6278">Technology</div><div style="font-size:0.72rem;color:#4a6278">EV-ready + low-rolling-resistance roadmap</div></div></div>
+      </div>
+      <div style="padding:16px;border-right:1px solid #1c2e3e;display:flex;flex-direction:column;justify-content:center">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:12px">HYPOTHESIS</div>
+        <div style="font-family:Georgia,serif;font-size:1.05rem;font-style:italic;color:#e8eef5;line-height:1.55;margin-bottom:16px">Continental Tires sustains ≥14% adjusted EBIT margin through FY2026 despite US tariffs + FX headwinds, with premium 18"+ mix shift and raw material price decline H2 2026 supporting the trajectory.</div>
+        <div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:3px;background:#1c2e3e;border-radius:2px"><div style="width:65%;height:100%;background:var(--gold);border-radius:2px"></div></div><span style="font-family:Courier New,monospace;font-size:0.65rem;color:var(--gold);font-weight:700">65%</span></div>
+      </div>
+      <div>
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">DECISIONS</div>
+        <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#9D7AD2;background:rgba(157,122,210,0.18);padding:2px 8px;border-radius:10px">6 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Track Q2 + Q3 Tires margin + premium-mix disclosure.</div></div>
+        <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#22AE8A;background:rgba(34,174,138,0.18);padding:2px 8px;border-radius:10px">12 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Tire competitive map + tariff exposure analysis.</div></div>
+        <div style="padding:10px 12px"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:var(--gold);background:rgba(255,212,0,0.18);padding:2px 8px;border-radius:10px">18 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">FY2026 attainment + FY2027 outlook.</div></div>
+      </div>
+    </div>
+    <div style="background:#0f1922">
+      <div style="display:flex;align-items:center;gap:16px;padding:12px 16px 8px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.1em;font-weight:700;color:var(--gold)">WHAT NEEDS TO BE TRUE</span><span style="flex:1;height:1px;background:#1c2e3e"></span><span style="font-family:Arial,sans-serif;font-size:0.65rem;color:#4a6278">All conditions hold</span></div>
+      <div style="padding:4px 16px 12px">
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">FY2026 Tires adj EBIT margin holds ≥14%.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">Premium 18"+ tire mix continues to grow as share of revenue.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">Raw material prices decline as guided in H2 2026.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">No material US tariff escalation that erases margin gains.</span></div>
+      </div>
+      <div style="padding:10px 16px 14px;border-top:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.5rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:5px">ENGAGEMENT IMPLICATION</div>
+        <div style="font-size:0.82rem;color:#8fa3b5;line-height:1.6;padding-left:12px;border-left:2px solid var(--gold)">Quarterly Tires margin + premium-mix tracking + tariff intelligence is the highest-leverage engagement input.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CON-03 -->
+  <div style="margin:0 0 44px 0;border:1px solid #243444;border-top:2px solid var(--gold)">
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#131f2b;border-bottom:1px solid #1c2e3e">
+      <span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--gold);font-weight:700">CON-03</span>
+      <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;border:1px solid #1c2e3e;padding:2px 8px">H1 · 1-2yr</span>
+      <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;margin-left:auto">Confidence: Mid</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1.3fr 1.6fr 1.2fr;border-bottom:1px solid #1c2e3e">
+      <div style="padding:14px 12px;border-right:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:10px">SOURCES</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.75rem;color:#4a6278;margin-bottom:10px;font-style:italic">Raw and undifferentiated</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ APAC tire share + China tire imports data</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ EV OE tire OEM design wins</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ Linglong / Sailun / Hankook competitive moves</div>
+      </div>
+      <div style="border-right:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">SYSTEM DRIVERS</div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(72,184,231,0.12);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#48B8E7;flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:#48B8E7">Market<span style="background:rgba(72,184,231,0.22);color:#48B8E7;font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">APAC EV + all-season tire demand</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(34,174,138,0.10);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#22AE8A;flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:#22AE8A">Technology<span style="background:rgba(34,174,138,0.22);color:#22AE8A;font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">EV-ready + low-rolling-resistance roadmap</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:4px;opacity:0.4"></span><div><div style="font-size:0.8rem;color:#4a6278">Economics</div><div style="font-size:0.72rem;color:#4a6278">APAC tire ASP vs domestic alternatives</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px"><span style="width:8px;height:8px;border-radius:50%;background:#9D7AD2;flex-shrink:0;margin-top:4px;opacity:0.35"></span><div><div style="font-size:0.8rem;color:#4a6278">Policy</div><div style="font-size:0.72rem;color:#4a6278">China tire export tariffs + EU labelling</div></div></div>
+      </div>
+      <div style="padding:16px;border-right:1px solid #1c2e3e;display:flex;flex-direction:column;justify-content:center">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:12px">HYPOTHESIS</div>
+        <div style="font-family:Georgia,serif;font-size:1.05rem;font-style:italic;color:#e8eef5;line-height:1.55;margin-bottom:16px">Continental delivers ≥mid-single-digit Tires unit growth in FY2027 driven by premium 18"+ + EV-ready + APAC expansion, gaining share against Chinese domestic alternatives in premium / OE segments.</div>
+        <div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:3px;background:#1c2e3e;border-radius:2px"><div style="width:60%;height:100%;background:var(--gold);border-radius:2px"></div></div><span style="font-family:Courier New,monospace;font-size:0.65rem;color:var(--gold);font-weight:700">60%</span></div>
+      </div>
+      <div>
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">DECISIONS</div>
+        <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#9D7AD2;background:rgba(157,122,210,0.18);padding:2px 8px;border-radius:10px">6 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Track Continental APAC + EV OE tire wins.</div></div>
+        <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#22AE8A;background:rgba(34,174,138,0.18);padding:2px 8px;border-radius:10px">12 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">EV-ready + premium tire competitive landscape.</div></div>
+        <div style="padding:10px 12px"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:var(--gold);background:rgba(255,212,0,0.18);padding:2px 8px;border-radius:10px">18 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">FY2027 unit growth + APAC share review.</div></div>
+      </div>
+    </div>
+    <div style="background:#0f1922">
+      <div style="display:flex;align-items:center;gap:16px;padding:12px 16px 8px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.1em;font-weight:700;color:var(--gold)">WHAT NEEDS TO BE TRUE</span><span style="flex:1;height:1px;background:#1c2e3e"></span><span style="font-family:Arial,sans-serif;font-size:0.65rem;color:#4a6278">All conditions hold</span></div>
+      <div style="padding:4px 16px 12px">
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">FY2027 Tires unit growth ≥ 5%.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">Premium 18"+ tire revenue grows above group average.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">APAC volume share gains visible in FY2027 reporting.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">No major Chinese tire premium-segment break-out displaces Continental on EV OE.</span></div>
+      </div>
+      <div style="padding:10px 16px 14px;border-top:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.5rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:5px">ENGAGEMENT IMPLICATION</div>
+        <div style="font-size:0.82rem;color:#8fa3b5;line-height:1.6;padding-left:12px;border-left:2px solid var(--gold)">EV OE tire design-win tracking + APAC share data is the highest-priority growth-thesis input.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+</div>
+</body>
+</html>
