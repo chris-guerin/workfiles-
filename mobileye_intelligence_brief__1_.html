@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mobileye — Account Intelligence Brief — May 2026</title>
+<style>
+:root{
+  --ink:#060a0f;--text:#e8eef5;--text-mid:#8fa3b5;--text-dim:#4a6278;
+  --panel:#0f1922;--panel2:#131f2b;--border:#1c2e3e;--border2:#243444;
+  --gold:#06b6d4;--cyan:#2dd4bf;--green:#22c55e;--amber:#f59e0b;
+  --red:#f05252;--blue:#38bdf8;--accent:#06b6d4;
+  --font-sans:Arial,Helvetica,sans-serif;--font-serif:Georgia,'Times New Roman',serif;
+  --font-mono:'Courier New',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--text);font-family:var(--font-sans);font-size:14px;line-height:1.6}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:9999}
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(6,10,15,0.95);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);display:flex;align-items:center;padding:0 32px;height:52px;gap:24px}
+.nav-brand{font-family:var(--font-mono);font-size:0.65rem;font-weight:700;color:var(--gold);letter-spacing:0.2em;text-transform:uppercase;border-right:1px solid var(--border);padding-right:24px;white-space:nowrap}
+.nav-links{display:flex;gap:4px;flex:1;overflow-x:auto;scrollbar-width:none}
+.nav-link{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);text-decoration:none;padding:6px 10px;white-space:nowrap}
+.nav-link:hover{color:var(--gold)}
+.nav-badge{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;color:var(--red);border:1px solid var(--red);padding:3px 8px;text-transform:uppercase}
+.posture-badge{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;color:var(--accent);border:1px solid var(--accent);padding:3px 8px;text-transform:uppercase}
+.page{max-width:1200px;margin:0 auto;padding:0 32px 80px}
+.hero{padding:110px 0 60px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.hero::before{content:'MBLY';position:absolute;right:-30px;top:50%;transform:translateY(-50%);font-family:var(--font-serif);font-size:18rem;font-weight:900;color:rgba(6,182,212,0.05);line-height:1;pointer-events:none;letter-spacing:-0.05em}
+.hero-kicker{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.hero-kicker::before{content:'';width:32px;height:1px;background:var(--gold)}
+.hero-title{font-family:var(--font-serif);font-size:3.5rem;font-weight:900;line-height:1.05;color:var(--text);margin-bottom:16px;max-width:700px}
+.hero-title em{font-style:normal;color:var(--gold)}
+.hero-subtitle{font-family:var(--font-sans);font-size:1rem;color:var(--text-mid);max-width:580px;margin-bottom:36px;font-weight:300;line-height:1.7}
+.hero-meta{display:flex;gap:32px;flex-wrap:wrap}
+.meta-item{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase}
+.meta-label{color:var(--text-dim);margin-bottom:4px}
+.meta-value{color:var(--text);font-weight:700;font-size:0.72rem}
+.section{padding:56px 0 0}
+.section-head{display:flex;align-items:center;gap:16px;margin-bottom:32px}
+.section-num{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.2em;color:var(--text-dim);text-transform:uppercase;background:var(--panel);border:1px solid var(--border);padding:4px 8px}
+.section-title{font-family:var(--font-serif);font-size:1.8rem;font-weight:700;color:var(--text)}
+.section-rule{flex:1;height:1px;background:var(--border)}
+.snapshot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:24px}
+.snap-cell{background:var(--panel);padding:20px}
+.snap-val{font-family:var(--font-mono);font-size:1.6rem;font-weight:700;color:var(--text);margin-bottom:4px}
+.snap-val.green{color:var(--green)}.snap-val.amber{color:var(--amber)}.snap-val.cyan{color:var(--cyan)}.snap-val.red{color:var(--red)}.snap-val.blue{color:var(--blue)}
+.snap-lbl{font-family:var(--font-sans);font-size:0.75rem;color:var(--text-mid);margin-bottom:2px}
+.snap-sub{font-family:var(--font-mono);font-size:0.58rem;color:var(--text-dim)}
+.info-box{background:var(--panel);border-left:3px solid var(--gold);padding:20px 24px;font-size:0.88rem;color:var(--text-mid);line-height:1.7;margin-bottom:24px}
+.callout{background:var(--panel2);border:1px solid var(--border2);border-left:3px solid var(--cyan);padding:20px 24px;font-size:0.88rem;color:var(--text);line-height:1.7;margin-bottom:24px}
+.strategy-box{background:var(--panel);border:1px solid var(--border);padding:24px;margin-bottom:24px}
+.strategy-two-col{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:24px}
+.strategy-col-head{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.strategy-col-head::after{content:'';flex:1;height:1px;background:var(--border)}
+.bullet-list{list-style:none;padding:0}
+.bullet-list li{font-size:0.85rem;color:var(--text-mid);padding:5px 0 5px 16px;position:relative;line-height:1.5;border-bottom:1px solid rgba(28,46,62,0.5)}
+.bullet-list li::before{content:'▸';position:absolute;left:0;color:var(--gold);font-size:0.7rem;top:7px}
+.bullet-list li strong{color:var(--text)}
+.peer-table{width:100%;border-collapse:collapse;font-size:0.78rem;margin-bottom:24px}
+.peer-table th{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);background:var(--panel)}
+.peer-table td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);vertical-align:middle}
+.peer-table .highlight-row td{background:var(--panel2);color:var(--text)}
+.co-name{font-weight:600;color:var(--text);font-size:0.82rem}
+.ticker{font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim)}
+.badge{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.06em;text-transform:uppercase;padding:2px 7px;border-radius:2px;display:inline-block}
+.badge-green{background:rgba(34,197,94,0.15);color:var(--green)}
+.badge-amber{background:rgba(245,158,11,0.15);color:var(--amber)}
+.badge-red{background:rgba(240,82,82,0.15);color:var(--red)}
+.badge-blue{background:rgba(56,189,248,0.15);color:var(--blue)}
+.badge-cyan{background:rgba(45,212,191,0.15);color:var(--cyan)}
+.badge-gold{background:rgba(6,182,212,0.15);color:var(--gold)}
+.initiatives-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:24px}
+.init-card{background:var(--panel);border:1px solid var(--border);padding:20px}
+.init-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:12px}
+.init-name{font-family:var(--font-sans);font-weight:600;font-size:0.88rem;color:var(--text)}
+.init-desc{font-size:0.8rem;color:var(--text-mid);line-height:1.55;margin-bottom:14px}
+.signals-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:24px}
+.signal-card{background:var(--panel);border:1px solid var(--border);padding:20px}
+.signal-num{font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);margin-bottom:6px}
+.signal-name{font-family:var(--font-serif);font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px}
+.signal-trl{font-family:var(--font-mono);font-size:0.58rem;color:var(--gold);margin-bottom:10px}
+.signal-desc{font-size:0.8rem;color:var(--text-mid);line-height:1.55;margin-bottom:12px}
+.signal-why{font-family:var(--font-mono);font-size:0.6rem;color:var(--text-dim)}
+@media(max-width:768px){.snapshot-grid{grid-template-columns:repeat(2,1fr)}.strategy-two-col,.initiatives-grid,.signals-grid{grid-template-columns:1fr}.hero-title{font-size:2.2rem}}
+</style>
+</head>
+<body>
+<!-- v8-deprecation-banner -->
+<div style="background:#000;color:#fff;padding:14px 24px;font-family:Arial,Helvetica,sans-serif;font-size:13px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;border-bottom:2px solid #06b6d4">
+  <span style="font-family:'Courier New',monospace;font-size:10px;font-weight:700;letter-spacing:0.12em;color:#06b6d4">DEPRECATED</span>
+  <span style="flex:1;line-height:1.45">This brief has been superseded by the live account plan tool, which pulls hypotheses, ontology pairs, signal log and contacts directly from the catalogue.</span>
+  <a href="account_plans_v8.html?company=Mobileye" style="background:#06b6d4;color:#fff;text-decoration:none;padding:7px 14px;font-weight:600;font-size:12px;letter-spacing:0.04em;white-space:nowrap">Open Mobileye in v8 →</a>
+</div>
+
+<div style="background:#0a1520;border-bottom:1px solid #1c2e3e;padding:8px 24px;display:flex;align-items:center;gap:12px">
+  <span style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.12em;font-weight:700;color:#22AE8A">● SIGNAL REFRESH</span>
+  <span style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278">May 2026 · Sources: Mobileye Q1 2026 results (23 Apr 2026), VW Group E3 1.2 / Cariad integration disclosure, Mahindra SuperVision design win, Mentee Robotics acquisition Q1 2026</span>
+  <span style="margin-left:auto;font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278">May 2026</span>
+</div>
+
+<nav class="nav">
+  <div class="nav-brand">FutureBridge // MBLY Brief</div>
+  <div class="nav-links">
+    <a href="#overview" class="nav-link">Overview</a>
+    <a href="#strategy" class="nav-link">Strategy</a>
+    <a href="#peers" class="nav-link">Peers</a>
+    <a href="#initiatives" class="nav-link">Initiatives</a>
+    <a href="#signals" class="nav-link">Signals</a>
+    <a href="#hypotheses" class="nav-link">Hypotheses</a>
+  </div>
+  <span class="posture-badge">EXPAND</span>
+  <div class="nav-badge">Confidential</div>
+</nav>
+
+<div class="page">
+
+  <section class="hero" id="top">
+    <div class="hero-kicker">Intelligence Brief · ADAS / AV — Vision-First SDV Stack</div>
+    <h1 class="hero-title">Mobileye<br><em>Strategic Intelligence</em></h1>
+    <p class="hero-subtitle">Israeli vision-first ADAS / AV stack. Q1 2026 +27% YoY ($558M); FY guidance lifted to $1.935-2.015B. EyeQ6 SuperVision in 2,000+km test drives, Chauffeur L3 milestones with VW Group, Mahindra design wins. Mentee Robotics acquired Q1.</p>
+    <div class="hero-meta">
+      <div class="meta-item"><div class="meta-label">Sector</div><div class="meta-value">ADAS · AV · SDV stack · vision-first</div></div>
+      <div class="meta-item"><div class="meta-label">Date</div><div class="meta-value">May 2026</div></div>
+      <div class="meta-item"><div class="meta-label">Posture</div><div class="meta-value" style="color:#22c55e">EXPAND</div></div>
+      <div class="meta-item"><div class="meta-label">Prepared by</div><div class="meta-value">FutureBridge Advisory</div></div>
+    </div>
+  </section>
+
+  <section class="section" id="overview">
+    <div class="section-head"><span class="section-num">01</span><h2 class="section-title">Company Snapshot</h2><div class="section-rule"></div></div>
+    <div class="snapshot-grid">
+      <div class="snap-cell"><div class="snap-val">$558M</div><div class="snap-lbl">Q1 2026 revenue</div><div class="snap-sub">+27% YoY · NASDAQ: MBLY</div></div>
+      <div class="snap-cell"><div class="snap-val green">+28%</div><div class="snap-lbl">EyeQ SoC volumes</div><div class="snap-sub">Volume ramp drives revenue beat</div></div>
+      <div class="snap-cell"><div class="snap-val cyan">$1.935-2.015B</div><div class="snap-lbl">FY 2026 outlook (raised)</div><div class="snap-sub">Midpoint up ~2% from prior $1.9-1.98B</div></div>
+      <div class="snap-cell"><div class="snap-val">$250M</div><div class="snap-lbl">Buyback authorisation</div><div class="snap-sub">Partial dilution offset incl Mentee Robotics</div></div>
+      <div class="snap-cell"><div class="snap-val cyan">2,000+km</div><div class="snap-lbl">SuperVision US test drive</div><div class="snap-sub">EyeQ6 High; achieved MTBF goals</div></div>
+      <div class="snap-cell"><div class="snap-val">SOP 2027</div><div class="snap-lbl">2nd-gen stack</div><div class="snap-sub">Stack ready April 2026; AV point-to-point</div></div>
+      <div class="snap-cell"><div class="snap-val blue">100k AVs</div><div class="snap-lbl">VW target by 2033</div><div class="snap-sub">Mobileye Drive partnership</div></div>
+      <div class="snap-cell"><div class="snap-val green">Mahindra</div><div class="snap-lbl">SuperVision + Surround design wins</div><div class="snap-sub">India market expansion</div></div>
+    </div>
+    <div class="info-box">
+      <strong>Headline state.</strong> Strong Q1 2026 with raised FY outlook + buyback. Three structural plays: VW Group SDV programs (E3 1.2 / Cariad), revenue trajectory toward $2.5B+ FY2027, and Chauffeur L3 / Mobileye Drive robotaxi commercialisation. Each tracked as a load-bearing hypothesis below.
+    </div>
+  </section>
+
+  <section class="section" id="strategy">
+    <div class="section-head"><span class="section-num">02</span><h2 class="section-title">Strategic Posture</h2><div class="section-rule"></div></div>
+    <div class="strategy-box">
+      <div class="strategy-two-col">
+        <div>
+          <div class="strategy-col-head">Where Mobileye is investing</div>
+          <ul class="bullet-list">
+            <li><strong>VW Group E3 1.2 + Cariad.</strong> Premium architecture (Audi, Bentley, Lamborghini, Porsche). Mobileye SuperVision in C-sample on Porsche + Audi vehicles; Surround ADAS B-sample with Valeo, full software Dec 2026.</li>
+            <li><strong>EyeQ6 High SuperVision.</strong> Pre-production US drive 2,000+km achieved MTBF in urban / suburban / highway / severe weather. 2nd-gen stack ready April 2026 with SOP 2027.</li>
+            <li><strong>Chauffeur L3 + Mobileye Drive.</strong> Significant milestones in robotaxi technology stack. VW partnership targets 100k AVs by 2033.</li>
+            <li><strong>Mahindra design wins.</strong> SuperVision + Surround ADAS — India market expansion.</li>
+            <li><strong>Mentee Robotics acquisition.</strong> Closed Q1 2026 — embodied AI / robotics extension of vision stack.</li>
+          </ul>
+        </div>
+        <div>
+          <div class="strategy-col-head">What's under pressure</div>
+          <ul class="bullet-list">
+            <li><strong>SDV-platform competition.</strong> Qualcomm Snapdragon Ride + NXP CoreRide + Renesas R-Car all targeting same OEM zonal-SDV pipeline; Mobileye competitive on vision-first stack only.</li>
+            <li><strong>China exposure.</strong> Limited China OEM penetration vs domestic alternatives (Horizon Robotics, MetaX).</li>
+            <li><strong>Intel parent overhang.</strong> Intel still majority shareholder — periodic share-secondary risk.</li>
+            <li><strong>Tesla FSD precedent.</strong> Tesla FSD rollout sets a benchmark — vision-only argument validated, but raises bar for Mobileye consumer ADAS narrative.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="callout">
+        <strong>Strategic posture: EXPAND</strong> — Q1 2026 +27% beat + raised guidance + $250M buyback signals operational confidence. Three hypotheses below test VW Group SOP, FY2027 revenue trajectory, and L3 / robotaxi commercialisation.
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="peers">
+    <div class="section-head"><span class="section-num">03</span><h2 class="section-title">Peer Landscape</h2><div class="section-rule"></div></div>
+    <table class="peer-table">
+      <tr><th>Company</th><th>FY2025 rev</th><th>SDV stack posture</th><th>L3 / AV posture</th><th>Posture</th></tr>
+      <tr class="highlight-row"><td><span class="co-name">Mobileye</span><br><span class="ticker">NASDAQ: MBLY</span></td><td>~$1.7B FY25; $1.935-2.015B FY26 outlook</td><td>SuperVision + Surround ADAS; vision-first</td><td>Chauffeur L3 with VW; 100k AVs by 2033</td><td><span class="badge badge-green">Beat</span></td></tr>
+      <tr><td><span class="co-name">Qualcomm</span><br><span class="ticker">NASDAQ: QCOM</span></td><td>~$40B group</td><td>Snapdragon Ride / Cockpit</td><td>Ride for L2+ ADAS</td><td><span class="badge badge-green">Aggressive</span></td></tr>
+      <tr><td><span class="co-name">NXP Semiconductors</span><br><span class="ticker">NASDAQ: NXPI</span></td><td>~$12.6B</td><td>S32 + CoreRide</td><td>L2+ via OEM stacks</td><td><span class="badge badge-green">Beat</span></td></tr>
+      <tr><td><span class="co-name">Renesas</span><br><span class="ticker">TYO: 6723</span></td><td>~¥1.4T</td><td>R-Car Gen 5 / X5H 3nm multi-domain</td><td>L2+/L3 enabling SoC</td><td><span class="badge badge-green">Beat</span></td></tr>
+      <tr><td><span class="co-name">Tesla FSD (in-house)</span><br><span class="ticker">NASDAQ: TSLA</span></td><td>n/a</td><td>Vision-only HW4 + custom SoC</td><td>Robotaxi rollout</td><td><span class="badge badge-amber">Benchmark</span></td></tr>
+      <tr><td><span class="co-name">Horizon Robotics</span><br><span class="ticker">HKEX: 9660</span></td><td>~¥3-5B est</td><td>Journey series; China OEM dominant</td><td>L2+/L3 stack</td><td><span class="badge badge-green">China leader</span></td></tr>
+    </table>
+  </section>
+
+  <section class="section" id="initiatives">
+    <div class="section-head"><span class="section-num">04</span><h2 class="section-title">Live Initiatives</h2><div class="section-rule"></div></div>
+    <div class="initiatives-grid">
+      <div class="init-card"><div class="init-head"><div class="init-name">VW Group E3 1.2 / Cariad integration</div><span class="badge badge-cyan">Active</span></div><div class="init-desc">SuperVision C-sample in Porsche + Audi; Surround ADAS B-sample with Valeo (full sw Dec 2026); E3 1.2 premium architecture for Audi / Bentley / Lamborghini / Porsche. Brand-specific tailoring.</div></div>
+      <div class="init-card"><div class="init-head"><div class="init-name">EyeQ6 High SuperVision</div><span class="badge badge-green">Validated</span></div><div class="init-desc">Pre-production US 2,000+km drive; achieved MTBF goals in urban / suburban / highway / severe weather; outperformed benchmarks. 2nd-gen stack ready April 2026; SOP 2027.</div></div>
+      <div class="init-card"><div class="init-head"><div class="init-name">Chauffeur L3 + Mobileye Drive robotaxi</div><span class="badge badge-cyan">Build</span></div><div class="init-desc">Significant milestones in robotaxi stack. VW partnership: 100k AVs by 2033. Independent robotaxi product positioning developing in parallel.</div></div>
+      <div class="init-card"><div class="init-head"><div class="init-name">Mahindra India design wins</div><span class="badge badge-green">Won</span></div><div class="init-desc">SuperVision + Surround ADAS design wins announced Q1 2026 for Mahindra. India market entry. Significant potential for both ADAS + AV.</div></div>
+      <div class="init-card"><div class="init-head"><div class="init-name">Mentee Robotics acquisition</div><span class="badge badge-blue">Closed Q1</span></div><div class="init-desc">Acquired Q1 2026. Embodied AI / humanoid robotics extension of vision stack. Stock issued for deal — partial offset via $250M buyback.</div></div>
+      <div class="init-card"><div class="init-head"><div class="init-name">Surround ADAS second top-10 OEM</div><span class="badge badge-cyan">Active</span></div><div class="init-desc">Second top-10 automaker selected Surround ADAS (alongside VW). OEM diversification offsetting concentration risk.</div></div>
+    </div>
+  </section>
+
+  <section class="section" id="signals">
+    <div class="section-head"><span class="section-num">06</span><h2 class="section-title">Weak Signals</h2><div class="section-rule"></div></div>
+    <div class="signals-grid">
+      <div class="signal-card"><div class="signal-num">SIG-01</div><div class="signal-name">VW SOP 2027 visibility</div><div class="signal-trl">CRITICAL · 2026-2027</div><div class="signal-desc">B/C-sample status visible; SOP 2027 the key milestone. Each Cariad delivery step matters; missed milestones derail FY2027-2028 ramp.</div><div class="signal-why">→ Watch: Cariad / VW Group press releases + IAA / model launch announcements</div></div>
+      <div class="signal-card"><div class="signal-num">SIG-02</div><div class="signal-name">China OEM exposure</div><div class="signal-trl">DRAG · 2026-2027</div><div class="signal-desc">Limited China OEM penetration vs Horizon Robotics + MetaX. Without major Chinese flagship win, Mobileye loses scale advantage in fastest-growing EV market.</div><div class="signal-why">→ Watch: Mobileye China design-win disclosures + Horizon Robotics share data</div></div>
+      <div class="signal-card"><div class="signal-num">SIG-03</div><div class="signal-name">Tesla FSD share-of-mind</div><div class="signal-trl">PRESSURE · 2026</div><div class="signal-desc">Tesla FSD vision-only validates Mobileye thesis but raises consumer-narrative bar. OEM customers must demonstrate equivalent capability.</div><div class="signal-why">→ Watch: OEM L2+ release marketing + Tesla FSD release notes</div></div>
+      <div class="signal-card"><div class="signal-num">SIG-04</div><div class="signal-name">Intel parent secondary risk</div><div class="signal-trl">RISK · 2026</div><div class="signal-desc">Intel still majority shareholder — periodic share secondary creates overhang. Each secondary compresses Mobileye equity narrative.</div><div class="signal-why">→ Watch: Intel quarterly disclosures + 13F filings</div></div>
+    </div>
+  </section>
+
+<!-- ══ HYPOTHESIS REGISTER ══ -->
+<section id="hypotheses" class="section">
+<div style="max-width:1200px;margin:0 auto;padding:56px 0 80px">
+
+  <div class="section-head"><span class="section-num">HYP</span><h2 class="section-title">Hypothesis Register</h2><div class="section-rule"></div></div>
+
+  <div class="info-box" style="margin-bottom:32px">
+    Three load-bearing hypotheses anchor Mobileye scouting through 2027-2028. Each is stated as a directional belief with explicit WNTBT thresholds — the conditions that must hold for the hypothesis to confirm.
+  </div>
+
+  <!-- Summary strip -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:40px">
+    <div style="background:var(--panel);padding:16px"><div style="font-family:var(--font-mono);font-size:1.4rem;font-weight:700;color:var(--text);margin-bottom:2px">3</div><div style="font-size:0.75rem;color:var(--text-mid)">Active hypotheses</div><div style="font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);margin-top:2px">May 2026</div></div>
+    <div style="background:var(--panel);padding:16px"><div style="font-family:var(--font-mono);font-size:1.4rem;font-weight:700;color:var(--text);margin-bottom:2px">60%</div><div style="font-size:0.75rem;color:var(--text-mid)">Average probability</div><div style="font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);margin-top:2px">Across 3 hypotheses</div></div>
+    <div style="background:var(--panel);padding:16px"><div style="font-family:var(--font-mono);font-size:1.4rem;font-weight:700;color:var(--gold);margin-bottom:2px">4</div><div style="font-size:0.75rem;color:var(--text-mid)">Signal drivers tracked</div><div style="font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);margin-top:2px">Economics · Market · Technology · Policy</div></div>
+  </div>
+
+  <!-- MBLY-01 -->
+  <div style="margin:0 0 44px 0;border:1px solid #243444;border-top:2px solid var(--gold)">
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#131f2b;border-bottom:1px solid #1c2e3e">
+      <span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--gold);font-weight:700">MBLY-01</span>
+      <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;border:1px solid #1c2e3e;padding:2px 8px">H2 · 3-5yr</span>
+      <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;margin-left:auto">Confidence: Mid</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1.3fr 1.6fr 1.2fr;border-bottom:1px solid #1c2e3e">
+      <div style="padding:14px 12px;border-right:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:10px">SOURCES</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.75rem;color:#4a6278;margin-bottom:10px;font-style:italic">Raw and undifferentiated</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ Mobileye + Cariad VW Group disclosures</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ Audi / Porsche / Bentley / Lamborghini model launches</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ Qualcomm / NXP / Renesas competitive moves</div>
+      </div>
+      <div style="border-right:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">SYSTEM DRIVERS</div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(34,174,138,0.12);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#22AE8A;flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:#22AE8A">Technology<span style="background:rgba(34,174,138,0.22);color:#22AE8A;font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">SuperVision C-sample + Surround ADAS B-sample completion</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(72,184,231,0.12);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#48B8E7;flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:#48B8E7">Market<span style="background:rgba(72,184,231,0.22);color:#48B8E7;font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">VW model launches (Audi, Porsche) with Mobileye stack</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:4px;opacity:0.4"></span><div><div style="font-size:0.8rem;color:#4a6278">Economics</div><div style="font-size:0.72rem;color:#4a6278">Per-vehicle Mobileye content vs Cariad in-house</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px"><span style="width:8px;height:8px;border-radius:50%;background:#9D7AD2;flex-shrink:0;margin-top:4px;opacity:0.35"></span><div><div style="font-size:0.8rem;color:#4a6278">Policy</div><div style="font-size:0.72rem;color:#4a6278">EU UNECE L2+/L3 regulation alignment</div></div></div>
+      </div>
+      <div style="padding:16px;border-right:1px solid #1c2e3e;display:flex;flex-direction:column;justify-content:center">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:12px">HYPOTHESIS</div>
+        <div style="font-family:Georgia,serif;font-size:1.05rem;font-style:italic;color:#e8eef5;line-height:1.55;margin-bottom:16px">VW Group E3 1.2 premium architecture (Audi, Bentley, Lamborghini, Porsche) reaches SOP 2027 with Mobileye SuperVision + Surround ADAS as the primary stack, anchoring the Cariad relationship and delivering EUR-mid-size revenue stream by FY2028.</div>
+        <div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:3px;background:#1c2e3e;border-radius:2px"><div style="width:60%;height:100%;background:var(--gold);border-radius:2px"></div></div><span style="font-family:Courier New,monospace;font-size:0.65rem;color:var(--gold);font-weight:700">60%</span></div>
+      </div>
+      <div>
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">DECISIONS</div>
+        <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#9D7AD2;background:rgba(157,122,210,0.18);padding:2px 8px;border-radius:10px">6 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Track Surround ADAS Dec 2026 sw milestone + SuperVision C-sample status.</div></div>
+        <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#22AE8A;background:rgba(34,174,138,0.18);padding:2px 8px;border-radius:10px">12 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Audi / Porsche / Lamborghini SOP 2027 launch tracker.</div></div>
+        <div style="padding:10px 12px"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:var(--gold);background:rgba(6,182,212,0.18);padding:2px 8px;border-radius:10px">18 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">SDV platform-share (Mobileye / Qualcomm / NXP / Renesas) annual review.</div></div>
+      </div>
+    </div>
+    <div style="background:#0f1922">
+      <div style="display:flex;align-items:center;gap:16px;padding:12px 16px 8px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.1em;font-weight:700;color:var(--gold)">WHAT NEEDS TO BE TRUE</span><span style="flex:1;height:1px;background:#1c2e3e"></span><span style="font-family:Arial,sans-serif;font-size:0.65rem;color:#4a6278">All conditions hold</span></div>
+      <div style="padding:4px 16px 12px">
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">Surround ADAS full software implementation by Dec 2026 as guided.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">SuperVision C-sample passes Cariad acceptance and progresses to D-sample on Audi / Porsche.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">First E3 1.2 production launch with Mobileye SuperVision in 2027 as planned.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">No Cariad walk-back to in-house stack on premium-brand vehicles before SOP.</span></div>
+      </div>
+      <div style="padding:10px 16px 14px;border-top:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.5rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:5px">ENGAGEMENT IMPLICATION</div>
+        <div style="font-size:0.82rem;color:#8fa3b5;line-height:1.6;padding-left:12px;border-left:2px solid var(--gold)">Cariad / VW Group integration tracking + premium-brand model-launch intelligence is the highest-priority engagement input.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MBLY-02 -->
+  <div style="margin:0 0 44px 0;border:1px solid #243444;border-top:2px solid var(--gold)">
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#131f2b;border-bottom:1px solid #1c2e3e">
+      <span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--gold);font-weight:700">MBLY-02</span>
+      <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;border:1px solid #1c2e3e;padding:2px 8px">H1 · 1-2yr</span>
+      <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;margin-left:auto">Confidence: Mid-High</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1.3fr 1.6fr 1.2fr;border-bottom:1px solid #1c2e3e">
+      <div style="padding:14px 12px;border-right:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:10px">SOURCES</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.75rem;color:#4a6278;margin-bottom:10px;font-style:italic">Raw and undifferentiated</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ Mobileye quarterly results + EyeQ volume disclosures</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ OEM SDV / ADAS rollout schedules</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ Mahindra + Surround 2nd top-10 deliveries</div>
+      </div>
+      <div style="border-right:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">SYSTEM DRIVERS</div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(72,184,231,0.12);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#48B8E7;flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:#48B8E7">Market<span style="background:rgba(72,184,231,0.22);color:#48B8E7;font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">EyeQ volume + global ADAS / SDV demand</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(6,182,212,0.10);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:var(--gold)">Economics<span style="background:rgba(6,182,212,0.22);color:var(--gold);font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">EyeQ ASP + content / vehicle as L2+ ramps</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#22AE8A;flex-shrink:0;margin-top:4px;opacity:0.4"></span><div><div style="font-size:0.8rem;color:#4a6278">Technology</div><div style="font-size:0.72rem;color:#4a6278">2nd-gen stack (Apr 2026) + EyeQ6 ramp</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px"><span style="width:8px;height:8px;border-radius:50%;background:#9D7AD2;flex-shrink:0;margin-top:4px;opacity:0.35"></span><div><div style="font-size:0.8rem;color:#4a6278">Policy</div><div style="font-size:0.72rem;color:#4a6278">UNECE / FMVSS L2+ regulation rollout</div></div></div>
+      </div>
+      <div style="padding:16px;border-right:1px solid #1c2e3e;display:flex;flex-direction:column;justify-content:center">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:12px">HYPOTHESIS</div>
+        <div style="font-family:Georgia,serif;font-size:1.05rem;font-style:italic;color:#e8eef5;line-height:1.55;margin-bottom:16px">Mobileye delivers FY2026 revenue at the upper end of $1.935-2.015B range and grows ≥20% in FY2027 to &gt;$2.4B, sustained by EyeQ6 ramp + VW Group Surround ADAS deliveries + Mahindra + Surround 2nd top-10 OEM.</div>
+        <div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:3px;background:#1c2e3e;border-radius:2px"><div style="width:70%;height:100%;background:var(--gold);border-radius:2px"></div></div><span style="font-family:Courier New,monospace;font-size:0.65rem;color:var(--gold);font-weight:700">70%</span></div>
+      </div>
+      <div>
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">DECISIONS</div>
+        <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#9D7AD2;background:rgba(157,122,210,0.18);padding:2px 8px;border-radius:10px">6 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Quarterly EyeQ volume + revenue tracking.</div></div>
+        <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#22AE8A;background:rgba(34,174,138,0.18);padding:2px 8px;border-radius:10px">12 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">FY2026 attainment + FY2027 guidance read-through.</div></div>
+        <div style="padding:10px 12px"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:var(--gold);background:rgba(6,182,212,0.18);padding:2px 8px;border-radius:10px">18 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">FY2027 attainment + capital-allocation review.</div></div>
+      </div>
+    </div>
+    <div style="background:#0f1922">
+      <div style="display:flex;align-items:center;gap:16px;padding:12px 16px 8px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.1em;font-weight:700;color:var(--gold)">WHAT NEEDS TO BE TRUE</span><span style="flex:1;height:1px;background:#1c2e3e"></span><span style="font-family:Arial,sans-serif;font-size:0.65rem;color:#4a6278">All conditions hold</span></div>
+      <div style="padding:4px 16px 12px">
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">FY2026 revenue lands ≥$1.97B (upper-half of guided range).</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">FY2027 revenue grows ≥20% to &gt;$2.4B.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">EyeQ SoC volumes continue +25%+ YoY through 2027.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">No Surround ADAS delays at VW + 2nd top-10 OEM.</span></div>
+      </div>
+      <div style="padding:10px 16px 14px;border-top:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.5rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:5px">ENGAGEMENT IMPLICATION</div>
+        <div style="font-size:0.82rem;color:#8fa3b5;line-height:1.6;padding-left:12px;border-left:2px solid var(--gold)">Quarterly EyeQ + Surround / SuperVision tracking is the FY2026-2027 ambient scout.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MBLY-03 -->
+  <div style="margin:0 0 44px 0;border:1px solid #243444;border-top:2px solid var(--gold)">
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#131f2b;border-bottom:1px solid #1c2e3e">
+      <span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--gold);font-weight:700">MBLY-03</span>
+      <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;border:1px solid #1c2e3e;padding:2px 8px">H2 · 3-5yr</span>
+      <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;margin-left:auto">Confidence: Low-Mid</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1.3fr 1.6fr 1.2fr;border-bottom:1px solid #1c2e3e">
+      <div style="padding:14px 12px;border-right:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:10px">SOURCES</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.75rem;color:#4a6278;margin-bottom:10px;font-style:italic">Raw and undifferentiated</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ Mobileye Drive deployment milestones</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ VW + partner robotaxi pilots</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ Tesla FSD + Waymo competitive moves</div>
+      </div>
+      <div style="border-right:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">SYSTEM DRIVERS</div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(34,174,138,0.12);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#22AE8A;flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:#22AE8A">Technology<span style="background:rgba(34,174,138,0.22);color:#22AE8A;font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">Chauffeur L3 stack maturity + safety case</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(72,184,231,0.10);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#48B8E7;flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:#48B8E7">Market<span style="background:rgba(72,184,231,0.22);color:#48B8E7;font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">Robotaxi commercial deployment timing</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:4px;opacity:0.4"></span><div><div style="font-size:0.8rem;color:#4a6278">Economics</div><div style="font-size:0.72rem;color:#4a6278">L3 / robotaxi unit economics + per-vehicle margin</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px"><span style="width:8px;height:8px;border-radius:50%;background:#9D7AD2;flex-shrink:0;margin-top:4px;opacity:0.35"></span><div><div style="font-size:0.8rem;color:#4a6278">Policy</div><div style="font-size:0.72rem;color:#4a6278">L3 / robotaxi regulatory clearance per region</div></div></div>
+      </div>
+      <div style="padding:16px;border-right:1px solid #1c2e3e;display:flex;flex-direction:column;justify-content:center">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:12px">HYPOTHESIS</div>
+        <div style="font-family:Georgia,serif;font-size:1.05rem;font-style:italic;color:#e8eef5;line-height:1.55;margin-bottom:16px">Mobileye Chauffeur L3 + Mobileye Drive achieves first commercial deployment by 2028 with VW Group, validating the AV stack toward the 100k-AVs-by-2033 target.</div>
+        <div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:3px;background:#1c2e3e;border-radius:2px"><div style="width:50%;height:100%;background:var(--gold);border-radius:2px"></div></div><span style="font-family:Courier New,monospace;font-size:0.65rem;color:var(--gold);font-weight:700">50%</span></div>
+      </div>
+      <div>
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">DECISIONS</div>
+        <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#9D7AD2;background:rgba(157,122,210,0.18);padding:2px 8px;border-radius:10px">6 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Track Chauffeur L3 + Mobileye Drive milestones.</div></div>
+        <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#22AE8A;background:rgba(34,174,138,0.18);padding:2px 8px;border-radius:10px">12 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">L3 / robotaxi competitive map (Mobileye / Tesla / Waymo / Cruise).</div></div>
+        <div style="padding:10px 12px"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:var(--gold);background:rgba(6,182,212,0.18);padding:2px 8px;border-radius:10px">18 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">First commercial deployment plan + go-to-market.</div></div>
+      </div>
+    </div>
+    <div style="background:#0f1922">
+      <div style="display:flex;align-items:center;gap:16px;padding:12px 16px 8px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.1em;font-weight:700;color:var(--gold)">WHAT NEEDS TO BE TRUE</span><span style="flex:1;height:1px;background:#1c2e3e"></span><span style="font-family:Arial,sans-serif;font-size:0.65rem;color:#4a6278">All conditions hold</span></div>
+      <div style="padding:4px 16px 12px">
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">Chauffeur L3 stack passes safety case + regulatory clearance in at least one major market by 2027.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">First commercial Mobileye Drive deployment with VW Group by 2028.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">VW retains commitment to 100k AVs by 2033 (no walk-back).</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">No major Tesla FSD / Waymo / Cruise expansion that obsoletes Mobileye partnership model.</span></div>
+      </div>
+      <div style="padding:10px 16px 14px;border-top:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.5rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:5px">ENGAGEMENT IMPLICATION</div>
+        <div style="font-size:0.82rem;color:#8fa3b5;line-height:1.6;padding-left:12px;border-left:2px solid var(--gold)">L3 / robotaxi competitive landscape + Mobileye Drive deployment milestones — long-term-thesis scouting input.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+</div>
+</body>
+</html>
