@@ -279,8 +279,39 @@ footer{background:var(--black);padding:20px 52px;display:flex;align-items:center
         </div>
       </a>
 
-      <a href="insight_forecast.html" class="tool live">
+      <a href="tech_heat_map.html" class="tool live">
         <div class="t-num">02</div>
+        <div class="t-icon">▦</div>
+        <div class="t-title">Technology Heat Map — live</div>
+        <p class="t-desc">Client × technology-pair matrix. Pulls live from <code style="font-size:11px">/v8/ontology-pairs</code> per company in parallel. Cells coloured by horizon, opacity by confidence, outline for cross-client edges. Search by company or technology, filter by horizon / confidence / cross-client. Export CSV. Bearer token stored in localStorage.</p>
+        <div class="t-tags">
+          <span class="tag live">Live · API-backed</span>
+          <span class="tag">All clients</span>
+          <span class="tag">Horizon × Confidence</span>
+          <span class="tag">Cross-client edges</span>
+          <span class="tag">CSV export</span>
+        </div>
+        <div class="t-link">Open tool <span class="t-arr"></span></div>
+      </a>
+
+      <a href="tech_tracker.html" class="tool live">
+        <div class="t-num">03</div>
+        <div class="t-icon">◐</div>
+        <div class="t-title">Technology Tracker — live</div>
+        <p class="t-desc">Per-technology view. Aggregates ontology pairs across all clients into one row per technology with TRL, TTT, dominant horizon, confidence, trajectory, client coverage and evidence count. TRL / TTT derived from horizon (labelled as estimates — validate with analyst). Click any row to expand application pairs and client list. Searchable, sortable, CSV export.</p>
+        <div class="t-tags">
+          <span class="tag live">Live · API-backed</span>
+          <span class="tag">TRL (est)</span>
+          <span class="tag">TTT (est)</span>
+          <span class="tag">Trajectory</span>
+          <span class="tag">Client coverage</span>
+          <span class="tag">CSV export</span>
+        </div>
+        <div class="t-link">Open tool <span class="t-arr"></span></div>
+      </a>
+
+      <a href="insight_forecast.html" class="tool live">
+        <div class="t-num">04</div>
         <div class="t-icon">◇</div>
         <div class="t-title">Insight &amp; Forecast</div>
         <p class="t-desc">Four-tab forward-view module. Accounts, market, technology, and regulatory outlook by sector. Use alongside account plans for meeting prep.</p>

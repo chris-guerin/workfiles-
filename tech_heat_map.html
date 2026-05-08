@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Technology Heat Map — FutureBridge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --black:#000;--white:#fff;--grey:#4B4B55;--grey-light:#e6e6e8;--grey-50:#f6f6f7;
+  --bg:#fff;--ink:#000;--muted:#4B4B55;--border:#e6e6e8;--surface:#fafafa;
+  --h1:#1f7a3a;--h2:#a36100;--h3:#274ea0;
+  --hi:#000;--med:#4B4B55;--lo:#a8a8b0;
+  --imp:#1f7a3a;--stab:#4B4B55;--det:#a13b3b;--vol:#a36100;--unk:#a8a8b0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',system-ui,sans-serif;font-size:13px;color:var(--ink);background:var(--bg);line-height:1.45}
+a{color:var(--ink)}
+button{font-family:inherit;font-size:13px;cursor:pointer;border:1px solid var(--border);background:#fff;padding:7px 14px;font-weight:500}
+button:hover{background:var(--grey-50)}
+button.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+button.primary:hover{background:#222}
+input[type=text],input[type=password],input[type=search]{font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border);width:100%;color:var(--ink);background:#fff}
+input:focus{outline:none;border-color:var(--ink)}
+.layout{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+.layout.collapsed{grid-template-columns:48px 1fr}
+
+aside{border-right:1px solid var(--border);background:var(--surface);padding:24px 20px;display:flex;flex-direction:column;gap:18px;position:sticky;top:0;height:100vh;overflow-y:auto}
+aside .brand{font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--ink)}
+aside h1{font-size:14px;font-weight:600;color:var(--ink);margin-top:4px}
+aside .desc{font-size:12px;color:var(--muted);line-height:1.55}
+aside section{display:flex;flex-direction:column;gap:8px}
+aside section .lbl{font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--muted)}
+aside .row{display:flex;gap:6px}
+aside .nav{display:flex;flex-direction:column;gap:6px;margin-top:auto;padding-top:12px;border-top:1px solid var(--border);font-size:12px}
+aside .nav a{display:block;padding:6px 8px;color:var(--muted);text-decoration:none;border:1px solid transparent}
+aside .nav a:hover{color:var(--ink);background:#fff;border-color:var(--border)}
+aside .nav a.active{color:var(--ink);font-weight:600;background:#fff;border-color:var(--border)}
+aside .toggle{position:absolute;top:14px;right:-13px;width:26px;height:26px;border-radius:50%;background:#fff;border:1px solid var(--border);font-size:14px;display:flex;align-items:center;justify-content:center;padding:0;line-height:1;z-index:5}
+aside .status{font-size:11px;color:var(--muted);font-family:'DM Sans',monospace}
+aside .status .ok{color:var(--imp);font-weight:600}
+aside .status .err{color:var(--det);font-weight:600}
+
+main{padding:28px 36px 80px;min-width:0;overflow-x:auto}
+.h-row{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:18px}
+.h-row .left h2{font-size:24px;font-weight:700;letter-spacing:-.01em}
+.h-row .left .sub{font-size:13px;color:var(--muted);margin-top:4px;max-width:760px}
+.h-row .right{display:flex;gap:8px;flex-wrap:wrap}
+
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:14px 16px;border:1px solid var(--border);margin-bottom:14px;background:#fff}
+.controls .field{display:flex;flex-direction:column;gap:4px;min-width:200px;flex:1}
+.controls .field .lbl{font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--muted)}
+.controls .field input,.controls .field select{font-family:inherit;font-size:13px;padding:7px 10px;border:1px solid var(--border);background:#fff}
+.controls .field select{cursor:pointer}
+.controls .stat{font-size:11px;color:var(--muted);padding:6px 10px;border:1px solid var(--border);background:#fff;font-family:'DM Sans',monospace}
+.controls .stat strong{color:var(--ink);font-weight:600}
+
+.legend{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:11px;color:var(--muted);margin-bottom:14px;padding:10px 14px;border:1px solid var(--border);background:var(--surface)}
+.legend .item{display:flex;align-items:center;gap:6px}
+.legend .swatch{width:12px;height:12px;border:1px solid var(--border)}
+.legend .sw-h1{background:var(--h1)}
+.legend .sw-h2{background:var(--h2)}
+.legend .sw-h3{background:var(--h3)}
+.legend .sw-cross{background:repeating-linear-gradient(45deg,var(--ink),var(--ink) 2px,#fff 2px,#fff 4px)}
+
+.matrix-wrap{overflow:auto;border:1px solid var(--border);background:#fff}
+table.heat{border-collapse:collapse;font-size:11px;font-family:'DM Sans',monospace}
+table.heat thead th{position:sticky;top:0;z-index:3;background:#fff;border-bottom:2px solid var(--ink);padding:8px 6px;font-weight:600;font-size:10px;text-align:left;white-space:nowrap;letter-spacing:.04em;color:var(--ink)}
+table.heat thead th.sticky-corner{position:sticky;left:0;z-index:5;border-right:1px solid var(--border);min-width:200px;background:#fff}
+table.heat thead th.tech-header{vertical-align:bottom;padding:0;background:#fff;border-right:1px solid var(--border);height:160px}
+table.heat thead th.tech-header .label{transform:rotate(-60deg);transform-origin:left bottom;width:160px;display:inline-block;padding:0 8px;line-height:1.25;font-weight:500;color:var(--ink)}
+table.heat thead th.tech-header .tech-name{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600;margin-bottom:2px}
+table.heat tbody td.sticky-row{position:sticky;left:0;background:#fff;border-right:1px solid var(--border);font-weight:600;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:12px;padding:8px 12px;min-width:200px;z-index:2}
+table.heat tbody td.cell{width:18px;height:24px;text-align:center;border-right:1px solid var(--grey-light);border-bottom:1px solid var(--grey-light);cursor:pointer;position:relative}
+table.heat tbody td.cell:hover{outline:1px solid var(--ink);z-index:1;outline-offset:-1px}
+table.heat tbody tr:hover td.sticky-row{background:var(--surface)}
+table.heat tbody tr.dimmed{opacity:.25}
+.dot{display:block;width:10px;height:10px;margin:0 auto;border:1px solid rgba(0,0,0,.25)}
+.dot.h1{background:var(--h1)}
+.dot.h2{background:var(--h2)}
+.dot.h3{background:var(--h3)}
+.dot.cross{outline:2px solid var(--ink);outline-offset:1px}
+.cell.confidence-medium .dot{opacity:.65}
+.cell.confidence-low .dot{opacity:.4}
+td.cell .err{color:var(--det);font-size:10px;font-weight:700}
+td.cell .err::before{content:'×'}
+td.cell .pending{color:var(--lo);font-size:10px}
+td.cell .pending::before{content:'…'}
+.row-status{font-size:10px;color:var(--muted);font-family:'DM Sans',monospace;padding:0 6px}
+
+.detail{position:fixed;right:24px;bottom:24px;width:380px;max-height:60vh;overflow:auto;background:#fff;border:1px solid var(--ink);box-shadow:0 8px 24px rgba(0,0,0,.12);padding:18px 20px;display:none;z-index:50}
+.detail.open{display:block}
+.detail .close{position:absolute;top:10px;right:12px;background:none;border:none;font-size:18px;color:var(--muted);cursor:pointer;padding:0}
+.detail h3{font-size:14px;font-weight:700;margin-bottom:4px;padding-right:24px}
+.detail .small{font-size:11px;color:var(--muted);margin-bottom:14px}
+.detail dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:12px}
+.detail dt{color:var(--muted);font-weight:500}
+.detail dd{color:var(--ink)}
+.detail .reasoning{margin-top:14px;padding-top:12px;border-top:1px solid var(--border);font-size:12px;line-height:1.5;color:var(--muted)}
+
+.empty{padding:60px 20px;text-align:center;color:var(--muted)}
+.empty h3{font-size:18px;color:var(--ink);font-weight:600;margin-bottom:8px}
+</style>
+</head>
+<body>
+
+<div class="layout" id="layout">
+
+  <aside id="sidebar">
+    <div class="brand">FutureBridge</div>
+    <h1>Technology Heat Map</h1>
+    <div class="desc">Live client × technology-pair matrix. Pulls from <code style="font-size:11px">/v8/ontology-pairs</code> per company in parallel.</div>
+
+    <section>
+      <div class="lbl">Signal Engine API token</div>
+      <input id="tokenInput" type="password" placeholder="Bearer token" autocomplete="off" />
+      <div class="row">
+        <button class="primary" id="saveToken" style="flex:1">Save &amp; load</button>
+        <button id="clearToken" title="Clear stored token">Clear</button>
+      </div>
+      <div class="status" id="tokenStatus">No token saved.</div>
+    </section>
+
+    <section>
+      <div class="lbl">Status</div>
+      <div class="status" id="loadStatus">Idle</div>
+    </section>
+
+    <div class="nav">
+      <a href="index.html">← All tools</a>
+      <a href="tech_heat_map.html" class="active">Heat Map</a>
+      <a href="tech_tracker.html">Technology Tracker</a>
+      <a href="account_plans_v8.html">Account Plans v8</a>
+    </div>
+  </aside>
+
+  <main>
+    <div class="h-row">
+      <div class="left">
+        <h2>Technology Heat Map</h2>
+        <div class="sub">Companies down rows, technology-application pairs across columns. Cell colour = horizon · solid outline = cross-client edge. Click any cell for details. Filters apply live.</div>
+      </div>
+      <div class="right">
+        <button id="refresh">Refresh data</button>
+        <button id="exportCsv">Export CSV</button>
+      </div>
+    </div>
+
+    <div class="controls" id="controls" style="display:none">
+      <div class="field">
+        <span class="lbl">Search company</span>
+        <input id="qCompany" type="search" placeholder="e.g. Shell, NXP, Wolfspeed…" />
+      </div>
+      <div class="field">
+        <span class="lbl">Search technology / pair</span>
+        <input id="qPair" type="search" placeholder="e.g. SiC, hydrogen, radar…" />
+      </div>
+      <div class="field" style="max-width:160px">
+        <span class="lbl">Horizon</span>
+        <select id="fHorizon">
+          <option value="">all</option>
+          <option value="H1">H1 only</option>
+          <option value="H2">H2 only</option>
+          <option value="H3">H3 only</option>
+        </select>
+      </div>
+      <div class="field" style="max-width:170px">
+        <span class="lbl">Confidence</span>
+        <select id="fConf">
+          <option value="">all</option>
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        </select>
+      </div>
+      <div class="field" style="max-width:170px">
+        <span class="lbl">Cross-client only</span>
+        <select id="fCross">
+          <option value="">all</option>
+          <option value="1">cross-client only</option>
+        </select>
+      </div>
+      <div class="stat" id="statSummary">…</div>
+    </div>
+
+    <div class="legend" id="legend" style="display:none">
+      <div class="item"><span class="swatch sw-h1"></span> H1 (1–2yr)</div>
+      <div class="item"><span class="swatch sw-h2"></span> H2 (3–5yr)</div>
+      <div class="item"><span class="swatch sw-h3"></span> H3 (6yr+)</div>
+      <div class="item"><span class="swatch" style="outline:2px solid #000;background:#fff"></span> cross-client edge</div>
+      <div class="item">opacity = confidence (high → low)</div>
+    </div>
+
+    <div id="content">
+      <div class="empty" id="emptyState">
+        <h3>Enter your Signal Engine token</h3>
+        <p>Use the sidebar to paste your bearer token, then press <strong>Save &amp; load</strong>. The matrix builds from live PG data.</p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="detail" id="detail">
+  <button class="close" id="detailClose">×</button>
+  <h3 id="dTitle"></h3>
+  <div class="small" id="dSub"></div>
+  <dl id="dList"></dl>
+  <div class="reasoning" id="dReason"></div>
+</div>
+
+<script>
+const API = 'https://signal-engine-api-production-0cf1.up.railway.app';
+const STORAGE_KEY = 'se_token';
+
+const els = {
+  tokenInput: document.getElementById('tokenInput'),
+  tokenStatus: document.getElementById('tokenStatus'),
+  saveToken: document.getElementById('saveToken'),
+  clearToken: document.getElementById('clearToken'),
+  loadStatus: document.getElementById('loadStatus'),
+  refresh: document.getElementById('refresh'),
+  exportCsv: document.getElementById('exportCsv'),
+  controls: document.getElementById('controls'),
+  legend: document.getElementById('legend'),
+  qCompany: document.getElementById('qCompany'),
+  qPair: document.getElementById('qPair'),
+  fHorizon: document.getElementById('fHorizon'),
+  fConf: document.getElementById('fConf'),
+  fCross: document.getElementById('fCross'),
+  statSummary: document.getElementById('statSummary'),
+  content: document.getElementById('content'),
+  emptyState: document.getElementById('emptyState'),
+  detail: document.getElementById('detail'),
+  detailClose: document.getElementById('detailClose'),
+  dTitle: document.getElementById('dTitle'),
+  dSub: document.getElementById('dSub'),
+  dList: document.getElementById('dList'),
+  dReason: document.getElementById('dReason'),
+};
+
+// State
+const state = {
+  token: null,
+  companies: [],          // [{id,name,sector,initiative_count}]
+  pairsByCompany: {},     // name -> array of pair rows
+  errorsByCompany: {},    // name -> error string
+  loadingByCompany: {},   // name -> true while in flight
+};
+
+// ── Token handling ─────────────────────────────────
+function readUrlToken(){
+  const u = new URL(location.href);
+  const t = u.searchParams.get('token');
+  if(t){
+    localStorage.setItem(STORAGE_KEY, t);
+    u.searchParams.delete('token');
+    history.replaceState(null,'',u.toString());
+    return t;
+  }
+  return null;
+}
+function loadToken(){
+  return readUrlToken() || localStorage.getItem(STORAGE_KEY) || '';
+}
+function setTokenStatus(){
+  if(state.token){
+    const masked = state.token.length > 8 ? state.token.slice(0,4)+'…'+state.token.slice(-4) : '••••';
+    els.tokenStatus.innerHTML = `<span class="ok">●</span> Token saved (${masked})`;
+  } else {
+    els.tokenStatus.innerHTML = `<span class="err">●</span> No token saved.`;
+  }
+}
+
+els.saveToken.addEventListener('click', () => {
+  const t = els.tokenInput.value.trim();
+  if(!t){ alert('Paste a token first.'); return; }
+  localStorage.setItem(STORAGE_KEY, t);
+  state.token = t;
+  els.tokenInput.value = '';
+  setTokenStatus();
+  loadAll();
+});
+els.clearToken.addEventListener('click', () => {
+  localStorage.removeItem(STORAGE_KEY);
+  state.token = null;
+  setTokenStatus();
+  els.content.innerHTML = '';
+  els.content.appendChild(els.emptyState);
+});
+
+// ── API client ────────────────────────────────────
+async function api(path){
+  const r = await fetch(API + path, {
+    headers: { 'Authorization': 'Bearer ' + state.token },
+  });
+  if(!r.ok){
+    const msg = `HTTP ${r.status}`;
+    throw new Error(msg);
+  }
+  return r.json();
+}
+
+// ── Load ───────────────────────────────────────────
+async function loadAll(){
+  if(!state.token){ els.loadStatus.textContent = 'No token'; return; }
+  els.loadStatus.textContent = 'Fetching companies…';
+  state.pairsByCompany = {};
+  state.errorsByCompany = {};
+  state.loadingByCompany = {};
+
+  let companies;
+  try {
+    companies = await api('/v8/companies');
+  } catch(e){
+    els.loadStatus.innerHTML = `<span class="err">●</span> Companies failed: ${e.message}`;
+    return;
+  }
+  state.companies = companies;
+  els.loadStatus.textContent = `Loaded ${companies.length} companies. Fetching ontology pairs…`;
+  els.controls.style.display = 'flex';
+  els.legend.style.display = 'flex';
+  render(); // first render with pending cells
+
+  // parallel fetch all companies
+  const t0 = performance.now();
+  await Promise.all(companies.map(async c => {
+    state.loadingByCompany[c.name] = true;
+    try {
+      const rows = await api('/v8/ontology-pairs?company=' + encodeURIComponent(c.name));
+      state.pairsByCompany[c.name] = rows;
+    } catch(e){
+      state.errorsByCompany[c.name] = e.message;
+    } finally {
+      state.loadingByCompany[c.name] = false;
+      render();
+    }
+  }));
+  const dt = ((performance.now()-t0)/1000).toFixed(1);
+  const errCount = Object.keys(state.errorsByCompany).length;
+  els.loadStatus.innerHTML = errCount
+    ? `<span class="err">●</span> Loaded with ${errCount} error(s) in ${dt}s`
+    : `<span class="ok">●</span> Loaded all in ${dt}s`;
+}
+
+els.refresh.addEventListener('click', loadAll);
+
+// ── Render ────────────────────────────────────────
+function uniquePairs(){
+  // Build set of pair_label across all companies' loaded rows.
+  // Keep one canonical row to drive header label + tech_name.
+  const map = new Map(); // pair_label -> {pair_label, technology, technology_name, application, application_domain}
+  for(const company in state.pairsByCompany){
+    for(const r of state.pairsByCompany[company] || []){
+      if(!map.has(r.pair_label)){
+        map.set(r.pair_label, {
+          pair_label: r.pair_label,
+          technology: r.technology,
+          technology_name: r.technology_name,
+          application: r.application,
+          application_name: r.application_name,
+          application_domain: r.application_domain,
+        });
+      }
+    }
+  }
+  // sort by technology, then application
+  return [...map.values()].sort((a,b) => {
+    const tA = (a.technology||'').toLowerCase();
+    const tB = (b.technology||'').toLowerCase();
+    if(tA !== tB) return tA < tB ? -1 : 1;
+    const aA = (a.application||'').toLowerCase();
+    const aB = (b.application||'').toLowerCase();
+    return aA < aB ? -1 : aA > aB ? 1 : 0;
+  });
+}
+
+function getCellRow(companyName, pairLabel){
+  const rows = state.pairsByCompany[companyName] || [];
+  // multiple link_role rows possible — prefer principal/enabling, else first
+  const matches = rows.filter(r => r.pair_label === pairLabel);
+  if(!matches.length) return null;
+  const order = {principal:0, enabling:1, external_threat:2};
+  matches.sort((a,b) => (order[a.link_type]||9) - (order[b.link_type]||9));
+  return matches[0];
+}
+
+function passFilters(row){
+  const fH = els.fHorizon.value;
+  const fC = els.fConf.value;
+  const fX = els.fCross.value;
+  if(fH && row.horizon !== fH) return false;
+  if(fC && row.confidence !== fC) return false;
+  if(fX === '1' && !row.is_cross_client_edge) return false;
+  return true;
+}
+
+function pairMatchesQuery(p, q){
+  if(!q) return true;
+  const s = (p.pair_label + ' ' + (p.technology||'') + ' ' + (p.technology_name||'') + ' ' + (p.application||'')).toLowerCase();
+  return s.includes(q.toLowerCase());
+}
+
+function render(){
+  const allPairs = uniquePairs();
+  const qC = els.qCompany.value.trim().toLowerCase();
+  const qP = els.qPair.value.trim().toLowerCase();
+  const pairs = allPairs.filter(p => pairMatchesQuery(p, qP));
+
+  // Stats
+  let totalLinks = 0, crossLinks = 0;
+  for(const c of state.companies){
+    for(const r of state.pairsByCompany[c.name] || []){
+      if(passFilters(r) && pairMatchesQuery({pair_label:r.pair_label,technology:r.technology,application:r.application,technology_name:r.technology_name}, qP)){
+        totalLinks++;
+        if(r.is_cross_client_edge) crossLinks++;
+      }
+    }
+  }
+  els.statSummary.innerHTML = `<strong>${state.companies.length}</strong> companies · <strong>${pairs.length}</strong> pairs · <strong>${totalLinks}</strong> links${crossLinks?` · <strong>${crossLinks}</strong> cross-client`:''}`;
+
+  if(!state.companies.length){ return; }
+
+  // Table
+  let html = '<div class="matrix-wrap"><table class="heat"><thead><tr>';
+  html += '<th class="sticky-corner">Company</th>';
+  let lastTech = null;
+  for(const p of pairs){
+    const showTech = p.technology !== lastTech;
+    lastTech = p.technology;
+    html += `<th class="tech-header" title="${escapeAttr(p.pair_label)}">`
+         + `<div class="label">`
+         + (showTech?`<span class="tech-name">${escapeHtml(p.technology||p.technology_name||'')}</span>`:'')
+         + escapeHtml(p.application || p.pair_label)
+         + `</div></th>`;
+  }
+  html += '<th class="sticky-corner" style="left:auto;right:0;border-left:1px solid var(--border);min-width:80px">Status</th>';
+  html += '</tr></thead><tbody>';
+
+  for(const c of state.companies){
+    const visible = !qC || c.name.toLowerCase().includes(qC);
+    if(!visible) continue;
+    html += `<tr><td class="sticky-row" title="${escapeAttr(c.name)} · ${c.sector||'?'} · ${c.initiative_count||0} initiative(s)">${escapeHtml(c.name)}</td>`;
+    for(const p of pairs){
+      const r = getCellRow(c.name, p.pair_label);
+      if(state.loadingByCompany[c.name] && !r){
+        html += `<td class="cell"><span class="pending"></span></td>`;
+      } else if(state.errorsByCompany[c.name] && !r){
+        html += `<td class="cell" title="${escapeAttr(state.errorsByCompany[c.name])}"><span class="err"></span></td>`;
+      } else if(r && passFilters(r)){
+        const cls = `cell confidence-${r.confidence||'unknown'}`;
+        const dot = `<span class="dot ${(r.horizon||'h1').toLowerCase()} ${r.is_cross_client_edge?'cross':''}"></span>`;
+        const tt = `${p.pair_label} · ${r.horizon} · ${r.confidence||'?'} · ${r.trajectory||'?'} · evid ${r.hard_evidence_count||0}${r.is_cross_client_edge?' · cross-client':''}`;
+        html += `<td class="${cls}" data-company="${escapeAttr(c.name)}" data-pair="${escapeAttr(p.pair_label)}" title="${escapeAttr(tt)}">${dot}</td>`;
+      } else {
+        html += `<td class="cell"></td>`;
+      }
+    }
+    let st;
+    if(state.loadingByCompany[c.name]){ st = '<span class="row-status">…</span>'; }
+    else if(state.errorsByCompany[c.name]){ st = `<span class="row-status" style="color:var(--det)" title="${escapeAttr(state.errorsByCompany[c.name])}">err</span>`; }
+    else { st = `<span class="row-status">${(state.pairsByCompany[c.name]||[]).length}</span>`; }
+    html += `<td class="sticky-row" style="left:auto;right:0;text-align:center;border-right:none;border-left:1px solid var(--border);min-width:60px">${st}</td>`;
+    html += '</tr>';
+  }
+  html += '</tbody></table></div>';
+
+  els.content.innerHTML = html;
+  // attach cell handlers
+  els.content.querySelectorAll('td.cell[data-company]').forEach(td => {
+    td.addEventListener('click', () => openDetail(td.dataset.company, td.dataset.pair));
+  });
+}
+
+function openDetail(company, pairLabel){
+  const r = getCellRow(company, pairLabel);
+  if(!r) return;
+  els.dTitle.textContent = r.pair_label;
+  els.dSub.textContent = `${company} · ${r.technology || r.technology_name || ''} → ${r.application || r.application_name || ''}`;
+  els.dList.innerHTML = `
+    <dt>Horizon</dt><dd>${r.horizon||'?'}</dd>
+    <dt>Confidence</dt><dd>${r.confidence||'?'}</dd>
+    <dt>Trajectory</dt><dd>${r.trajectory||'?'}</dd>
+    <dt>Hard evidence</dt><dd>${r.hard_evidence_count ?? 0}</dd>
+    <dt>Cross-client</dt><dd>${r.is_cross_client_edge?'yes':'no'}</dd>
+    <dt>Link type</dt><dd>${r.link_type||'?'}</dd>
+    <dt>Domain</dt><dd>${r.application_domain||'?'}</dd>
+    <dt>Flagged</dt><dd>${r.is_flagged_for_review?'yes':'no'}</dd>
+  `;
+  els.dReason.textContent = r.link_reasoning || '(no reasoning text in API)';
+  els.detail.classList.add('open');
+}
+els.detailClose.addEventListener('click', () => els.detail.classList.remove('open'));
+
+// ── Filters ──────────────────────────────────────
+['input','change'].forEach(ev => {
+  els.qCompany.addEventListener(ev, render);
+  els.qPair.addEventListener(ev, render);
+  els.fHorizon.addEventListener(ev, render);
+  els.fConf.addEventListener(ev, render);
+  els.fCross.addEventListener(ev, render);
+});
+
+// ── CSV ──────────────────────────────────────────
+els.exportCsv.addEventListener('click', () => {
+  const rows = [['company','pair_label','technology','application','horizon','confidence','trajectory','hard_evidence_count','is_cross_client_edge','link_type']];
+  for(const c of state.companies){
+    for(const r of state.pairsByCompany[c.name] || []){
+      if(!passFilters(r)) continue;
+      rows.push([
+        c.name, r.pair_label, r.technology||r.technology_name||'',
+        r.application||r.application_name||'', r.horizon||'', r.confidence||'',
+        r.trajectory||'', r.hard_evidence_count||0,
+        r.is_cross_client_edge?1:0, r.link_type||'',
+      ]);
+    }
+  }
+  const csv = rows.map(r => r.map(v => {
+    const s = String(v ?? '');
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+  }).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `tech_heat_map_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+});
+
+// ── Helpers ──────────────────────────────────────
+function escapeHtml(s){
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(s){ return escapeHtml(s); }
+
+// ── Boot ─────────────────────────────────────────
+state.token = loadToken();
+setTokenStatus();
+if(state.token){ loadAll(); }
+</script>
+</body>
+</html>

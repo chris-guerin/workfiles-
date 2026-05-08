@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Technology Tracker — FutureBridge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --black:#000;--white:#fff;--grey:#4B4B55;--grey-light:#e6e6e8;--grey-50:#f6f6f7;
+  --bg:#fff;--ink:#000;--muted:#4B4B55;--border:#e6e6e8;--surface:#fafafa;
+  --h1:#1f7a3a;--h2:#a36100;--h3:#274ea0;
+  --imp:#1f7a3a;--stab:#4B4B55;--det:#a13b3b;--vol:#a36100;--unk:#a8a8b0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',system-ui,sans-serif;font-size:13px;color:var(--ink);background:var(--bg);line-height:1.45}
+button{font-family:inherit;font-size:13px;cursor:pointer;border:1px solid var(--border);background:#fff;padding:7px 14px;font-weight:500}
+button:hover{background:var(--grey-50)}
+button.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+button.primary:hover{background:#222}
+input{font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border);width:100%;color:var(--ink);background:#fff}
+input:focus{outline:none;border-color:var(--ink)}
+.layout{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+
+aside{border-right:1px solid var(--border);background:var(--surface);padding:24px 20px;display:flex;flex-direction:column;gap:18px;position:sticky;top:0;height:100vh;overflow-y:auto}
+aside .brand{font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--ink)}
+aside h1{font-size:14px;font-weight:600;color:var(--ink);margin-top:4px}
+aside .desc{font-size:12px;color:var(--muted);line-height:1.55}
+aside section{display:flex;flex-direction:column;gap:8px}
+aside section .lbl{font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--muted)}
+aside .row{display:flex;gap:6px}
+aside .nav{display:flex;flex-direction:column;gap:6px;margin-top:auto;padding-top:12px;border-top:1px solid var(--border);font-size:12px}
+aside .nav a{display:block;padding:6px 8px;color:var(--muted);text-decoration:none;border:1px solid transparent}
+aside .nav a:hover{color:var(--ink);background:#fff;border-color:var(--border)}
+aside .nav a.active{color:var(--ink);font-weight:600;background:#fff;border-color:var(--border)}
+aside .status{font-size:11px;color:var(--muted);font-family:'DM Sans',monospace}
+aside .status .ok{color:var(--imp);font-weight:600}
+aside .status .err{color:var(--det);font-weight:600}
+
+main{padding:28px 36px 80px;min-width:0}
+.h-row{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:18px}
+.h-row .left h2{font-size:24px;font-weight:700;letter-spacing:-.01em}
+.h-row .left .sub{font-size:13px;color:var(--muted);margin-top:4px;max-width:760px}
+.h-row .right{display:flex;gap:8px;flex-wrap:wrap}
+
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;padding:14px 16px;border:1px solid var(--border);margin-bottom:14px;background:#fff}
+.controls .field{display:flex;flex-direction:column;gap:4px;min-width:200px;flex:1}
+.controls .field .lbl{font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--muted)}
+.controls select{font-family:inherit;font-size:13px;padding:7px 10px;border:1px solid var(--border);background:#fff;cursor:pointer}
+.controls .stat{font-size:11px;color:var(--muted);padding:6px 10px;border:1px solid var(--border);background:#fff;font-family:'DM Sans',monospace}
+.controls .stat strong{color:var(--ink);font-weight:600}
+
+.disclaimer{padding:10px 14px;border:1px dashed var(--border);background:var(--surface);font-size:11px;color:var(--muted);margin-bottom:14px;line-height:1.5}
+.disclaimer strong{color:var(--ink);font-weight:600}
+
+table.tracker{width:100%;border-collapse:collapse;border:1px solid var(--border);background:#fff;font-size:12px}
+table.tracker thead th{position:sticky;top:0;background:#fff;border-bottom:2px solid var(--ink);padding:10px 12px;text-align:left;font-weight:600;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);cursor:pointer;user-select:none;white-space:nowrap}
+table.tracker thead th .arrow{font-size:9px;color:var(--muted);margin-left:4px}
+table.tracker tbody tr{border-top:1px solid var(--grey-light);cursor:pointer}
+table.tracker tbody tr:hover{background:var(--surface)}
+table.tracker tbody tr.expanded{background:var(--surface)}
+table.tracker tbody td{padding:10px 12px;vertical-align:top}
+table.tracker tbody td.tech{font-weight:600;color:var(--ink);min-width:200px}
+table.tracker tbody td.tech .slug{display:block;font-size:10px;color:var(--muted);font-weight:400;font-family:'DM Sans',monospace;margin-top:2px}
+table.tracker tbody td .pill{display:inline-block;padding:2px 7px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;border:1px solid var(--border)}
+.pill.h1{background:rgba(31,122,58,.12);color:var(--h1);border-color:rgba(31,122,58,.4)}
+.pill.h2{background:rgba(163,97,0,.12);color:var(--h2);border-color:rgba(163,97,0,.4)}
+.pill.h3{background:rgba(39,78,160,.12);color:var(--h3);border-color:rgba(39,78,160,.4)}
+.pill.high{background:rgba(0,0,0,.85);color:#fff;border-color:#000}
+.pill.medium{background:rgba(75,75,85,.18);color:#000}
+.pill.low{background:#fff;color:var(--muted)}
+.pill.improving{background:rgba(31,122,58,.12);color:var(--imp);border-color:rgba(31,122,58,.4)}
+.pill.deteriorating{background:rgba(161,59,59,.12);color:var(--det);border-color:rgba(161,59,59,.4)}
+.pill.volatile{background:rgba(163,97,0,.12);color:var(--vol);border-color:rgba(163,97,0,.4)}
+.pill.stable{background:#fff;color:var(--muted)}
+.pill.unknown{background:#fff;color:var(--unk)}
+.pill.cross{background:#000;color:#fff;border-color:#000}
+.client-chip{display:inline-block;padding:2px 7px;margin:1px 3px 1px 0;font-size:10px;background:var(--surface);border:1px solid var(--border);font-weight:500}
+
+td.expand-row{padding:0!important;background:var(--surface);border-top:none}
+.expand-inner{padding:18px 20px;border-top:1px dashed var(--grey-light);display:grid;grid-template-columns:1fr 1fr;gap:24px;font-size:12px;line-height:1.55}
+.expand-inner h4{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;font-weight:600}
+.expand-inner .block{display:flex;flex-direction:column;gap:6px}
+.expand-inner .pair{display:flex;justify-content:space-between;gap:12px;padding:6px 8px;background:#fff;border:1px solid var(--border);font-size:11px}
+.expand-inner .pair .lbl{font-weight:500;color:var(--ink)}
+.expand-inner .pair .meta{color:var(--muted);font-family:'DM Sans',monospace;font-size:10px;white-space:nowrap}
+.expand-inner .wntbt{padding:10px 12px;background:#fff;border:1px dashed var(--ink);color:var(--muted);font-size:11px}
+
+.empty{padding:60px 20px;text-align:center;color:var(--muted)}
+.empty h3{font-size:18px;color:var(--ink);font-weight:600;margin-bottom:8px}
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <aside>
+    <div class="brand">FutureBridge</div>
+    <h1>Technology Tracker</h1>
+    <div class="desc">Live per-technology view. Aggregates ontology pairs across all clients into one row per technology, with TRL/TTT estimates derived from horizon.</div>
+
+    <section>
+      <div class="lbl">Signal Engine API token</div>
+      <input id="tokenInput" type="password" placeholder="Bearer token" autocomplete="off" />
+      <div class="row">
+        <button class="primary" id="saveToken" style="flex:1">Save &amp; load</button>
+        <button id="clearToken">Clear</button>
+      </div>
+      <div class="status" id="tokenStatus">No token saved.</div>
+    </section>
+
+    <section>
+      <div class="lbl">Status</div>
+      <div class="status" id="loadStatus">Idle</div>
+    </section>
+
+    <div class="nav">
+      <a href="index.html">← All tools</a>
+      <a href="tech_heat_map.html">Heat Map</a>
+      <a href="tech_tracker.html" class="active">Technology Tracker</a>
+      <a href="account_plans_v8.html">Account Plans v8</a>
+    </div>
+  </aside>
+
+  <main>
+    <div class="h-row">
+      <div class="left">
+        <h2>Technology Tracker</h2>
+        <div class="sub">One row per technology. Aggregates client coverage, horizon, confidence, trajectory and evidence count from live ontology pairs. TRL and TTT are derived from horizon and labelled as estimates — validate with the analyst before quoting externally.</div>
+      </div>
+      <div class="right">
+        <button id="refresh">Refresh data</button>
+        <button id="exportCsv">Export CSV</button>
+      </div>
+    </div>
+
+    <div class="controls" id="controls" style="display:none">
+      <div class="field">
+        <span class="lbl">Search technology / application</span>
+        <input id="qSearch" type="search" placeholder="e.g. SiC, hydrogen, radar, autonomous…" />
+      </div>
+      <div class="field" style="max-width:200px">
+        <span class="lbl">Client</span>
+        <select id="fClient"><option value="">all clients</option></select>
+      </div>
+      <div class="field" style="max-width:160px">
+        <span class="lbl">Horizon</span>
+        <select id="fHorizon">
+          <option value="">all</option>
+          <option value="H1">H1 only</option>
+          <option value="H2">H2 only</option>
+          <option value="H3">H3 only</option>
+        </select>
+      </div>
+      <div class="field" style="max-width:170px">
+        <span class="lbl">Confidence</span>
+        <select id="fConf">
+          <option value="">all</option>
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        </select>
+      </div>
+      <div class="field" style="max-width:170px">
+        <span class="lbl">Cross-client</span>
+        <select id="fCross">
+          <option value="">all</option>
+          <option value="1">cross-client only</option>
+        </select>
+      </div>
+      <div class="stat" id="statSummary">…</div>
+    </div>
+
+    <div class="disclaimer" id="disclaimer" style="display:none">
+      <strong>Estimated fields.</strong> TRL and time-to-truth (TTT) are derived from horizon
+      (H1 → TRL 7–9, 0–2yr · H2 → TRL 5–7, 3–6yr · H3 → TRL 2–5, 7–12yr). Validate with the analyst before quoting.
+      WNTBT thresholds are not yet exposed via the API — placeholder shown in expanded view.
+    </div>
+
+    <div id="content">
+      <div class="empty" id="emptyState">
+        <h3>Enter your Signal Engine token</h3>
+        <p>Paste the token in the sidebar and press <strong>Save &amp; load</strong>. The tracker pulls live ontology pairs across every client.</p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+const API = 'https://signal-engine-api-production-0cf1.up.railway.app';
+const STORAGE_KEY = 'se_token';
+
+const els = {
+  tokenInput: document.getElementById('tokenInput'),
+  tokenStatus: document.getElementById('tokenStatus'),
+  saveToken: document.getElementById('saveToken'),
+  clearToken: document.getElementById('clearToken'),
+  loadStatus: document.getElementById('loadStatus'),
+  refresh: document.getElementById('refresh'),
+  exportCsv: document.getElementById('exportCsv'),
+  controls: document.getElementById('controls'),
+  disclaimer: document.getElementById('disclaimer'),
+  qSearch: document.getElementById('qSearch'),
+  fClient: document.getElementById('fClient'),
+  fHorizon: document.getElementById('fHorizon'),
+  fConf: document.getElementById('fConf'),
+  fCross: document.getElementById('fCross'),
+  statSummary: document.getElementById('statSummary'),
+  content: document.getElementById('content'),
+  emptyState: document.getElementById('emptyState'),
+};
+
+const state = {
+  token: null,
+  companies: [],
+  pairsByCompany: {},
+  errorsByCompany: {},
+  loadingByCompany: {},
+  sortKey: 'tech',
+  sortDir: 'asc',
+  expanded: new Set(),
+};
+
+const HORIZON_TO_TRL = { H1:'7–9', H2:'5–7', H3:'2–5' };
+const HORIZON_TO_TTT = { H1:'0–2 yr', H2:'3–6 yr', H3:'7–12 yr' };
+
+// ── Token ─────────────────────────────────
+function readUrlToken(){
+  const u = new URL(location.href);
+  const t = u.searchParams.get('token');
+  if(t){
+    localStorage.setItem(STORAGE_KEY, t);
+    u.searchParams.delete('token');
+    history.replaceState(null,'',u.toString());
+    return t;
+  }
+  return null;
+}
+function loadToken(){ return readUrlToken() || localStorage.getItem(STORAGE_KEY) || ''; }
+function setTokenStatus(){
+  if(state.token){
+    const masked = state.token.length > 8 ? state.token.slice(0,4)+'…'+state.token.slice(-4) : '••••';
+    els.tokenStatus.innerHTML = `<span class="ok">●</span> Token saved (${masked})`;
+  } else {
+    els.tokenStatus.innerHTML = `<span class="err">●</span> No token saved.`;
+  }
+}
+els.saveToken.addEventListener('click', () => {
+  const t = els.tokenInput.value.trim();
+  if(!t){ alert('Paste a token first.'); return; }
+  localStorage.setItem(STORAGE_KEY, t);
+  state.token = t;
+  els.tokenInput.value = '';
+  setTokenStatus();
+  loadAll();
+});
+els.clearToken.addEventListener('click', () => {
+  localStorage.removeItem(STORAGE_KEY);
+  state.token = null;
+  setTokenStatus();
+  els.content.innerHTML = '';
+  els.content.appendChild(els.emptyState);
+});
+
+// ── API ───────────────────────────────────
+async function api(path){
+  const r = await fetch(API + path, {
+    headers: { 'Authorization': 'Bearer ' + state.token },
+  });
+  if(!r.ok) throw new Error(`HTTP ${r.status}`);
+  return r.json();
+}
+
+// ── Load ──────────────────────────────────
+async function loadAll(){
+  if(!state.token){ return; }
+  els.loadStatus.textContent = 'Fetching companies…';
+  state.pairsByCompany = {};
+  state.errorsByCompany = {};
+  state.loadingByCompany = {};
+
+  let companies;
+  try { companies = await api('/v8/companies'); }
+  catch(e){
+    els.loadStatus.innerHTML = `<span class="err">●</span> Companies failed: ${e.message}`;
+    return;
+  }
+  state.companies = companies;
+  // Populate client filter
+  els.fClient.innerHTML = '<option value="">all clients</option>' +
+    companies.map(c => `<option value="${escapeAttr(c.name)}">${escapeHtml(c.name)}</option>`).join('');
+
+  els.controls.style.display = 'flex';
+  els.disclaimer.style.display = 'block';
+  els.loadStatus.textContent = `Loaded ${companies.length} companies. Fetching ontology pairs…`;
+
+  const t0 = performance.now();
+  await Promise.all(companies.map(async c => {
+    state.loadingByCompany[c.name] = true;
+    try {
+      state.pairsByCompany[c.name] = await api('/v8/ontology-pairs?company=' + encodeURIComponent(c.name));
+    } catch(e){
+      state.errorsByCompany[c.name] = e.message;
+    } finally {
+      state.loadingByCompany[c.name] = false;
+      render();
+    }
+  }));
+  const dt = ((performance.now()-t0)/1000).toFixed(1);
+  const errCount = Object.keys(state.errorsByCompany).length;
+  els.loadStatus.innerHTML = errCount
+    ? `<span class="err">●</span> Loaded with ${errCount} error(s) in ${dt}s`
+    : `<span class="ok">●</span> Loaded all in ${dt}s`;
+  render();
+}
+
+els.refresh.addEventListener('click', loadAll);
+
+// ── Aggregate ────────────────────────────
+function buildTechnologies(){
+  // tech_name -> {tech_name, technology, pairs:[{...,company}], clients:Set}
+  const map = new Map();
+  for(const company in state.pairsByCompany){
+    for(const r of state.pairsByCompany[company] || []){
+      const key = r.technology_name || r.technology;
+      if(!key) continue;
+      let entry = map.get(key);
+      if(!entry){
+        entry = {
+          technology_name: r.technology_name,
+          technology: r.technology || r.technology_name,
+          pairs: [],
+          clients: new Set(),
+          horizons: {H1:0,H2:0,H3:0},
+          confidence: {high:0, medium:0, low:0, unknown:0},
+          trajectory: {},
+          evidenceTotal: 0,
+          maxEvidence: 0,
+          crossClient: false,
+        };
+        map.set(key, entry);
+      }
+      entry.pairs.push({ ...r, company });
+      entry.clients.add(company);
+      if(entry.horizons[r.horizon] !== undefined) entry.horizons[r.horizon]++;
+      const conf = r.confidence || 'unknown';
+      entry.confidence[conf] = (entry.confidence[conf]||0) + 1;
+      const traj = r.trajectory || 'unknown';
+      entry.trajectory[traj] = (entry.trajectory[traj]||0) + 1;
+      const ev = r.hard_evidence_count || 0;
+      entry.evidenceTotal += ev;
+      if(ev > entry.maxEvidence) entry.maxEvidence = ev;
+      if(r.is_cross_client_edge) entry.crossClient = true;
+    }
+  }
+  // Compute aggregates: dominant horizon, confidence, trajectory
+  for(const e of map.values()){
+    e.dominantHorizon = pickMax(e.horizons);
+    e.dominantConfidence = pickMax(e.confidence);
+    e.dominantTrajectory = pickMax(e.trajectory);
+    e.applications = [...new Set(e.pairs.map(p => p.application || p.application_name).filter(Boolean))].sort();
+  }
+  return [...map.values()];
+}
+function pickMax(obj){
+  let max = -1, key = null;
+  for(const k in obj){
+    if(obj[k] > max){ max = obj[k]; key = k; }
+  }
+  return key;
+}
+
+// ── Filters ──────────────────────────────
+function passFilters(tech){
+  const q = els.qSearch.value.trim().toLowerCase();
+  const fC = els.fClient.value;
+  const fH = els.fHorizon.value;
+  const fConf = els.fConf.value;
+  const fCross = els.fCross.value;
+  if(q){
+    const hay = (tech.technology + ' ' + tech.technology_name + ' ' + tech.applications.join(' ')).toLowerCase();
+    if(!hay.includes(q)) return false;
+  }
+  if(fC && !tech.clients.has(fC)) return false;
+  if(fH){
+    // Pass if any pair under this tech has the horizon (per-pair filter approach)
+    if(!tech.pairs.some(p => p.horizon === fH)) return false;
+  }
+  if(fConf){
+    if(!tech.pairs.some(p => p.confidence === fConf)) return false;
+  }
+  if(fCross === '1' && !tech.crossClient) return false;
+  return true;
+}
+
+// ── Sort ─────────────────────────────────
+const SORT_FNS = {
+  tech: t => (t.technology||'').toLowerCase(),
+  horizon: t => ({H1:1,H2:2,H3:3}[t.dominantHorizon] || 9),
+  trl: t => ({H1:1,H2:2,H3:3}[t.dominantHorizon] || 9),
+  ttt: t => ({H1:1,H2:2,H3:3}[t.dominantHorizon] || 9),
+  confidence: t => ({high:1,medium:2,low:3,unknown:4}[t.dominantConfidence] || 5),
+  trajectory: t => t.dominantTrajectory || 'zz',
+  clients: t => -t.clients.size,
+  evidence: t => -t.evidenceTotal,
+};
+function sortTechs(arr){
+  const fn = SORT_FNS[state.sortKey] || SORT_FNS.tech;
+  const dir = state.sortDir === 'asc' ? 1 : -1;
+  return [...arr].sort((a,b) => {
+    const va = fn(a), vb = fn(b);
+    if(va < vb) return -1*dir;
+    if(va > vb) return 1*dir;
+    return 0;
+  });
+}
+
+// ── Render ───────────────────────────────
+function render(){
+  if(!state.companies.length){ return; }
+  const allTechs = buildTechnologies();
+  const filtered = allTechs.filter(passFilters);
+  const sorted = sortTechs(filtered);
+
+  const totalPairs = filtered.reduce((s,t) => s + t.pairs.length, 0);
+  const crossCount = filtered.filter(t => t.crossClient).length;
+  els.statSummary.innerHTML = `<strong>${sorted.length}</strong> technologies · <strong>${totalPairs}</strong> pairs · <strong>${crossCount}</strong> cross-client`;
+
+  const cols = [
+    {key:'tech',label:'Technology'},
+    {key:'horizon',label:'Horizon'},
+    {key:'trl',label:'TRL (est)'},
+    {key:'ttt',label:'TTT (est)'},
+    {key:'confidence',label:'Confidence'},
+    {key:'trajectory',label:'Trajectory'},
+    {key:'clients',label:'Clients'},
+    {key:'evidence',label:'Evidence'},
+  ];
+
+  let html = '<table class="tracker"><thead><tr>';
+  for(const c of cols){
+    const arrow = state.sortKey === c.key ? `<span class="arrow">${state.sortDir==='asc'?'▲':'▼'}</span>` : '';
+    html += `<th data-sort="${c.key}">${c.label}${arrow}</th>`;
+  }
+  html += '</tr></thead><tbody>';
+
+  for(const t of sorted){
+    const isExp = state.expanded.has(t.technology_name || t.technology);
+    const trl = HORIZON_TO_TRL[t.dominantHorizon] || '?';
+    const ttt = HORIZON_TO_TTT[t.dominantHorizon] || '?';
+    html += `<tr class="${isExp?'expanded':''}" data-key="${escapeAttr(t.technology_name||t.technology)}">`
+         + `<td class="tech">${escapeHtml(t.technology||t.technology_name)}<span class="slug">${escapeHtml(t.technology_name||'')}</span>${t.crossClient?'<br><span class="pill cross">cross-client</span>':''}</td>`
+         + `<td><span class="pill ${(t.dominantHorizon||'h1').toLowerCase()}">${t.dominantHorizon||'?'}</span></td>`
+         + `<td>${trl}</td>`
+         + `<td>${ttt}</td>`
+         + `<td><span class="pill ${t.dominantConfidence||'unknown'}">${t.dominantConfidence||'?'}</span></td>`
+         + `<td><span class="pill ${(t.dominantTrajectory||'unknown').toLowerCase()}">${t.dominantTrajectory||'?'}</span></td>`
+         + `<td>${t.clients.size}</td>`
+         + `<td>${t.evidenceTotal}${t.maxEvidence!==t.evidenceTotal?` <span style="color:var(--muted);font-size:10px">(max ${t.maxEvidence})</span>`:''}</td>`
+         + `</tr>`;
+    if(isExp){
+      const clientChips = [...t.clients].sort().map(c => `<span class="client-chip">${escapeHtml(c)}</span>`).join('');
+      const pairs = t.pairs.slice().sort((a,b) => (a.application||'').localeCompare(b.application||''))
+        .map(p => `<div class="pair"><span class="lbl">${escapeHtml(p.application||p.application_name||'?')} <span style="color:var(--muted);font-weight:400">· ${escapeHtml(p.company)}</span></span><span class="meta">${p.horizon||'?'} · ${p.confidence||'?'} · evid ${p.hard_evidence_count||0}${p.is_cross_client_edge?' · cross':''}</span></div>`).join('');
+      html += `<tr><td colspan="${cols.length}" class="expand-row"><div class="expand-inner">`
+           + `<div class="block"><h4>Description</h4><div>${escapeHtml(t.technology)} — derived from technology label. Clients vary in framing and horizon.</div>`
+           + `<h4 style="margin-top:14px">WNTBT (what needs to be true)</h4><div class="wntbt"><strong style="color:var(--ink)">Validate with analyst.</strong> WNTBT thresholds are stored on initiatives_v2 / claims_v2, not on ontology pairs. Use account_plans_v8 → Hypotheses tab for the analyst-curated WNTBT per client.</div>`
+           + `<h4 style="margin-top:14px">Clients (${t.clients.size})</h4><div>${clientChips}</div>`
+           + `</div>`
+           + `<div class="block"><h4>Pair coverage (${t.pairs.length})</h4>${pairs}</div>`
+           + `</div></td></tr>`;
+    }
+  }
+  html += '</tbody></table>';
+  els.content.innerHTML = html;
+
+  // Sort handlers
+  els.content.querySelectorAll('thead th[data-sort]').forEach(th => {
+    th.addEventListener('click', () => {
+      const k = th.dataset.sort;
+      if(state.sortKey === k){ state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc'; }
+      else { state.sortKey = k; state.sortDir = 'asc'; }
+      render();
+    });
+  });
+  // Expand handlers
+  els.content.querySelectorAll('tbody tr[data-key]').forEach(tr => {
+    tr.addEventListener('click', () => {
+      const k = tr.dataset.key;
+      if(state.expanded.has(k)) state.expanded.delete(k);
+      else state.expanded.add(k);
+      render();
+    });
+  });
+}
+
+['input','change'].forEach(ev => {
+  els.qSearch.addEventListener(ev, render);
+  els.fClient.addEventListener(ev, render);
+  els.fHorizon.addEventListener(ev, render);
+  els.fConf.addEventListener(ev, render);
+  els.fCross.addEventListener(ev, render);
+});
+
+// ── CSV ─────────────────────────────────
+els.exportCsv.addEventListener('click', () => {
+  const techs = sortTechs(buildTechnologies().filter(passFilters));
+  const rows = [['technology','technology_name','dominant_horizon','TRL_est','TTT_est','dominant_confidence','dominant_trajectory','clients_count','clients','evidence_total','evidence_max','cross_client','pair_count','applications']];
+  for(const t of techs){
+    rows.push([
+      t.technology, t.technology_name||'',
+      t.dominantHorizon||'', HORIZON_TO_TRL[t.dominantHorizon]||'', HORIZON_TO_TTT[t.dominantHorizon]||'',
+      t.dominantConfidence||'', t.dominantTrajectory||'',
+      t.clients.size, [...t.clients].sort().join('; '),
+      t.evidenceTotal, t.maxEvidence,
+      t.crossClient?1:0, t.pairs.length,
+      t.applications.join('; '),
+    ]);
+  }
+  const csv = rows.map(r => r.map(v => {
+    const s = String(v ?? '');
+    return /[",\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s;
+  }).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `tech_tracker_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+});
+
+// ── Helpers ──────────────────────────────
+function escapeHtml(s){
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(s){ return escapeHtml(s); }
+
+// ── Boot ────────────────────────────────
+state.token = loadToken();
+setTokenStatus();
+if(state.token){ loadAll(); }
+</script>
+</body>
+</html>
