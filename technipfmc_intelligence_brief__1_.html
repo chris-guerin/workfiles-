@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TechnipFMC Intelligence Brief — FutureBridge Advisory</title>
+<style>
+:root{--ink:#060a0f;--surface:#0b1219;--panel:#0f1922;--panel2:#131f2b;--border:#1c2e3e;--border2:#243444;--gold:#d4a230;--cyan:#2dd4bf;--red:#f05252;--green:#22c55e;--amber:#f59e0b;--blue:#38bdf8;--text:#e8eef5;--text-mid:#8fa3b5;--text-dim:#4a6278;--accent:#0f7eaa}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ink);color:var(--text);font-family:'IBM Plex Sans',system-ui,Helvetica,Arial,sans-serif;font-size:14px;line-height:1.6}
+.page{max-width:1200px;margin:0 auto;padding:0 32px 80px}
+.hero{padding:60px 0 40px;border-bottom:1px solid var(--border)}
+.hero-kicker{font-family:'IBM Plex Mono',monospace;font-size:0.6rem;letter-spacing:0.3em;color:var(--accent);text-transform:uppercase;margin-bottom:16px}
+.hero-title{font-family:Georgia,serif;font-size:3rem;font-weight:900;line-height:1.05;margin-bottom:14px}
+.hero-title em{font-style:normal;color:var(--accent)}
+.hero-subtitle{color:var(--text-mid);max-width:580px;margin-bottom:30px;font-weight:300}
+.hero-meta{display:flex;gap:32px;flex-wrap:wrap}
+.meta-item{font-family:'IBM Plex Mono',monospace;font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase}
+.meta-label{color:var(--text-dim);margin-bottom:4px}
+.meta-value{color:var(--text);font-weight:700;font-size:0.72rem}
+.section{padding:48px 0 0}
+.section-head{display:flex;align-items:center;gap:16px;margin-bottom:28px}
+.section-num{font-family:'IBM Plex Mono',monospace;font-size:0.55rem;letter-spacing:0.2em;color:var(--text-dim);text-transform:uppercase;background:var(--panel);border:1px solid var(--border);padding:4px 8px}
+.section-title{font-family:Georgia,serif;font-size:1.6rem;font-weight:700}
+.section-rule{flex:1;height:1px;background:var(--border)}
+.snapshot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:24px}
+.snap-cell{background:var(--panel);padding:18px}
+.snap-val{font-family:'IBM Plex Mono',monospace;font-size:1.5rem;font-weight:700;margin-bottom:4px}
+.snap-val.green{color:var(--green)} .snap-val.amber{color:var(--amber)} .snap-val.cyan{color:var(--accent)}
+.snap-lbl{font-size:0.75rem;color:var(--text-mid)}
+.snap-sub{font-family:'IBM Plex Mono',monospace;font-size:0.58rem;color:var(--text-dim);margin-top:3px}
+.callout{background:var(--panel2);border:1px solid var(--border2);border-left:3px solid var(--accent);padding:18px 22px;font-size:0.88rem;color:var(--text);line-height:1.7;margin-bottom:20px}
+.strategy-box{background:var(--panel);border:1px solid var(--border);padding:22px;margin-bottom:20px}
+.strategy-two-col{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:20px}
+.strategy-col-head{font-family:'IBM Plex Mono',monospace;font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+.bullet-list{list-style:none;padding:0}
+.bullet-list li{font-size:0.85rem;color:var(--text-mid);padding:5px 0 5px 16px;position:relative;line-height:1.5;border-bottom:1px solid rgba(28,46,62,0.5)}
+.bullet-list li::before{content:'▸';position:absolute;left:0;color:var(--accent);font-size:0.7rem;top:7px}
+.bullet-list li strong{color:var(--text)}
+.peer-table{width:100%;border-collapse:collapse;font-size:0.78rem;margin-bottom:24px}
+.peer-table th{font-family:'IBM Plex Mono',monospace;font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);padding:8px 10px;text-align:left;border-bottom:1px solid var(--border);background:var(--panel)}
+.peer-table td{padding:9px 10px;border-bottom:1px solid var(--border);color:var(--text-mid)}
+.peer-table .highlight-row td{background:var(--panel2);color:var(--text)}
+.co-name{font-weight:600;color:var(--text);font-size:0.82rem}
+.badge{font-family:'IBM Plex Mono',monospace;font-size:0.58rem;letter-spacing:0.06em;text-transform:uppercase;padding:2px 7px;border-radius:2px;display:inline-block}
+.badge-green{background:rgba(34,197,94,0.15);color:var(--green)}
+.badge-amber{background:rgba(245,158,11,0.15);color:var(--amber)}
+.badge-cyan{background:rgba(15,126,170,0.18);color:var(--accent)}
+.init-card{background:var(--panel);border:1px solid var(--border);padding:18px;margin-bottom:14px}
+.init-head{display:flex;justify-content:space-between;gap:12px;margin-bottom:8px}
+.init-name{font-weight:600;font-size:0.9rem}
+.init-desc{font-size:0.82rem;color:var(--text-mid);line-height:1.55}
+.signals-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:24px}
+.signal-card{background:var(--panel);border:1px solid var(--border);padding:18px}
+.signal-num{font-family:'IBM Plex Mono',monospace;font-size:0.55rem;color:var(--text-dim)}
+.signal-name{font-family:Georgia,serif;font-size:1rem;font-weight:700;margin:6px 0}
+.signal-desc{font-size:0.82rem;color:var(--text-mid);line-height:1.55;margin:8px 0 8px}
+.hyp-card{margin:0 0 36px 0;border:1px solid var(--border2);border-top:2px solid var(--accent)}
+.hyp-head{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--panel2);border-bottom:1px solid var(--border)}
+.hyp-code{font-family:'IBM Plex Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--accent);font-weight:700}
+.hyp-meta{font-family:'IBM Plex Mono',monospace;font-size:0.55rem;color:var(--text-dim);border:1px solid var(--border);padding:2px 8px}
+.hyp-conf{font-family:'IBM Plex Mono',monospace;font-size:0.55rem;color:var(--text-dim);margin-left:auto}
+.hyp-grid{display:grid;grid-template-columns:1.4fr 1.6fr 1.2fr;border-bottom:1px solid var(--border)}
+.hyp-col{padding:14px 16px;border-right:1px solid var(--border)}
+.hyp-col:last-child{border-right:none}
+.hyp-col-label{font-family:'IBM Plex Mono',monospace;font-size:0.55rem;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:10px}
+.hyp-driver{padding:6px 0;border-bottom:1px solid rgba(28,46,62,0.5);font-size:0.78rem}
+.hyp-driver:last-child{border-bottom:none}
+.hyp-driver.signal{color:var(--accent);font-weight:700}
+.hyp-driver.signal::after{content:' · SIGNAL';font-family:'IBM Plex Mono',monospace;font-size:0.5rem;color:var(--accent);background:rgba(15,126,170,0.18);padding:2px 6px;border-radius:10px;margin-left:4px;font-weight:700;letter-spacing:0.06em}
+.hyp-statement{font-family:Georgia,Times,serif;font-size:1.02rem;font-style:italic;color:var(--text);line-height:1.55;margin-bottom:14px}
+.hyp-prob{display:flex;align-items:center;gap:8px}
+.hyp-prob-bar{flex:1;height:3px;background:var(--border);border-radius:2px}
+.hyp-prob-fill{height:100%;background:var(--accent);border-radius:2px}
+.hyp-prob-val{font-family:'IBM Plex Mono',monospace;font-size:0.65rem;color:var(--accent);font-weight:700}
+.hyp-decision{padding:8px 0;border-bottom:1px solid rgba(28,46,62,0.5);font-size:0.78rem}
+.hyp-decision:last-child{border-bottom:none}
+.hyp-decision-tag{font-family:'IBM Plex Mono',monospace;font-size:0.6rem;font-weight:700;color:var(--accent);background:rgba(15,126,170,0.18);padding:2px 8px;border-radius:10px;margin-right:8px}
+.hyp-wntbt{background:var(--panel)}
+.hyp-wntbt-head{padding:12px 16px 8px;border-bottom:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:0.6rem;letter-spacing:0.1em;font-weight:700;color:var(--accent)}
+.hyp-wntbt-list{padding:8px 16px}
+.hyp-wntbt-item{padding:8px 0;border-bottom:1px solid rgba(28,46,62,0.5);font-size:0.82rem;line-height:1.55;display:flex;gap:10px}
+.hyp-wntbt-item:last-child{border-bottom:none}
+.hyp-wntbt-item::before{content:'☐';color:var(--accent)}
+.hyp-engagement{padding:10px 16px 14px;border-top:1px solid var(--border);font-size:0.82rem;color:var(--text-mid);line-height:1.6}
+.hyp-engagement-label{font-family:'IBM Plex Mono',monospace;font-size:0.5rem;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:5px}
+.hyp-engagement-text{padding-left:12px;border-left:2px solid var(--accent)}
+a{color:var(--accent)}
+.refresh-strip{background:#0a1520;border-bottom:1px solid var(--border);padding:8px 24px;display:flex;align-items:center;gap:12px}
+.refresh-strip span:first-child{font-family:'IBM Plex Mono',monospace;font-size:0.55rem;letter-spacing:0.12em;font-weight:700;color:var(--accent)}
+.refresh-strip span:nth-child(2){font-size:0.72rem;color:var(--text-dim);flex:1}
+.refresh-strip span:last-child{font-family:'IBM Plex Mono',monospace;font-size:0.55rem;color:var(--text-dim)}
+@media(max-width:768px){.snapshot-grid{grid-template-columns:repeat(2,1fr)}.strategy-two-col,.signals-grid{grid-template-columns:1fr}.hyp-grid{grid-template-columns:1fr}.hero-title{font-size:2rem}}
+</style>
+</head>
+<body>
+<!-- v8-deprecation-banner -->
+<div style="background:#000;color:#fff;padding:14px 24px;font-family:Arial,Helvetica,sans-serif;font-size:13px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;border-bottom:2px solid #F84E5D">
+  <span style="font-family:'Courier New',monospace;font-size:10px;font-weight:700;letter-spacing:0.12em;color:#F84E5D">DEPRECATED</span>
+  <span style="flex:1;line-height:1.45">This brief has been superseded by the live account plan tool, which pulls hypotheses, ontology pairs, signal log and contacts directly from the catalogue.</span>
+  <a href="account_plans_v8.html?company=TechnipFMC" style="background:#F84E5D;color:#fff;text-decoration:none;padding:7px 14px;font-weight:600;font-size:12px;letter-spacing:0.04em;white-space:nowrap">Open TechnipFMC in v8 →</a>
+</div>
+<div class="refresh-strip"><span>● SIGNAL REFRESH</span><span>Q1 2026 · Sources: TechnipFMC Q3 2025 results press release, Q3 2025 earnings presentation deck, IR overview deck Oct 2025</span><span>May 2026</span></div>
+<div class="page">
+
+<section class="hero">
+  <div class="hero-kicker">— Intelligence brief · Subsea production systems &amp; services</div>
+  <h1 class="hero-title">TechnipFMC<br><em>Strategic Intelligence</em></h1>
+  <p class="hero-subtitle">Subsea production-systems pure-play after the Feb 2021 Technip Energies spin-off. Three commercial bets: ride the deepwater capex super-cycle, lock-in ExxonMobil Guyana exclusivity, prove the iEPCI integrated-direct model carries margin advantage over traditional EPCI through the cycle peak.</p>
+  <div class="hero-meta">
+    <div class="meta-item"><div class="meta-label">Listed</div><div class="meta-value">NYSE · FTI</div></div>
+    <div class="meta-item"><div class="meta-label">Date</div><div class="meta-value">May 2026</div></div>
+    <div class="meta-item"><div class="meta-label">Posture</div><div class="meta-value" style="color:#0f7eaa">EXPAND</div></div>
+    <div class="meta-item"><div class="meta-label">Prepared by</div><div class="meta-value">FutureBridge Advisory</div></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><span class="section-num">01</span><h2 class="section-title">Company Snapshot</h2><div class="section-rule"></div></div>
+  <div class="snapshot-grid">
+    <div class="snap-cell"><div class="snap-val">$2.65B</div><div class="snap-lbl">Q3 2025 Revenue</div><div class="snap-sub">+9% YoY · Q3 2025 release</div></div>
+    <div class="snap-cell"><div class="snap-val green">$16.8B</div><div class="snap-lbl">Total Backlog</div><div class="snap-sub">$16.0B subsea + $0.8B surface · Sep 30 2025</div></div>
+    <div class="snap-cell"><div class="snap-val cyan">$10B</div><div class="snap-lbl">2026 Subsea Inbound Target</div><div class="snap-sub">2026 guidance · Q3 2025</div></div>
+    <div class="snap-cell"><div class="snap-val">17.3%</div><div class="snap-lbl">Subsea Op Margin</div><div class="snap-sub">+10bps QoQ · Q3 2025</div></div>
+  </div>
+  <div class="callout">TechnipFMC is the dedicated subsea-production-systems pure-play after the Feb 2021 spin-off of Technip Energies. Subsea $2.32B revenue Q3 2025 (~88% of group). Subsea EBITDA $505.6M (+4.7% QoQ). Backlog phasing: $1.8B 2025, $5.7B 2026, $8.6B 2027+. Q3 2025 inbound $2.4B in the quarter. The deepwater super-cycle thesis is fully reflected in guidance: $10B 2026 subsea inbound target plus $531M adjusted EBITDA + $448M FCF.</div>
+</section>
+
+<section class="section">
+  <div class="section-head"><span class="section-num">02</span><h2 class="section-title">Strategy &amp; Intelligence</h2><div class="section-rule"></div></div>
+  <div class="strategy-box">
+    <div class="strategy-two-col">
+      <div>
+        <div class="strategy-col-head">Subsea super-cycle ride</div>
+        <ul class="bullet-list">
+          <li><strong>$16.8B backlog</strong> with execution phasing favouring 2026-2027 ($5.7B + $8.6B respectively).</li>
+          <li><strong>Q3 2025 EBITDA +36% YoY</strong> — Subsea segment driving most of the lift (Investing.com Q3 2025 slides note).</li>
+          <li><strong>iEPCI integrated direct model</strong> drove sequential growth in Q3 2025 — Africa, Americas, Australia activity.</li>
+          <li><strong>Brazil + Guyana</strong> are the structural growth corridors via Petrobras and ExxonMobil flagship contracts.</li>
+        </ul>
+      </div>
+      <div>
+        <div class="strategy-col-head">Customer lock-in: Petrobras + ExxonMobil</div>
+        <ul class="bullet-list">
+          <li><strong>Petrobras subsea production systems contract</strong> — multi-year frame for greenfield + brownfield + asset revitalisation; covers installation support + life-of-field services.</li>
+          <li><strong>ExxonMobil Guyana — 7/7 awards</strong> since first contract in 2017, including Hammerhead (Q3 2025 — the 7th award). Effective exclusivity on Guyana subsea.</li>
+          <li><strong>iEPCI vs traditional EPCI</strong> — direct-access integration model widens the addressable economic spread vs Subsea7, Saipem, McDermott.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="strategy-two-col">
+    <div>
+      <div class="strategy-col-head">2026 financial guidance — first formal disclosure</div>
+      <ul class="bullet-list">
+        <li><strong>$10B subsea inbound orders 2026</strong> (vs Q3 2025 inbound $2.4B annualised ≈ $9.6B, so guidance roughly matches run-rate).</li>
+        <li><strong>$531M adjusted EBITDA ex-FX 2026</strong>.</li>
+        <li><strong>$448M free cash flow 2026</strong>.</li>
+        <li><strong>"Higher economic returns and greater project certainty"</strong> per Q3 2025 — operator FIDs underwritten by oil prices that pencil deepwater.</li>
+      </ul>
+    </div>
+    <div>
+      <div class="strategy-col-head">Where FutureBridge can engage</div>
+      <ul class="bullet-list">
+        <li>iEPCI vs traditional EPCI competitive positioning intelligence — Subsea7, Saipem, McDermott economics.</li>
+        <li>Guyana exclusivity defensibility — 8th + 9th ExxonMobil awards as the test.</li>
+        <li>Petrobras frame contract execution + revitalisation pipeline mapping.</li>
+        <li>Subsea autonomous inspection + intervention technology — robotics + remote monitoring.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><span class="section-num">03</span><h2 class="section-title">Peer Landscape</h2><div class="section-rule"></div></div>
+  <table class="peer-table">
+    <thead><tr><th>Company</th><th>Profile</th><th>Subsea backlog</th><th>iEPCI / direct model</th><th>2026 outlook</th><th>Risk profile</th></tr></thead>
+    <tbody>
+      <tr class="highlight-row"><td><div class="co-name">TechnipFMC</div></td><td>Subsea production systems pure-play</td><td>$16.0B</td><td>iEPCI flagship</td><td>$10B inbound target</td><td><span class="badge badge-cyan">Cycle peak</span></td></tr>
+      <tr><td><div class="co-name">Subsea7</div></td><td>SURF + integrated subsea</td><td>~$10B</td><td>Subsea Integration Alliance with Schlumberger</td><td>Strong</td><td><span class="badge badge-amber">Cyclical</span></td></tr>
+      <tr><td><div class="co-name">Saipem</div></td><td>Italian EPC; offshore + onshore</td><td>~$30B (mixed)</td><td>Limited subsea share</td><td>Recovery</td><td><span class="badge badge-amber">Volatile</span></td></tr>
+      <tr><td><div class="co-name">McDermott Intl</div></td><td>Post-restructure US EPC</td><td>Modest subsea</td><td>SURF capability</td><td>Modest</td><td><span class="badge badge-amber">Recovering</span></td></tr>
+      <tr><td><div class="co-name">SLB / OneSubsea</div></td><td>Tech leader; integrated digital subsea via SIA + OneSubsea (acquired 2025)</td><td>Growing</td><td>Direct competitor to iEPCI</td><td>Strong</td><td><span class="badge badge-green">Disciplined</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="section">
+  <div class="section-head"><span class="section-num">04</span><h2 class="section-title">Key Initiatives &amp; Progress</h2><div class="section-rule"></div></div>
+  <div class="init-card"><div class="init-head"><div class="init-name">ExxonMobil Hammerhead (Guyana)</div><span class="badge badge-cyan">Q3 2025 award</span></div><div class="init-desc">7th consecutive ExxonMobil Guyana subsea award since 2017. Subsea production systems for the Hammerhead development — extends TFMC effective exclusivity on Guyana subsea through the development cycle.</div></div>
+  <div class="init-card"><div class="init-head"><div class="init-name">Petrobras subsea production systems frame contract</div><span class="badge badge-cyan">Multi-year</span></div><div class="init-desc">Greenfield + brownfield + asset revitalisation across Petrobras' Brazil portfolio. Installation support + life-of-field services. Anchors TFMC's Brazil position through next pre-salt cycle.</div></div>
+  <div class="init-card"><div class="init-head"><div class="init-name">iEPCI™ Africa / Americas / Australia activity</div><span class="badge badge-green">Driving growth</span></div><div class="init-desc">Q3 2025 sequential revenue growth (+4.6% QoQ) driven by iEPCI projects across all three regions. The integrated direct-access model — single point of accountability, faster cycle times — is the core competitive thesis vs traditional EPCI bidding wars.</div></div>
+  <div class="init-card"><div class="init-head"><div class="init-name">Subsea Surface Technologies $775M</div><span class="badge badge-amber">Diversifier</span></div><div class="init-desc">Smaller surface technologies segment. Provides diversification against subsea cycle but currently only $775M of the $16.8B total backlog (4.6%). Not the core thesis driver.</div></div>
+</section>
+
+<section class="section">
+  <div class="section-head"><span class="section-num">06</span><h2 class="section-title">Weak Signals — FutureBridge Intelligence</h2><div class="section-rule"></div></div>
+  <div class="signals-grid">
+    <div class="signal-card"><div class="signal-num">S-01</div><div class="signal-name">SLB / OneSubsea integration threat to iEPCI</div><div class="signal-desc">SLB acquired OneSubsea (former TFMC JV partner) in 2025; combined with the Subsea Integration Alliance with Subsea7 creates a credible direct-model competitor. Watch contracted-share trajectory in 2026.</div></div>
+    <div class="signal-card"><div class="signal-num">S-02</div><div class="signal-name">Guyana exclusivity vulnerable post-Hammerhead</div><div class="signal-desc">7/7 record is structural but each new award resets. Watch for ExxonMobil dual-sourcing on the next Stabroek block development — would be the breakthrough signal.</div></div>
+    <div class="signal-card"><div class="signal-num">S-03</div><div class="signal-name">Brent floor durability gates deepwater FIDs</div><div class="signal-desc">$10B 2026 inbound assumes oil price holds penciling deepwater. Watch IEA/EIA price decks vs deepwater break-even (~$45-55/bbl). Sustained drop below $60 would slow inbound conversion.</div></div>
+    <div class="signal-card"><div class="signal-num">S-04</div><div class="signal-name">Autonomous subsea inspection &amp; intervention</div><div class="signal-desc">ROV / AUV technology trend; flexible pipe + electric Christmas trees. TFMC technology investment level vs Saipem + Subsea7 + SLB OneSubsea is an active scouting question.</div></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><span class="section-num">HYP</span><h2 class="section-title">Hypothesis Register</h2><div class="section-rule"></div></div>
+  <p style="color:var(--text-mid);max-width:780px;margin-bottom:32px;font-size:0.88rem">Three structured hypotheses for engagement targeting.</p>
+
+  <!-- TFMC-01 -->
+  <div class="hyp-card">
+    <div class="hyp-head"><span class="hyp-code">TFMC-01</span><span class="hyp-meta">H2 · 3-5yr</span><span class="hyp-conf">Confidence: High</span></div>
+    <div class="hyp-grid">
+      <div class="hyp-col"><div class="hyp-col-label">System drivers</div>
+        <div class="hyp-driver signal">Economics — Brent floor + deepwater break-even economics</div>
+        <div class="hyp-driver signal">Market — Subsea inbound order trajectory + deepwater FIDs</div>
+        <div class="hyp-driver">Technology — iEPCI execution efficiency vs traditional EPCI</div>
+        <div class="hyp-driver">Policy — Offshore leasing regimes (US, Brazil, Guyana, Africa)</div>
+      </div>
+      <div class="hyp-col"><div class="hyp-col-label">Hypothesis</div>
+        <div class="hyp-statement">TechnipFMC subsea inbound orders exceed $10B in 2026 and the deepwater super-cycle peaks 2026-2028, with TFMC sustaining Subsea EBITDA margin above 17% and growing 2027+ backlog above $10B by end-2026.</div>
+        <div class="hyp-prob"><div class="hyp-prob-bar"><div class="hyp-prob-fill" style="width:78%"></div></div><span class="hyp-prob-val">78%</span></div>
+      </div>
+      <div class="hyp-col"><div class="hyp-col-label">Decisions</div>
+        <div class="hyp-decision"><span class="hyp-decision-tag">6M</span>Track quarterly inbound orders + Brent vs deepwater break-even.</div>
+        <div class="hyp-decision"><span class="hyp-decision-tag">12M</span>Deliver deepwater capex cycle competitive intelligence.</div>
+        <div class="hyp-decision"><span class="hyp-decision-tag">18M</span>Propose subsea cycle monitoring programme.</div>
+      </div>
+    </div>
+    <div class="hyp-wntbt">
+      <div class="hyp-wntbt-head">WHAT NEEDS TO BE TRUE</div>
+      <div class="hyp-wntbt-list">
+        <div class="hyp-wntbt-item">2026 Subsea inbound orders reach or exceed $10B target.</div>
+        <div class="hyp-wntbt-item">2027+ backlog ($8.6B at Q3 2025) grows above $10B by end-2026.</div>
+        <div class="hyp-wntbt-item">Subsea operating margin holds above 17% through 2026-2027.</div>
+        <div class="hyp-wntbt-item">Brent oil price sustained above $60/bbl through 2026-2027 supporting deepwater break-evens.</div>
+      </div>
+      <div class="hyp-engagement"><div class="hyp-engagement-label">ENGAGEMENT IMPLICATION</div><div class="hyp-engagement-text">Deepwater capex cycle intelligence + IOC FID pipeline + iEPCI margin economics are the active scouting questions in TFMC's strategy team.</div></div>
+    </div>
+  </div>
+
+  <!-- TFMC-02 -->
+  <div class="hyp-card">
+    <div class="hyp-head"><span class="hyp-code">TFMC-02</span><span class="hyp-meta">H1 · 1-3yr</span><span class="hyp-conf">Confidence: Medium</span></div>
+    <div class="hyp-grid">
+      <div class="hyp-col"><div class="hyp-col-label">System drivers</div>
+        <div class="hyp-driver">Economics — TFMC vs SLB OneSubsea / Subsea7 cost competitiveness</div>
+        <div class="hyp-driver signal">Market — ExxonMobil Stabroek next-development award assignment</div>
+        <div class="hyp-driver">Technology — Standardised Christmas tree + flexible pipe leadership</div>
+        <div class="hyp-driver signal">Policy — Guyana fiscal regime stability + ExxonMobil portfolio decisions</div>
+      </div>
+      <div class="hyp-col"><div class="hyp-col-label">Hypothesis</div>
+        <div class="hyp-statement">TechnipFMC retains 100% ExxonMobil Guyana exclusivity through end-2027 (8th + 9th + 10th awards), defending against SLB OneSubsea breakthrough until at least the post-Stabroek expansion phase.</div>
+        <div class="hyp-prob"><div class="hyp-prob-bar"><div class="hyp-prob-fill" style="width:64%"></div></div><span class="hyp-prob-val">64%</span></div>
+      </div>
+      <div class="hyp-col"><div class="hyp-col-label">Decisions</div>
+        <div class="hyp-decision"><span class="hyp-decision-tag">6M</span>Map ExxonMobil Stabroek FID pipeline + selection criteria.</div>
+        <div class="hyp-decision"><span class="hyp-decision-tag">12M</span>Deliver subsea direct-model competitive intelligence.</div>
+        <div class="hyp-decision"><span class="hyp-decision-tag">18M</span>Propose ExxonMobil customer-relationship intelligence retainer.</div>
+      </div>
+    </div>
+    <div class="hyp-wntbt">
+      <div class="hyp-wntbt-head">WHAT NEEDS TO BE TRUE</div>
+      <div class="hyp-wntbt-list">
+        <div class="hyp-wntbt-item">≥3 additional ExxonMobil Guyana subsea awards through end-2027 — all to TFMC.</div>
+        <div class="hyp-wntbt-item">No SLB OneSubsea or Subsea7 award announced on Stabroek-block developments before end-2027.</div>
+        <div class="hyp-wntbt-item">Guyana fiscal regime + ExxonMobil portfolio commitment to Stabroek hold through end-2027.</div>
+      </div>
+      <div class="hyp-engagement"><div class="hyp-engagement-label">ENGAGEMENT IMPLICATION</div><div class="hyp-engagement-text">ExxonMobil-side intelligence on selection criteria + competitor (SLB OneSubsea, Subsea7) breakthrough probability is what TFMC needs to defend the position.</div></div>
+    </div>
+  </div>
+
+  <!-- TFMC-03 -->
+  <div class="hyp-card">
+    <div class="hyp-head"><span class="hyp-code">TFMC-03</span><span class="hyp-meta">H2 · 3-5yr</span><span class="hyp-conf">Confidence: Medium</span></div>
+    <div class="hyp-grid">
+      <div class="hyp-col"><div class="hyp-col-label">System drivers</div>
+        <div class="hyp-driver signal">Economics — iEPCI EBITDA margin spread vs traditional EPCI bid-up</div>
+        <div class="hyp-driver">Market — IOC + NOC project award type preferences</div>
+        <div class="hyp-driver">Technology — Standardisation + repeatability of integrated solutions</div>
+        <div class="hyp-driver">Policy — IRA + EU CBAM secondary effects on offshore project economics</div>
+      </div>
+      <div class="hyp-col"><div class="hyp-col-label">Hypothesis</div>
+        <div class="hyp-statement">iEPCI integrated-direct model captures more than 60% of TFMC subsea inbound orders by 2027 and demonstrates a sustained 200bps EBITDA margin advantage over traditional EPCI awards.</div>
+        <div class="hyp-prob"><div class="hyp-prob-bar"><div class="hyp-prob-fill" style="width:60%"></div></div><span class="hyp-prob-val">60%</span></div>
+      </div>
+      <div class="hyp-col"><div class="hyp-col-label">Decisions</div>
+        <div class="hyp-decision"><span class="hyp-decision-tag">6M</span>Map iEPCI vs traditional split in Q4 2025 + 2026 inbound mix.</div>
+        <div class="hyp-decision"><span class="hyp-decision-tag">12M</span>Deliver direct-model EBITDA economics intelligence.</div>
+        <div class="hyp-decision"><span class="hyp-decision-tag">18M</span>Propose iEPCI competitive monitoring programme.</div>
+      </div>
+    </div>
+    <div class="hyp-wntbt">
+      <div class="hyp-wntbt-head">WHAT NEEDS TO BE TRUE</div>
+      <div class="hyp-wntbt-list">
+        <div class="hyp-wntbt-item">iEPCI share of TFMC inbound orders exceeds 60% in 2026 or 2027.</div>
+        <div class="hyp-wntbt-item">EBITDA margin on iEPCI awards demonstrates +200bps advantage vs traditional EPCI in disclosed comparisons.</div>
+        <div class="hyp-wntbt-item">No major IOC reverts to traditional bid-out model after using iEPCI on a previous project.</div>
+        <div class="hyp-wntbt-item">SLB / Subsea7 direct-model alternatives do not capture &gt;20% of integrated subsea awards through 2027.</div>
+      </div>
+      <div class="hyp-engagement"><div class="hyp-engagement-label">ENGAGEMENT IMPLICATION</div><div class="hyp-engagement-text">iEPCI vs traditional EPCI margin economics + direct-model competitor (SLB OneSubsea, Subsea Integration Alliance) trajectory are the strategic questions TFMC's commercial team is most focused on.</div></div>
+    </div>
+  </div>
+
+</section>
+
+</div>
+</body>
+</html>
