@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jaguar Land Rover — Account Intelligence Brief — May 2026</title>
+<style>
+:root{
+  --ink:#060a0f;--text:#e8eef5;--text-mid:#8fa3b5;--text-dim:#4a6278;
+  --panel:#0f1922;--panel2:#131f2b;--border:#1c2e3e;--border2:#243444;
+  --gold:#22d3ee;--cyan:#2dd4bf;--green:#22c55e;--amber:#f59e0b;
+  --red:#f05252;--blue:#38bdf8;--accent:#22d3ee;
+  --font-sans:Arial,Helvetica,sans-serif;--font-serif:Georgia,'Times New Roman',serif;
+  --font-mono:'Courier New',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--text);font-family:var(--font-sans);font-size:14px;line-height:1.6}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:9999}
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(6,10,15,0.95);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);display:flex;align-items:center;padding:0 32px;height:52px;gap:24px}
+.nav-brand{font-family:var(--font-mono);font-size:0.65rem;font-weight:700;color:var(--gold);letter-spacing:0.2em;text-transform:uppercase;border-right:1px solid var(--border);padding-right:24px;white-space:nowrap}
+.nav-links{display:flex;gap:4px;flex:1;overflow-x:auto;scrollbar-width:none}
+.nav-link{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);text-decoration:none;padding:6px 10px;white-space:nowrap}
+.nav-link:hover{color:var(--gold)}
+.nav-badge{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;color:var(--red);border:1px solid var(--red);padding:3px 8px;text-transform:uppercase}
+.posture-badge{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;color:var(--accent);border:1px solid var(--accent);padding:3px 8px;text-transform:uppercase}
+.page{max-width:1200px;margin:0 auto;padding:0 32px 80px}
+.hero{padding:110px 0 60px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.hero::before{content:'JLR';position:absolute;right:-30px;top:50%;transform:translateY(-50%);font-family:var(--font-serif);font-size:18rem;font-weight:900;color:rgba(34,211,238,0.05);line-height:1;pointer-events:none;letter-spacing:-0.05em}
+.hero-kicker{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.hero-kicker::before{content:'';width:32px;height:1px;background:var(--gold)}
+.hero-title{font-family:var(--font-serif);font-size:3.5rem;font-weight:900;line-height:1.05;color:var(--text);margin-bottom:16px;max-width:700px}
+.hero-title em{font-style:normal;color:var(--gold)}
+.hero-subtitle{font-family:var(--font-sans);font-size:1rem;color:var(--text-mid);max-width:580px;margin-bottom:36px;font-weight:300;line-height:1.7}
+.hero-meta{display:flex;gap:32px;flex-wrap:wrap}
+.meta-item{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase}
+.meta-label{color:var(--text-dim);margin-bottom:4px}
+.meta-value{color:var(--text);font-weight:700;font-size:0.72rem}
+.section{padding:56px 0 0}
+.section-head{display:flex;align-items:center;gap:16px;margin-bottom:32px}
+.section-num{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.2em;color:var(--text-dim);text-transform:uppercase;background:var(--panel);border:1px solid var(--border);padding:4px 8px}
+.section-title{font-family:var(--font-serif);font-size:1.8rem;font-weight:700;color:var(--text)}
+.section-rule{flex:1;height:1px;background:var(--border)}
+.snapshot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:24px}
+.snap-cell{background:var(--panel);padding:20px}
+.snap-val{font-family:var(--font-mono);font-size:1.6rem;font-weight:700;color:var(--text);margin-bottom:4px}
+.snap-val.green{color:var(--green)}.snap-val.amber{color:var(--amber)}.snap-val.cyan{color:var(--cyan)}.snap-val.red{color:var(--red)}.snap-val.blue{color:var(--blue)}
+.snap-lbl{font-family:var(--font-sans);font-size:0.75rem;color:var(--text-mid);margin-bottom:2px}
+.snap-sub{font-family:var(--font-mono);font-size:0.58rem;color:var(--text-dim)}
+.info-box{background:var(--panel);border-left:3px solid var(--gold);padding:20px 24px;font-size:0.88rem;color:var(--text-mid);line-height:1.7;margin-bottom:24px}
+.callout{background:var(--panel2);border:1px solid var(--border2);border-left:3px solid var(--cyan);padding:20px 24px;font-size:0.88rem;color:var(--text);line-height:1.7;margin-bottom:24px}
+.strategy-box{background:var(--panel);border:1px solid var(--border);padding:24px;margin-bottom:24px}
+.strategy-two-col{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:24px}
+.strategy-col-head{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.strategy-col-head::after{content:'';flex:1;height:1px;background:var(--border)}
+.bullet-list{list-style:none;padding:0}
+.bullet-list li{font-size:0.85rem;color:var(--text-mid);padding:5px 0 5px 16px;position:relative;line-height:1.5;border-bottom:1px solid rgba(28,46,62,0.5)}
+.bullet-list li::before{content:'▸';position:absolute;left:0;color:var(--gold);font-size:0.7rem;top:7px}
+.bullet-list li strong{color:var(--text)}
+.peer-table{width:100%;border-collapse:collapse;font-size:0.78rem;margin-bottom:24px}
+.peer-table th{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);background:var(--panel)}
+.peer-table td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);vertical-align:middle}
+.peer-table .highlight-row td{background:var(--panel2);color:var(--text)}
+.co-name{font-weight:600;color:var(--text);font-size:0.82rem}
+.ticker{font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim)}
+.badge{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.06em;text-transform:uppercase;padding:2px 7px;border-radius:2px;display:inline-block}
+.badge-green{background:rgba(34,197,94,0.15);color:var(--green)}
+.badge-amber{background:rgba(245,158,11,0.15);color:var(--amber)}
+.badge-red{background:rgba(240,82,82,0.15);color:var(--red)}
+.badge-blue{background:rgba(56,189,248,0.15);color:var(--blue)}
+.badge-cyan{background:rgba(45,212,191,0.15);color:var(--cyan)}
+.badge-gold{background:rgba(34,211,238,0.15);color:var(--gold)}
+.initiatives-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:24px}
+.init-card{background:var(--panel);border:1px solid var(--border);padding:20px}
+.init-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:12px}
+.init-name{font-family:var(--font-sans);font-weight:600;font-size:0.88rem;color:var(--text)}
+.init-desc{font-size:0.8rem;color:var(--text-mid);line-height:1.55;margin-bottom:14px}
+.signals-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:24px}
+.signal-card{background:var(--panel);border:1px solid var(--border);padding:20px}
+.signal-num{font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);margin-bottom:6px}
+.signal-name{font-family:var(--font-serif);font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px}
+.signal-trl{font-family:var(--font-mono);font-size:0.58rem;color:var(--gold);margin-bottom:10px}
+.signal-desc{font-size:0.8rem;color:var(--text-mid);line-height:1.55;margin-bottom:12px}
+.signal-why{font-family:var(--font-mono);font-size:0.6rem;color:var(--text-dim)}
+@media(max-width:768px){.snapshot-grid{grid-template-columns:repeat(2,1fr)}.strategy-two-col,.initiatives-grid,.signals-grid{grid-template-columns:1fr}.hero-title{font-size:2.2rem}}
+</style>
+</head>
+<body>
+<!-- v8-deprecation-banner -->
+<div style="background:#000;color:#fff;padding:14px 24px;font-family:Arial,Helvetica,sans-serif;font-size:13px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;border-bottom:2px solid #22d3ee">
+  <span style="font-family:'Courier New',monospace;font-size:10px;font-weight:700;letter-spacing:0.12em;color:#22d3ee">DEPRECATED</span>
+  <span style="flex:1;line-height:1.45">This brief has been superseded by the live account plan tool, which pulls hypotheses, ontology pairs, signal log and contacts directly from the catalogue.</span>
+  <a href="account_plans_v8.html?company=Jaguar%20Land%20Rover" style="background:#22d3ee;color:#000;text-decoration:none;padding:7px 14px;font-weight:600;font-size:12px;letter-spacing:0.04em;white-space:nowrap">Open Jaguar Land Rover in v8 →</a>
+</div>
+
+<div style="background:#0a1520;border-bottom:1px solid #1c2e3e;padding:8px 24px;display:flex;align-items:center;gap:12px">
+  <span style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.12em;font-weight:700;color:#22AE8A">● SIGNAL REFRESH</span>
+  <span style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278">May 2026 · Sources: JLR FY 2026 results notice (May 2026), Tata Motors Q3 disclosure, Range Rover Electric launch coverage, Jaguar Type 00 GT details</span>
+  <span style="margin-left:auto;font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278">May 2026</span>
+</div>
+
+<nav class="nav">
+  <div class="nav-brand">FutureBridge // JLR Brief</div>
+  <div class="nav-links">
+    <a href="#overview" class="nav-link">Overview</a>
+    <a href="#strategy" class="nav-link">Strategy</a>
+    <a href="#peers" class="nav-link">Peers</a>
+    <a href="#initiatives" class="nav-link">Initiatives</a>
+    <a href="#signals" class="nav-link">Signals</a>
+    <a href="#hypotheses" class="nav-link">Hypotheses</a>
+  </div>
+  <span class="posture-badge">RECOVER</span>
+  <div class="nav-badge">Confidential</div>
+</nav>
+
+<div class="page">
+
+  <section class="hero" id="top">
+    <div class="hero-kicker">Intelligence Brief · Mobility — Premium OEM Reset</div>
+    <h1 class="hero-title">Jaguar Land Rover<br><em>Strategic Intelligence</em></h1>
+    <p class="hero-subtitle">Tata-owned UK premium OEM in transition. FY26 disrupted by Q3 cyber incident, US tariffs, and legacy-Jaguar wind-down. Range Rover Electric launches 2026; Jaguar Type 00 GT (1,000hp tri-motor) revealed 2026 with first deliveries 2027 — full brand reset under Reimagine strategy.</p>
+    <div class="hero-meta">
+      <div class="meta-item"><div class="meta-label">Sector</div><div class="meta-value">Premium OEM · Range Rover · Defender · Discovery · Jaguar reset</div></div>
+      <div class="meta-item"><div class="meta-label">Date</div><div class="meta-value">May 2026</div></div>
+      <div class="meta-item"><div class="meta-label">Posture</div><div class="meta-value" style="color:#f59e0b">RECOVER</div></div>
+      <div class="meta-item"><div class="meta-label">Prepared by</div><div class="meta-value">FutureBridge Advisory</div></div>
+    </div>
+  </section>
+
+  <section class="section" id="overview">
+    <div class="section-head"><span class="section-num">01</span><h2 class="section-title">Company Snapshot</h2><div class="section-rule"></div></div>
+    <div class="snapshot-grid">
+      <div class="snap-cell"><div class="snap-val">£16.0B</div><div class="snap-lbl">FY 2026 YTD revenue</div><div class="snap-sub">-24.5% YoY · LSE: TTMT (Tata Motors parent)</div></div>
+      <div class="snap-cell"><div class="snap-val red">3.6%</div><div class="snap-lbl">FY 2026 YTD EBITDA</div><div class="snap-sub">-1040bps; EBIT -2.9% (-1070bps)</div></div>
+      <div class="snap-cell"><div class="snap-val red">307,900</div><div class="snap-lbl">FY 2026 YTD wholesales</div><div class="snap-sub">-23.2% YoY</div></div>
+      <div class="snap-cell"><div class="snap-val red">352,300</div><div class="snap-lbl">FY 2026 YTD retail</div><div class="snap-sub">-17.8% YoY</div></div>
+      <div class="snap-cell"><div class="snap-val cyan">0-2%</div><div class="snap-lbl">FY 2026 EBIT guidance</div><div class="snap-sub">FCF outflow £2.2-2.5B</div></div>
+      <div class="snap-cell"><div class="snap-val blue">2026</div><div class="snap-lbl">Range Rover Electric launch</div><div class="snap-sub">First volume battery EV in core franchise</div></div>
+      <div class="snap-cell"><div class="snap-val cyan">2027</div><div class="snap-lbl">Jaguar Type 00 GT deliveries</div><div class="snap-sub">$130k+ tri-motor 1,000hp grand tourer</div></div>
+      <div class="snap-cell"><div class="snap-val">£18B</div><div class="snap-lbl">Investment plan to FY28</div><div class="snap-sub">Reimagine strategy — net zero 2039</div></div>
+    </div>
+    <div class="info-box">
+      <strong>Headline state.</strong> FY 2026 disrupted by Q3 cyber incident + US tariffs + planned legacy Jaguar wind-down. Recovery profile loaded into FY 2027-2028 with Range Rover Electric (2026) and Jaguar Type 00 GT (2027) launch cadence. Reimagine strategy — net-zero 2039 — anchors the long-term electrification thesis.
+    </div>
+  </section>
+
+  <section class="section" id="strategy">
+    <div class="section-head"><span class="section-num">02</span><h2 class="section-title">Strategic Posture</h2><div class="section-rule"></div></div>
+    <div class="strategy-box">
+      <div class="strategy-two-col">
+        <div>
+          <div class="strategy-col-head">Where JLR is investing</div>
+          <ul class="bullet-list">
+            <li><strong>Range Rover Electric (2026 launch).</strong> Core franchise battery EV — first volume electrification of the Range Rover line. Critical to Reimagine strategy execution.</li>
+            <li><strong>Jaguar Type 00 GT.</strong> Reveal 2026, deliveries 2027. Tri-motor 1,000hp, 800V architecture, 400-mile target, $130k+. UK-built. Brand-reset proof point.</li>
+            <li><strong>JEA architecture.</strong> Jaguar Electrified Architecture (800V) supporting Type 00 GT + future Jaguar EV portfolio.</li>
+            <li><strong>£18B investment plan to FY28.</strong> Multi-year capex programme spanning electrification + plant modernisation + software.</li>
+            <li><strong>Reimagine strategy.</strong> Net-zero 2039; modern luxury + electrification + sustainability + enterprise pillars.</li>
+          </ul>
+        </div>
+        <div>
+          <div class="strategy-col-head">What's under pressure</div>
+          <ul class="bullet-list">
+            <li><strong>Cyber incident Q3.</strong> Production shutdown disrupted FY 2026; recovery + insurance claim sequencing material.</li>
+            <li><strong>US tariffs.</strong> Premium SUV exposure to US market makes JLR particularly tariff-sensitive.</li>
+            <li><strong>Legacy Jaguar wind-down.</strong> Planned exit of legacy Jaguar models leaves brand-revenue gap until Type 00 GT delivers volume from 2028.</li>
+            <li><strong>Polarising rebrand.</strong> Jaguar 2024 rebrand (logo + visual identity) drew backlash; designer Gerry McGovern departed. Type 00 GT must justify the reset.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="callout">
+        <strong>Strategic posture: RECOVER</strong> — FY 2026 is a transition year; recovery + electrification thesis loaded into FY 2027-2028. Three hypotheses below test Range Rover Electric, Jaguar Type 00 GT, and FY 2027 EBIT recovery.
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="peers">
+    <div class="section-head"><span class="section-num">03</span><h2 class="section-title">Peer Landscape</h2><div class="section-rule"></div></div>
+    <table class="peer-table">
+      <tr><th>Company</th><th>FY revenue</th><th>EV positioning</th><th>Brand strategy</th><th>Posture</th></tr>
+      <tr class="highlight-row"><td><span class="co-name">Jaguar Land Rover</span><br><span class="ticker">via Tata Motors LSE: TTMT</span></td><td>£16B FY26 YTD</td><td>Range Rover Electric 2026; Jaguar Type 00 GT 2027</td><td>Reimagine — Jaguar reset; Range Rover premium-luxury</td><td><span class="badge badge-amber">Recover</span></td></tr>
+      <tr><td><span class="co-name">Mercedes-Benz</span><br><span class="ticker">ETR: MBG</span></td><td>~€143B</td><td>EQS / EQE; pause on EV-only timeline</td><td>Top-end Luxury + Core Luxury + Entry Luxury</td><td><span class="badge badge-amber">Reset</span></td></tr>
+      <tr><td><span class="co-name">BMW Group</span><br><span class="ticker">ETR: BMW</span></td><td>~€155B</td><td>i-series + Neue Klasse 2025+</td><td>BMW + Mini + Rolls-Royce</td><td><span class="badge badge-green">Steady</span></td></tr>
+      <tr><td><span class="co-name">Audi (VW)</span><br><span class="ticker">ETR: VOW3</span></td><td>~€68B</td><td>e-tron + Q-models; PPE / E3 1.2 architecture</td><td>Premium luxury within VW Group</td><td><span class="badge badge-amber">Mixed</span></td></tr>
+      <tr><td><span class="co-name">Bentley (VW)</span><br><span class="ticker">ETR: VOW3</span></td><td>~€3B</td><td>First BEV 2026</td><td>Beyond100 strategy</td><td><span class="badge badge-green">Premium</span></td></tr>
+      <tr><td><span class="co-name">Porsche AG</span><br><span class="ticker">ETR: P911</span></td><td>~€40B</td><td>Taycan + Macan EV; PPE</td><td>Sports / luxury performance</td><td><span class="badge badge-amber">Reset</span></td></tr>
+    </table>
+  </section>
+
+  <section class="section" id="initiatives">
+    <div class="section-head"><span class="section-num">04</span><h2 class="section-title">Live Initiatives</h2><div class="section-rule"></div></div>
+    <div class="initiatives-grid">
+      <div class="init-card"><div class="init-head"><div class="init-name">Range Rover Electric launch</div><span class="badge badge-cyan">Active</span></div><div class="init-desc">2026 launch of first volume battery EV in core Range Rover franchise. Critical to Reimagine strategy + electrification narrative. Customer waitlist open.</div></div>
+      <div class="init-card"><div class="init-head"><div class="init-name">Jaguar Type 00 GT</div><span class="badge badge-blue">Reveal 2026</span></div><div class="init-desc">Tri-motor 1,000hp grand tourer. 800V architecture, 400mi range target, $130k+ start. Reveal 2026, orders H2 2026, customer deliveries ~12mo later (2027). UK-built.</div></div>
+      <div class="init-card"><div class="init-head"><div class="init-name">JEA architecture</div><span class="badge badge-cyan">Build</span></div><div class="init-desc">Jaguar Electrified Architecture supporting Type 00 GT + future Jaguar EV portfolio. 800V class-leading; ~200mi added in 15min charging.</div></div>
+      <div class="init-card"><div class="init-head"><div class="init-name">£18B Reimagine investment plan</div><span class="badge badge-cyan">Active</span></div><div class="init-desc">£18B (~Rs 1.9tn) multi-year capex through FY28 — electrification + plant modernisation + software. Backed by Tata Motors balance sheet.</div></div>
+      <div class="init-card"><div class="init-head"><div class="init-name">Cyber incident recovery</div><span class="badge badge-amber">In flight</span></div><div class="init-desc">Q3 FY26 production shutdown post-cyber incident. Restart in progress. Insurance claim + production catch-up sequencing critical to FY27 base.</div></div>
+      <div class="init-card"><div class="init-head"><div class="init-name">Legacy Jaguar wind-down</div><span class="badge badge-amber">Planned</span></div><div class="init-desc">Legacy Jaguar models being wound down ahead of Type 00 GT volume in 2028. Brand-revenue gap through interim. Required for full reset.</div></div>
+    </div>
+  </section>
+
+  <section class="section" id="signals">
+    <div class="section-head"><span class="section-num">06</span><h2 class="section-title">Weak Signals</h2><div class="section-rule"></div></div>
+    <div class="signals-grid">
+      <div class="signal-card"><div class="signal-num">SIG-01</div><div class="signal-name">Range Rover Electric SOP</div><div class="signal-trl">CRITICAL · 2026</div><div class="signal-desc">2026 launch on schedule = critical proof point. Each quarter of slip pushes Reimagine narrative into 2027.</div><div class="signal-why">→ Watch: JLR press releases + auto-show announcements</div></div>
+      <div class="signal-card"><div class="signal-num">SIG-02</div><div class="signal-name">Type 00 GT customer demand</div><div class="signal-trl">CRITICAL · 2026-2027</div><div class="signal-desc">Type 00 GT order book open H2 2026. Polarising rebrand + $130k price point — order pace = brand-reset proof point.</div><div class="signal-why">→ Watch: JLR order-book disclosures + early customer reviews</div></div>
+      <div class="signal-card"><div class="signal-num">SIG-03</div><div class="signal-name">US tariff escalation</div><div class="signal-trl">PRESSURE · 2026</div><div class="signal-desc">UK-built JLR exports to US heavily exposed. Continued tariff escalation compresses FY27 EBIT recovery profile.</div><div class="signal-why">→ Watch: US-UK trade announcements + JLR pricing actions</div></div>
+      <div class="signal-card"><div class="signal-num">SIG-04</div><div class="signal-name">Cyber recovery + insurance</div><div class="signal-trl">DRAG · 2026</div><div class="signal-desc">Production catch-up + insurance recoveries determine FY27 starting base. Each quarter of disruption compounds.</div><div class="signal-why">→ Watch: JLR Q4 FY26 results (May 2026) + production data</div></div>
+    </div>
+  </section>
+
+<!-- ══ HYPOTHESIS REGISTER ══ -->
+<section id="hypotheses" class="section">
+<div style="max-width:1200px;margin:0 auto;padding:56px 0 80px">
+
+  <div class="section-head"><span class="section-num">HYP</span><h2 class="section-title">Hypothesis Register</h2><div class="section-rule"></div></div>
+
+  <div class="info-box" style="margin-bottom:32px">
+    Three load-bearing hypotheses anchor JLR scouting through 2027-2028. Recovery + electrification thesis loaded into FY 2027-2028 launch cadence.
+  </div>
+
+  <!-- Summary strip -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:40px">
+    <div style="background:var(--panel);padding:16px"><div style="font-family:var(--font-mono);font-size:1.4rem;font-weight:700;color:var(--text);margin-bottom:2px">3</div><div style="font-size:0.75rem;color:var(--text-mid)">Active hypotheses</div><div style="font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);margin-top:2px">May 2026</div></div>
+    <div style="background:var(--panel);padding:16px"><div style="font-family:var(--font-mono);font-size:1.4rem;font-weight:700;color:var(--text);margin-bottom:2px">57%</div><div style="font-size:0.75rem;color:var(--text-mid)">Average probability</div><div style="font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);margin-top:2px">Across 3 hypotheses</div></div>
+    <div style="background:var(--panel);padding:16px"><div style="font-family:var(--font-mono);font-size:1.4rem;font-weight:700;color:var(--gold);margin-bottom:2px">4</div><div style="font-size:0.75rem;color:var(--text-mid)">Signal drivers tracked</div><div style="font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);margin-top:2px">Economics · Market · Technology · Policy</div></div>
+  </div>
+
+  <!-- JLR-01 -->
+  <div style="margin:0 0 44px 0;border:1px solid #243444;border-top:2px solid var(--gold)">
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#131f2b;border-bottom:1px solid #1c2e3e">
+      <span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--gold);font-weight:700">JLR-01</span>
+      <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;border:1px solid #1c2e3e;padding:2px 8px">H1 · 1-2yr</span>
+      <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;margin-left:auto">Confidence: Mid</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1.3fr 1.6fr 1.2fr;border-bottom:1px solid #1c2e3e">
+      <div style="padding:14px 12px;border-right:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:10px">SOURCES</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.75rem;color:#4a6278;margin-bottom:10px;font-style:italic">Raw and undifferentiated</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ JLR press releases + Range Rover Electric milestones</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ Auto-show launch coverage + reviews</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ Tata Motors quarterly disclosures</div>
+      </div>
+      <div style="border-right:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">SYSTEM DRIVERS</div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(34,174,138,0.12);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#22AE8A;flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:#22AE8A">Technology<span style="background:rgba(34,174,138,0.22);color:#22AE8A;font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">Range Rover Electric SOP + production ramp</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(72,184,231,0.12);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#48B8E7;flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:#48B8E7">Market<span style="background:rgba(72,184,231,0.22);color:#48B8E7;font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">Customer waitlist + reservation conversion</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:4px;opacity:0.4"></span><div><div style="font-size:0.8rem;color:#4a6278">Economics</div><div style="font-size:0.72rem;color:#4a6278">Range Rover Electric ASP vs ICE Range Rover</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px"><span style="width:8px;height:8px;border-radius:50%;background:#9D7AD2;flex-shrink:0;margin-top:4px;opacity:0.35"></span><div><div style="font-size:0.8rem;color:#4a6278">Policy</div><div style="font-size:0.72rem;color:#4a6278">UK ZEV mandate + EU CO₂ regulation</div></div></div>
+      </div>
+      <div style="padding:16px;border-right:1px solid #1c2e3e;display:flex;flex-direction:column;justify-content:center">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:12px">HYPOTHESIS</div>
+        <div style="font-family:Georgia,serif;font-size:1.05rem;font-style:italic;color:#e8eef5;line-height:1.55;margin-bottom:16px">Range Rover Electric launches in 2026 on schedule and reaches first volume customer deliveries through FY 2027, anchoring the Reimagine electrification narrative and contributing to FY 2027 revenue recovery.</div>
+        <div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:3px;background:#1c2e3e;border-radius:2px"><div style="width:65%;height:100%;background:var(--gold);border-radius:2px"></div></div><span style="font-family:Courier New,monospace;font-size:0.65rem;color:var(--gold);font-weight:700">65%</span></div>
+      </div>
+      <div>
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">DECISIONS</div>
+        <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#9D7AD2;background:rgba(157,122,210,0.18);padding:2px 8px;border-radius:10px">6 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Track Range Rover Electric SOP + reservation conversion.</div></div>
+        <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#22AE8A;background:rgba(34,174,138,0.18);padding:2px 8px;border-radius:10px">12 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Range Rover Electric vs Mercedes EQS / BMW iX competitive map.</div></div>
+        <div style="padding:10px 12px"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:var(--gold);background:rgba(34,211,238,0.18);padding:2px 8px;border-radius:10px">18 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">FY 2027 EV mix + Reimagine narrative review.</div></div>
+      </div>
+    </div>
+    <div style="background:#0f1922">
+      <div style="display:flex;align-items:center;gap:16px;padding:12px 16px 8px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.1em;font-weight:700;color:var(--gold)">WHAT NEEDS TO BE TRUE</span><span style="flex:1;height:1px;background:#1c2e3e"></span><span style="font-family:Arial,sans-serif;font-size:0.65rem;color:#4a6278">All conditions hold</span></div>
+      <div style="padding:4px 16px 12px">
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">Range Rover Electric SOP achieved in 2026 as planned.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">First volume customer deliveries through FY 2027.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">Reservation conversion ≥75% (high reservation-to-order quality).</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">No material technical recall or quality issue post-launch.</span></div>
+      </div>
+      <div style="padding:10px 16px 14px;border-top:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.5rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:5px">ENGAGEMENT IMPLICATION</div>
+        <div style="font-size:0.82rem;color:#8fa3b5;line-height:1.6;padding-left:12px;border-left:2px solid var(--gold)">Range Rover Electric launch milestone tracking is the highest-priority engagement input through 2026.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JLR-02 -->
+  <div style="margin:0 0 44px 0;border:1px solid #243444;border-top:2px solid var(--gold)">
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#131f2b;border-bottom:1px solid #1c2e3e">
+      <span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--gold);font-weight:700">JLR-02</span>
+      <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;border:1px solid #1c2e3e;padding:2px 8px">H2 · 3-5yr</span>
+      <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;margin-left:auto">Confidence: Low-Mid</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1.3fr 1.6fr 1.2fr;border-bottom:1px solid #1c2e3e">
+      <div style="padding:14px 12px;border-right:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:10px">SOURCES</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.75rem;color:#4a6278;margin-bottom:10px;font-style:italic">Raw and undifferentiated</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ Jaguar reveal events + auto press</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ Order book disclosure + customer reactions</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ Premium GT competitive moves (Bentley, Porsche, Lucid)</div>
+      </div>
+      <div style="border-right:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">SYSTEM DRIVERS</div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(72,184,231,0.12);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#48B8E7;flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:#48B8E7">Market<span style="background:rgba(72,184,231,0.22);color:#48B8E7;font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">Premium luxury EV GT market acceptance</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(34,211,238,0.10);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:var(--gold)">Brand<span style="background:rgba(34,211,238,0.22);color:var(--gold);font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">Jaguar rebrand reception + Type 00 GT order pace</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#22AE8A;flex-shrink:0;margin-top:4px;opacity:0.4"></span><div><div style="font-size:0.8rem;color:#4a6278">Technology</div><div style="font-size:0.72rem;color:#4a6278">JEA 800V architecture + tri-motor performance</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px"><span style="width:8px;height:8px;border-radius:50%;background:#9D7AD2;flex-shrink:0;margin-top:4px;opacity:0.35"></span><div><div style="font-size:0.8rem;color:#4a6278">Policy</div><div style="font-size:0.72rem;color:#4a6278">EV incentive + super-credit programmes</div></div></div>
+      </div>
+      <div style="padding:16px;border-right:1px solid #1c2e3e;display:flex;flex-direction:column;justify-content:center">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:12px">HYPOTHESIS</div>
+        <div style="font-family:Georgia,serif;font-size:1.05rem;font-style:italic;color:#e8eef5;line-height:1.55;margin-bottom:16px">Jaguar Type 00 GT customer deliveries reach first 1,000 in 2027 with no further delays, and brand-reset gains commercial traction at $130k+ price point — validating the Reimagine strategy.</div>
+        <div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:3px;background:#1c2e3e;border-radius:2px"><div style="width:50%;height:100%;background:var(--gold);border-radius:2px"></div></div><span style="font-family:Courier New,monospace;font-size:0.65rem;color:var(--gold);font-weight:700">50%</span></div>
+      </div>
+      <div>
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">DECISIONS</div>
+        <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#9D7AD2;background:rgba(157,122,210,0.18);padding:2px 8px;border-radius:10px">6 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Track Type 00 GT reveal + order-book opening reception.</div></div>
+        <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#22AE8A;background:rgba(34,174,138,0.18);padding:2px 8px;border-radius:10px">12 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Premium EV GT competitive map (Bentley, Porsche Taycan, Lucid).</div></div>
+        <div style="padding:10px 12px"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:var(--gold);background:rgba(34,211,238,0.18);padding:2px 8px;border-radius:10px">18 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Type 00 GT delivery pace + brand-reset commercial outcome.</div></div>
+      </div>
+    </div>
+    <div style="background:#0f1922">
+      <div style="display:flex;align-items:center;gap:16px;padding:12px 16px 8px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.1em;font-weight:700;color:var(--gold)">WHAT NEEDS TO BE TRUE</span><span style="flex:1;height:1px;background:#1c2e3e"></span><span style="font-family:Arial,sans-serif;font-size:0.65rem;color:#4a6278">All conditions hold</span></div>
+      <div style="padding:4px 16px 12px">
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">Type 00 GT reveal in 2026 + order book opens H2 2026 as guided.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">First 1,000 customer deliveries achieved in 2027.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">No further price escalation beyond $130k+ start point.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">No major competing premium EV GT (Bentley BEV, Porsche EV) launches that displace Type 00 GT order pace.</span></div>
+      </div>
+      <div style="padding:10px 16px 14px;border-top:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.5rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:5px">ENGAGEMENT IMPLICATION</div>
+        <div style="font-size:0.82rem;color:#8fa3b5;line-height:1.6;padding-left:12px;border-left:2px solid var(--gold)">Type 00 GT reveal + order book + early reception is the principal Jaguar brand-reset proof-point input.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JLR-03 -->
+  <div style="margin:0 0 44px 0;border:1px solid #243444;border-top:2px solid var(--gold)">
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#131f2b;border-bottom:1px solid #1c2e3e">
+      <span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--gold);font-weight:700">JLR-03</span>
+      <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;border:1px solid #1c2e3e;padding:2px 8px">H1 · 1-2yr</span>
+      <span style="font-family:Courier New,monospace;font-size:0.55rem;color:#4a6278;margin-left:auto">Confidence: Mid</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1.3fr 1.6fr 1.2fr;border-bottom:1px solid #1c2e3e">
+      <div style="padding:14px 12px;border-right:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:10px">SOURCES</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.75rem;color:#4a6278;margin-bottom:10px;font-style:italic">Raw and undifferentiated</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ JLR / Tata Motors quarterly disclosures</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ US-UK trade announcements</div>
+        <div style="font-family:Arial,sans-serif;font-size:0.72rem;color:#4a6278;padding:3px 0">→ Cyber recovery + insurance disclosures</div>
+      </div>
+      <div style="border-right:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">SYSTEM DRIVERS</div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(34,211,238,0.12);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:var(--gold)">Economics<span style="background:rgba(34,211,238,0.22);color:var(--gold);font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">EBIT margin trajectory + cost recovery</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:rgba(157,122,210,0.10);border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#9D7AD2;flex-shrink:0;margin-top:4px"></span><div><div style="font-size:0.8rem;font-weight:700;color:#9D7AD2">Policy<span style="background:rgba(157,122,210,0.22);color:#9D7AD2;font-family:Courier New,monospace;font-size:0.5rem;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:6px">SIGNAL</span></div><div style="font-size:0.72rem;color:#8fa3b5">US tariff + UK ZEV mandate</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;border-bottom:1px solid #1c2e3e"><span style="width:8px;height:8px;border-radius:50%;background:#48B8E7;flex-shrink:0;margin-top:4px;opacity:0.4"></span><div><div style="font-size:0.8rem;color:#4a6278">Market</div><div style="font-size:0.72rem;color:#4a6278">Premium SUV demand recovery + Range Rover Electric mix</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px"><span style="width:8px;height:8px;border-radius:50%;background:#22AE8A;flex-shrink:0;margin-top:4px;opacity:0.35"></span><div><div style="font-size:0.8rem;color:#4a6278">Technology</div><div style="font-size:0.72rem;color:#4a6278">Cyber recovery + production normalisation</div></div></div>
+      </div>
+      <div style="padding:16px;border-right:1px solid #1c2e3e;display:flex;flex-direction:column;justify-content:center">
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:12px">HYPOTHESIS</div>
+        <div style="font-family:Georgia,serif;font-size:1.05rem;font-style:italic;color:#e8eef5;line-height:1.55;margin-bottom:16px">JLR FY 2027 EBIT margin recovers from FY 2026 trough (0-2% guide) to &gt;5% as cyber + tariff + Jaguar wind-down headwinds normalise and Range Rover Electric contributes premium mix.</div>
+        <div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:3px;background:#1c2e3e;border-radius:2px"><div style="width:55%;height:100%;background:var(--gold);border-radius:2px"></div></div><span style="font-family:Courier New,monospace;font-size:0.65rem;color:var(--gold);font-weight:700">55%</span></div>
+      </div>
+      <div>
+        <div style="font-family:Courier New,monospace;font-size:0.55rem;letter-spacing:0.08em;color:#4a6278;padding:14px 12px 10px">DECISIONS</div>
+        <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#9D7AD2;background:rgba(157,122,210,0.18);padding:2px 8px;border-radius:10px">6 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">Track Q4 FY26 results + cyber recovery + insurance disclosures.</div></div>
+        <div style="padding:10px 12px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:#22AE8A;background:rgba(34,174,138,0.18);padding:2px 8px;border-radius:10px">12 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">FY27 H1 EBIT margin trajectory + premium EV mix.</div></div>
+        <div style="padding:10px 12px"><span style="font-family:Courier New,monospace;font-size:0.65rem;font-weight:700;color:var(--gold);background:rgba(34,211,238,0.18);padding:2px 8px;border-radius:10px">18 M</span><div style="font-size:0.8rem;color:#8fa3b5;line-height:1.5;margin-top:4px">FY27 attainment + FY28 outlook.</div></div>
+      </div>
+    </div>
+    <div style="background:#0f1922">
+      <div style="display:flex;align-items:center;gap:16px;padding:12px 16px 8px;border-bottom:1px solid #1c2e3e"><span style="font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:0.1em;font-weight:700;color:var(--gold)">WHAT NEEDS TO BE TRUE</span><span style="flex:1;height:1px;background:#1c2e3e"></span><span style="font-family:Arial,sans-serif;font-size:0.65rem;color:#4a6278">All conditions hold</span></div>
+      <div style="padding:4px 16px 12px">
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">FY 2026 lands within EBIT 0-2% guidance (no further negative surprises).</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">FY 2027 EBIT margin recovers to &gt;5%.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1c2e3e"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">No US tariff escalation that compresses recovery.</span></div>
+        <div style="display:flex;gap:10px;padding:9px 0"><span style="color:var(--gold);font-size:12px;flex-shrink:0;line-height:1.4">☐</span><span style="font-size:0.82rem;color:#e8eef5;line-height:1.55">Cyber-recovery + insurance settlement complete by H1 FY 2027.</span></div>
+      </div>
+      <div style="padding:10px 16px 14px;border-top:1px solid #1c2e3e">
+        <div style="font-family:Courier New,monospace;font-size:0.5rem;letter-spacing:0.08em;color:#4a6278;margin-bottom:5px">ENGAGEMENT IMPLICATION</div>
+        <div style="font-size:0.82rem;color:#8fa3b5;line-height:1.6;padding-left:12px;border-left:2px solid var(--gold)">Quarterly EBIT + cyber-recovery + tariff intelligence is the FY 2026-2027 ambient scout for JLR.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+</div>
+</body>
+</html>
