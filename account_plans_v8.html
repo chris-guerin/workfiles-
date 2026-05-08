@@ -248,18 +248,18 @@ main{padding:24px 36px 80px;max-width:1200px;width:100%}
     <div class="config-help">Meeting log backend (carry from v7).</div>
   </div>
 
-  <div style="display:flex;gap:6px">
-    <button class="btn-primary" id="loadCompaniesBtn" style="flex:1" onclick="loadCompanies()">Load companies</button>
-    <button class="btn-ghost" id="testTokenBtn" onclick="testToken()" title="Hit /health then /v8/companies, log every step to DevTools console + show outcome here">Test</button>
-  </div>
+  <button class="btn-primary" id="loadCompaniesBtn" style="width:100%;padding:10px;font-size:12px" onclick="loadCompanies()">Load companies</button>
 
   <div id="tokenDiag" style="font-size:10px;color:var(--muted);font-family:var(--mono);min-height:14px;line-height:1.5"></div>
 
-  <button class="btn-ghost" style="width:100%;font-size:10px" onclick="copyCurlCommand()">Copy curl command for /v8/companies</button>
+  <div style="display:flex;gap:6px;font-size:10px">
+    <button class="btn-ghost" id="testTokenBtn" style="flex:1;font-size:10px" onclick="testToken()" title="Probe /health then /v8/companies and report what comes back">Test token</button>
+    <button class="btn-ghost" style="flex:1;font-size:10px" onclick="copyCurlCommand()" title="Copy a curl command that mirrors the browser's request">Copy curl</button>
+  </div>
 
   <details style="font-size:10px;color:var(--muted);line-height:1.5">
     <summary style="cursor:pointer;font-family:var(--mono);letter-spacing:0.04em">Network tab guide</summary>
-    <div style="padding-top:6px">When you click "Test" or "Load companies", DevTools Network shows TWO requests for each /v8/* call: an <strong>OPTIONS preflight first</strong> (no Authorization header — that's by design), then the actual <strong>GET right below it</strong> (Authorization should be present). If the GET is missing entirely, preflight failed and the browser blocked the GET. If the GET is present but has no Authorization header, the JS dropped it before fetch — open the DevTools Console and check the <code>[v8]</code> log line that prints right before each fetch.</div>
+    <div style="padding-top:6px">When "Load companies" or "Test token" runs, DevTools Network shows TWO rows per /v8/* call: an <strong>OPTIONS preflight first</strong> (no Authorization header — by design), then the actual <strong>GET right below it</strong> (Authorization present). If the GET is missing, preflight failed. If the GET is present but missing the header, the JS dropped it — check the <code>[v8]</code> log line in DevTools Console.</div>
   </details>
 
   <div id="companyList" class="company-list">
@@ -464,6 +464,7 @@ async function testToken() {
 // Copies to clipboard. User runs in a terminal — if the curl works but the
 // browser doesn't, the issue is browser-side, not server-side.
 function copyCurlCommand() {
+  console.log('[v8] copyCurlCommand() called');
   const tok = getBearer();
   const diag = document.getElementById('tokenDiag');
   if (!tok) { diag.textContent = '⚠ Paste a token first.'; return; }
@@ -472,7 +473,7 @@ function copyCurlCommand() {
   -H "Authorization: Bearer ${tok}" \\
   ${API_BASE}/v8/companies`;
   navigator.clipboard.writeText(cmd).then(() => {
-    diag.innerHTML = `<span style="color:var(--green)">✓ curl command copied to clipboard</span> — paste in terminal. If it returns the company list, the API is fine and the issue is browser-side.`;
+    diag.innerHTML = `<span style="color:var(--green)">✓ curl copied</span> — paste in terminal. If it works, issue is browser-side.`;
   }).catch(e => {
     diag.innerHTML = `<span style="color:var(--red-dark)">clipboard failed: ${escapeHtml(e.message)}</span>`;
   });
@@ -528,15 +529,23 @@ async function appsScriptPost(action, data) {
 
 // ══ COMPANY LOADER ═════════════════════════════════════════════════════
 async function loadCompanies() {
+  console.log('[v8] loadCompanies() called');
   const btn = document.getElementById('loadCompaniesBtn');
   const list = document.getElementById('companyList');
-  if (!getBearer()) { list.innerHTML = '<div class="company-list-empty">⚠ Bearer token required.</div>'; return; }
+  const diag = document.getElementById('tokenDiag');
+  if (!getBearer()) {
+    list.innerHTML = '<div class="company-list-empty">⚠ Bearer token required.</div>';
+    diag.innerHTML = '<span style="color:var(--red-dark)">⚠ No token in field</span>';
+    return;
+  }
   btn.disabled = true; btn.textContent = 'Loading…';
+  diag.textContent = tokenFingerprint() + ' · fetching /v8/companies…';
   list.innerHTML = '<div class="company-list-empty"><span class="spinner"></span>Fetching /v8/companies…</div>';
   try {
     const cos = await apiGet('/v8/companies');
     state.companies = cos;
     renderCompanyList();
+    diag.innerHTML = `<span style="color:var(--green)">✓ ${cos.length} companies loaded</span>`;
     // URL parameter direct linking
     const params = new URLSearchParams(window.location.search);
     const direct = params.get('company');
@@ -547,6 +556,8 @@ async function loadCompanies() {
     }
   } catch (e) {
     list.innerHTML = `<div class="company-list-empty">Error: ${escapeHtml(e.message)}</div>`;
+    diag.innerHTML = `<span style="color:var(--red-dark)">✗ ${escapeHtml(e.message.slice(0,140))}</span>`;
+    console.error('[v8] loadCompanies failed:', e);
   } finally {
     btn.disabled = false; btn.textContent = 'Reload companies';
   }
