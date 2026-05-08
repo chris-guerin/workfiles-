@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ExxonMobil Intelligence Brief — FutureBridge Advisory</title>
+<style>
+:root{--ink:#060a0f;--surface:#0b1219;--panel:#0f1922;--panel2:#131f2b;--border:#1c2e3e;--border2:#243444;--gold:#d4a230;--cyan:#2dd4bf;--red:#f05252;--green:#22c55e;--amber:#f59e0b;--blue:#38bdf8;--text:#e8eef5;--text-mid:#8fa3b5;--text-dim:#4a6278;--accent:#c8102e}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ink);color:var(--text);font-family:'IBM Plex Sans',system-ui,Helvetica,Arial,sans-serif;font-size:14px;line-height:1.6}
+.page{max-width:1200px;margin:0 auto;padding:0 32px 80px}
+.hero{padding:60px 0 40px;border-bottom:1px solid var(--border)}
+.hero-kicker{font-family:'IBM Plex Mono',monospace;font-size:0.6rem;letter-spacing:0.3em;color:var(--accent);text-transform:uppercase;margin-bottom:16px}
+.hero-title{font-family:Georgia,serif;font-size:3rem;font-weight:900;line-height:1.05;margin-bottom:14px}
+.hero-title em{font-style:normal;color:var(--accent)}
+.hero-subtitle{color:var(--text-mid);max-width:580px;margin-bottom:30px;font-weight:300}
+.hero-meta{display:flex;gap:32px;flex-wrap:wrap}
+.meta-item{font-family:'IBM Plex Mono',monospace;font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase}
+.meta-label{color:var(--text-dim);margin-bottom:4px}
+.meta-value{color:var(--text);font-weight:700;font-size:0.72rem}
+.section{padding:48px 0 0}
+.section-head{display:flex;align-items:center;gap:16px;margin-bottom:28px}
+.section-num{font-family:'IBM Plex Mono',monospace;font-size:0.55rem;letter-spacing:0.2em;color:var(--text-dim);text-transform:uppercase;background:var(--panel);border:1px solid var(--border);padding:4px 8px}
+.section-title{font-family:Georgia,serif;font-size:1.6rem;font-weight:700}
+.section-rule{flex:1;height:1px;background:var(--border)}
+.snapshot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:24px}
+.snap-cell{background:var(--panel);padding:18px}
+.snap-val{font-family:'IBM Plex Mono',monospace;font-size:1.5rem;font-weight:700;margin-bottom:4px}
+.snap-val.green{color:var(--green)} .snap-val.amber{color:var(--amber)} .snap-val.cyan{color:var(--accent)}
+.snap-lbl{font-size:0.75rem;color:var(--text-mid)}
+.snap-sub{font-family:'IBM Plex Mono',monospace;font-size:0.58rem;color:var(--text-dim);margin-top:3px}
+.callout{background:var(--panel2);border:1px solid var(--border2);border-left:3px solid var(--accent);padding:18px 22px;font-size:0.88rem;color:var(--text);line-height:1.7;margin-bottom:20px}
+.strategy-box{background:var(--panel);border:1px solid var(--border);padding:22px;margin-bottom:20px}
+.strategy-two-col{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:20px}
+.strategy-col-head{font-family:'IBM Plex Mono',monospace;font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+.bullet-list{list-style:none;padding:0}
+.bullet-list li{font-size:0.85rem;color:var(--text-mid);padding:5px 0 5px 16px;position:relative;line-height:1.5;border-bottom:1px solid rgba(28,46,62,0.5)}
+.bullet-list li::before{content:'▸';position:absolute;left:0;color:var(--accent);font-size:0.7rem;top:7px}
+.bullet-list li strong{color:var(--text)}
+.peer-table{width:100%;border-collapse:collapse;font-size:0.78rem;margin-bottom:24px}
+.peer-table th{font-family:'IBM Plex Mono',monospace;font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);padding:8px 10px;text-align:left;border-bottom:1px solid var(--border);background:var(--panel)}
+.peer-table td{padding:9px 10px;border-bottom:1px solid var(--border);color:var(--text-mid)}
+.peer-table .highlight-row td{background:var(--panel2);color:var(--text)}
+.co-name{font-weight:600;color:var(--text);font-size:0.82rem}
+.badge{font-family:'IBM Plex Mono',monospace;font-size:0.58rem;letter-spacing:0.06em;text-transform:uppercase;padding:2px 7px;border-radius:2px;display:inline-block}
+.badge-green{background:rgba(34,197,94,0.15);color:var(--green)}
+.badge-amber{background:rgba(245,158,11,0.15);color:var(--amber)}
+.badge-cyan{background:rgba(200,16,46,0.18);color:var(--accent)}
+.init-card{background:var(--panel);border:1px solid var(--border);padding:18px;margin-bottom:14px}
+.init-head{display:flex;justify-content:space-between;gap:12px;margin-bottom:8px}
+.init-name{font-weight:600;font-size:0.9rem}
+.init-desc{font-size:0.82rem;color:var(--text-mid);line-height:1.55}
+.signals-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:24px}
+.signal-card{background:var(--panel);border:1px solid var(--border);padding:18px}
+.signal-num{font-family:'IBM Plex Mono',monospace;font-size:0.55rem;color:var(--text-dim)}
+.signal-name{font-family:Georgia,serif;font-size:1rem;font-weight:700;margin:6px 0}
+.signal-desc{font-size:0.82rem;color:var(--text-mid);line-height:1.55;margin:8px 0 8px}
+.hyp-card{margin:0 0 36px 0;border:1px solid var(--border2);border-top:2px solid var(--accent)}
+.hyp-head{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--panel2);border-bottom:1px solid var(--border)}
+.hyp-code{font-family:'IBM Plex Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--accent);font-weight:700}
+.hyp-meta{font-family:'IBM Plex Mono',monospace;font-size:0.55rem;color:var(--text-dim);border:1px solid var(--border);padding:2px 8px}
+.hyp-conf{font-family:'IBM Plex Mono',monospace;font-size:0.55rem;color:var(--text-dim);margin-left:auto}
+.hyp-grid{display:grid;grid-template-columns:1.4fr 1.6fr 1.2fr;border-bottom:1px solid var(--border)}
+.hyp-col{padding:14px 16px;border-right:1px solid var(--border)}
+.hyp-col:last-child{border-right:none}
+.hyp-col-label{font-family:'IBM Plex Mono',monospace;font-size:0.55rem;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:10px}
+.hyp-driver{padding:6px 0;border-bottom:1px solid rgba(28,46,62,0.5);font-size:0.78rem}
+.hyp-driver:last-child{border-bottom:none}
+.hyp-driver.signal{color:var(--accent);font-weight:700}
+.hyp-driver.signal::after{content:' · SIGNAL';font-family:'IBM Plex Mono',monospace;font-size:0.5rem;color:var(--accent);background:rgba(200,16,46,0.18);padding:2px 6px;border-radius:10px;margin-left:4px;font-weight:700;letter-spacing:0.06em}
+.hyp-statement{font-family:Georgia,Times,serif;font-size:1.02rem;font-style:italic;color:var(--text);line-height:1.55;margin-bottom:14px}
+.hyp-prob{display:flex;align-items:center;gap:8px}
+.hyp-prob-bar{flex:1;height:3px;background:var(--border);border-radius:2px}
+.hyp-prob-fill{height:100%;background:var(--accent);border-radius:2px}
+.hyp-prob-val{font-family:'IBM Plex Mono',monospace;font-size:0.65rem;color:var(--accent);font-weight:700}
+.hyp-decision{padding:8px 0;border-bottom:1px solid rgba(28,46,62,0.5);font-size:0.78rem}
+.hyp-decision:last-child{border-bottom:none}
+.hyp-decision-tag{font-family:'IBM Plex Mono',monospace;font-size:0.6rem;font-weight:700;color:var(--accent);background:rgba(200,16,46,0.18);padding:2px 8px;border-radius:10px;margin-right:8px}
+.hyp-wntbt{background:var(--panel)}
+.hyp-wntbt-head{padding:12px 16px 8px;border-bottom:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:0.6rem;letter-spacing:0.1em;font-weight:700;color:var(--accent)}
+.hyp-wntbt-list{padding:8px 16px}
+.hyp-wntbt-item{padding:8px 0;border-bottom:1px solid rgba(28,46,62,0.5);font-size:0.82rem;line-height:1.55;display:flex;gap:10px}
+.hyp-wntbt-item:last-child{border-bottom:none}
+.hyp-wntbt-item::before{content:'☐';color:var(--accent)}
+.hyp-engagement{padding:10px 16px 14px;border-top:1px solid var(--border);font-size:0.82rem;color:var(--text-mid);line-height:1.6}
+.hyp-engagement-label{font-family:'IBM Plex Mono',monospace;font-size:0.5rem;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:5px}
+.hyp-engagement-text{padding-left:12px;border-left:2px solid var(--accent)}
+a{color:var(--accent)}
+.refresh-strip{background:#0a1520;border-bottom:1px solid var(--border);padding:8px 24px;display:flex;align-items:center;gap:12px}
+.refresh-strip span:first-child{font-family:'IBM Plex Mono',monospace;font-size:0.55rem;letter-spacing:0.12em;font-weight:700;color:var(--accent)}
+.refresh-strip span:nth-child(2){font-size:0.72rem;color:var(--text-dim);flex:1}
+.refresh-strip span:last-child{font-family:'IBM Plex Mono',monospace;font-size:0.55rem;color:var(--text-dim)}
+@media(max-width:768px){.snapshot-grid{grid-template-columns:repeat(2,1fr)}.strategy-two-col,.signals-grid{grid-template-columns:1fr}.hyp-grid{grid-template-columns:1fr}.hero-title{font-size:2rem}}
+</style>
+</head>
+<body>
+<!-- v8-deprecation-banner -->
+<div style="background:#000;color:#fff;padding:14px 24px;font-family:Arial,Helvetica,sans-serif;font-size:13px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;border-bottom:2px solid #F84E5D">
+  <span style="font-family:'Courier New',monospace;font-size:10px;font-weight:700;letter-spacing:0.12em;color:#F84E5D">DEPRECATED</span>
+  <span style="flex:1;line-height:1.45">This brief has been superseded by the live account plan tool.</span>
+  <a href="account_plans_v8.html?company=ExxonMobil%20Corporation" style="background:#F84E5D;color:#fff;text-decoration:none;padding:7px 14px;font-weight:600;font-size:12px;letter-spacing:0.04em;white-space:nowrap">Open ExxonMobil in v8 →</a>
+</div>
+<div class="refresh-strip"><span>● SIGNAL REFRESH</span><span>Q1 2026 · Sources: ExxonMobil Q3 2025 results press release, Updated 2030 Plan (Dec 2025), Q3 2025 earnings call transcript</span><span>May 2026</span></div>
+<div class="page">
+
+<section class="hero">
+  <div class="hero-kicker">— Intelligence brief · Integrated supermajor</div>
+  <h1 class="hero-title">ExxonMobil<br><em>Strategic Intelligence</em></h1>
+  <p class="hero-subtitle">Disciplined growth supermajor doubling Permian to 2.3 Mbpd by 2030 + Guyana to 900k+ bpd, integrating Pioneer at $4B/yr synergy run-rate, while pacing low-carbon spend after demand disappointment. Three commercial bets: upstream cash-flow doubling, Pioneer integration completion, low-carbon services pace control.</p>
+  <div class="hero-meta">
+    <div class="meta-item"><div class="meta-label">Listed</div><div class="meta-value">NYSE · XOM</div></div>
+    <div class="meta-item"><div class="meta-label">Date</div><div class="meta-value">May 2026</div></div>
+    <div class="meta-item"><div class="meta-label">Posture</div><div class="meta-value" style="color:#c8102e">EXPAND-DISCIPLINED</div></div>
+    <div class="meta-item"><div class="meta-label">Prepared by</div><div class="meta-value">FutureBridge Advisory</div></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><span class="section-num">01</span><h2 class="section-title">Company Snapshot</h2><div class="section-rule"></div></div>
+  <div class="snapshot-grid">
+    <div class="snap-cell"><div class="snap-val">$5.7B</div><div class="snap-lbl">Q3 2025 Earnings</div><div class="snap-sub">+$277M QoQ · Q3 2025 release</div></div>
+    <div class="snap-cell"><div class="snap-val green">700k+ bpd</div><div class="snap-lbl">Guyana Production</div><div class="snap-sub">Yellowtail start-up · 4 months early</div></div>
+    <div class="snap-cell"><div class="snap-val cyan">1.7M boe/d</div><div class="snap-lbl">Permian Q3 Record</div><div class="snap-sub">Target 2.3 Mbpd by 2030</div></div>
+    <div class="snap-cell"><div class="snap-val amber">$30B → paced</div><div class="snap-lbl">Low-Carbon 2025-30</div><div class="snap-sub">Texas H2 hub halted Nov 2025</div></div>
+  </div>
+  <div class="callout">ExxonMobil's 2030 Plan (raised Dec 2025): <strong>+$25B earnings growth + $35B cash flow growth vs 2024</strong> at constant price/margin, no capital increase. Yellowtail start-up four months early (~250k bpd added) takes Guyana installed capacity past 900k boe/d. Pioneer synergies $4B/yr (double initial estimates). Late-Nov 2025 decision to "pace" low-carbon spending after disappointing customer demand — Texas hydrogen hub halted, ~$20B (vs $30B headline) likely realised across the period.</div>
+</section>
+
+<section class="section">
+  <div class="section-head"><span class="section-num">02</span><h2 class="section-title">Strategy &amp; Intelligence</h2><div class="section-rule"></div></div>
+  <div class="strategy-box">
+    <div class="strategy-two-col">
+      <div>
+        <div class="strategy-col-head">Upstream cash-flow doubling thesis</div>
+        <ul class="bullet-list">
+          <li><strong>Permian 1.7M → 2.3M boe/d by 2030</strong> — explicit company target, supported by Pioneer integration delivering structural cost savings.</li>
+          <li><strong>Guyana past 900k boe/d</strong> — Yellowtail (4th development) added 250k bpd; further developments in pipeline.</li>
+          <li><strong>Golden Pass LNG Train 1</strong> mechanical completion late 2025; first cargoes Q1 2026. Texas LNG entry secured.</li>
+          <li><strong>Mozambique + PNG LNG starts</strong> — 2030 Plan includes new LNG project startups in both regions.</li>
+        </ul>
+      </div>
+      <div>
+        <div class="strategy-col-head">Pioneer integration + cost discipline</div>
+        <ul class="bullet-list">
+          <li><strong>$4B annual synergies</strong> — Pioneer synergies doubled vs initial estimates, declared in Q3 2025.</li>
+          <li><strong>"Industry-leading performance"</strong> per management; structural cost savings flow through margin.</li>
+          <li><strong>Lower-tier shale + tier-1 acreage combined</strong> — XOM tier-1 + Pioneer tier-1 = consolidated dominant Permian position.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="strategy-two-col">
+    <div>
+      <div class="strategy-col-head">Low-carbon — paced, not abandoned</div>
+      <ul class="bullet-list">
+        <li><strong>~$20B (revised lower) of $30B planned</strong> low-emission investments 2025-2030. ~60% focused on third-party customer emission reductions.</li>
+        <li><strong>Denbury CCS network</strong> — US carbon transport+storage backbone; sequencing uncertain after H2 hub pause.</li>
+        <li><strong>Lithium from brine</strong> — direct lithium extraction at smackover; pre-commercial scale.</li>
+        <li><strong>Proxxima thermoset resins</strong> — capacity tripled in 2025; 40% installation efficiency vs steel for rebar.</li>
+        <li><strong>Battery anode graphite</strong> — promising lithium-ion test results; new product line.</li>
+        <li><strong>Texas hydrogen hub halted</strong> Nov 2025 citing disappointing customer demand + uncertain government policy.</li>
+      </ul>
+    </div>
+    <div>
+      <div class="strategy-col-head">Where FutureBridge can engage</div>
+      <ul class="bullet-list">
+        <li>Permian production scaling intelligence — well productivity, midstream constraints, water management.</li>
+        <li>Guyana subsea + drilling FID pipeline (TFMC exclusivity defensibility).</li>
+        <li>LNG project execution intelligence — Golden Pass, Mozambique, PNG.</li>
+        <li>Proxxima + lithium + advanced materials commercialisation pace.</li>
+        <li>Low-carbon "pace" decisions — which projects survive, which get cut, which get repurposed.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><span class="section-num">03</span><h2 class="section-title">Peer Landscape</h2><div class="section-rule"></div></div>
+  <table class="peer-table">
+    <thead><tr><th>Company</th><th>Strategy</th><th>Permian / shale</th><th>LNG position</th><th>Low-carbon</th><th>Risk profile</th></tr></thead>
+    <tbody>
+      <tr class="highlight-row"><td><div class="co-name">ExxonMobil</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim)">XOM</div></td><td>Disciplined growth supermajor</td><td>1.7→2.3 Mbpd by 2030</td><td>Golden Pass + Mozambique + PNG</td><td>$30B (paced)</td><td><span class="badge badge-green">Disciplined</span></td></tr>
+      <tr><td><div class="co-name">Chevron</div></td><td>Higher returns, lower carbon</td><td>~1.0 Mbpd</td><td>Wheatstone + Gorgon</td><td>Selective</td><td><span class="badge badge-green">Disciplined</span></td></tr>
+      <tr><td><div class="co-name">Shell</div></td><td>LNG-anchored; selective retreat</td><td>Permian via Aera (sold)</td><td>~40% of group EBITDA</td><td>Reversing</td><td><span class="badge badge-amber">Identity flux</span></td></tr>
+      <tr><td><div class="co-name">BP plc</div></td><td>Distressed valuation; restructure</td><td>BPX cash engine</td><td>Modest position</td><td>Reversing</td><td><span class="badge badge-amber">M&amp;A target</span></td></tr>
+      <tr><td><div class="co-name">TotalEnergies</div></td><td>Most committed integrated multi-energy</td><td>Modest</td><td>Strong</td><td>Committed</td><td><span class="badge badge-amber">Balanced</span></td></tr>
+      <tr><td><div class="co-name">ConocoPhillips</div></td><td>Low-cost supply discipline</td><td>~2.0 Mboed (Permian + Eagle Ford)</td><td>APLNG + QatarEnergy</td><td>Limited</td><td><span class="badge badge-green">Disciplined</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="section">
+  <div class="section-head"><span class="section-num">04</span><h2 class="section-title">Key Initiatives &amp; Progress</h2><div class="section-rule"></div></div>
+  <div class="init-card"><div class="init-head"><div class="init-name">Yellowtail FPSO (Guyana)</div><span class="badge badge-green">Operational</span></div><div class="init-desc">Started up Q3 2025 four months early and under budget. Adds 250k boe/d initial average. Takes total Guyana installed capacity past 900k boe/d.</div></div>
+  <div class="init-card"><div class="init-head"><div class="init-name">Permian (XOM + Pioneer integrated)</div><span class="badge badge-green">Record Q3 2025</span></div><div class="init-desc">1.7M boe/d Q3 2025 record. Target 2.3M boe/d by 2030 (~6% CAGR). $4B/yr Pioneer synergies declared (double initial $2B). Industry-leading performance per management.</div></div>
+  <div class="init-card"><div class="init-head"><div class="init-name">Golden Pass LNG Train 1</div><span class="badge badge-cyan">First cargo Q1 2026</span></div><div class="init-desc">Mechanical completion late 2025. First cargoes Q1 2026. JV with QatarEnergy. Texas LNG export entry secured.</div></div>
+  <div class="init-card"><div class="init-head"><div class="init-name">Texas Hydrogen Hub</div><span class="badge badge-amber">HALTED Nov 2025</span></div><div class="init-desc">Massive low-carbon hydrogen facility in Baytown halted. Citing disappointing customer demand + uncertain government policy (45V framework). Indicates broader pace control on H2.</div></div>
+  <div class="init-card"><div class="init-head"><div class="init-name">Denbury CCS Network</div><span class="badge badge-amber">Sequencing uncertain</span></div><div class="init-desc">$4.9B Denbury acquisition (2023) gave XOM the largest CO2 transport network in US (1,300+ miles). Customer offtake build-out pace unclear after H2 hub pause.</div></div>
+  <div class="init-card"><div class="init-head"><div class="init-name">Proxxima thermoset resins + battery anode graphite</div><span class="badge badge-green">Scaling</span></div><div class="init-desc">Proxxima capacity tripled 2025; 40% installation efficiency vs steel rebar. Battery anode graphite shows promising Li-ion performance test results. Advanced materials become a real if small business line.</div></div>
+</section>
+
+<section class="section">
+  <div class="section-head"><span class="section-num">06</span><h2 class="section-title">Weak Signals — FutureBridge Intelligence</h2><div class="section-rule"></div></div>
+  <div class="signals-grid">
+    <div class="signal-card"><div class="signal-num">S-01</div><div class="signal-name">Permian doubling carries midstream + water risk</div><div class="signal-desc">2.3M boe/d 2030 target requires sustained well productivity + midstream + produced-water disposal. Watch for permitting friction or regional bottlenecks. XOM's structural advantages in scale and tech investment most help here.</div></div>
+    <div class="signal-card"><div class="signal-num">S-02</div><div class="signal-name">Low-carbon "pace" affects supplier landscape</div><div class="signal-desc">Texas H2 hub halt + LCS spending pace = engineering services demand from XOM softer than 2024 forecasts. Affects T.EN, KBR, Honeywell UOP, Worley. Watch H2/CCS supplier order book commentary in 2026.</div></div>
+    <div class="signal-card"><div class="signal-num">S-03</div><div class="signal-name">Yellowtail success → next-development award sequence</div><div class="signal-desc">Yellowtail early + under budget validates the Stabroek block execution model. Sets up additional FPSO awards through 2027-2028. TFMC subsea exclusivity defensibility (TFMC-02) is the corollary thesis.</div></div>
+    <div class="signal-card"><div class="signal-num">S-04</div><div class="signal-name">Proxxima + lithium are real businesses, not greenwash</div><div class="signal-desc">Proxxima 3× capacity 2025; battery graphite positive test results. These are scale-driven advanced materials businesses, distinguishable from low-carbon services. Watch standalone disclosure in Q4 2025 / FY2025 results.</div></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><span class="section-num">HYP</span><h2 class="section-title">Hypothesis Register</h2><div class="section-rule"></div></div>
+
+  <!-- XOM-01 -->
+  <div class="hyp-card">
+    <div class="hyp-head"><span class="hyp-code">XOM-01</span><span class="hyp-meta">H2 · 3-5yr</span><span class="hyp-conf">Confidence: High</span></div>
+    <div class="hyp-grid">
+      <div class="hyp-col"><div class="hyp-col-label">System drivers</div>
+        <div class="hyp-driver signal">Economics — Permian + Guyana free cash flow growth</div>
+        <div class="hyp-driver signal">Market — LNG offtake + global oil demand</div>
+        <div class="hyp-driver">Technology — Permian well productivity + Stabroek FPSO execution</div>
+        <div class="hyp-driver">Policy — US offshore + onshore leasing + Guyana fiscal stability</div>
+      </div>
+      <div class="hyp-col"><div class="hyp-col-label">Hypothesis</div>
+        <div class="hyp-statement">ExxonMobil delivers the 2030 Plan: Permian doubles to 2.3M boe/d, Guyana sustains 900k+ boe/d, and group-level cash flow grows $35B vs 2024 with capital flat — making XOM the highest-cash-flow IOC of the decade.</div>
+        <div class="hyp-prob"><div class="hyp-prob-bar"><div class="hyp-prob-fill" style="width:78%"></div></div><span class="hyp-prob-val">78%</span></div>
+      </div>
+      <div class="hyp-col"><div class="hyp-col-label">Decisions</div>
+        <div class="hyp-decision"><span class="hyp-decision-tag">6M</span>Track Permian production trajectory + midstream constraints.</div>
+        <div class="hyp-decision"><span class="hyp-decision-tag">12M</span>Deliver Guyana FPSO sequencing + Stabroek block intelligence.</div>
+        <div class="hyp-decision"><span class="hyp-decision-tag">18M</span>Propose IOC capex cycle monitoring programme.</div>
+      </div>
+    </div>
+    <div class="hyp-wntbt">
+      <div class="hyp-wntbt-head">WHAT NEEDS TO BE TRUE</div>
+      <div class="hyp-wntbt-list">
+        <div class="hyp-wntbt-item">Permian production reaches at least 2.0M boe/d by end-2027 (interim milestone).</div>
+        <div class="hyp-wntbt-item">Guyana sustained above 900k boe/d through 2027 with at least one additional FPSO online.</div>
+        <div class="hyp-wntbt-item">Pioneer synergies sustain at $4B annual run-rate through 2026 + 2027.</div>
+        <div class="hyp-wntbt-item">Brent above $60/bbl through 2027; no major fiscal regime shock in Permian or Guyana.</div>
+      </div>
+      <div class="hyp-engagement"><div class="hyp-engagement-label">ENGAGEMENT IMPLICATION</div><div class="hyp-engagement-text">Permian production scaling + Guyana FPSO sequencing + LNG project execution are the active scouting categories.</div></div>
+    </div>
+  </div>
+
+  <!-- XOM-02 -->
+  <div class="hyp-card">
+    <div class="hyp-head"><span class="hyp-code">XOM-02</span><span class="hyp-meta">H2 · 4-6yr</span><span class="hyp-conf">Confidence: Medium</span></div>
+    <div class="hyp-grid">
+      <div class="hyp-col"><div class="hyp-col-label">System drivers</div>
+        <div class="hyp-driver">Economics — Low-carbon project break-evens vs subsidy</div>
+        <div class="hyp-driver signal">Market — Customer demand for low-carbon services</div>
+        <div class="hyp-driver">Technology — Denbury CCS + DAC + H2 production maturity</div>
+        <div class="hyp-driver signal">Policy — IRA 45V/45Q durability + government policy continuity</div>
+      </div>
+      <div class="hyp-col"><div class="hyp-col-label">Hypothesis</div>
+        <div class="hyp-statement">Realised low-carbon spending tracks below $20B (vs the headline $30B 2025-2030 plan), driven by sustained pace-control after disappointing customer demand and uncertain US policy. Texas H2 hub stays halted; Denbury network deploys selectively rather than at full design capacity.</div>
+        <div class="hyp-prob"><div class="hyp-prob-bar"><div class="hyp-prob-fill" style="width:65%"></div></div><span class="hyp-prob-val">65%</span></div>
+      </div>
+      <div class="hyp-col"><div class="hyp-col-label">Decisions</div>
+        <div class="hyp-decision"><span class="hyp-decision-tag">6M</span>Track XOM low-carbon capex disclosures Q4 2025 + FY2025.</div>
+        <div class="hyp-decision"><span class="hyp-decision-tag">12M</span>Deliver low-carbon services demand intelligence.</div>
+        <div class="hyp-decision"><span class="hyp-decision-tag">18M</span>Propose policy + customer-demand monitoring programme.</div>
+      </div>
+    </div>
+    <div class="hyp-wntbt">
+      <div class="hyp-wntbt-head">WHAT NEEDS TO BE TRUE</div>
+      <div class="hyp-wntbt-list">
+        <div class="hyp-wntbt-item">Texas hydrogen hub remains halted through end-2027 (no restart announcement).</div>
+        <div class="hyp-wntbt-item">Annual low-carbon capex tracks below $5B/yr in both 2026 and 2027.</div>
+        <div class="hyp-wntbt-item">Denbury CCS pipeline utilisation stays below 50% of design capacity through 2027.</div>
+        <div class="hyp-wntbt-item">No US 45V / 45Q expansion before mid-2027 that would change customer-demand signal.</div>
+      </div>
+      <div class="hyp-engagement"><div class="hyp-engagement-label">ENGAGEMENT IMPLICATION</div><div class="hyp-engagement-text">Customer demand intelligence (who actually buys low-carbon services and at what price) is the most commercially valuable input for XOM's pace-control decisions.</div></div>
+    </div>
+  </div>
+
+  <!-- XOM-03 -->
+  <div class="hyp-card">
+    <div class="hyp-head"><span class="hyp-code">XOM-03</span><span class="hyp-meta">H1 · 1-2yr</span><span class="hyp-conf">Confidence: High</span></div>
+    <div class="hyp-grid">
+      <div class="hyp-col"><div class="hyp-col-label">System drivers</div>
+        <div class="hyp-driver signal">Economics — Pioneer integration synergy run-rate</div>
+        <div class="hyp-driver">Market — Permian production + cost performance</div>
+        <div class="hyp-driver signal">Technology — Combined drilling + completion + midstream optimisation</div>
+        <div class="hyp-driver">Policy — US Permian operating regime stability</div>
+      </div>
+      <div class="hyp-col"><div class="hyp-col-label">Hypothesis</div>
+        <div class="hyp-statement">Pioneer integration completes by end-2026 with $4B+ annual synergy run-rate fully realised, declared formally complete, and Permian production tracking 1.95M+ boe/d in 2026 — confirming XOM's industry-leading Permian unit economics.</div>
+        <div class="hyp-prob"><div class="hyp-prob-bar"><div class="hyp-prob-fill" style="width:80%"></div></div><span class="hyp-prob-val">80%</span></div>
+      </div>
+      <div class="hyp-col"><div class="hyp-col-label">Decisions</div>
+        <div class="hyp-decision"><span class="hyp-decision-tag">6M</span>Track quarterly Permian production + Pioneer integration milestones.</div>
+        <div class="hyp-decision"><span class="hyp-decision-tag">12M</span>Deliver Permian competitive intelligence (CVX, COP, Diamondback).</div>
+        <div class="hyp-decision"><span class="hyp-decision-tag">18M</span>Propose ongoing Permian intelligence programme.</div>
+      </div>
+    </div>
+    <div class="hyp-wntbt">
+      <div class="hyp-wntbt-head">WHAT NEEDS TO BE TRUE</div>
+      <div class="hyp-wntbt-list">
+        <div class="hyp-wntbt-item">$4B annual synergies sustained through 2026 (run-rate disclosed in Q4 2025 / Q1 2026 results).</div>
+        <div class="hyp-wntbt-item">Permian production exceeds 1.95M boe/d in 2026 calendar year.</div>
+        <div class="hyp-wntbt-item">Pioneer integration declared formally complete in 2026 management commentary.</div>
+        <div class="hyp-wntbt-item">No regulatory or environmental friction (water, methane, permitting) materially constrains 2026 production.</div>
+      </div>
+      <div class="hyp-engagement"><div class="hyp-engagement-label">ENGAGEMENT IMPLICATION</div><div class="hyp-engagement-text">Permian competitive intelligence — Chevron, ConocoPhillips, Diamondback, Coterra — is the most commercially valuable input as XOM consolidates dominance.</div></div>
+    </div>
+  </div>
+
+</section>
+
+</div>
+</body>
+</html>
