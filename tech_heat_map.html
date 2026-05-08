@@ -73,10 +73,21 @@ table.heat thead th.tech-header{vertical-align:bottom;padding:0;background:#fff;
 table.heat thead th.tech-header .label{transform:rotate(-60deg);transform-origin:left bottom;width:160px;display:inline-block;padding:0 8px;line-height:1.25;font-weight:500;color:var(--ink)}
 table.heat thead th.tech-header .tech-name{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600;margin-bottom:2px}
 table.heat tbody td.sticky-row{position:sticky;left:0;background:#fff;border-right:1px solid var(--border);font-weight:600;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:12px;padding:8px 12px;min-width:200px;z-index:2}
+table.heat tbody td.sticky-row .sub{display:block;font-size:9px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
 table.heat tbody td.cell{width:18px;height:24px;text-align:center;border-right:1px solid var(--grey-light);border-bottom:1px solid var(--grey-light);cursor:pointer;position:relative}
 table.heat tbody td.cell:hover{outline:1px solid var(--ink);z-index:1;outline-offset:-1px}
 table.heat tbody tr:hover td.sticky-row{background:var(--surface)}
 table.heat tbody tr.dimmed{opacity:.25}
+/* Group rollup row */
+table.heat tbody tr.group-rollup td{background:#ececef;border-bottom:1px solid var(--ink)}
+table.heat tbody tr.group-rollup:hover td.sticky-row{background:#dedee2}
+table.heat tbody tr.group-rollup td.sticky-row{font-weight:700;border-left:3px solid var(--ink)}
+table.heat tbody tr.group-rollup td.cell .dot{outline:1px dashed var(--ink);outline-offset:1px}
+/* Child rows of a group: subtle left indent indicator */
+table.heat tbody tr.group-child td.sticky-row{padding-left:18px;border-left:3px solid var(--grey-light)}
+table.heat tbody tr.group-child td.sticky-row::before{content:'└';position:absolute;left:6px;color:var(--muted);font-family:monospace;font-weight:400}
+/* Group parent row (the parent itself, separate from rollup) */
+table.heat tbody tr.group-parent td.sticky-row{border-left:3px solid var(--grey-light)}
 .dot{display:block;width:10px;height:10px;margin:0 auto;border:1px solid rgba(0,0,0,.25)}
 .dot.h1{background:var(--h1)}
 .dot.h2{background:var(--h2)}
@@ -191,6 +202,7 @@ td.cell .pending::before{content:'…'}
       <div class="item"><span class="swatch sw-h3"></span> H3 (6yr+)</div>
       <div class="item"><span class="swatch" style="outline:2px solid #000;background:#fff"></span> cross-client edge</div>
       <div class="item">opacity = confidence (high → low)</div>
+      <div class="item"><span class="swatch" style="background:#ececef;border-left:3px solid #000"></span> group consolidated row · <span style="color:#000">dashed outline cell</span> = aggregated</div>
     </div>
 
     <div id="content">
@@ -239,6 +251,21 @@ const els = {
   dList: document.getElementById('dList'),
   dReason: document.getElementById('dReason'),
 };
+
+// ── Group rollup config ─────────────────────────────
+// Multi-brand groups in the catalogue. Add more entries here as needed.
+// The consolidated row fills if ANY child OR the parent itself tracks the pair.
+const COMPANY_GROUPS = {
+  'Volkswagen Group': ['Audi AG', 'Porsche AG', 'Skoda Auto', 'SEAT / CUPRA'],
+};
+
+const CHILD_TO_PARENT = (() => {
+  const m = {};
+  for(const parent in COMPANY_GROUPS){
+    for(const child of COMPANY_GROUPS[parent]) m[child] = parent;
+  }
+  return m;
+})();
 
 // State
 const state = {
@@ -396,6 +423,82 @@ function passFilters(row){
   return true;
 }
 
+// Build the ordered render list, injecting consolidated rollup rows above
+// each parent + child cluster. Returns:
+//   [{ company:{name,sector,initiative_count}, kind:'normal'|'rollup'|'parent'|'child',
+//      members?:[companyObj] }, ...]
+function buildRenderRows(){
+  const byName = Object.fromEntries(state.companies.map(c => [c.name, c]));
+  const sorted = [...state.companies].sort((a,b) => a.name.localeCompare(b.name));
+  const out = [];
+  const emitted = new Set();
+  for(const c of sorted){
+    if(CHILD_TO_PARENT[c.name]) continue; // emitted under parent
+    if(emitted.has(c.name)) continue;
+    if(COMPANY_GROUPS[c.name]){
+      const childObjs = COMPANY_GROUPS[c.name]
+        .map(n => byName[n]).filter(Boolean)
+        .sort((a,b) => a.name.localeCompare(b.name));
+      out.push({
+        company: { name: c.name, sector: c.sector || 'group', initiative_count: 0 },
+        kind: 'rollup',
+        members: [c, ...childObjs],
+      });
+      out.push({ company: c, kind: 'parent', parentName: c.name });
+      for(const cc of childObjs){
+        out.push({ company: cc, kind: 'child', parentName: c.name });
+        emitted.add(cc.name);
+      }
+      emitted.add(c.name);
+    } else {
+      out.push({ company: c, kind: 'normal' });
+    }
+  }
+  // Edge case: parent declared in COMPANY_GROUPS but absent from /v8/companies
+  for(const parentName in COMPANY_GROUPS){
+    if(byName[parentName]) continue; // already handled above
+    const childObjs = COMPANY_GROUPS[parentName].map(n => byName[n]).filter(Boolean);
+    if(!childObjs.length) continue;
+    out.push({
+      company: { name: parentName, sector: 'group', initiative_count: 0 },
+      kind: 'rollup',
+      members: childObjs,
+      parentMissing: true,
+    });
+    for(const cc of childObjs.sort((a,b) => a.name.localeCompare(b.name))){
+      if(emitted.has(cc.name)) continue;
+      out.push({ company: cc, kind: 'child', parentName });
+      emitted.add(cc.name);
+    }
+  }
+  return out;
+}
+
+// For a rollup row, find the first member that has a row matching this pair
+// AND passes the active filters. Member precedence: parent first, then children
+// alphabetically (already sorted in buildRenderRows).
+function getRollupCellRow(rollupRow, pairLabel){
+  const contributors = [];
+  for(const m of rollupRow.members){
+    const r = getCellRow(m.name, pairLabel);
+    if(r && passFilters(r)) contributors.push({ row: r, sourceCompany: m.name });
+  }
+  if(!contributors.length) return null;
+  return { primary: contributors[0], all: contributors };
+}
+
+function rollupRowStatus(rollupRow){
+  let loading = 0, errors = 0, pairs = 0;
+  const seen = new Set();
+  for(const m of rollupRow.members){
+    if(state.loadingByCompany[m.name]) loading++;
+    if(state.errorsByCompany[m.name]) errors++;
+    for(const r of state.pairsByCompany[m.name] || []){ seen.add(r.pair_label); }
+  }
+  pairs = seen.size;
+  return { loading, errors, pairs, members: rollupRow.members.length };
+}
+
 function pairMatchesQuery(p, q){
   if(!q) return true;
   const s = (p.pair_label + ' ' + (p.technology||'') + ' ' + (p.technology_name||'') + ' ' + (p.application||'')).toLowerCase();
@@ -408,7 +511,7 @@ function render(){
   const qP = els.qPair.value.trim().toLowerCase();
   const pairs = allPairs.filter(p => pairMatchesQuery(p, qP));
 
-  // Stats
+  // Stats (count actual links from real companies; rollup cells are derived)
   let totalLinks = 0, crossLinks = 0;
   for(const c of state.companies){
     for(const r of state.pairsByCompany[c.name] || []){
@@ -418,7 +521,9 @@ function render(){
       }
     }
   }
-  els.statSummary.innerHTML = `<strong>${state.companies.length}</strong> companies · <strong>${pairs.length}</strong> pairs · <strong>${totalLinks}</strong> links${crossLinks?` · <strong>${crossLinks}</strong> cross-client`:''}`;
+  const rows = buildRenderRows();
+  const rollupCount = rows.filter(r => r.kind === 'rollup').length;
+  els.statSummary.innerHTML = `<strong>${state.companies.length}</strong> companies${rollupCount?` + <strong>${rollupCount}</strong> group rollup`:''} · <strong>${pairs.length}</strong> pairs · <strong>${totalLinks}</strong> links${crossLinks?` · <strong>${crossLinks}</strong> cross-client`:''}`;
 
   if(!state.companies.length){ return; }
 
@@ -438,11 +543,52 @@ function render(){
   html += '<th class="sticky-corner" style="left:auto;right:0;border-left:1px solid var(--border);min-width:80px">Status</th>';
   html += '</tr></thead><tbody>';
 
-  for(const c of state.companies){
-    const visible = !qC || c.name.toLowerCase().includes(qC);
+  for(const row of rows){
+    const c = row.company;
+    // visibility: rollup rows match if either parent name OR any child name matches the search
+    let visible = true;
+    if(qC){
+      if(row.kind === 'rollup'){
+        visible = c.name.toLowerCase().includes(qC) || row.members.some(m => m.name.toLowerCase().includes(qC));
+      } else {
+        visible = c.name.toLowerCase().includes(qC);
+      }
+    }
     if(!visible) continue;
-    html += `<tr><td class="sticky-row" title="${escapeAttr(c.name)} · ${c.sector||'?'} · ${c.initiative_count||0} initiative(s)">${escapeHtml(c.name)}</td>`;
+
+    const trCls = row.kind === 'rollup' ? 'group-rollup'
+              : row.kind === 'parent'  ? 'group-parent'
+              : row.kind === 'child'   ? 'group-child' : '';
+    const stickyTitle = row.kind === 'rollup'
+      ? `${c.name} (group consolidated) — fills if any of: ${row.members.map(m => m.name).join(', ')} tracks the pair`
+      : `${c.name} · ${c.sector||'?'} · ${c.initiative_count||0} initiative(s)`;
+    const stickySub = row.kind === 'rollup' ? `<span class="sub">group consolidated · ${row.members.length} entities</span>`
+                    : row.kind === 'parent' ? `<span class="sub">parent · own pairs only</span>`
+                    : '';
+    html += `<tr class="${trCls}"><td class="sticky-row" title="${escapeAttr(stickyTitle)}">${escapeHtml(c.name)}${stickySub}</td>`;
+
     for(const p of pairs){
+      if(row.kind === 'rollup'){
+        const rolled = getRollupCellRow(row, p.pair_label);
+        if(rolled){
+          const r = rolled.primary.row;
+          const cls = `cell confidence-${r.confidence||'unknown'}`;
+          const dot = `<span class="dot ${(r.horizon||'h1').toLowerCase()} ${r.is_cross_client_edge?'cross':''}"></span>`;
+          const contribCount = rolled.all.length;
+          const tt = `${p.pair_label} · from ${rolled.primary.sourceCompany}${contribCount>1?` (+${contribCount-1} other)`:''} · ${r.horizon} · ${r.confidence||'?'} · ${r.trajectory||'?'} · evid ${r.hard_evidence_count||0}${r.is_cross_client_edge?' · cross-client':''}`;
+          html += `<td class="${cls}" data-rollup="${escapeAttr(c.name)}" data-pair="${escapeAttr(p.pair_label)}" title="${escapeAttr(tt)}">${dot}</td>`;
+        } else {
+          // any member loading?
+          const anyLoading = row.members.some(m => state.loadingByCompany[m.name]);
+          if(anyLoading){
+            html += `<td class="cell"><span class="pending"></span></td>`;
+          } else {
+            html += `<td class="cell"></td>`;
+          }
+        }
+        continue;
+      }
+      // normal / parent / child row — same cell logic as before
       const r = getCellRow(c.name, p.pair_label);
       if(state.loadingByCompany[c.name] && !r){
         html += `<td class="cell"><span class="pending"></span></td>`;
@@ -457,8 +603,15 @@ function render(){
         html += `<td class="cell"></td>`;
       }
     }
+
+    // Status cell
     let st;
-    if(state.loadingByCompany[c.name]){ st = '<span class="row-status">…</span>'; }
+    if(row.kind === 'rollup'){
+      const s = rollupRowStatus(row);
+      const txt = s.loading ? `${s.loading}/${s.members}…` : (s.errors ? `${s.errors} err` : `${s.pairs} pairs`);
+      const col = s.errors ? 'var(--det)' : 'var(--ink)';
+      st = `<span class="row-status" style="color:${col}" title="rollup of ${s.members} entities · ${s.pairs} unique pairs${s.loading?` · ${s.loading} loading`:''}${s.errors?` · ${s.errors} errored`:''}">${txt}</span>`;
+    } else if(state.loadingByCompany[c.name]){ st = '<span class="row-status">…</span>'; }
     else if(state.errorsByCompany[c.name]){ st = `<span class="row-status" style="color:var(--det)" title="${escapeAttr(state.errorsByCompany[c.name])}">err</span>`; }
     else { st = `<span class="row-status">${(state.pairsByCompany[c.name]||[]).length}</span>`; }
     html += `<td class="sticky-row" style="left:auto;right:0;text-align:center;border-right:none;border-left:1px solid var(--border);min-width:60px">${st}</td>`;
@@ -470,6 +623,9 @@ function render(){
   // attach cell handlers
   els.content.querySelectorAll('td.cell[data-company]').forEach(td => {
     td.addEventListener('click', () => openDetail(td.dataset.company, td.dataset.pair));
+  });
+  els.content.querySelectorAll('td.cell[data-rollup]').forEach(td => {
+    td.addEventListener('click', () => openRollupDetail(td.dataset.rollup, td.dataset.pair));
   });
 }
 
@@ -491,6 +647,34 @@ function openDetail(company, pairLabel){
   els.dReason.textContent = r.link_reasoning || '(no reasoning text in API)';
   els.detail.classList.add('open');
 }
+function openRollupDetail(parentName, pairLabel){
+  const rows = buildRenderRows();
+  const rollup = rows.find(r => r.kind === 'rollup' && r.company.name === parentName);
+  if(!rollup) return;
+  const rolled = getRollupCellRow(rollup, pairLabel);
+  if(!rolled) return;
+  const r = rolled.primary.row;
+  els.dTitle.textContent = r.pair_label;
+  els.dSub.textContent = `${parentName} (group consolidated) · ${r.technology || r.technology_name || ''} → ${r.application || r.application_name || ''}`;
+  els.dList.innerHTML = `
+    <dt>Primary source</dt><dd>${escapeHtml(rolled.primary.sourceCompany)}</dd>
+    <dt>Contributing entities</dt><dd>${rolled.all.length} of ${rollup.members.length}</dd>
+    <dt>Horizon</dt><dd>${r.horizon||'?'}</dd>
+    <dt>Confidence</dt><dd>${r.confidence||'?'} <span style="color:var(--muted);font-size:11px">(primary)</span></dd>
+    <dt>Trajectory</dt><dd>${r.trajectory||'?'}</dd>
+    <dt>Hard evidence</dt><dd>${r.hard_evidence_count ?? 0}</dd>
+    <dt>Cross-client</dt><dd>${r.is_cross_client_edge?'yes':'no'}</dd>
+    <dt>Link type</dt><dd>${r.link_type||'?'}</dd>
+  `;
+  // Per-contributor detail block
+  const contribHtml = rolled.all.map(co => {
+    const cr = co.row;
+    return `<div style="padding:6px 0;border-top:1px solid var(--border);font-size:11px"><strong>${escapeHtml(co.sourceCompany)}</strong> · ${cr.horizon||'?'} · ${cr.confidence||'?'} · ${cr.trajectory||'?'} · evid ${cr.hard_evidence_count||0}${cr.is_cross_client_edge?' · cross':''}</div>`;
+  }).join('');
+  els.dReason.innerHTML = `<div style="margin-bottom:8px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--muted)">Per-entity coverage</div>${contribHtml}<div style="margin-top:14px;padding-top:8px;border-top:1px solid var(--border);font-size:11px;color:var(--muted)">Primary reasoning: ${escapeHtml(r.link_reasoning || '(no reasoning text)')}</div>`;
+  els.detail.classList.add('open');
+}
+
 els.detailClose.addEventListener('click', () => els.detail.classList.remove('open'));
 
 // ── Filters ──────────────────────────────────────
@@ -504,19 +688,38 @@ els.detailClose.addEventListener('click', () => els.detail.classList.remove('ope
 
 // ── CSV ──────────────────────────────────────────
 els.exportCsv.addEventListener('click', () => {
-  const rows = [['company','pair_label','technology','application','horizon','confidence','trajectory','hard_evidence_count','is_cross_client_edge','link_type']];
-  for(const c of state.companies){
-    for(const r of state.pairsByCompany[c.name] || []){
-      if(!passFilters(r)) continue;
-      rows.push([
-        c.name, r.pair_label, r.technology||r.technology_name||'',
-        r.application||r.application_name||'', r.horizon||'', r.confidence||'',
-        r.trajectory||'', r.hard_evidence_count||0,
-        r.is_cross_client_edge?1:0, r.link_type||'',
-      ]);
+  const renderRows = buildRenderRows();
+  const allPairs = uniquePairs();
+  const out = [['company','is_group_rollup','source_entity','pair_label','technology','application','horizon','confidence','trajectory','hard_evidence_count','is_cross_client_edge','link_type']];
+  for(const row of renderRows){
+    const c = row.company;
+    if(row.kind === 'rollup'){
+      for(const p of allPairs){
+        const rolled = getRollupCellRow(row, p.pair_label);
+        if(!rolled) continue;
+        const r = rolled.primary.row;
+        out.push([
+          c.name, 1, rolled.primary.sourceCompany,
+          r.pair_label, r.technology||r.technology_name||'',
+          r.application||r.application_name||'', r.horizon||'', r.confidence||'',
+          r.trajectory||'', r.hard_evidence_count||0,
+          r.is_cross_client_edge?1:0, r.link_type||'',
+        ]);
+      }
+    } else {
+      for(const r of state.pairsByCompany[c.name] || []){
+        if(!passFilters(r)) continue;
+        out.push([
+          c.name, 0, c.name,
+          r.pair_label, r.technology||r.technology_name||'',
+          r.application||r.application_name||'', r.horizon||'', r.confidence||'',
+          r.trajectory||'', r.hard_evidence_count||0,
+          r.is_cross_client_edge?1:0, r.link_type||'',
+        ]);
+      }
     }
   }
-  const csv = rows.map(r => r.map(v => {
+  const csv = out.map(r => r.map(v => {
     const s = String(v ?? '');
     return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
   }).join(',')).join('\n');
