@@ -341,9 +341,25 @@ Total component_pair_links added (P4 → existing ontology): 18 (Infineon→SiC 
 |-----------|--------|
 | **signal-engine-api `/v8/*` routes** | **Deployed to Railway. 5 routes: /v8/companies, /v8/hypotheses, /v8/ontology-pairs, /v8/signals, /v8/contacts. All read-only, Bearer-auth. Verified live by Chris (13 companies returning).** |
 | **account_plans_v8.html** | **Built. 11 tabs: Overview, Strategy (Claude+PG), Hypotheses, Technologies, Signal Log, Contacts (PG live), Pain points, Weak signals (Claude+PG), Pre-Meeting (3-call Claude pipeline), Meetings (Apps Script carry from v7), Post-Meeting (Fathom transcript → Claude → Apps Script). Sidebar config: Bearer + Anthropic key + Apps Script URL. URL parameter `?company=X` for direct linking.** |
-| **index.html** | **Updated — Account Plans tile now points to v8 with per-company quick-link block (13 deep links). v7 archived link retained.** |
+| **index.html** | **Updated — Account Plans tile now points to v8 with per-company quick-link block (now 27 deep links incl. 14 new P5 companies). v7 archived link retained.** |
 | **17 intel brief HTMLs** | **Deprecated — all 32 brief HTML files (16 companies × bare + `__N_` versions) now carry a black-banner deprecation note at top, linking to v8 with the company URL parameter (or v8 root for the 5 uncovered companies: Datwyler, EDF, E.ON, Halliburton, WOCO).** |
 | Existing v7 (`account_plans_v7.html`) | Retained as archive. Linked from index.html footer of v8 tile as "v7 archived at..." |
+
+---
+
+**As of 2026-05-08 — P5 batch (14 briefs + populators) complete**
+
+Layout fix on `account_plans_v8.html` (sidebar/main flex switch — commit `7520315`) plus 14 net-new intelligence briefs and PG populators:
+
+| Block | Companies | Briefs + populators | PG company state |
+|-------|-----------|---------------------|------------------|
+| **Energy (6)** | Technip Energies (TEN-01..03), TechnipFMC (TFMC-01..03), ExxonMobil (XOM-01..03), Eni SpA (ENI-01..03), ConocoPhillips (CNP-01..03), SLB (SLB-01..03) | `P5_TEN/TFMC/XOM/ENI/CNP/SLB_hypotheses.mjs` | New rows for TEN, TFMC, ENI, SLB; CNP existing id=72; XOM existing id=74 |
+| **Semiconductors (6)** | STMicroelectronics (STM-01..03), NXP Semiconductors (NXP-01..03), Renesas Electronics (REN-01..03), onsemi (ON-01..03), Wolfspeed (WOLF-01..03), Mobileye (MBLY-01..03) | `P5_STM/NXP/REN/ON/WOLF/MBLY_hypotheses.mjs` | STM re-used id=29, NXP re-used id=53 (sidestep dedup), Renesas / onsemi / Wolfspeed / Mobileye new rows |
+| **Mobility (2)** | Continental AG (CON-01..03), Jaguar Land Rover (JLR-01..03) | `P5_CON_hypotheses.mjs`, `P5_JLR_hypotheses.mjs` | Re-used id=10 (Continental) and id=16 (JLR) |
+
+**Totals (P5 batch):** 14 briefs (~480-640 lines each), 14 populators, **42 new initiatives**, **168 new components**, **168 new claims_v2**, **24 new direct-link buttons on `index.html`**. Schema enum gotcha: `companies.sector` accepts only `energy/mobility/both/unknown` — semis classified as `mobility` (auto-focused) or `both` (Wolfspeed cross-cutting).
+
+`catalogue.initiatives_v2` row count post-P5: **57** initiatives across **22** companies (vs 43/13 pre-batch).
 
 ---
 
@@ -355,8 +371,8 @@ Total component_pair_links added (P4 → existing ontology): 18 (Infineon→SiC 
 | Next | Apps Script INSERT trigger — install (run `installOntologyTriggers()` in Apps Script editor) |
 | Today | **End-to-end test account_plans_v8.html in browser** — load companies, switch tabs (Hypotheses, Technologies, Contacts should render from PG; Pre-Meeting + Post-Meeting need Anthropic key + a contact selected; Meetings needs Apps Script URL configured). Confirm Claude generation works for Overview / Strategy / Pain points / Weak signals tabs. |
 | Today | **Add 5 uncovered companies to v8 catalogue** — Datwyler, EDF, E.ON, Halliburton, WOCO each have intel briefs in repo but no PG hypotheses. Their brief deprecation banners link to v8 root (no `?company=` parameter) because v8 has no data to show them. Generate brief-sourced hypotheses for each via the established `_populator_v2.mjs` pattern. |
-| Next | **Generate intelligence briefs for the deferred targets** — the most commercially valuable: STMicroelectronics, NXP Semiconductors, JLR, Continental AG. Then secondary energy clients: TEN, TFMC, XOM, ENI, CNP, SLB, Saudi Aramco. Then Renesas, onsemi, Wolfspeed, Mobileye for full semiconductor coverage. |
-| Next | **NXP Semiconductors PG dedup** — three rows in `catalogue.companies` (id=53 NXP Semiconductors, id=25 NXP Semiconductors Austria, id=52 NXP Semiconductors NV). Consolidate to one canonical row before populating NXP. None has any initiatives yet so consolidation is low-risk. |
+| Done | ~~**Generate intelligence briefs for the deferred targets**~~ — 14 of 15 done in P5 batch (commits `b76323e..3b729d3` 2026-05-07/08): TEN, TFMC, XOM, ENI, CNP, SLB, STM, NXP, Renesas, onsemi, Wolfspeed, Mobileye, Continental AG, JLR. Saudi Aramco still pending. |
+| Future | **NXP Semiconductors PG dedup** — sidestepped in P5 batch by populating canonical `id=53 NXP Semiconductors` row directly (id=25 Austria + id=52 NV remain as legacy rows with 0 initiatives — low-risk to leave or merge later). |
 | Next | **MAN_001 fleet BEV charging hypothesis** — generate MAN brief first, then populate (was on original VWG brief, dropped from Path A) |
 | Next | **Tyre-specific ontology pairs** — current mobility ontology has no tyre pairs. Michelin (3 inits, 12 components) only has exposure_only linkage to BEV × passenger. Future pass: add `ev_specific_tyre_compound × passenger_car_electrification`, `aircraft_tyre_materials × aviation`, `mining_tyre × resource_extraction` pairs anchored on Michelin components. |
 | Done | ~~Mobility ontology Phase 3~~ — 15 pairs populated 2026-05-07 via `P3_mobility_ontology.mjs`. Cross-client adjacency edges (v1.3) flagged 13 of 36 new edges as cross-client. Ontology heat map now spans energy (33 pairs) + mobility (15 pairs) = 48 pairs total, 26 technologies, 12 applications. |
