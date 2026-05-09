@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Method · FutureBridge Signal Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--k:#000;--w:#fff;--g:#4B4B55;--r:#F84E5D;--ln:#E5E5E8;--off:#F8F8F9}
+html{font-size:16px}
+body{font-family:'DM Sans',Arial,sans-serif;background:var(--w);color:var(--k);-webkit-font-smoothing:antialiased;line-height:1.65;max-width:920px;margin:0 auto;padding-bottom:48px}
+@media print{.no-print{display:none}body{font-size:13px;max-width:100%}}
+.top{background:var(--k);padding:12px 44px;display:flex;justify-content:space-between;align-items:center}
+.fb{font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--w)}
+.top-r{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.hero{padding:40px 44px 32px;border-bottom:3px solid var(--k)}
+.lbl{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--g);margin-bottom:12px}
+.hero h1{font-size:clamp(1.4rem,2.8vw,2.1rem);font-weight:700;line-height:1.1;letter-spacing:-.02em;margin-bottom:16px;max-width:700px}
+.hero-sub{font-size:15px;color:var(--g);line-height:1.7;max-width:640px;margin-bottom:20px}
+.pos-line{background:var(--k);color:var(--w);padding:14px 20px;font-size:14px;font-weight:600;line-height:1.6;max-width:700px}
+.pos-line span{color:var(--r)}
+.body{padding:36px 44px}
+.sl{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--g);margin-bottom:6px}
+.st{font-size:18px;font-weight:700;letter-spacing:-.01em;margin-bottom:20px}
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--ln);margin-bottom:32px}
+.pillar{padding:22px;border-right:1px solid var(--ln)}
+.pillar:last-child{border-right:none}
+.pnum{font-family:'DM Mono';font-size:10px;color:var(--r);margin-bottom:10px}
+.ptitle{font-size:16px;font-weight:700;margin-bottom:3px;line-height:1.2}
+.psub{font-size:11px;color:var(--g);margin-bottom:14px;font-style:italic}
+.anchor{background:var(--off);border-left:2px solid var(--ln);padding:10px 12px;margin-bottom:14px}
+.al{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g);margin-bottom:4px}
+.an{font-size:12px;font-weight:600;line-height:1.45}
+.as{font-size:11px;color:var(--g);line-height:1.4;margin-top:2px}
+.pcl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g);margin-bottom:4px}
+.pc{font-size:12px;color:var(--g);line-height:1.55;margin-bottom:14px}
+.pal{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--k);margin-bottom:4px}
+.pa{font-size:12px;font-weight:500;line-height:1.55}
+.conn{background:var(--k);color:var(--w);padding:24px 28px;margin-bottom:28px}
+.conn-lbl{font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--r);margin-bottom:10px}
+.conn-t{font-size:18px;font-weight:700;line-height:1.2;margin-bottom:10px}
+.conn-b{font-size:14px;color:rgba(255,255,255,.72);line-height:1.7;max-width:64ch;margin-bottom:18px}
+.conn-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ci{background:rgba(255,255,255,.07);padding:14px;border-left:1px solid rgba(248,78,93,.4)}
+.ci-t{font-size:12px;font-weight:700;color:var(--w);margin-bottom:4px}
+.ci-d{font-size:12px;color:rgba(255,255,255,.6);line-height:1.55}
+.flow-wrap{margin-bottom:28px}
+.flow-lbl{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--g);margin-bottom:12px}
+.flow{display:flex;align-items:stretch;gap:0}
+.fstep{flex:1;padding:14px 12px;border:1px solid var(--ln);margin-right:-1px;position:relative}
+.fstep:last-child{margin-right:0}
+.fnum{font-family:'DM Mono';font-size:9px;color:var(--r);margin-bottom:5px}
+.fname{font-size:13px;font-weight:700;margin-bottom:4px}
+.fdesc{font-size:11px;color:var(--g);line-height:1.5}
+.farr{display:flex;align-items:center;padding:0 2px;color:var(--g);font-size:16px;flex-shrink:0}
+.comp-tbl{width:100%;border-collapse:collapse;margin-bottom:28px}
+.comp-tbl thead tr{border-bottom:2px solid var(--k)}
+.comp-tbl th{text-align:left;padding:8px 10px;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g)}
+.comp-tbl tbody tr{border-bottom:1px solid var(--ln)}
+.comp-tbl td{padding:11px 10px;vertical-align:top;line-height:1.5;font-size:13px}
+.wedge{border:1px solid var(--k);padding:20px 24px;margin-bottom:24px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.wq{font-size:13px;color:var(--g);line-height:1.65}
+.wq em{color:var(--k);font-style:normal;font-weight:600}
+.wa{background:var(--k);color:var(--w);padding:16px;font-size:13px;font-weight:500;line-height:1.65}
+.wa span{color:var(--r)}
+.sens{background:var(--off);border-left:2px solid var(--r);padding:14px 18px;margin-bottom:20px;font-size:13px;color:var(--g);line-height:1.65}
+.sens strong{color:var(--k)}
+.foot{background:var(--k);padding:16px 44px;display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+.foot-n{font-size:10px;color:rgba(255,255,255,.3);max-width:560px;line-height:1.5}
+.foot-r{font-size:11px;color:rgba(255,255,255,.5);text-align:right;letter-spacing:.1em;text-transform:uppercase}
+.pb{position:fixed;bottom:20px;right:20px;background:var(--k);color:var(--w);border:none;padding:8px 16px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',Arial,sans-serif}
+.pb:hover{background:var(--r)}
+@media(max-width:700px){.pillars,.conn-grid,.wedge{grid-template-columns:1fr}.pillar{border-right:none;border-bottom:1px solid var(--ln)}.flow{flex-direction:column}.farr{display:none}}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="fb">FutureBridge Advisory</div>
+  <div class="top-r">Signal Engine · Methodology · May 2026</div>
+</div>
+<div class="hero">
+  <div class="lbl">FutureBridge Signal Engine · The Method</div>
+  <h1>This method is not new. It is three established academic disciplines wired together and made operational with live signals.</h1>
+  <div class="hero-sub">Discovery-driven strategy, causal modelling, and driver-based planning are each well established in academic and commercial strategy practice. FutureBridge did not invent them. What is different is connecting all three into a single system that updates continuously as real-world events arrive — and links that directly to decisions, not to reports.</div>
+  <div class="pos-line">Most approaches <span>describe</span> the future. This approach <span>tests</span> whether it is actually arriving.</div>
+</div>
+<div class="body">
+
+<div class="sl">The academic foundations</div>
+<div class="st">Three established disciplines — one connected system</div>
+
+<div class="pillars">
+  <div class="pillar">
+    <div class="pnum">PILLAR 01</div>
+    <div class="ptitle">What must be true</div>
+    <div class="psub">Discovery-driven planning</div>
+    <div class="anchor">
+      <div class="al">Academic anchor</div>
+      <div class="an">Rita McGrath · Ian MacMillan</div>
+      <div class="as">Harvard Business Review, 1995. Columbia Business School. Foundational in corporate venture strategy and new market entry.</div>
+    </div>
+    <div class="pcl">The established concept</div>
+    <div class="pc">Strategy for uncertain markets should begin with explicit assumptions about what must be true for success — not treat those assumptions as facts. Making them visible enables deliberate testing and faster learning when conditions change.</div>
+    <div class="pal">FutureBridge application</div>
+    <div class="pa">We define those assumptions as measurable thresholds — WNTBT (What Needs to Be True) — with specific numbers, not narratives. Each threshold is a falsifiable claim the evidence either supports or doesn't.</div>
+  </div>
+  <div class="pillar">
+    <div class="pnum">PILLAR 02</div>
+    <div class="ptitle">How the system works</div>
+    <div class="psub">System dynamics and causal modelling</div>
+    <div class="anchor">
+      <div class="al">Academic anchor</div>
+      <div class="an">Jay W. Forrester</div>
+      <div class="as">MIT Sloan School of Management. Originated system dynamics modelling. Basis for much of modern supply chain, macroeconomic, and policy simulation thinking.</div>
+    </div>
+    <div class="pcl">The established concept</div>
+    <div class="pc">Complex outcomes are driven by interconnected variables and feedback loops — not single causes. Understanding a system means mapping the causal structure, not just observing outputs. Changes in one node propagate through the whole.</div>
+    <div class="pal">FutureBridge application</div>
+    <div class="pa">We map the causal structure of each strategic question — regulation, technology cost, supply chain, competitive dynamics — so we know which variables actually drive the outcome and in what sequence.</div>
+  </div>
+  <div class="pillar">
+    <div class="pnum">PILLAR 03</div>
+    <div class="ptitle">What moves the outcome</div>
+    <div class="psub">Driver trees and driver-based planning</div>
+    <div class="anchor">
+      <div class="al">Academic anchor</div>
+      <div class="an">McKinsey &amp; Company · Corporate FP&amp;A practice</div>
+      <div class="as">McKinsey driver trees, widely adopted in CFO and FP&A (Financial Planning and Analysis) planning. Decomposes business performance into measurable input variables.</div>
+    </div>
+    <div class="pcl">The established concept</div>
+    <div class="pc">Business performance is driven by a small number of measurable input variables. Managing the business means tracking those inputs — not just the financial outputs. The right drivers, correctly measured, give early warning of where outcomes are heading.</div>
+    <div class="pal">FutureBridge application</div>
+    <div class="pa">We track the specific input nodes — tariff rates, local content percentages, cell costs, regulatory milestones — that drive the strategic outcome. External news events are classified by which node they move and by how much.</div>
+  </div>
+</div>
+
+<!-- THE CONNECTION -->
+<div class="conn">
+  <div class="conn-lbl">What FutureBridge adds</div>
+  <div class="conn-t">The components are standard. The connection is not.</div>
+  <div class="conn-b">Each of the three disciplines above exists in isolation across strategy consulting and academic practice. Discovery-driven planning rarely gets connected to a real causal model. Driver trees rarely get connected to external signal classification. And none of them typically update in real time as market events occur. FutureBridge connects all three — and adds a fourth layer: live news classified against the model, updating the thresholds continuously rather than at the next strategy review.</div>
+  <div class="conn-grid">
+    <div class="ci">
+      <div class="ci-t">What the connection enables</div>
+      <div class="ci-d">A tariff announcement, a technology cost milestone, or a regulatory vote is classified against the causal model immediately. The relevant WNTBT threshold updates. The decision window opens or closes. That cycle runs continuously — not annually.</div>
+    </div>
+    <div class="ci">
+      <div class="ci-t">What it replaces</div>
+      <div class="ci-d">Strategy reviews that are obsolete by the time they are presented. Trend reports that describe what happened but do not say what it means for a specific decision. Scenario planning that produces options but no thresholds for choosing between them.</div>
+    </div>
+  </div>
+</div>
+
+<!-- FLOW -->
+<div class="flow-wrap">
+  <div class="flow-lbl">The operational flow — from evidence to decision</div>
+  <div class="flow">
+    <div class="fstep">
+      <div class="fnum">01</div>
+      <div class="fname">Hypothesis</div>
+      <div class="fdesc">A falsifiable claim with a specific threshold and the decision it informs. Not a belief — a statement that can be proven wrong.</div>
+    </div>
+    <div class="farr">→</div>
+    <div class="fstep">
+      <div class="fnum">02</div>
+      <div class="fname">WNTBT thresholds</div>
+      <div class="fdesc">The specific conditions — with numbers — that must hold for the hypothesis to be valid. Each one is a measurable claim, not a narrative assumption.</div>
+    </div>
+    <div class="farr">→</div>
+    <div class="fstep">
+      <div class="fnum">03</div>
+      <div class="fname">Causal driver map</div>
+      <div class="fdesc">The input variables that determine whether each threshold is met — technology cost, regulatory timing, supply chain depth, market dynamics. Mapped as a causal system, not a list.</div>
+    </div>
+    <div class="farr">→</div>
+    <div class="fstep">
+      <div class="fnum">04</div>
+      <div class="fname">Live signal classification</div>
+      <div class="fdesc">External news is classified by which driver node it moves and in which direction. Only events that affect a WNTBT threshold become signals. Everything else is noise.</div>
+    </div>
+    <div class="farr">→</div>
+    <div class="fstep">
+      <div class="fnum">05</div>
+      <div class="fname">Decision window</div>
+      <div class="fdesc">When multiple thresholds converge — or when one crosses — the decision window opens. The system surfaces this directly. No translation layer required.</div>
+    </div>
+  </div>
+</div>
+
+<!-- WEDGE vs COMPETITORS -->
+<div class="sl">Competitive positioning</div>
+<div class="st" style="margin-bottom:14px">What others do well — and where the gap is</div>
+
+<table class="comp-tbl">
+  <thead><tr>
+    <th style="width:22%">Firm / approach</th>
+    <th style="width:28%">Strong on</th>
+    <th style="width:28%">Weaker on</th>
+    <th>FutureBridge difference</th>
+  </tr></thead>
+  <tbody>
+    <tr>
+      <td style="font-weight:600">McKinsey &amp; Company</td>
+      <td>Driver trees · transformation strategy · executive access</td>
+      <td class="weak-td">Real-time signal linkage · testable thresholds · India ecosystem access</td>
+      <td>Driver tree connected to live signals. Thresholds that update when the market moves, not when the next engagement is sold.</td>
+    </tr>
+    <tr>
+      <td style="font-weight:600">Boston Consulting Group</td>
+      <td>Scenario planning · transformation · technology landscape</td>
+      <td class="weak-td">Falsifiable hypotheses · causal modelling · operational signal classification</td>
+      <td>Scenarios replaced with falsifiable hypotheses. The question is not "which future?" but "is this future arriving on the evidence available today?"</td>
+    </tr>
+    <tr>
+      <td style="font-weight:600">Gartner / analyst firms</td>
+      <td>Technology trends · hype cycle · peer benchmarking</td>
+      <td class="weak-td">Decision linkage · causal structure · client-specific threshold setting</td>
+      <td>Trends classified against a client-specific causal model. A Gartner hype cycle position does not tell you when to act. A threshold does.</td>
+    </tr>
+    <tr>
+      <td style="font-weight:600">In-house strategy teams</td>
+      <td>Deep context · internal data · speed of execution</td>
+      <td class="weak-td">External signal coverage · ecosystem access · methodology discipline</td>
+      <td>External signal coverage connected to internal decision models. FutureBridge's India ecosystem relationships access what an internal team cannot reach from Wolfsburg or London.</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- WEDGE LINE -->
+<div class="wedge">
+  <div class="wq">
+    <em>If someone asks: "Is this a new framework?"</em><br><br>
+    The honest answer: no. It is built on Rita McGrath's discovery-driven planning, Forrester's system dynamics, and McKinsey-style driver trees. These are not proprietary. What is different is connecting them into a system that updates continuously with external signals and makes the decision window explicit.<br><br>
+    That is the answer that earns credibility. Claiming a proprietary method invites scepticism. Naming the established foundations does the opposite.
+  </div>
+  <div class="wa">
+    The components are standard.<br>The connection is not.<br><br>
+    <span>External events → driver nodes → WNTBT thresholds → decision window.</span><br><br>
+    That cycle runs continuously. Strategy reviews run annually. The difference is not sophistication — it is speed.
+  </div>
+</div>
+
+<!-- SENSITIVITY NOTE — applicable to VWG India specifically -->
+<div class="sens">
+  <strong>Applied to VWG India — a note on the crossover calculation:</strong> The estimated manufacturing cost crossover (where CBU import becomes cheaper than local production) is modelled at approximately 38% tariff, with a local ICE manufacturing cost range of ₹18–22 lakh. A sensitivity of ±₹2 lakh in local manufacturing cost shifts the crossover tariff by approximately 5–7 percentage points. At ₹20 lakh local cost: crossover at ~38% tariff. At ₹18 lakh: crossover at ~32% tariff. At ₹22 lakh: crossover at ~44% tariff — above FTA phase 1, meaning manufacturing remains safe. The crossover range is ₹32–44% depending on actual VWG cost. Phase 1 of the engagement establishes where within that range VWG sits.
+</div>
+
+</div>
+<div class="foot">
+  <div class="foot-n">FutureBridge Advisory · Signal Engine methodology · May 2026. Method foundations: Rita McGrath and Ian MacMillan, "Discovery-Driven Planning" (HBR, 1995); Jay W. Forrester, system dynamics (MIT, 1958 onwards); McKinsey &amp; Company driver-tree planning framework. FutureBridge application: connecting these into a continuously updated decision system with real-world signal classification.</div>
+  <div class="foot-r">FutureBridge<br><span style="font-size:9px;color:rgba(255,255,255,.3)">Mumbai · London · Singapore</span></div>
+</div>
+<button class="pb no-print" onclick="window.print()">Print / Save PDF</button>
+</body>
+</html>
